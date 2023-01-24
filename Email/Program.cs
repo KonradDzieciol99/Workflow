@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -13,9 +16,6 @@ builder.Services.AddAuthentication(x =>
     x.Authority = "https://localhost:7122/";
     x.TokenValidationParameters = new TokenValidationParameters
     {
-        //ValidateIssuerSigningKey = true,
-        //IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration.GetValue<string>("ApiSettings:Secret"))),
-        //ValidateIssuer = false,
         ValidateAudience = false
     };
 });
