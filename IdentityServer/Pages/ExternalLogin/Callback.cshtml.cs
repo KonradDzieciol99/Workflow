@@ -83,6 +83,10 @@ public class Callback : PageModel
             user = new IdentityUser(Guid.NewGuid().ToString());
             await _userManager.CreateAsync(user);
 
+
+            /////////////////////////////RAISE IDENTITY EVENT I TAM CONSUME
+
+
             await _userManager.AddLoginAsync(user, new UserLoginInfo(provider, providerUserId, provider));
         }
 
