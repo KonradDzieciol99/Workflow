@@ -1,5 +1,9 @@
 using Duende.IdentityServer;
+using Duende.IdentityServer.Services;
+using IdentityModel;
+using IdentityServer.Common.Models;
 using IdentityServer.Persistence;
+using Mango.MessageBus;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,7 +53,11 @@ builder.Services.AddAuthentication().AddMicrosoftAccount(opt =>
     opt.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
 });
 
+builder.Services.AddScoped<IEventSink, IdentityEvents>();
+
 builder.Services.AddScoped<ApplicationDbContextInitialiser>();
+
+builder.Services.AddSingleton<IMessageBus, AzureServiceBusMessageBus>();
 
 var app = builder.Build();
 
