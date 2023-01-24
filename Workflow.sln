@@ -11,19 +11,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integration", "Integration"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Identity", "Identity", "{543242A3-AF15-470D-8432-F130CDFE943A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resource", "Resource", "{11B5D57B-30FA-4E7E-BB55-08A62019F1B6}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Team", "Team", "{11B5D57B-30FA-4E7E-BB55-08A62019F1B6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer", "..\Workflow\IdentityServer\IdentityServer.csproj", "{B0D8DB1B-A592-498A-907C-22CB0295FD45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer", "IdentityServer\IdentityServer.csproj", "{B0D8DB1B-A592-498A-907C-22CB0295FD45}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPI", "..\Workflow\WebAPI\WebAPI.csproj", "{A4A7024B-3850-4A10-96B4-1A4E50CE3B0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPI", "WebAPI\WebAPI.csproj", "{A4A7024B-3850-4A10-96B4-1A4E50CE3B0B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "..\Workflow\Infrastructure\Infrastructure.csproj", "{9F67109F-CDD0-4F18-8ADF-8E197C00B7E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{9F67109F-CDD0-4F18-8ADF-8E197C00B7E2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "..\Workflow\Domain\Domain.csproj", "{7919B608-1445-42AE-888F-63303DCC932E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{7919B608-1445-42AE-888F-63303DCC932E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "..\Workflow\Application\Application.csproj", "{97A56A06-72AF-49CA-A90C-F8F25C84EA9E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\Application.csproj", "{97A56A06-72AF-49CA-A90C-F8F25C84EA9E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageBus", "..\Workflow\MessageBus\MessageBus.csproj", "{7EF84877-E167-460C-ADB4-679FE89CCC8F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageBus", "MessageBus\MessageBus.csproj", "{7EF84877-E167-460C-ADB4-679FE89CCC8F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
