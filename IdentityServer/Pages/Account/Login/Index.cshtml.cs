@@ -64,7 +64,6 @@ public class Index : PageModel
         
     public async Task<IActionResult> OnPost()
     {
-        Console.WriteLine(Input);
         // check if we are in the context of an authorization request
         var context = await _interaction.GetAuthorizationContextAsync(Input.ReturnUrl);
 
@@ -97,10 +96,13 @@ public class Index : PageModel
 
         if (ModelState.IsValid)
         {
-            var user = await _signInManager.UserManager.FindByNameAsync(Input.Username);
-            
+            var user = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
+            //var user = await _signInManager.UserManager.FindByNameAsync(Input.Username);
+
             // validate username/password against in-memory store
-            if (user != null && (await _signInManager.CheckPasswordSignInAsync(user, Input.Password, false)) == SignInResult.Success)
+            
+            var signInresoult = await _signInManager.CheckPasswordSignInAsync(user, Input.Password, false);
+            if (user != null && (signInresoult) == SignInResult.Success)
             {
                 await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.Client.ClientId));
 
@@ -153,8 +155,18 @@ public class Index : PageModel
                 }
             }
 
-            await _events.RaiseAsync(new UserLoginFailureEvent(Input.Username, "invalid credentials", clientId:context?.Client.ClientId));
-            ModelState.AddModelError(string.Empty, LoginOptions.InvalidCredentialsErrorMessage);
+            if (!user.EmailConfirmed)
+            {
+                await _events.RaiseAsync(new UserLoginFailureEvent(Input.Email, "email not confirmed", clientId: context?.Client.ClientId));
+                ModelState.AddModelError(string.Empty, "You must have a confirmed email address.");
+            }
+            else
+            {
+                await _events.RaiseAsync(new UserLoginFailureEvent(Input.Email, "invalid credentials", clientId: context?.Client.ClientId));
+                ModelState.AddModelError(string.Empty, LoginOptions.InvalidCredentialsErrorMessage);
+            }
+
+
         }
 
         // something went wrong, show form with error
@@ -180,8 +192,8 @@ public class Index : PageModel
                 EnableLocalLogin = local,
             };
 
-            Input.Username = context?.LoginHint;
-
+            //Input.Username = context?.LoginHint;
+            Input.Email = context?.LoginHint;
             if (!local)
             {
                 View.ExternalProviders = new[] { new ViewModel.ExternalProvider { AuthenticationScheme = context.IdP } };
