@@ -1,4 +1,7 @@
+using Duende.IdentityServer.Events;
+using Duende.IdentityServer.Services;
 using IdentityModel;
+using IdentityServer.Common.Models;
 using IdentityServerHost.Pages.Login;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -15,14 +18,17 @@ namespace IdentityServer.Pages.Account.Register
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IEventService _events;
 
         public IndexModel(
             UserManager<IdentityUser> userManager,
                 SignInManager<IdentityUser> signInManager,
-                RoleManager<IdentityRole> roleInManager
+                RoleManager<IdentityRole> roleInManager,
+                IEventService events
               )
         {
             _roleManager = roleInManager;
+            this._events = events;
             _userManager = userManager;
             _signInManager = signInManager;
         }
@@ -81,6 +87,7 @@ namespace IdentityServer.Pages.Account.Register
                     //    new Claim(JwtClaimTypes.Role,Input.RoleName)
                     //});
 
+                    await _events.RaiseAsync(new LocalUserRegisterSuccessEvent(user.Email));
                     return RedirectToPage("/EmailConfirmation/Index", new { user.Email });
 
                     //var loginresult = await _signInManager.PasswordSignInAsync(

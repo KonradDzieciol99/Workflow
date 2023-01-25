@@ -101,8 +101,8 @@ public class Index : PageModel
 
             // validate username/password against in-memory store
             
-            var signInresoult = await _signInManager.CheckPasswordSignInAsync(user, Input.Password, false);
-            if (user != null && (signInresoult) == SignInResult.Success)
+            
+            if (user != null && (await _signInManager.CheckPasswordSignInAsync(user, Input.Password, false)) == SignInResult.Success)
             {
                 await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.Client.ClientId));
 
