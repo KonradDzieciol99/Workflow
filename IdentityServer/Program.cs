@@ -32,7 +32,8 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(opt =>
     opt.Password.RequireNonAlphanumeric = false;
     //opt.SignIn.RequireConfirmedEmail = true;
 })
-.AddEntityFrameworkStores<ApplicationDbContext>();
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
 
 builder.Services.AddIdentityServer(options =>
 {

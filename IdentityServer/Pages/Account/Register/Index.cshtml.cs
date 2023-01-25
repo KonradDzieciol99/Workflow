@@ -65,7 +65,7 @@ namespace IdentityServer.Pages.Account.Register
                     Email = Input.Email,
                 };
                 var result = await _userManager.CreateAsync(user, Input.Password);
-
+                
                 if (result.Succeeded)
                 {
                     //if (!_roleManager.RoleExistsAsync(Input.RoleName).GetAwaiter().GetResult())
@@ -86,8 +86,9 @@ namespace IdentityServer.Pages.Account.Register
                     //    new Claim(JwtClaimTypes.Email,Input.Email),
                     //    new Claim(JwtClaimTypes.Role,Input.RoleName)
                     //});
-
-                    await _events.RaiseAsync(new LocalUserRegisterSuccessEvent(user.Email));
+                    var identityUser = await _userManager.FindByEmailAsync(user.Email);
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(identityUser);
+                    await _events.RaiseAsync(new LocalUserRegisterSuccessEvent(user.Email,token));
                     return RedirectToPage("/EmailConfirmation/Index", new { user.Email });
 
                     //var loginresult = await _signInManager.PasswordSignInAsync(

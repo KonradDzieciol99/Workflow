@@ -15,7 +15,7 @@ namespace Mango.MessageBus
         //can be improved
         private string connectionString = "Endpoint=sb://workflowazureservicebus.servicebus.windows.net/;SharedAccessKeyName=AccessKey;SharedAccessKey=siRIzQcrn3bmCLkvdCklk/qFogTavWYhcMZQTtqB4j0=;EntityPath=newuserregister";
 
-        public async Task PublishMessage(BaseMessage message, string topicName)
+        public async Task PublishMessage<T>(T message, string topicName)
         {
 
             await using var client = new ServiceBusClient(connectionString);

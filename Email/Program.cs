@@ -1,10 +1,13 @@
+using Email;
+using Email.Extension;
+using Email.MessageBus;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
-var builder = WebApplication.CreateBuilder(args);
 
+
+var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
-//builder.Services.AddRazorPages();
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -19,6 +22,17 @@ builder.Services.AddAuthentication(x =>
         ValidateAudience = false
     };
 });
+
+var from = builder.Configuration["EmailConfiguration:From"];
+var key = builder.Configuration["SendGrid_Key"];
+
+builder.Services.AddFluentEmail(from)
+        .AddRazorRenderer()
+        .AddSendGridSender(key);
+
+builder.Services.AddSingleton<IEmailSender, EmailSender>();
+builder.Services.AddSingleton<IAzureServiceBusConsumer, AzureServiceBusConsumer>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -31,11 +45,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
-app.UseAuthorization();
-
-//app.MapRazorPages();
+app.UseAuthentication();
+//app.UseAuthorization();
+app.UseAzureServiceBusConsumer();
 
 app.Run();
