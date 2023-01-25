@@ -11,7 +11,7 @@
 
     <div class="row">
 
-        @if (Model.View.EnableLocalLogin)
+        @*@if (Model.View.EnableLocalLogin)
         {
             <div class="col-sm-6">
                 <div class="card">
@@ -32,7 +32,7 @@
                                 <input type="password" class="form-control" placeholder="Password" asp-for="Input.Password" autocomplete="off">
                             </div>
                             
-                            @if (Model.View.AllowRememberLogin)
+                             @if (Model.View.AllowRememberLogin)
                             {
                                 <div class="form-group">
                                     <div class="form-check">
@@ -50,7 +50,7 @@
                     </div>
                 </div>
             </div>
-        }
+        }*@
 
         @if (Model.View.VisibleExternalProviders.Any())
         {
@@ -88,3 +88,68 @@
         }
     </div>
 </div>
+<div class="h-100 d-flex">
+    <form id="loginForm" class="text-center form needs-validation " asp-page="/Account/Login/Index" style="width:330px; margin: auto; ">
+        <input type="hidden" asp-for="Input.ReturnUrl" />
+        @*<div class="alert alert-danger" role="alert" *ngIf="loginForm.errors?.['serverError']">
+            {{ loginForm.errors?.['serverError']}}
+        </div>*@
+        <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+        <div>
+            <div class="form-floating">        
+                <input type="email" class="form-control" placeholder="Email" asp-for="Input.Email" required>
+                <label asp-for="Input.Email"></label>
+                <div class="invalid-feedback my-2">
+                    <span asp-validation-for="Input.Email"></span>
+                </div>
+            </div>
+@*            <div class="invalid-feedback">
+                <span asp-validation-for="Input.Email" class="text-danger invalid-feedback"></span>
+            </div>*@
+            <div class="form-floating">
+                <input type="password" class="form-control" placeholder="Password" asp-for="Input.Password" autocomplete="off" required>
+                <label asp-for="Input.Password"></label>
+                <div class="invalid-feedback mt-0">
+                    <span asp-validation-for="Input.Password"></span>
+                </div>
+             </div>
+        </div>
+
+@*        <p class="text-end mb-0">
+            <a type="button" class="link-primary" routerLink="../reset-password">Forgot your password?</a>
+        </p>*@
+        <button class="w-100 btn btn-lg btn-primary mt-3" name="Input.Button" value="login">Sign in</button>
+        <p class="mt-3 mb-3 text-muted">
+            <a class="link-primary" href="/Account/Register">Don't have a Workflow account? Sign up now!</a>
+        </p>
+        <p class="mt-2 mb-3 text-muted">
+            &copy;
+            <a href="https://www.linkedin.com/in/konrad-dziêcio³-235a8523a" class="link-primary"><i class="fa-brands fa-linkedin"></i></a>
+        </p>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            'use strict'
+
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.querySelectorAll('.needs-validation')
+
+            // Loop over them and prevent submission
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
+}

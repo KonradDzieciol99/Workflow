@@ -22,8 +22,17 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(configuration.GetConnectionString("DbContextConnString"));
 });
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-  .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(opt =>
+{
+    //opt.Password.RequireNonAlphanumeric = false;
+    //opt.Password.RequireUppercase = false;
+    //opt.Password.RequireDigit = false;
+    opt.User.RequireUniqueEmail = true;
+    opt.SignIn.RequireConfirmedEmail = true;
+    opt.Password.RequireNonAlphanumeric = false;
+    //opt.SignIn.RequireConfirmedEmail = true;
+})
+.AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddIdentityServer(options =>
 {

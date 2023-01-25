@@ -83,6 +83,7 @@ public static class Config
                     SubjectId = "1",
                     Username = "alice",
                     Password = "alice",
+
                     Claims =
                     {
                         new Claim(JwtClaimTypes.Name, "Alice Smith"),
