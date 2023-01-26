@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
-namespace IdentityServer.Pages.EmailConfirmation
+namespace IdentityServer.Pages.EmailConfirmationInfo
 {
     [AllowAnonymous]
     public class IndexModel : PageModel

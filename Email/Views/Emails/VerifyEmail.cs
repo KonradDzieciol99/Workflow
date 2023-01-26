@@ -2,7 +2,6 @@
 {
     public class VerifyEmail
     {
-        public string Token { get; set; }
-        public string url { get; set; }
+        public string Url { get; set; }
     }
 }

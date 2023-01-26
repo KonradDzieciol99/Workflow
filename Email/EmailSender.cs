@@ -10,22 +10,24 @@ namespace Email
     {
         private readonly IFluentEmail _fluentEmail;
         private readonly string _from;
+        private readonly string _verifyEmailUrl;
         public EmailSender(IFluentEmail fluentEmail, IConfiguration configuration)
         {
             this._fluentEmail = fluentEmail;
-            var VerifyEmailUrl = configuration["VerifyEmailUrl"]; ;
+            var _verifyEmailUrl = configuration["VerifyEmailUrl"];
         }
         public async Task SendConfirmEmailMessage(RegisterEmailBusMessage registerEmailBusMessage)
         {
-            configuration
-            var verifyEmailModel = new VerifyEmail() { Token= registerEmailBusMessage.Token,url=""};
+            var url = $"{this._verifyEmailUrl}?token={registerEmailBusMessage.Token}&email={registerEmailBusMessage.Email}";
 
-            var currentLocation = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+            var verifyEmailModel = new VerifyEmail() { Url=url};
+
+            var currentLocation = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location);
             
             var email = _fluentEmail.To(registerEmailBusMessage.Email)
                                     .Tag("TEST")
                                     .Subject("Workflow Email verification")
-                                    .UsingTemplateFromFile($@"{currentLocation}/Views/Emails/PendingOrderEmail.cshtml", verifyEmailModel);
+                                    .UsingTemplateFromFile($@"{currentLocation}/Views/Emails/VerifyEmail.cshtml", verifyEmailModel);
 
             await this.Send(email);
 
