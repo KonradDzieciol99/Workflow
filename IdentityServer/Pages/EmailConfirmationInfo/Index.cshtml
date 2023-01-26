@@ -1,0 +1,28 @@
+﻿@page
+@model IdentityServer.Pages.EmailConfirmationInfo.IndexModel
+@{
+    //Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+    <div class="h-100 container text-center">
+        <img src="https://res.cloudinary.com/ddmmg4wb2/image/upload/v1673385489/workflow-management_ssnvgy.jpg" width="300" height="250" class="rounded mx-auto d-block" alt="...">
+
+        <p class="mt-4 h3">Please check your inbox to log in!</p>
+
+        <p class="mt-4 h5">To complete your registration, please click on the verification link in the email.</p>
+        <p class="mt-4 h5">Email has been sent to the address:</p>
+        <p>@Model.UserEmail</p>
+        <hr>
+        <form asp-page="/Account/Login/Index">
+            <p><a class="link-primary" type="submit" name="button" value="register">Resend the verification email</a></p>
+        </form>
+    </div>
+</body>
+</html>
