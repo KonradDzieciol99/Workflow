@@ -81,11 +81,9 @@ namespace IdentityServer.Pages.Account.Register
                     //await _userManager.AddToRoleAsync(user, Input.RoleName);
 
 
-                    //await _userManager.AddClaimsAsync(user, new Claim[] {
-                    //    new Claim(JwtClaimTypes.Name,Input.Email),
-                    //    new Claim(JwtClaimTypes.Email,Input.Email),
-                    //    new Claim(JwtClaimTypes.Role,Input.RoleName)
-                    //});
+                    await _userManager.AddClaimsAsync(user, new Claim[] {
+                        new Claim(JwtClaimTypes.Email,Input.Email),
+                    });
                     var identityUser = await _userManager.FindByEmailAsync(user.Email);
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(identityUser);
                     await _events.RaiseAsync(new LocalUserRegisterSuccessEvent(user.Email,token));
