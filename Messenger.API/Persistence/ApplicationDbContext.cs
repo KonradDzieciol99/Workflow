@@ -1,9 +1,7 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
+using Socjal.API.Models;
 
-using Messenger.API.Models;
-using Microsoft.EntityFrameworkCore;
-
-namespace Messenger.API.Persistence
+namespace Socjal.API.Persistence
 {
     public class ApplicationDbContext : DbContext
     {

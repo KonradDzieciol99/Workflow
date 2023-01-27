@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Socjal.API;
+using System.Security.Claims;
 
-namespace Messenger.API.Controllers
+namespace Socjal.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -21,6 +23,9 @@ namespace Messenger.API.Controllers
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {
+            var c = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),

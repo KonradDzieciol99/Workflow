@@ -1,6 +1,6 @@
-﻿using Messenger.API.Persistence;
+﻿using Socjal.API.Persistence;
 
-namespace Messenger.API.Repositories
+namespace Socjal.API.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {
@@ -12,7 +12,7 @@ namespace Messenger.API.Repositories
         }
 
         public IMessageRepository MessageRepository => new MessageRepository(_applicationDbContext);
-
+        public IUserRepository UserRepository => new UserRepository(_applicationDbContext);
 
         public async Task<bool> Complete()
         {

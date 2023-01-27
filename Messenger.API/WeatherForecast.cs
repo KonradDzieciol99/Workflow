@@ -1,4 +1,4 @@
-namespace Messenger.API
+namespace Socjal.API
 {
     public class WeatherForecast
     {

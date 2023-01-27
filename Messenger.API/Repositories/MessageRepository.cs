@@ -1,9 +1,7 @@
-﻿
+﻿using Socjal.API.Models;
+using Socjal.API.Persistence;
 
-using Messenger.API.Models;
-using Messenger.API.Persistence;
-
-namespace Messenger.API.Repositories
+namespace Socjal.API.Repositories
 {
     public class MessageRepository : Repository<Message>, IMessageRepository
     {

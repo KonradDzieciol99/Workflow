@@ -2,7 +2,7 @@
 
 namespace Socjal.API.Repositories
 {
-    public interface IMessageRepository : IRepository<Message>
+    public interface IUserRepository : IRepository<User>
     {
     }
 }

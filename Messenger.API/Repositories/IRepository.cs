@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace Messenger.API.Repositories
+namespace Socjal.API.Repositories
 {
     public interface IRepository<TEntity> where TEntity : class
     {

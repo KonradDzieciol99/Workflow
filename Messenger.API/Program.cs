@@ -1,9 +1,10 @@
-using Messenger.API;
-using Messenger.API.Persistence;
-using Messenger.API.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Socjal.API;
+using Socjal.API.Persistence;
+using Socjal.API.Repositories;
 using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,18 +33,33 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(opt =>
     ConnectionMultiplexer.Connect(RedisOptions)
 );
 
-builder.Services.AddAuthentication(x =>
+builder.Services.AddAuthentication(opt =>
 {
-    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-.AddJwtBearer(x => {
-    x.RequireHttpsMetadata = false;
-    x.SaveToken = true;
-    x.Authority = "https://localhost:7122/";
-    x.TokenValidationParameters = new TokenValidationParameters
+.AddJwtBearer(opt => {
+    opt.RequireHttpsMetadata = false;
+    opt.SaveToken = true;
+    opt.Authority = "https://localhost:7122/";
+    opt.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateAudience = false
+    };
+    opt.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hub"))
+            {
+                context.Token = accessToken;
+            }
+
+            return Task.CompletedTask;
+        }
     };
 });
 
@@ -72,6 +88,20 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    using (var scope = app.Services.CreateScope())
+    {
+        var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        try
+        {
+            if (initialiser.Database.IsSqlServer())
+                await initialiser.Database.MigrateAsync();
+        }
+        catch (Exception)
+        {
+            //_logger.LogError(ex, "An error occurred while initialising the database.");
+            throw;
+        }
+    }
 }
 
 app.UseHttpsRedirection();
@@ -86,5 +116,5 @@ app.MapControllers();
 
 app.MapHub<MessagesHub>("/hub/Messages");
 
-app.Run();
+await app.RunAsync();
 
