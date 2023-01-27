@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
 
-namespace Mango.Services.OrderAPI.Messaging
-{  
+namespace Socjal.API.MessageBus
+{
     //public class AzureServiceBusConsumer : IAzureServiceBusConsumer
     //{
     //    private readonly string serviceBusConnectionString;

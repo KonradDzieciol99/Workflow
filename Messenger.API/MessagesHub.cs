@@ -5,7 +5,6 @@ using Socjal.API.Models;
 using Socjal.API.Repositories;
 using StackExchange.Redis;
 using System.Security.Claims;
-using WorkflowApi.DataTransferObject;
 
 namespace Socjal.API
 {

@@ -1,4 +1,4 @@
-﻿namespace WorkflowApi.DataTransferObject
+﻿namespace Socjal.API.Models
 {
     public class MessageDto
     {

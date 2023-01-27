@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Mango.Services.OrderAPI.Messaging
+namespace Socjal.API.MessageBus
 {
     public interface IAzureServiceBusConsumer
     {
