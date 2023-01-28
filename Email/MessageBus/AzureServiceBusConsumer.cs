@@ -65,8 +65,8 @@ namespace Email.MessageBus
                 throw new ArgumentNullException("registerEmailBusMessage is empty");
             }
             //var c = new EmailSender();
-            //await  _emailSender.SendConfirmEmailMessage(registerEmailBusMessage);
-            //await args.CompleteMessageAsync(args.Message);
+            await  _emailSender.SendConfirmEmailMessage(registerEmailBusMessage);
+            await args.CompleteMessageAsync(args.Message);
 
         }
         //private async Task OnCheckOutMessageReceived(ProcessMessageEventArgs args)

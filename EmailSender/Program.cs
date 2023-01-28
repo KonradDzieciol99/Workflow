@@ -1,16 +1,14 @@
-using Email;
-using Email.Extension;
-using Email.MessageBus;
-using FluentEmail.Core;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-
-
 var builder = WebApplication.CreateBuilder(args);
+
 // Add services to the container.
+
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddAuthentication(x =>
 {
@@ -26,7 +24,6 @@ builder.Services.AddAuthentication(x =>
         ValidateAudience = false
     };
 });
-
 var from = builder.Configuration["EmailConfiguration:From"];
 var key = builder.Configuration["SendGrid_Key"];
 
@@ -40,32 +37,19 @@ builder.Services.AddSingleton<IEmailSender, EmailSender>(opt =>
     var fluentEmailFactory = opt.GetRequiredService<IFluentEmailFactory>();
     return new EmailSender(fluentEmailFactory, verifyEmailUrl);
 });
-
-builder.Services.AddSingleton<IAzureServiceBusConsumer, AzureServiceBusConsumer>();
-
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-
     app.UseSwagger();
     app.UseSwaggerUI();
-
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
-app.UseRouting();
-app.UseAuthentication();
+
+app.UseAuthorization();
+
 app.MapControllers();
-//app.UseAuthorization();
-app.UseAzureServiceBusConsumer();
 
 app.Run();

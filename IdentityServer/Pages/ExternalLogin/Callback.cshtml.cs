@@ -79,15 +79,35 @@ public class Callback : PageModel
             // remove the user id claim so we don't include it as an extra claim if/when we provision the user
             var claims = externalUser.Claims.ToList();
             claims.Remove(userIdClaim);
+            var email = claims.Single(x => x.Type == ClaimTypes.Email).Value;
+            user = new IdentityUser(Guid.NewGuid().ToString()) { Email= email };
 
-            user = new IdentityUser(Guid.NewGuid().ToString());
-            await _userManager.CreateAsync(user);
-
+            var resoult = await _userManager.CreateAsync(user);
+            if (!resoult.Succeeded)
+            {
+                string errors="";
+                foreach (var item in resoult.Errors)
+                {
+                    errors=string.Join(",", item.Description);
+                }
+                throw new Exception(errors);
+                //prod to loggin page with error
+            }
 
             /////////////////////////////RAISE IDENTITY EVENT I TAM CONSUME
 
 
-            await _userManager.AddLoginAsync(user, new UserLoginInfo(provider, providerUserId, provider));
+            resoult = await _userManager.AddLoginAsync(user, new UserLoginInfo(provider, providerUserId, provider));
+            if (!resoult.Succeeded)
+            {
+                string errors = "";
+                foreach (var item in resoult.Errors)
+                {
+                    errors = string.Join(",", item.Description);
+                }
+                throw new Exception(errors);
+                //prod to loggin page with error
+            }
         }
 
         // this allows us to collect any additional claims or properties
