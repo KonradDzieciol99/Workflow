@@ -1,9 +1,10 @@
+using Email.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmailSender.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
@@ -12,15 +13,21 @@ namespace EmailSender.Controllers
     };
 
         private readonly ILogger<WeatherForecastController> _logger;
+        public IEmailSender EmailSender { get; }
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IEmailSender emailSender)
         {
             _logger = logger;
+            EmailSender = emailSender;
+
         }
 
         [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+        public async Task<IEnumerable<WeatherForecast>> GetAsync()
         {
+            var f = new RegisterEmailBusMessage() { Token = "ddd", Email = "konradd990212@gmail.com" };
+            await EmailSender.SendConfirmEmailMessage(f);
+
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),

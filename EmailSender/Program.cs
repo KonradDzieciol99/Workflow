@@ -1,3 +1,7 @@
+using EmailSender;
+using EmailSender.Extension;
+using EmailSender.MessageBus;
+using FluentEmail.Core;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -31,12 +35,15 @@ builder.Services.AddFluentEmail(from)
         .AddRazorRenderer()
         .AddSendGridSender(key);
 
-builder.Services.AddSingleton<IEmailSender, EmailSender>(opt =>
+builder.Services.AddSingleton<IEmailSender, EmailSenderS>(opt =>
 {
     var verifyEmailUrl = builder.Configuration["VerifyEmailUrl"];
+    var from = builder.Configuration["EmailConfiguration:From"];
     var fluentEmailFactory = opt.GetRequiredService<IFluentEmailFactory>();
-    return new EmailSender(fluentEmailFactory, verifyEmailUrl);
+    return new EmailSenderS(fluentEmailFactory, verifyEmailUrl, from);
 });
+
+builder.Services.AddSingleton<IAzureServiceBusConsumer, AzureServiceBusConsumer>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -47,9 +54,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
 
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.UseAzureServiceBusConsumer();
 app.Run();
