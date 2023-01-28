@@ -155,18 +155,15 @@ public class Index : PageModel
                 }
             }
 
-            if (!user.EmailConfirmed)
+            if (user is not null && !user.EmailConfirmed)
             {
                 await _events.RaiseAsync(new UserLoginFailureEvent(Input.Email, "email not confirmed", clientId: context?.Client.ClientId));
                 ModelState.AddModelError(string.Empty, "You must have a confirmed email address.");
-            }
-            else
+            } else
             {
                 await _events.RaiseAsync(new UserLoginFailureEvent(Input.Email, "invalid credentials", clientId: context?.Client.ClientId));
                 ModelState.AddModelError(string.Empty, LoginOptions.InvalidCredentialsErrorMessage);
             }
-
-
         }
 
         // something went wrong, show form with error

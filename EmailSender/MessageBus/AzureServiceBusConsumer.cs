@@ -10,8 +10,9 @@ using Mango.MessageBus;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Email.Common.Models;
+using EmailSender;
 
-namespace Email.MessageBus
+namespace EmailSender.MessageBus
 {
     public class AzureServiceBusConsumer : IAzureServiceBusConsumer
     {
@@ -23,12 +24,12 @@ namespace Email.MessageBus
         private readonly IEmailSender _emailSender;
         private ServiceBusProcessor UserRegisterProcessor;
 
-        public AzureServiceBusConsumer( IConfiguration configuration, IEmailSender emailSender)
+        public AzureServiceBusConsumer(IConfiguration configuration, IEmailSender emailSender)
         {
             _configuration = configuration;
             //_messageBus = messageBus;
-            this._emailSender = emailSender;
-            serviceBusConnectionString = _configuration.GetValue<string>("ServiceBusConnectionString");;
+            _emailSender = emailSender;
+            serviceBusConnectionString = _configuration.GetValue<string>("ServiceBusConnectionString"); ;
             NewUserRegisterTopic = _configuration.GetValue<string>("NewUserRegisterTopic");
             NewUserRegisterSubscription = _configuration.GetValue<string>("NewUserRegisterSubscription");
 
@@ -59,13 +60,13 @@ namespace Email.MessageBus
             var body = Encoding.UTF8.GetString(message.Body);
 
             var registerEmailBusMessage = JsonSerializer.Deserialize<RegisterEmailBusMessage>(body);
-           
+
             if (registerEmailBusMessage is null)
             {
                 throw new ArgumentNullException("registerEmailBusMessage is empty");
             }
             //var c = new EmailSender();
-            await  _emailSender.SendConfirmEmailMessage(registerEmailBusMessage);
+            await _emailSender.SendConfirmEmailMessage(registerEmailBusMessage);
             await args.CompleteMessageAsync(args.Message);
 
         }

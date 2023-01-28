@@ -1,41 +1,41 @@
-﻿using EllipticCurve.Utils;
-using Email.Common.Models;
-using Email.Views.Emails;
+﻿using Email.Common.Models;
+using EmailSender.Views.Emails;
 using FluentEmail.Core;
-using FluentEmail.Razor;
-using Microsoft.Extensions.Configuration;
+using System.Net;
 
-namespace Email
+namespace EmailSender
 {
-    public class EmailSender: IEmailSender
+    public class EmailSenderS : IEmailSender
     {
         private readonly IFluentEmailFactory _fluentEmailFactory;
         private readonly string _verifyEmailUrl;
+        private readonly string _from;
 
-        public EmailSender(IFluentEmailFactory fluentEmailFactory, string verifyEmailUrl)
+        public EmailSenderS(IFluentEmailFactory fluentEmailFactory, string verifyEmailUrl,string from)
         {
-            this._fluentEmailFactory = fluentEmailFactory;
-            this._verifyEmailUrl = verifyEmailUrl;
+            _fluentEmailFactory = fluentEmailFactory;
+            _verifyEmailUrl = verifyEmailUrl;
+            this._from = from;
         }
         public async Task SendConfirmEmailMessage(RegisterEmailBusMessage registerEmailBusMessage)
         {
 
 
             IFluentEmail _fluentEmail = _fluentEmailFactory.Create();
-
-
-            var url = $"{this._verifyEmailUrl}?token={registerEmailBusMessage.Token}&email={registerEmailBusMessage.Email}";
+            ///////////////////WebUtility.UrlEncode!!!!!!!!!!
+            var url = $"{_verifyEmailUrl}?token={WebUtility.UrlEncode(registerEmailBusMessage.Token)}&email={registerEmailBusMessage.Email}";
 
             var verifyEmailModel = new VerifyEmail() { Url = url };
 
             var currentLocation = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location);
 
             var email = _fluentEmail.To(registerEmailBusMessage.Email)
+                                    .SetFrom(_from)
                                     .Tag("TEST")
                                     .Subject("Workflow Email verification")
                                     .UsingTemplateFromFile($@"{currentLocation}/Views/Emails/VerifyEmail.cshtml", verifyEmailModel);
 
-            await this.Send(email);
+            await Send(email);
 
             return;
         }
