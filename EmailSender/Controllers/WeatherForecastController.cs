@@ -25,7 +25,7 @@ namespace EmailSender.Controllers
         [HttpGet(Name = "GetWeatherForecast")]
         public async Task<IEnumerable<WeatherForecast>> GetAsync()
         {
-            var f = new RegisterEmailBusMessage() { Token = "ddd", Email = "konradd990212@gmail.com" };
+            var f = new NewUserRegisterEmail() { Token = "ddd", Email = "konradd990212@gmail.com" };
             await EmailSender.SendConfirmEmailMessage(f);
 
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast

@@ -17,7 +17,7 @@ namespace Email
             this._fluentEmailFactory = fluentEmailFactory;
             this._verifyEmailUrl = verifyEmailUrl;
         }
-        public async Task SendConfirmEmailMessage(RegisterEmailBusMessage registerEmailBusMessage)
+        public async Task SendConfirmEmailMessage(NewUserRegisterEmail registerEmailBusMessage)
         {
 
 

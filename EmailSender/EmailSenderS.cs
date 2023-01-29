@@ -17,7 +17,7 @@ namespace EmailSender
             _verifyEmailUrl = verifyEmailUrl;
             this._from = from;
         }
-        public async Task SendConfirmEmailMessage(RegisterEmailBusMessage registerEmailBusMessage)
+        public async Task SendConfirmEmailMessage(NewUserRegisterEmail registerEmailBusMessage)
         {
 
 

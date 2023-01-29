@@ -86,7 +86,7 @@ namespace IdentityServer.Pages.Account.Register
                     });
                     var identityUser = await _userManager.FindByEmailAsync(user.Email);
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(identityUser);
-                    await _events.RaiseAsync(new LocalUserRegisterSuccessEvent(user.Email,token));
+                    await _events.RaiseAsync(new LocalUserRegisterSuccessEvent(user.Email,token,user.Id));
                     return RedirectToPage("/EmailConfirmationInfo/Index", new { user.Email });
 
                     //var loginresult = await _signInManager.PasswordSignInAsync(

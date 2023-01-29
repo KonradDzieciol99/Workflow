@@ -4,18 +4,20 @@ namespace IdentityServer.Common.Models
 {
     public class LocalUserRegisterSuccessEvent : Event
     {
-        public LocalUserRegisterSuccessEvent(string email, string token)
+        public LocalUserRegisterSuccessEvent(string localUserEmail, string localUserActivateToken, string identityUserId)
             : base(EventCategories.Authentication,
                     "Local User Register",
                     EventTypes.Success,
                     EventIds.UserLoginSuccess//<--TODO
                     )
         {
-            LocalUserEmail = email;
-            Token = token;
+            LocalUserEmail = localUserEmail;
+            LocalUserActivateToken = localUserActivateToken;
+            IdentityUserId = identityUserId;
         }
 
         public string LocalUserEmail { get; set; } 
-        public string Token { get; set; } 
+        public string LocalUserActivateToken { get; set; } 
+        public string IdentityUserId { get; set; } 
     }
 }
