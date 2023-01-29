@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Socjal.API;
@@ -31,7 +32,7 @@ var RedisOptions = new ConfigurationOptions()
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(opt =>
     ConnectionMultiplexer.Connect(RedisOptions)
-);
+);///////////////////////////////na pewno singleton??????
 
 builder.Services.AddAuthentication(opt =>
 {
@@ -75,11 +76,19 @@ builder.Services.AddCors(opt =>
                     .AllowCredentials();
               });
 });
+
+var optionBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+optionBuilder.UseSqlServer(builder.Configuration.GetConnectionString("DbContextConnString"));
+
 builder.Services.AddDbContext<ApplicationDbContext>(opt =>
 {
-    opt.UseSqlServer(builder.Configuration.GetConnectionString("DbContextConnString"));
+    opt = optionBuilder;
+    //opt.UseSqlServer(builder.Configuration.GetConnectionString("DbContextConnString"));
 });
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddSingleton(new UserRepositorySingleton(optionBuilder.Options));
 
 var app = builder.Build();
 
