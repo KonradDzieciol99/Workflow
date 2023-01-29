@@ -19,7 +19,7 @@ namespace Email.Controlers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var f = new RegisterEmailBusMessage() { Token = "ddd", Email = "konradd990212@gmail.com" };
+            var f = new NewUserRegisterEmail() { Token = "ddd", Email = "konradd990212@gmail.com" };
             await EmailSender.SendConfirmEmailMessage(f);
 
             return Ok();

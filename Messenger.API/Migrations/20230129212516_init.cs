@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Socjal.API.Migrations
 {
-    public partial class add_Messages : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -29,12 +29,28 @@ namespace Socjal.API.Migrations
                 {
                     table.PrimaryKey("PK_Messages", x => x.Id);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhotoUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
                 name: "Messages");
+
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }

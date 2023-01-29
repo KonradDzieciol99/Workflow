@@ -4,6 +4,6 @@ namespace Socjal.API.Repositories
 {
     public interface IUserRepositorySingleton
     {
-        Task<bool> AddUser(User orderHeader);
+        Task<bool> AddUser(User user);
     }
 }

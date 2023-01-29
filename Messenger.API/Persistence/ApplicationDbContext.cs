@@ -20,6 +20,10 @@ namespace Socjal.API.Persistence
             {
                 opt.HasKey(x => x.Id);
             });
+            builder.Entity<User>(opt =>
+            {
+                opt.HasKey(x => x.Id);
+            });
         }
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Socjal.API;
+using Socjal.API.MessageBus;
 using Socjal.API.Persistence;
 using Socjal.API.Repositories;
 using StackExchange.Redis;
@@ -77,18 +78,21 @@ builder.Services.AddCors(opt =>
               });
 });
 
-var optionBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-optionBuilder.UseSqlServer(builder.Configuration.GetConnectionString("DbContextConnString"));
-
 builder.Services.AddDbContext<ApplicationDbContext>(opt =>
 {
-    opt = optionBuilder;
-    //opt.UseSqlServer(builder.Configuration.GetConnectionString("DbContextConnString"));
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("DbContextConnString"));
 });
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-builder.Services.AddSingleton(new UserRepositorySingleton(optionBuilder.Options));
+var optionBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+optionBuilder.UseSqlServer(builder.Configuration.GetConnectionString("DbContextConnString"));
+builder.Services.AddSingleton<IUserRepositorySingleton,UserRepositorySingleton>(opt=>
+{
+    return new UserRepositorySingleton(optionBuilder.Options);
+});
+
+builder.Services.AddHostedService<AzureServiceBusConsumer>();
 
 var app = builder.Build();
 

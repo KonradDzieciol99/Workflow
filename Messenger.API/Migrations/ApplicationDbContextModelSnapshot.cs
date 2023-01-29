@@ -64,6 +64,23 @@ namespace Socjal.API.Migrations
 
                     b.ToTable("Messages");
                 });
+
+            modelBuilder.Entity("Socjal.API.Models.User", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhotoUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
 #pragma warning restore 612, 618
         }
     }
