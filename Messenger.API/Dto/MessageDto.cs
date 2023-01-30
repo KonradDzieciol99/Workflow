@@ -1,9 +1,9 @@
-﻿namespace Socjal.API.Models
+﻿namespace Socjal.API.Dto
 {
     public class MessageDto
     {
-        public int Id { get; set; }
-        public int SenderId { get; set; }
+        public string Id { get; set; }
+        public string SenderId { get; set; }
         public string SenderEmail { get; set; }
         public int RecipientId { get; set; }//
         public string RecipientEmail { get; set; }

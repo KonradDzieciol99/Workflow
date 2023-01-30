@@ -1,4 +1,4 @@
-﻿using Socjal.API.Models;
+﻿using Socjal.API.Entity;
 
 namespace Socjal.API.Repositories
 {

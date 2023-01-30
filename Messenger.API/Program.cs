@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Socjal.API;
+using Socjal.API.Common.MapperProfiles;
 using Socjal.API.MessageBus;
 using Socjal.API.Persistence;
 using Socjal.API.Repositories;
@@ -93,6 +94,8 @@ builder.Services.AddSingleton<IUserRepositorySingleton,UserRepositorySingleton>(
 });
 
 builder.Services.AddHostedService<AzureServiceBusConsumer>();
+
+builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 
 var app = builder.Build();
 

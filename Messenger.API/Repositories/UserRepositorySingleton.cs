@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Socjal.API.Models;
+using Socjal.API.Entity;
 using Socjal.API.Persistence;
 
 namespace Socjal.API.Repositories

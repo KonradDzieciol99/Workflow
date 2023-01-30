@@ -1,8 +1,8 @@
-﻿namespace Socjal.API.Models
+﻿namespace Socjal.API.Dto
 {
     public class CreateMessageDto
     {
-        public string RecipientUsername { get; set; }
+        public string RecipientEmail { get; set; }
         public string Content { get; set; }
     }
 }

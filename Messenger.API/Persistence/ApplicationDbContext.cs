@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Socjal.API.Models;
+using Socjal.API.Entity;
 
 namespace Socjal.API.Persistence
 {
@@ -24,6 +24,23 @@ namespace Socjal.API.Persistence
             {
                 opt.HasKey(x => x.Id);
             });
+
+            builder.Entity<Message>(opt =>
+            {
+                opt.HasOne(m => m.Sender)
+                .WithMany(u => u.MessagesSent)
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                opt.HasOne(m => m.Recipient)
+                .WithMany(u => u.MessagesReceived)
+                .HasForeignKey(m => m.RecipientId)
+                .OnDelete(DeleteBehavior.Restrict);
+            });
+
+
+
+
         }
     }
 }
