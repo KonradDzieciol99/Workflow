@@ -9,6 +9,9 @@ namespace Socjal.API.Common.MapperProfiles
         public AutoMapperProfiles()
         {
             CreateMap<MessageDto, Message>();
+            CreateMap<Message, MessageDto>();
+            CreateMap<User, UserDto>();
+            CreateMap<UserDto, User>();
         }
     }
 }

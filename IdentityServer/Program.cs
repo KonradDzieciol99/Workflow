@@ -1,8 +1,9 @@
 using Duende.IdentityServer;
 using Duende.IdentityServer.Services;
 using IdentityModel;
-using IdentityServer.Common.Models;
+using IdentityServer.Events;
 using IdentityServer.Persistence;
+using IdentityServer.Services;
 using Mango.MessageBus;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +42,7 @@ builder.Services.AddIdentityServer(options =>
     options.Events.RaiseFailureEvents = true;
     options.Events.RaiseSuccessEvents = true;
     options.EmitStaticAudienceClaim = true;
+
     //options.UserInteraction.LogoutUrl = "/home";
 
 }).AddInMemoryIdentityResources(Config.IdentityResources)
@@ -49,6 +51,9 @@ builder.Services.AddIdentityServer(options =>
 .AddInMemoryClients(Config.Clients)
 .AddAspNetIdentity<IdentityUser>()
 .AddDeveloperSigningCredential();
+
+//.AddProfileService<ProfileService>(); ////narazie nie robi nic ponad ten zwyk³y
+//builder.Services.AddScoped<IProfileService, ProfileService>(); ////narazie nie robi nic ponad ////narazie nie robi nic ponad ten zwyk³y
 
 //.AddConfigurationStore(options => options.ConfigureDbContext = b => b.UseSqlite(connectionString,
 //opt => opt.MigrationsAssembly(migrationsAssembly)))

@@ -13,6 +13,7 @@ namespace Socjal.API.Repositories
 
         public IMessageRepository MessageRepository => new MessageRepository(_applicationDbContext);
         public IUserRepository UserRepository => new UserRepository(_applicationDbContext);
+        public IFriendInvitationRepository FriendInvitationRepository => new FriendInvitationRepository(_applicationDbContext);
 
         public async Task<bool> Complete()
         {

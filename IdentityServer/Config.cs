@@ -11,7 +11,10 @@ public static class Config
         new IdentityResource[]
         {
             new IdentityResources.OpenId(),
+            new IdentityResources.Email(),
             new IdentityResources.Profile(),
+            //new IdentityResource("custom.profile",
+            //userClaims: new[] { JwtClaimTypes.Name, JwtClaimTypes.Email, "location"})
         };
 
     public static IEnumerable<ApiScope> ApiScopes =>
@@ -19,6 +22,7 @@ public static class Config
         {
             new ApiScope("weatherapi.read"),
             new ApiScope("weatherapi.write"),
+            new ApiScope(name: "email_access_token",displayName: "User Email.", userClaims: new[] { JwtClaimTypes.Email }),
         };
 
     public static IEnumerable<ApiResource> ApiResources => new[]
@@ -28,7 +32,17 @@ public static class Config
             Scopes = new List<string> {"weatherapi.read", "weatherapi.write"},
             ApiSecrets = new List<Secret> {new Secret("ScopeSecret".Sha256())},
             UserClaims = new List<string> {"role"}
-        }
+        },
+        //new ApiResource("customer", "Customer API")
+        //new ApiResource("email")
+        //{
+        //Scopes = { "customer.read", "customer.contact", "manage", "enumerate" },  
+        //UserClaims ={
+
+        //"department_id",
+        //"sales_region"
+        //}
+        //}// additional claims to put into access token
     };
     
     public static IEnumerable<Client> Clients =>
@@ -47,7 +61,7 @@ public static class Config
             // interactive client using code flow + pkce
             new Client
             {
-                
+                //    AlwaysIncludeUserClaimsInIdToken = true,
                 ClientId = "interactive",
                 ClientSecrets = { new Secret("49C1A7E1-0C79-4A89-A3D6-A37998FB86B0".Sha256()) },
                 AllowedGrantTypes = GrantTypes.Code,
@@ -58,13 +72,25 @@ public static class Config
                 PostLogoutRedirectUris = { "https://localhost:4200" },
                 AllowedCorsOrigins = { "https://localhost:4200" },
                 AllowOfflineAccess = true,
-                AllowedScopes = { "openid", "profile", "weatherapi.read" },
+                //AllowedScopes = { "openid", "profile", "weatherapi.read" },
+                AllowedScopes =
+                {
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    //"api1",
+                    IdentityServerConstants.StandardScopes.Email,
+                    "email_access_token"
+                    //"weatherapi.read"
+                    //"custom.profile",
+                },
+                
                 RequireConsent = true,
+                AllowRememberConsent = true,/// ?????
                 AccessTokenLifetime = 600,
                 
             },
         };
-    public static List<TestUser> Users
+    public static List<TestUser> Users ////one są ważne jeśli nie mamy dodanego Identyty do projektu jeśli mamy dodane to usermenager
     {
         get
         {
@@ -83,7 +109,7 @@ public static class Config
                     SubjectId = "1",
                     Username = "alice",
                     Password = "alice",
-
+                    
                     Claims =
                     {
 

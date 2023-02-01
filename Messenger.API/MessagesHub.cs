@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
+using Socjal.API.Dto;
+using Socjal.API.Entity;
+using Socjal.API.Repositories;
 using StackExchange.Redis;
 using System.Security.Claims;
 

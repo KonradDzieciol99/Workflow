@@ -8,6 +8,8 @@ using Duende.IdentityServer.Events;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Test;
 using IdentityModel;
+using IdentityServer.Common.Models;
+using IdentityServer.Events;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -94,9 +96,6 @@ public class Callback : PageModel
                 //prod to loggin page with error
             }
 
-            /////////////////////////////RAISE IDENTITY EVENT I TAM CONSUME
-
-
             resoult = await _userManager.AddLoginAsync(user, new UserLoginInfo(provider, providerUserId, provider));
             if (!resoult.Succeeded)
             {
@@ -108,6 +107,9 @@ public class Callback : PageModel
                 throw new Exception(errors);
                 //prod to loggin page with error
             }
+
+            await _events.RaiseAsync(new ExternalUserRegisterSuccessEvent(user.Email, user.Id));
+
         }
 
         // this allows us to collect any additional claims or properties
