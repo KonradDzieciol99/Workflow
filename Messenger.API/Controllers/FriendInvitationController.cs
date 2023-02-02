@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -12,8 +13,10 @@ using System.Threading.Tasks;
 
 namespace Socjal.API.Controllers
 {
+
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class FriendInvitationController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -40,20 +43,20 @@ namespace Socjal.API.Controllers
             {
                 return BadRequest("This invitation is already exist.");
             }
-
+            if (Inviter.Id == InitedUser.Id)
+            {
+                return BadRequest("You can't invite yourself.");
+            }
             FriendInvitation friendInvitation = new()
             {
-               
                 InviterUserId = Inviter.Id,
                 InviterUserEmail = Inviter.Email,
                 InviterPhotoUrl = Inviter.PhotoUrl,
                 InviterUser = Inviter,
-
                 InvitedUserEmail = InitedUser.Email,
                 InvitedUserId = InitedUser.Id,
                 InvitedPhotoUrl = InitedUser.PhotoUrl,
                 InvitedUser = InitedUser,
-
                 Confirmed = false
             };
 
@@ -71,14 +74,16 @@ namespace Socjal.API.Controllers
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new HubException("User cannot be identified");
 
-            var users = await _unitOfWork.FriendInvitationRepository.GetAllFriends(userId);
+            var friendsInvitation = await _unitOfWork.FriendInvitationRepository.GetAllFriends(userId);
 
-            if (users == null)
+            if (friendsInvitation == null)
             {
                 return NotFound();
             }
 
-            return Ok(users);
+            var friendsInvitationDto = _mapper.Map<IEnumerable<FriendInvitation>, IEnumerable<FriendInvitationDto>>(friendsInvitation);
+
+            return Ok(friendsInvitationDto);
         }
         [HttpGet("GetAllInvitations")]
         public async Task<ActionResult<IEnumerable<FriendInvitationDto>>> GetAllInvitations()
