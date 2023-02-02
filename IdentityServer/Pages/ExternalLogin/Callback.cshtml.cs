@@ -96,6 +96,23 @@ public class Callback : PageModel
                 //prod to loggin page with error
             }
 
+            var photo = claims.Single(x => x.Type == JwtClaimTypes.Picture).Value;
+            if (photo is not null)
+            {
+                resoult = await _userManager.AddClaimsAsync(user, new Claim[] { new Claim(JwtClaimTypes.Picture, photo) });
+
+                if (!resoult.Succeeded)
+                {
+                    string errors = "";
+                    foreach (var item in resoult.Errors)
+                    {
+                        errors = string.Join(",", item.Description);
+                    }
+                    throw new Exception(errors);
+                    //prod to loggin page with error
+                }
+            }
+
             resoult = await _userManager.AddLoginAsync(user, new UserLoginInfo(provider, providerUserId, provider));
             if (!resoult.Succeeded)
             {

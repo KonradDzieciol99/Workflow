@@ -66,6 +66,5 @@ namespace Socjal.API.Persistence
 
         }
 
-        public DbSet<Socjal.API.Dto.UserDto> UserDto { get; set; }
     }
 }

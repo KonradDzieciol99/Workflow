@@ -36,18 +36,28 @@ namespace Socjal.API.Controllers
             {
                 return BadRequest("The specified users do not exist.");
             }
-            if (_unitOfWork.FriendInvitationRepository.checkIfExistsAsync(InviterId, InitedUserDto.Id) is not null)
+            if (await _unitOfWork.FriendInvitationRepository.checkIfExistsAsync(InviterId, InitedUserDto.Id))
             {
                 return BadRequest("This invitation is already exist.");
             }
 
-            FriendInvitation friendInvitation = new ()
+            FriendInvitation friendInvitation = new()
             {
+               
+                InviterUserId = Inviter.Id,
+                InviterUserEmail = Inviter.Email,
+                InviterPhotoUrl = Inviter.PhotoUrl,
                 InviterUser = Inviter,
+
+                InvitedUserEmail = InitedUser.Email,
+                InvitedUserId = InitedUser.Id,
+                InvitedPhotoUrl = InitedUser.PhotoUrl,
                 InvitedUser = InitedUser,
-                InviterUserId = InviterId,
-                InvitedUserId = InitedUserDto.Id,
+
+                Confirmed = false
             };
+
+            _unitOfWork.FriendInvitationRepository.Add(friendInvitation);
 
             if (await _unitOfWork.Complete())
             {
@@ -56,64 +66,72 @@ namespace Socjal.API.Controllers
             return BadRequest("User cannot be invited.");
 
         }
+        [HttpGet("GetAllFriends")]
+        public async Task<ActionResult<UserDto>> GetAllFriends()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new HubException("User cannot be identified");
 
-        //[HttpGet("FindUsersByEmailAndCheckState/{email}")]//SEARCH
-        //public async Task<ActionResult<IEnumerable<UserSearchedFriendInvitationDto>>> FindUsersByEmailAndCheckState(string email)
-        //{
-        //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var users = await _unitOfWork.FriendInvitationRepository.GetAllFriends(userId);
 
-        //    var users = await _unitOfWork.UserRepository.FindUsersByEmailAsync(email);
+            if (users == null)
+            {
+                return NotFound();
+            }
 
-        //    var tasks = new List<Task>();
+            return Ok(users);
+        }
+        [HttpGet("GetAllInvitations")]
+        public async Task<ActionResult<IEnumerable<FriendInvitationDto>>> GetAllInvitations()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new HubException("User cannot be identified");
 
-        //    foreach (var item in users)
-        //    {
-        //        var task = _unitOfWork.FriendInvitationRepository.checkIfExistsAsync(item.Id,userId);
-        //        tasks.Add(task);
-        //    }
+            var friendsInvitation = await _unitOfWork.FriendInvitationRepository.GetAllInvitations(userId);
 
-        //    await Task.WhenAll(tasks);
+            if (friendsInvitation == null)
+            {
+                return BadRequest();
+            }
 
-        //    var userSearcheds = new List<UserSearchedFriendInvitationDto>();
-        //    for (int i = 0; i < tasks.Count; i++)
-        //    {
-        //        var user = users.ElementAt(i) ?? throw new Exception("can't find user");
+            var friendsInvitationDto = _mapper.Map<IEnumerable<FriendInvitation>, IEnumerable<FriendInvitationDto>>(friendsInvitation);
 
-        //        var finishedTask = ((Task<FreindInvitationRelationStatus>)tasks.ElementAt(i)).Result;
+            return Ok(friendsInvitationDto);
+        }
+        [HttpPost("AcceptFriendInvitation")]
+        public async Task<IActionResult> AcceptFriendInvitation(FriendInvitationDto friendInvitationDto)
+        {
+            var InvitedUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new HubException("User cannot be identified");
+            
+            var friendInvitation = await _unitOfWork.FriendInvitationRepository.GetFriendInvitation(friendInvitationDto.InviterUserId, InvitedUserId);
 
-        //        var UserSearched = new UserSearchedFriendInvitationDto()
-        //        {
-        //            Id = user.Id,
-        //            Email = user.Email,
-        //            PhotoUrl = user.PhotoUrl,
-        //            IsAlreadyInvited = finishedTask.IsAlreadyInvited,
-        //            Confirmed = finishedTask.Confirmed
-        //        };
+            if (friendInvitation == null)
+                return BadRequest("invitation does not exist");
 
-        //        userSearcheds.Add(UserSearched);
-        //    }
+            friendInvitation.Confirmed=true;
 
-        //    return userSearcheds;
-        //    //return _mapper.Map<IEnumerable<User>, IEnumerable<UserDto>>(await _unitOfWork.UserRepository.FindUsersByEmailAsync(email));
-        //}
-        //[HttpPost]
-        //public async Task<IActionResult> PostFriendInvitation(string friendInvitationDto)
-        //{
+            if (await _unitOfWork.Complete())
+                return Ok();
 
-        //    var FriendInvitation = new FriendInvitation()
-        //    {
-        //        Confirmed = false,
-        //        InviterUser =,
-        //        InviterUserId,
-        //        InviterUserEmail,
-        //        InvitedUser,
-        //        InvitedUserId,
-        //        InvitedUserEmail,
-        //    };
+            return BadRequest("The invitation cannot be confirmed.");
+        }
+        [HttpPost("DeclineFriendInvitation")]
+        public async Task<IActionResult> DeclineFriendInvitation(FriendInvitationDto friendInvitationDto)
+        {
+            var InitedUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new HubException("User cannot be identified");
 
-        //    await _unitOfWork.UserRepository.
+            //var friendInvitation = await _unitOfWork.FriendInvitationRepository.GetFriendInvitation(friendInvitationDto.InviterUserId, InitedUserId);
 
-        //    return _mapper.Map<IEnumerable<User>, IEnumerable<UserDto>>(await _unitOfWork.UserRepository.FindUsersByEmailAsync(email));
-        //}
+            var friendInvitation = _mapper.Map<FriendInvitationDto, FriendInvitation>(friendInvitationDto);
+
+            if (friendInvitation == null)
+                return BadRequest("invitation does not exist");
+
+            _unitOfWork.FriendInvitationRepository.Remove(friendInvitation);
+
+            if (await _unitOfWork.Complete())
+                return Ok();
+
+            return BadRequest("This invitation cannot be canceled.");
+        }
+
     }
 }

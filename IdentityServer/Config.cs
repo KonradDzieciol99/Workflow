@@ -72,6 +72,7 @@ public static class Config
                 PostLogoutRedirectUris = { "https://localhost:4200" },
                 AllowedCorsOrigins = { "https://localhost:4200" },
                 AllowOfflineAccess = true,
+                AlwaysIncludeUserClaimsInIdToken = true,
                 //AllowedScopes = { "openid", "profile", "weatherapi.read" },
                 AllowedScopes =
                 {
@@ -84,7 +85,7 @@ public static class Config
                     //"custom.profile",
                 },
                 
-                RequireConsent = true,
+                RequireConsent = true,//// ????
                 AllowRememberConsent = true,/// ?????
                 AccessTokenLifetime = 600,
                 

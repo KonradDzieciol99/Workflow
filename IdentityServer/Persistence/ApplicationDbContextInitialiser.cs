@@ -84,6 +84,7 @@ namespace IdentityServer.Persistence
                     new Claim(JwtClaimTypes.FamilyName, "Smith"),
                     new Claim(JwtClaimTypes.WebSite, "http://alice.com"),
                     new Claim(JwtClaimTypes.Email, "AliceSmith@email.com"),
+                    new Claim(JwtClaimTypes.Picture, "https://www.iesabroad.org/sites/default/files/styles/blog_card/public/2022-07/09/fullsizeoutput_9331-featured-cropped.jpg?itok=IHM5Tlld"),
 
                 }).Result;
                 if (!result.Succeeded)
@@ -124,7 +125,9 @@ namespace IdentityServer.Persistence
                     new Claim(JwtClaimTypes.FamilyName, "Smith"),
                     new Claim(JwtClaimTypes.WebSite, "http://bob.com"),
                     new Claim(JwtClaimTypes.Email, "BobSmith@email.com"),
-                    new Claim("location", "somewhere")
+                    new Claim("location", "somewhere"),
+                    new Claim(JwtClaimTypes.Picture, "https://tvn24.pl/tvnmeteo/najnowsze/cdn-zdjecie-x921ur-filary-stworzenia-w-obiektywie-kosmicznego-teleskopu-jamesa-webba-6171706/alternates/LANDSCAPE_840"),
+
                 }).Result;
                 if (!result.Succeeded)
                 {

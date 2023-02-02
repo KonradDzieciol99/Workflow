@@ -35,6 +35,20 @@ namespace Socjal.API.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<string>("InvitedPhotoUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InvitedUserEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InviterPhotoUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InviterUserEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("InviterUserId", "InvitedUserId");
 
                     b.HasIndex("InvitedUserId");

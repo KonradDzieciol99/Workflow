@@ -23,7 +23,7 @@ builder.Services.AddSignalR(o =>
     o.EnableDetailedErrors = true;
 }).AddStackExchangeRedis(builder.Configuration.GetConnectionString("Redis"), options =>
 {
-    options.Configuration.ChannelPrefix = "MessengerSignalR";
+    options.Configuration.ChannelPrefix = "Socjal.API";
 });
 
 var RedisOptions = new ConfigurationOptions()
@@ -134,3 +134,9 @@ app.MapHub<MessagesHub>("/hub/Messages");
 
 await app.RunAsync();
 
+//app.UseAuthentication();
+
+//app.UseSignalR(routes =>
+//{
+//    routes.MapHub<MainHub>("/hubs/main");
+//});

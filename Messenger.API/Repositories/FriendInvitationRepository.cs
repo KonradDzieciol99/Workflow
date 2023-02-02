@@ -13,20 +13,17 @@ namespace Socjal.API.Repositories
         {
             this._applicationDbContext = applicationDbContext;
         }
-        public async Task<FreindInvitationRelationStatus> checkIfExistsAsync(string InviterUserId,string InvitedUserId)
+        public async Task<bool> checkIfExistsAsync(string InviterUserId,string InvitedUserId)
         {
+
             var friendsInvitation = await _applicationDbContext.FriendsInvitation.FindAsync(InviterUserId, InvitedUserId );
 
-            if (friendsInvitation is  null)
-            { 
-                return new FreindInvitationRelationStatus() { Confirmed = false,IsAlreadyInvited=false};
+            if (friendsInvitation is null)
+            {
+                return false;
             }
-            var freindInvitationRelationStatus = new FreindInvitationRelationStatus();
 
-            freindInvitationRelationStatus.IsAlreadyInvited = true;
-            freindInvitationRelationStatus.Confirmed = friendsInvitation.Confirmed;
-
-            return freindInvitationRelationStatus;
+            return false;
         }
         public async Task<IEnumerable<string>> findAllFriendIds(string UserId)
         {
@@ -52,6 +49,30 @@ namespace Socjal.API.Repositories
 
             //return freindInvitationRelationStatus;
         }
+        public async Task<IEnumerable<User>> GetAllFriends(string UserId)
+        {
+            var Friends = await _applicationDbContext.FriendsInvitation
+                                .Where(x => (x.InviterUserId == UserId || x.InvitedUserId == UserId) && x.Confirmed == true )
+                                .Select(x =>
+                                   // x.InviterUserId == UserId ? x.InvitedUser : x.InvitedUserId == UserId ? x.InviterUser : new User() { }
+                                    x.InviterUserId == UserId ? x.InvitedUser :  x.InviterUser 
+                                ).ToListAsync();
 
+            return Friends;
+            //////////////zle!!!!!!!!!!!!!!!!!!!!!!!!!!
+        }
+        public async Task<IEnumerable<FriendInvitation>> GetAllInvitations(string UserId)
+        {
+            var Friends = await _applicationDbContext.FriendsInvitation
+                                .Where(x => x.InvitedUserId == UserId && x.Confirmed == false )
+                                .ToListAsync();
+
+            return Friends;
+        }
+        public async Task<FriendInvitation?> GetFriendInvitation(string InviterUserId, string InvitedUserId)
+        {
+            var friendInvitations= await _applicationDbContext.FriendsInvitation.FindAsync(InviterUserId, InvitedUserId);
+            return friendInvitations;
+        }
     }
 }

@@ -12,6 +12,8 @@ namespace Socjal.API.Common.MapperProfiles
             CreateMap<Message, MessageDto>();
             CreateMap<User, UserDto>();
             CreateMap<UserDto, User>();
+            CreateMap<FriendInvitationDto, FriendInvitation>();
+            CreateMap<FriendInvitation, FriendInvitationDto>();
         }
     }
 }

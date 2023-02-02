@@ -5,9 +5,13 @@ using IdentityServer.Events;
 using IdentityServer.Persistence;
 using IdentityServer.Services;
 using Mango.MessageBus;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using System.Security.Claims;
+using static System.Formats.Asn1.AsnWriter;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,7 +46,8 @@ builder.Services.AddIdentityServer(options =>
     options.Events.RaiseFailureEvents = true;
     options.Events.RaiseSuccessEvents = true;
     options.EmitStaticAudienceClaim = true;
-
+    //options.
+    //options.GetClaimsFromUserInfoEndpoint = true;
     //options.UserInteraction.LogoutUrl = "/home";
 
 }).AddInMemoryIdentityResources(Config.IdentityResources)
@@ -60,11 +65,61 @@ builder.Services.AddIdentityServer(options =>
 //.AddOperationalStore(options => options.ConfigureDbContext = b => b.UseSqlite(connectionString,
 //opt => opt.MigrationsAssembly(migrationsAssembly)))
 
-builder.Services.AddAuthentication().AddMicrosoftAccount(opt =>
+builder.Services.AddAuthentication()
+.AddOpenIdConnect("AzureOpenId", "Azure Active Directory OpenId", options =>
 {
-    opt.ClientId = configuration["Authentication:Microsoft:ClientId"];
-    opt.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
-    opt.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+    //options.Authority = "https://login.microsoftonline.com/" + configuration["AzureAd:TenantId"] + "/v2.0/";
+    options.Authority = "https://login.microsoftonline.com/" + "5d3aafdf-d077-4419-bd3c-622d8000bc09" + "/v2.0/";
+    options.ClientId = configuration["Authentication:Microsoft:ClientId"];
+    options.ResponseType = OpenIdConnectResponseType.Code;
+    options.CallbackPath = "/signin-microsoft";
+    //            options.UsePkce = _identityServerConfiguration.UsePkce;
+
+    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+    options.ForwardSignOut = IdentityServerConstants.DefaultCookieAuthenticationScheme;
+
+    //options.CallbackPath = "https://localhost:7122/signin-microsoft";
+    //options.CallbackPath = configuration["AzureAd:CallbackPath"];
+    options.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
+    options.RequireHttpsMetadata = false;
+    options.SaveTokens = true;
+    options.GetClaimsFromUserInfoEndpoint = true;
+
+    options.Scope.Add("profile");
+    options.Scope.Add("email");
+    options.Scope.Add("openid");
+    options.Scope.Add("User.Read");
+
+    options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "sub"); 
+})
+//.AddMicrosoftAccount(opt =>
+//{
+//    opt.ClientId = configuration["Authentication:Microsoft:ClientId"];
+//    opt.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
+//    opt.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+//    opt.get
+//    //opt.Events=
+//});
+
+.AddOpenIdConnect("Google", "Sign-in with Google", options =>
+{
+    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+    options.ForwardSignOut = IdentityServerConstants.DefaultCookieAuthenticationScheme;
+
+    options.Authority = "https://accounts.google.com/";
+    options.ClientId = "944959518171-o303j7ij1434c3j1mrcl983qedr167b9.apps.googleusercontent.com";//todo
+    options.ClientSecret = "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";//todo
+    options.CallbackPath = "/signin-google";//todo
+    options.GetClaimsFromUserInfoEndpoint = true;//We need this option
+    options.RequireHttpsMetadata = false;
+    options.SaveTokens = true;
+    
+    //options.Scope.Add("email");
+    options.Scope.Add("profile");
+    options.Scope.Add("email");
+    options.Scope.Add("openid");
+    options.ResponseType = OpenIdConnectResponseType.Code;
+
 });
 
 builder.Services.AddScoped<IEventSink, IdentityEvents>();

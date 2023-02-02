@@ -12,8 +12,8 @@ using Socjal.API.Persistence;
 namespace Socjal.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230131223342_addFriends")]
-    partial class addFriends
+    [Migration("20230202032936_addFriendInvitation")]
+    partial class addFriendInvitation
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -36,6 +36,20 @@ namespace Socjal.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
+
+                    b.Property<string>("InvitedPhotoUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InvitedUserEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InviterPhotoUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InviterUserEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("InviterUserId", "InvitedUserId");
 
