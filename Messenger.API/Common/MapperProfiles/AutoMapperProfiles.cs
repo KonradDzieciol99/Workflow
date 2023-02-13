@@ -9,7 +9,9 @@ namespace Socjal.API.Common.MapperProfiles
         public AutoMapperProfiles()
         {
             CreateMap<MessageDto, Message>();
-            CreateMap<Message, MessageDto>();
+            CreateMap<Message, MessageDto>()
+                .ForMember(d => d.SenderPhotoUrl, o => o.MapFrom(s => s.Sender.PhotoUrl))
+                .ForMember(d => d.RecipientPhotoUrl, o => o.MapFrom(s => s.Recipient.PhotoUrl));
             CreateMap<User, UserDto>();
             CreateMap<UserDto, User>();
             CreateMap<FriendInvitationDto, FriendInvitation>();

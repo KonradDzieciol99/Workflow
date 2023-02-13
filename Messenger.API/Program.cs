@@ -132,6 +132,8 @@ app.MapControllers();
 
 app.MapHub<MessagesHub>("/hub/Messages");
 
+app.MapHub<PresenceHub>("/hub/Presence");
+
 await app.RunAsync();
 
 //app.UseAuthentication();

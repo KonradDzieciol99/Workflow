@@ -49,7 +49,7 @@ namespace Socjal.API.Repositories
 
             //return freindInvitationRelationStatus;
         }
-        public async Task<IEnumerable<FriendInvitation>> GetAllFriends(string UserId)
+        public async Task<IEnumerable<FriendInvitation>> GetAllFriends(string UserId)//confimed invitations
         {
             var Friends = await _applicationDbContext.FriendsInvitation
                                 .Where(x => (x.InviterUserId == UserId || x.InvitedUserId == UserId) && x.Confirmed == true )

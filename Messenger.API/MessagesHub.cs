@@ -37,7 +37,8 @@ namespace Socjal.API
             var groupName = GetGroupName(SenderEmail, recipientEmail);
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
 
-            await _redisDb.HashSetAsync(groupName, Context.ConnectionId, recipientEmail);
+           // await _redisDb.HashSetAsync(groupName, Context.ConnectionId, recipientEmail);
+            await _redisDb.HashSetAsync(groupName, Context.ConnectionId, SenderEmail);
 
             List<string> groupMembers = new() { SenderEmail };
 
@@ -45,7 +46,18 @@ namespace Socjal.API
             if (values.Contains(recipientEmail))
                 groupMembers.Add(recipientEmail);
 
-            await Clients.Group(groupName).SendAsync("UpdatedGroup", SenderEmail);
+            await Clients.Group(groupName).SendAsync("UpdatedGroup", groupMembers);
+            ///
+            var messages = await _unitOfWork.MessageRepository.GetMessageThreadAsync(SenderEmail, recipientEmail);
+
+            var messagesDto = _mapper.Map<IEnumerable<Message>, IEnumerable<MessageDto>>(messages);
+
+            if (_unitOfWork.HasChanges())
+            {
+                if (!await _unitOfWork.Complete()) { throw new HubException("Failed to mark as read"); }
+            }
+
+            await Clients.Caller.SendAsync("ReceiveMessageThread", messagesDto);
 
             await base.OnConnectedAsync();
         }
@@ -82,6 +94,7 @@ namespace Socjal.API
             var stringCompare = string.CompareOrdinal(caller, other) < 0;
             return stringCompare ? $"{caller}-{other}" : $"{other}-{caller}";
         }
+
         public async Task SendMessage(CreateMessageDto createMessageDto)
         {
             var httpContext = Context.GetHttpContext() ?? throw new ArgumentNullException("httpContext error");
@@ -97,9 +110,11 @@ namespace Socjal.API
 
             var message = new Message
             {
-                SenderId = sender.Id,
+               
                 Sender = sender,
+                SenderId = sender.Id,
                 Recipient = recipient,
+                RecipientId= recipient.Id,
                 SenderEmail = sender.Email,
                 RecipientEmail = recipient.Email,
                 Content = createMessageDto.Content
@@ -111,11 +126,6 @@ namespace Socjal.API
                 message.DateRead = DateTime.UtcNow;
 
 
-            //var group = await _uow.MessageRepository.GetMessageGroup(groupName)
-            //if (group.Connections.Any(x => x.Username == recipient.UserName))
-            //{
-            //    message.DateRead = DateTime.UtcNow;
-            //}
             //else
             //{
             //    var connections = await PresenceTracker.GetConnectionsForUser(recipient.UserName);
@@ -128,10 +138,13 @@ namespace Socjal.API
 
             _unitOfWork.MessageRepository.Add(message);
 
-            if (await _unitOfWork.Complete())
+            if (!await _unitOfWork.Complete())
             {
-                await Clients.Group(groupName).SendAsync("NewMessage", _mapper.Map<MessageDto>(message));
+                throw new HubException("some errors occurred");
             }
+  
+            await Clients.Group(groupName).SendAsync("NewMessage", _mapper.Map<MessageDto>(message));
+            
         }
     }
 }
