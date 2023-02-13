@@ -9,7 +9,7 @@ using Azure.Messaging.ServiceBus;
 using Mango.MessageBus;
 using MessageBus;
 using Microsoft.Extensions.Configuration;
-using Socjal.API.Models;
+using Socjal.API.Entity;
 using Socjal.API.Repositories;
 
 namespace Socjal.API.MessageBus

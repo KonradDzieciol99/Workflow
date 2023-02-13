@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Socjal.API;
+using Socjal.API.Common.MapperProfiles;
 using Socjal.API.MessageBus;
 using Socjal.API.Persistence;
 using Socjal.API.Repositories;
@@ -22,7 +23,7 @@ builder.Services.AddSignalR(o =>
     o.EnableDetailedErrors = true;
 }).AddStackExchangeRedis(builder.Configuration.GetConnectionString("Redis"), options =>
 {
-    options.Configuration.ChannelPrefix = "MessengerSignalR";
+    options.Configuration.ChannelPrefix = "Socjal.API";
 });
 
 var RedisOptions = new ConfigurationOptions()
@@ -94,6 +95,8 @@ builder.Services.AddSingleton<IUserRepositorySingleton,UserRepositorySingleton>(
 
 builder.Services.AddHostedService<AzureServiceBusConsumer>();
 
+builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -129,5 +132,13 @@ app.MapControllers();
 
 app.MapHub<MessagesHub>("/hub/Messages");
 
+app.MapHub<PresenceHub>("/hub/Presence");
+
 await app.RunAsync();
 
+//app.UseAuthentication();
+
+//app.UseSignalR(routes =>
+//{
+//    routes.MapHub<MainHub>("/hubs/main");
+//});

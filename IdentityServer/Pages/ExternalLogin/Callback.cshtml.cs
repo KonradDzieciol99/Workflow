@@ -8,6 +8,8 @@ using Duende.IdentityServer.Events;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Test;
 using IdentityModel;
+using IdentityServer.Common.Models;
+using IdentityServer.Events;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -94,8 +96,22 @@ public class Callback : PageModel
                 //prod to loggin page with error
             }
 
-            /////////////////////////////RAISE IDENTITY EVENT I TAM CONSUME
+            var photo = claims.Single(x => x.Type == JwtClaimTypes.Picture).Value;
+            if (photo is not null)
+            {
+                resoult = await _userManager.AddClaimsAsync(user, new Claim[] { new Claim(JwtClaimTypes.Picture, photo) });
 
+                if (!resoult.Succeeded)
+                {
+                    string errors = "";
+                    foreach (var item in resoult.Errors)
+                    {
+                        errors = string.Join(",", item.Description);
+                    }
+                    throw new Exception(errors);
+                    //prod to loggin page with error
+                }
+            }
 
             resoult = await _userManager.AddLoginAsync(user, new UserLoginInfo(provider, providerUserId, provider));
             if (!resoult.Succeeded)
@@ -108,6 +124,9 @@ public class Callback : PageModel
                 throw new Exception(errors);
                 //prod to loggin page with error
             }
+
+            await _events.RaiseAsync(new ExternalUserRegisterSuccessEvent(user.Email, user.Id));
+
         }
 
         // this allows us to collect any additional claims or properties

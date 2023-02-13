@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
-using Socjal.API.Models;
+using Socjal.API.Dto;
+using Socjal.API.Entity;
 using Socjal.API.Repositories;
 using StackExchange.Redis;
 using System.Security.Claims;
@@ -13,12 +15,14 @@ namespace Socjal.API
     {
         private readonly IConnectionMultiplexer _connectionMultiplexer;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
         private readonly IDatabase _redisDb;
 
-        public MessagesHub(IConnectionMultiplexer connectionMultiplexer, IUnitOfWork unitOfWork)
+        public MessagesHub(IConnectionMultiplexer connectionMultiplexer, IUnitOfWork unitOfWork, IMapper mapper)
         {
             _connectionMultiplexer = connectionMultiplexer;
             this._unitOfWork = unitOfWork;
+            this._mapper = mapper;
             _redisDb = _connectionMultiplexer.GetDatabase();
 
         }
@@ -33,7 +37,8 @@ namespace Socjal.API
             var groupName = GetGroupName(SenderEmail, recipientEmail);
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
 
-            await _redisDb.HashSetAsync(groupName, Context.ConnectionId, recipientEmail);
+           // await _redisDb.HashSetAsync(groupName, Context.ConnectionId, recipientEmail);
+            await _redisDb.HashSetAsync(groupName, Context.ConnectionId, SenderEmail);
 
             List<string> groupMembers = new() { SenderEmail };
 
@@ -41,7 +46,18 @@ namespace Socjal.API
             if (values.Contains(recipientEmail))
                 groupMembers.Add(recipientEmail);
 
-            await Clients.Group(groupName).SendAsync("UpdatedGroup", SenderEmail);
+            await Clients.Group(groupName).SendAsync("UpdatedGroup", groupMembers);
+            ///
+            var messages = await _unitOfWork.MessageRepository.GetMessageThreadAsync(SenderEmail, recipientEmail);
+
+            var messagesDto = _mapper.Map<IEnumerable<Message>, IEnumerable<MessageDto>>(messages);
+
+            if (_unitOfWork.HasChanges())
+            {
+                if (!await _unitOfWork.Complete()) { throw new HubException("Failed to mark as read"); }
+            }
+
+            await Clients.Caller.SendAsync("ReceiveMessageThread", messagesDto);
 
             await base.OnConnectedAsync();
         }
@@ -78,53 +94,57 @@ namespace Socjal.API
             var stringCompare = string.CompareOrdinal(caller, other) < 0;
             return stringCompare ? $"{caller}-{other}" : $"{other}-{caller}";
         }
-        //public async Task SendMessage(CreateMessageDto createMessageDto)
-        //{
-        //    var httpContext = Context.GetHttpContext() ?? throw new ArgumentNullException("httpContext error");
-        //    var SenderEmail = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new HubException("User cannot be identified");
 
-        //    if (SenderEmail == createMessageDto.RecipientUsername)
-        //        throw new HubException("You cannot send messages to yourself");
+        public async Task SendMessage(CreateMessageDto createMessageDto)
+        {
+            var httpContext = Context.GetHttpContext() ?? throw new ArgumentNullException("httpContext error");
+            var SenderEmail = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new HubException("User cannot be identified");
 
-        //    var sender = await _unitOfWork.MessageRepository.GetUserByUsernameAsync(username);
-        //    var recipient = await _uow.UserRepository.GetUserByUsernameAsync(createMessageDto.RecipientUsername);
+            if (SenderEmail == createMessageDto.RecipientEmail)
+                throw new HubException("You cannot send messages to yourself");
 
-        //    if (recipient == null) throw new HubException("Not found user");
+            var sender = await _unitOfWork.UserRepository.GetUserByEmailAsync(SenderEmail);
+            var recipient = await _unitOfWork.UserRepository.GetUserByEmailAsync(createMessageDto.RecipientEmail);
 
-        //    var message = new Message
-        //    {
-        //        SenderId = SenderId
-        //        Sender = sender,
-        //        Recipient = recipient,
-        //        SenderUsername = sender.UserName,
-        //        RecipientUsername = recipient.UserName,
-        //        Content = createMessageDto.Content
-        //    };
+            if (recipient == null || sender == null) throw new HubException("Not found user");
 
-        //    var groupName = GetGroupName(sender.UserName, recipient.UserName);
+            var message = new Message
+            {
+               
+                Sender = sender,
+                SenderId = sender.Id,
+                Recipient = recipient,
+                RecipientId= recipient.Id,
+                SenderEmail = sender.Email,
+                RecipientEmail = recipient.Email,
+                Content = createMessageDto.Content
+            };
 
-        //    var group = await _uow.MessageRepository.GetMessageGroup(groupName);
+            var groupName = GetGroupName(sender.Email, recipient.Email);
+            var values = await _redisDb.HashValuesAsync(groupName);
+            if (values.Contains(recipient.Email))
+                message.DateRead = DateTime.UtcNow;
 
-        //    if (group.Connections.Any(x => x.Username == recipient.UserName))
-        //    {
-        //        message.DateRead = DateTime.UtcNow;
-        //    }
-        //    else
-        //    {
-        //        var connections = await PresenceTracker.GetConnectionsForUser(recipient.UserName);
-        //        if (connections != null)
-        //        {
-        //            await _presenceHub.Clients.Clients(connections).SendAsync("NewMessageReceived",
-        //                new { username = sender.UserName, knownAs = sender.KnownAs });
-        //        }
-        //    }
 
-        //    _uow.MessageRepository.AddMessage(message);
+            //else
+            //{
+            //    var connections = await PresenceTracker.GetConnectionsForUser(recipient.UserName);
+            //    if (connections != null)
+            //    {
+            //        await _presenceHub.Clients.Clients(connections).SendAsync("NewMessageReceived",
+            //            new { username = sender.UserName, knownAs = sender.KnownAs });
+            //    }
+            //}
 
-        //    if (await _uow.Complete())
-        //    {
-        //        await Clients.Group(groupName).SendAsync("NewMessage", _mapper.Map<MessageDto>(message));
-        //    }
-        //}
+            _unitOfWork.MessageRepository.Add(message);
+
+            if (!await _unitOfWork.Complete())
+            {
+                throw new HubException("some errors occurred");
+            }
+  
+            await Clients.Group(groupName).SendAsync("NewMessage", _mapper.Map<MessageDto>(message));
+            
+        }
     }
 }

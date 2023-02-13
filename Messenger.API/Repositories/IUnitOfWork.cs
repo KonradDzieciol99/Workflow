@@ -4,6 +4,7 @@
     {
         IMessageRepository MessageRepository { get; }
         IUserRepository UserRepository { get; }
+        IFriendInvitationRepository FriendInvitationRepository { get; }
         Task<bool> Complete();
         bool HasChanges();
     }

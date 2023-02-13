@@ -15,22 +15,22 @@ namespace Socjal.API.Repositories
 
         public void Add(TEntity entity)
         {
-            throw new NotImplementedException();
+            _dbContext.Set<TEntity>().Add(entity);
         }
 
         public void AddRange(IEnumerable<TEntity> entities)
         {
-            throw new NotImplementedException();
+            _dbContext.Set<TEntity>().AddRange(entities);
         }
 
         public void Remove(TEntity entity)
         {
-            throw new NotImplementedException();
+            _dbContext.Set<TEntity>().Remove(entity);
         }
 
         public void RemoveRange(IEnumerable<TEntity> entities)
         {
-            throw new NotImplementedException();
+            _dbContext.Set<TEntity>().RemoveRange(entities);
         }
     }
 }

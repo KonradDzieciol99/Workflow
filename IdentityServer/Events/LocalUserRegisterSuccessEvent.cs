@@ -1,6 +1,6 @@
 ﻿using Duende.IdentityServer.Events;
 
-namespace IdentityServer.Common.Models
+namespace IdentityServer.Events
 {
     public class LocalUserRegisterSuccessEvent : Event
     {
@@ -16,8 +16,8 @@ namespace IdentityServer.Common.Models
             IdentityUserId = identityUserId;
         }
 
-        public string LocalUserEmail { get; set; } 
-        public string LocalUserActivateToken { get; set; } 
-        public string IdentityUserId { get; set; } 
+        public string LocalUserEmail { get; set; }
+        public string LocalUserActivateToken { get; set; }
+        public string IdentityUserId { get; set; }
     }
 }
