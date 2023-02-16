@@ -1,4 +1,5 @@
 
+using Mango.MessageBus;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using SignalR;
@@ -75,6 +76,7 @@ builder.Services.AddCors(opt =>
 });
 
 builder.Services.AddHostedService<AzureServiceBusConsumer>();
+builder.Services.AddSingleton<IMessageBus, AzureServiceBusMessageBus>();
 
 //builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 

@@ -6,48 +6,48 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
+using Mango.MessageBus;
+using MessageBus.Events;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
-
+using StackExchange.Redis;
 
 namespace SignalR.MessageBus
 {
     public class AzureServiceBusConsumer : BackgroundService
     {
-        private readonly string serviceBusConnectionString;
-        private readonly string azureBusTopic;
-        private readonly string azureBusSubscription;
+        private readonly string _serviceBusConnectionString;
+        private readonly string _sendMessageToSignalRQueueName;
+        private readonly IDatabase _redisDb;
+        private readonly IMessageBus _messageBus;
+        private readonly IConnectionMultiplexer _connectionMultiplexer;
         private readonly IConfiguration _configuration;
-        private ServiceBusProcessor UserRegisterProcessor;
+        private readonly IHubContext<MessagesHub> _messagesHubContext;
+        private readonly IHubContext<PresenceHub> _presenceHubContext;
 
-        public AzureServiceBusConsumer(IConfiguration configuration)
+        public AzureServiceBusConsumer(IMessageBus messageBus,
+            IConnectionMultiplexer connectionMultiplexer,
+            IConfiguration configuration,
+            IHubContext<MessagesHub> messagesHubContext,
+            IHubContext<PresenceHub> presenceHubContext)
         {
+            this._messageBus = messageBus;
+            this._connectionMultiplexer = connectionMultiplexer;
             _configuration = configuration;
-            //this.userRepositorySingleton = userRepositorySingleton;
-            serviceBusConnectionString = _configuration.GetValue<string>("ServiceBusConnectionString"); ;
-            azureBusTopic = _configuration.GetValue<string>("AzureBusTopic");
-            azureBusSubscription = _configuration.GetValue<string>("AzureBusSubscription");
+            this._messagesHubContext = messagesHubContext;
+            this._presenceHubContext = presenceHubContext;
+            _serviceBusConnectionString = _configuration.GetValue<string>("ServiceBusConnectionString");
+            _sendMessageToSignalRQueueName = _configuration.GetValue<string>("sendMessageToSignalRQueue");
+            _redisDb = _connectionMultiplexer.GetDatabase();
         }
-
-        //public async Task Start()
-        //{
-        //    UserRegisterProcessor.ProcessMessageAsync += OnUserRegisterReceived;
-        //    UserRegisterProcessor.ProcessErrorAsync += ErrorHandler;
-        //    await UserRegisterProcessor.StartProcessingAsync();
-        //}
-        //public async Task Stop()
-        //{
-        //    await UserRegisterProcessor.StopProcessingAsync();
-        //    await UserRegisterProcessor.DisposeAsync();
-        //}
-
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            //var client = new ServiceBusClient(serviceBusConnectionString);
-            //UserRegisterProcessor = client.CreateProcessor(azureBusTopic, azureBusSubscription);
-            //UserRegisterProcessor.ProcessMessageAsync += OnUserRegisterReceived;
-            //UserRegisterProcessor.ProcessErrorAsync += ErrorHandler;
-            //await UserRegisterProcessor.StartProcessingAsync();
-            //return;
+            var client = new ServiceBusClient(_serviceBusConnectionString);
+            var sendMessageToSignalRQueueProcessor = client.CreateProcessor(_sendMessageToSignalRQueueName);
+            sendMessageToSignalRQueueProcessor.ProcessMessageAsync += OnMessageToSignalRQueueReceived;
+            sendMessageToSignalRQueueProcessor.ProcessErrorAsync += ErrorHandler;
+            await sendMessageToSignalRQueueProcessor.StartProcessingAsync();
+            return;
         }
 
         Task ErrorHandler(ProcessErrorEventArgs args)
@@ -55,6 +55,40 @@ namespace SignalR.MessageBus
             Console.WriteLine(args.Exception.ToString());
             return Task.CompletedTask;
         }
+        private async Task OnMessageToSignalRQueueReceived(ProcessMessageEventArgs args)
+        {
+            var message = args.Message;
+            var body = Encoding.UTF8.GetString(message.Body);
+
+            var sendMessageToSignalREvent = JsonSerializer.Deserialize<SendMessageToSignalREvent>(body);
+
+            if (sendMessageToSignalREvent is null)
+            {
+                throw new ArgumentNullException("Message is empty");
+            }
+
+            var groupName = GetGroupName(sendMessageToSignalREvent.SenderEmail, sendMessageToSignalREvent.RecipientEmail);
+
+            var values = await _redisDb.HashValuesAsync(groupName);
+            if (values.Contains(sendMessageToSignalREvent.RecipientEmail))
+            {
+                sendMessageToSignalREvent.DateRead = DateTime.UtcNow;
+                var markChatMessageAsReadEvent = new MarkChatMessageAsReadEvent() { Id = sendMessageToSignalREvent.Id, DateRead = (DateTime)sendMessageToSignalREvent.DateRead };
+                await _messageBus.PublishMessage(markChatMessageAsReadEvent, "mark-chat-message-as-read");
+            }
+                
+            await _messagesHubContext.Clients.Group(groupName).SendAsync("NewMessage", sendMessageToSignalREvent);
+            await _presenceHubContext.Clients.User(sendMessageToSignalREvent.RecipientId).SendAsync("NewMessageReceived",new { senderEmail = sendMessageToSignalREvent.SenderEmail});
+
+            await args.CompleteMessageAsync(args.Message);
+        }
+
+        private string GetGroupName(string caller, string other)
+        {
+            var stringCompare = string.CompareOrdinal(caller, other) < 0;
+            return stringCompare ? $"{caller}-{other}" : $"{other}-{caller}";
+        }
+
         private async Task OnUserRegisterReceived(ProcessMessageEventArgs args)
         {
             //var message = args.Message;

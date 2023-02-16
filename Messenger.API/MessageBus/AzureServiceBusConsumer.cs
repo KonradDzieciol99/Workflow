@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Mango.MessageBus;
-using MessageBus;
+using MessageBus.Events;
 using Microsoft.Extensions.Configuration;
 using Socjal.API.Entity;
 using Socjal.API.Repositories;

@@ -23,6 +23,10 @@ namespace Chat.Repositories
             _dbContext.Set<TEntity>().AddRange(entities);
         }
 
+        public async Task<TEntity?> GetOneAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await _dbContext.Set<TEntity>().SingleOrDefaultAsync(predicate);
+        }
         public void Remove(TEntity entity)
         {
             _dbContext.Set<TEntity>().Remove(entity);

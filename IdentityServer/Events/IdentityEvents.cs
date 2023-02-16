@@ -3,6 +3,7 @@ using Duende.IdentityServer.Services;
 using IdentityServer.Common.Models;
 using Mango.MessageBus;
 using MessageBus;
+using MessageBus.Events;
 using Microsoft.AspNetCore.Identity;
 
 namespace IdentityServer.Events

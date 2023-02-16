@@ -33,7 +33,7 @@ namespace SignalR
             var groupName = GetGroupName(SenderEmail, recipientEmail);
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
 
-            // await _redisDb.HashSetAsync(groupName, Context.ConnectionId, recipientEmail);
+            //await _redisDb.HashSetAsync(groupName, Context.ConnectionId, recipientEmail);
             await _redisDb.HashSetAsync(groupName, Context.ConnectionId, SenderEmail);
 
             List<string> groupMembers = new() { SenderEmail };
@@ -43,21 +43,9 @@ namespace SignalR
                 groupMembers.Add(recipientEmail);
 
             await Clients.Group(groupName).SendAsync("UpdatedGroup", groupMembers);
-            ///
-            //var messages = await _unitOfWork.MessageRepository.GetMessageThreadAsync(SenderEmail, recipientEmail);
-
-            //var messagesDto = _mapper.Map<IEnumerable<Message>, IEnumerable<MessageDto>>(messages);
-
-            //if (_unitOfWork.HasChanges())
-            //{
-            //    if (!await _unitOfWork.Complete()) { throw new HubException("Failed to mark as read"); }
-            //}
-
-            //await Clients.Caller.SendAsync("ReceiveMessageThread", messagesDto);
 
             await base.OnConnectedAsync();
         }
-
         public override async Task OnDisconnectedAsync(Exception ex)
         {
             var httpContext = Context.GetHttpContext() ?? throw new ArgumentNullException("httpContext error");
@@ -79,8 +67,6 @@ namespace SignalR
                 groupMembers.Add(SenderEmail);
 
             await Clients.Group(groupName).SendAsync("UpdatedGroup", groupMembers);
-
-            //await Groups.RemoveFromGroupAsync(Context.ConnectionId, Context.User.Identity.Name); //https://stackoverflow.com/questions/23854979/signalr-is-it-necessary-to-remove-the-connection-id-from-group-ondisconnect
 
             await base.OnDisconnectedAsync(ex);
         }
@@ -122,15 +108,16 @@ namespace SignalR
         //        message.DateRead = DateTime.UtcNow;
 
 
-        //    //else
-        //    //{
-        //    //    var connections = await PresenceTracker.GetConnectionsForUser(recipient.UserName);
-        //    //    if (connections != null)
-        //    //    {
-        //    //        await _presenceHub.Clients.Clients(connections).SendAsync("NewMessageReceived",
-        //    //            new { username = sender.UserName, knownAs = sender.KnownAs });
-        //    //    }
-        //    //}
+    ////    else
+    ////    {
+    ////        var connections = await PresenceTracker.GetConnectionsForUser(recipient.UserName);
+    ////        if (connections != null)
+    ////        {
+    ////            await _presenceHub.Clients.Clients(connections).SendAsync("NewMessageReceived",
+    ////                new { username = sender.UserName, knownAs = sender.KnownAs
+    ////});
+    ////        }
+    ////    }
 
         //    _unitOfWork.MessageRepository.Add(message);
 

@@ -2,6 +2,8 @@
 using Chat.Dto;
 using Chat.Entity;
 using Chat.Repositories;
+using Mango.MessageBus;
+using MessageBus.Events;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,11 +22,13 @@ namespace Chat.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IMessageBus _messageBus;
 
-        public FriendInvitationController(IUnitOfWork unitOfWork, IMapper mapper)
+        public FriendInvitationController(IUnitOfWork unitOfWork, IMapper mapper,IMessageBus messageBus)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            this._messageBus = messageBus;
         }
         // GET: api/Invitations/5
         [HttpPost]
@@ -68,7 +72,7 @@ namespace Chat.Controllers
             return BadRequest("User cannot be invited.");
 
         }
-        [HttpGet("GetAllFriends")]
+        [HttpGet("GetAllFriends")]//with presence
         public async Task<ActionResult<UserDto>> GetAllFriends()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new HubException("User cannot be identified");
@@ -80,9 +84,12 @@ namespace Chat.Controllers
                 return NotFound();
             }
 
-            var friendsInvitationDto = _mapper.Map<IEnumerable<FriendInvitation>, IEnumerable<FriendInvitationDto>>(friendsInvitation);
-
-            return Ok(friendsInvitationDto);
+            var friendsInvitationDtos = _mapper.Map<IEnumerable<FriendInvitation>, IEnumerable<FriendInvitationDto>>(friendsInvitation);
+            //
+            var newOnlineUserEvent =  new NewOnlineUserEvent() { FriendInvitationDtos = friendsInvitationDtos }
+            await _messageBus.PublishMessage(newOnlineUserEvent, "new-online-user-queue");
+            //
+            return Ok(friendsInvitationDtos);
         }
         [HttpGet("GetAllInvitations")]
         public async Task<ActionResult<IEnumerable<FriendInvitationDto>>> GetAllInvitations()

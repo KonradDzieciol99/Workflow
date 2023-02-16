@@ -1,8 +1,8 @@
 ﻿using EllipticCurve.Utils;
-using Email.Common.Models;
 using Email.Views.Emails;
 using FluentEmail.Core;
 using FluentEmail.Razor;
+using MessageBus.Events;
 using Microsoft.Extensions.Configuration;
 
 namespace Email

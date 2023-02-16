@@ -1,6 +1,6 @@
-﻿using Email.Common.Models;
-using EmailSender.Views.Emails;
+﻿using EmailSender.Views.Emails;
 using FluentEmail.Core;
+using MessageBus.Events;
 using System.Net;
 
 namespace EmailSender

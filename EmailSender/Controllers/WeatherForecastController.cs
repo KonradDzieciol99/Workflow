@@ -1,4 +1,4 @@
-using Email.Common.Models;
+using MessageBus.Events;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmailSender.Controllers

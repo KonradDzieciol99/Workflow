@@ -7,29 +7,37 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Chat.Entity;
+using Chat.Persistence;
 using Chat.Repositories;
 using Mango.MessageBus;
-using MessageBus;
+using MessageBus.Events;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace Chat.MessageBus
 {
     public class AzureServiceBusConsumer : BackgroundService
     {
-        private readonly string serviceBusConnectionString;
+        private readonly string _serviceBusConnectionString;
         private readonly string azureBusTopic;
         private readonly string azureBusSubscription;
+        private readonly string _markChatMessageAsReadQueueName;
         private readonly IConfiguration _configuration;
         private readonly IUserRepositorySingleton userRepositorySingleton;
-        private ServiceBusProcessor UserRegisterProcessor;
+        private readonly DbContextOptions<ApplicationDbContext> _dbContextOptions;
 
-        public AzureServiceBusConsumer(IConfiguration configuration, IUserRepositorySingleton userRepositorySingleton)
+        //private ServiceBusProcessor UserRegisterProcessor;
+
+        public AzureServiceBusConsumer(IConfiguration configuration, IUserRepositorySingleton userRepositorySingleton, DbContextOptions<ApplicationDbContext> dbContextOptions)
         {
             _configuration = configuration;
             this.userRepositorySingleton = userRepositorySingleton;
-            serviceBusConnectionString = _configuration.GetValue<string>("ServiceBusConnectionString"); ;
+            this._dbContextOptions = dbContextOptions;
+            _serviceBusConnectionString = _configuration.GetValue<string>("ServiceBusConnectionString"); ;
             azureBusTopic = _configuration.GetValue<string>("AzureBusTopic");
             azureBusSubscription = _configuration.GetValue<string>("AzureBusSubscription");
+            _markChatMessageAsReadQueueName = _configuration.GetValue<string>("markChatMessageAsReadQueue");
+
         }
 
         //public async Task Start()
@@ -46,11 +54,17 @@ namespace Chat.MessageBus
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var client = new ServiceBusClient(serviceBusConnectionString);
-            UserRegisterProcessor = client.CreateProcessor(azureBusTopic, azureBusSubscription);
+            var client = new ServiceBusClient(_serviceBusConnectionString);
+            var UserRegisterProcessor = client.CreateProcessor(azureBusTopic, azureBusSubscription);
             UserRegisterProcessor.ProcessMessageAsync += OnUserRegisterReceived;
             UserRegisterProcessor.ProcessErrorAsync += ErrorHandler;
             await UserRegisterProcessor.StartProcessingAsync();
+
+            var markChatMessageAsReadProcessor = client.CreateProcessor(_markChatMessageAsReadQueueName);
+            markChatMessageAsReadProcessor.ProcessMessageAsync += OnMarkChatMessageAsReadReceived;
+            markChatMessageAsReadProcessor.ProcessErrorAsync += ErrorHandler;
+            await markChatMessageAsReadProcessor.StartProcessingAsync();
+
             return;
         }
 
@@ -58,6 +72,37 @@ namespace Chat.MessageBus
         {
             Console.WriteLine(args.Exception.ToString());
             return Task.CompletedTask;
+        }
+
+        private async Task OnMarkChatMessageAsReadReceived(ProcessMessageEventArgs args)
+        {
+            var busMessage = args.Message;
+            var body = Encoding.UTF8.GetString(busMessage.Body);
+
+            var newMarkChatMessageAsReadEvent = JsonSerializer.Deserialize<MarkChatMessageAsReadEvent>(body);
+
+            if (newMarkChatMessageAsReadEvent is null)
+            {
+                throw new ArgumentNullException("newMarkChatMessageAsReadEvent is empty");
+            }
+
+            using (var unitOfWork = new UnitOfWork(new ApplicationDbContext(_dbContextOptions)))
+            {
+                var message = await unitOfWork.MessageRepository.GetOneAsync(x => x.Id == newMarkChatMessageAsReadEvent.Id);
+                
+                if (message is null)
+                    throw new ArgumentNullException($"I can't find the chat message from event:{newMarkChatMessageAsReadEvent}");
+
+                message.DateRead=newMarkChatMessageAsReadEvent.DateRead;
+
+                if (!unitOfWork.HasChanges())
+                    throw new Exception("Failed to mark as read");
+                if (!await unitOfWork.Complete())
+                    throw new Exception("Failed to mark as read");
+            }
+
+            await args.CompleteMessageAsync(args.Message);
+
         }
         private async Task OnUserRegisterReceived(ProcessMessageEventArgs args)
         {
@@ -82,6 +127,11 @@ namespace Chat.MessageBus
             await args.CompleteMessageAsync(args.Message);
 
         }
+
+
+
+
+
         //private async Task OnCheckOutMessageReceived(ProcessMessageEventArgs args)
         //{
         //    var message = args.Message;

@@ -9,8 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Mango.MessageBus;
 using System.Net.Http.Json;
 using System.Text.Json;
-using Email.Common.Models;
 using EmailSender;
+using MessageBus.Events;
 
 namespace EmailSender.MessageBus
 {

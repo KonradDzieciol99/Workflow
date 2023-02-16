@@ -1,6 +1,6 @@
 ﻿using Mango.MessageBus;
 
-namespace Email.Common.Models
+namespace MessageBus.Events
 {
     public class NewUserRegisterEmail : BaseMessage
     {

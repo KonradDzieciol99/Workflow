@@ -2,6 +2,7 @@ using Chat.Common.MapperProfiles;
 using Chat.MessageBus;
 using Chat.Persistence;
 using Chat.Repositories;
+using Mango.MessageBus;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -56,10 +57,18 @@ builder.Services.AddSingleton<IUserRepositorySingleton, UserRepositorySingleton>
 {
     return new UserRepositorySingleton(optionBuilder.Options);
 });
+//builder.Services.AddSingleton<IUserRepositorySingleton, UserRepositorySingleton>(opt =>
+//{
+//    return new UserRepositorySingleton(optionBuilder.Options);
+//});
 
-builder.Services.AddHostedService<AzureServiceBusConsumer>();
-
+builder.Services.AddHostedService<AzureServiceBusConsumer>(opt =>
+{
+    var userRepositorySingleton = opt.GetRequiredService<IUserRepositorySingleton>();
+    return new AzureServiceBusConsumer(builder.Configuration, userRepositorySingleton, optionBuilder.Options);
+});
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
+builder.Services.AddSingleton<IMessageBus, AzureServiceBusMessageBus>();
 
 var app = builder.Build();
 

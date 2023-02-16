@@ -7,6 +7,7 @@ using IdentityServer.Events;
 using Duende.IdentityServer.Services;
 using Mango.MessageBus;
 using MessageBus;
+using MessageBus.Events;
 
 namespace IdentityServer.Persistence
 {

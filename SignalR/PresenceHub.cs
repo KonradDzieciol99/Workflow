@@ -22,7 +22,7 @@ namespace SignalR
             var httpContext = Context.GetHttpContext() ?? throw new ArgumentNullException("httpContext error");
             var SenderEmail = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new HubException("User cannot be identified");
 
-            //await _redisDb.SetAddAsync($"presence-{SenderEmail}", Context.ConnectionId);
+           await _redisDb.SetAddAsync($"presence-{SenderEmail}", Context.ConnectionId);
 
             //var friendsIds = await GetFriendsIds();
             //await Clients.Users(friendsIds).SendAsync("UserIsOnline", SenderEmail);
@@ -37,6 +37,20 @@ namespace SignalR
         {
             var httpContext = Context.GetHttpContext() ?? throw new ArgumentNullException("httpContext error");
             var SenderEmail = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new HubException("User cannot be identified");
+
+
+            await _redisDb.SetRemoveAsync($"presence-{SenderEmail}", Context.ConnectionId);
+            var ConnectionLength = await _redisDb.SetLengthAsync($"presence-{SenderEmail}");
+
+            if (ConnectionLength == 0)
+            {
+                await _redisDb.KeyDeleteAsync($"presence-{SenderEmail}");
+
+                //string[] InvitedUsersConnectionIds = await GetInvitedUsers();
+                //await Clients.Clients(InvitedUsersConnectionIds).SendAsync("UserIsOffline", userName);
+                //event!
+                //event zwrotny
+            }
 
             await base.OnDisconnectedAsync(exception);
         }
