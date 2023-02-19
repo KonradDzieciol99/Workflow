@@ -10,7 +10,7 @@ namespace Socjal.API.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "NewOnlineUserChatFriends",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -40,13 +40,13 @@ namespace Socjal.API.Migrations
                     table.ForeignKey(
                         name: "FK_FriendsInvitation_Users_InvitedUserId",
                         column: x => x.InvitedUserId,
-                        principalTable: "Users",
+                        principalTable: "NewOnlineUserChatFriends",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_FriendsInvitation_Users_InviterUserId",
                         column: x => x.InviterUserId,
-                        principalTable: "Users",
+                        principalTable: "NewOnlineUserChatFriends",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -73,13 +73,13 @@ namespace Socjal.API.Migrations
                     table.ForeignKey(
                         name: "FK_Messages_Users_RecipientId",
                         column: x => x.RecipientId,
-                        principalTable: "Users",
+                        principalTable: "NewOnlineUserChatFriends",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Messages_Users_SenderId",
                         column: x => x.SenderId,
-                        principalTable: "Users",
+                        principalTable: "NewOnlineUserChatFriends",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -109,7 +109,7 @@ namespace Socjal.API.Migrations
                 name: "Messages");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "NewOnlineUserChatFriends");
         }
     }
 }

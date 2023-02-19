@@ -6,8 +6,10 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
+using Chat.Events;
 using Mango.MessageBus;
 using MessageBus.Events;
+using MessageBus.Models;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
@@ -18,26 +20,31 @@ namespace SignalR.MessageBus
     {
         private readonly string _serviceBusConnectionString;
         private readonly string _sendMessageToSignalRQueueName;
+        private readonly string _newOnlineUserQueueName;
         private readonly IDatabase _redisDb;
         private readonly IMessageBus _messageBus;
         private readonly IConnectionMultiplexer _connectionMultiplexer;
         private readonly IConfiguration _configuration;
-        private readonly IHubContext<MessagesHub> _messagesHubContext;
+        private readonly IHubContext<ChatHub> _chatHubContext;
         private readonly IHubContext<PresenceHub> _presenceHubContext;
+        private readonly IHubContext<MessagesHub> _messagesHubContext;
 
         public AzureServiceBusConsumer(IMessageBus messageBus,
             IConnectionMultiplexer connectionMultiplexer,
             IConfiguration configuration,
-            IHubContext<MessagesHub> messagesHubContext,
-            IHubContext<PresenceHub> presenceHubContext)
+            IHubContext<ChatHub> chatHubContext,
+            IHubContext<PresenceHub> presenceHubContext,
+            IHubContext<MessagesHub> messagesHubContext)
         {
             this._messageBus = messageBus;
             this._connectionMultiplexer = connectionMultiplexer;
             _configuration = configuration;
-            this._messagesHubContext = messagesHubContext;
+            this._chatHubContext = chatHubContext;
             this._presenceHubContext = presenceHubContext;
+            this._messagesHubContext = messagesHubContext;
             _serviceBusConnectionString = _configuration.GetValue<string>("ServiceBusConnectionString");
             _sendMessageToSignalRQueueName = _configuration.GetValue<string>("sendMessageToSignalRQueue");
+            _newOnlineUserQueueName = _configuration.GetValue<string>("newOnlineUserQueue");
             _redisDb = _connectionMultiplexer.GetDatabase();
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -47,6 +54,11 @@ namespace SignalR.MessageBus
             sendMessageToSignalRQueueProcessor.ProcessMessageAsync += OnMessageToSignalRQueueReceived;
             sendMessageToSignalRQueueProcessor.ProcessErrorAsync += ErrorHandler;
             await sendMessageToSignalRQueueProcessor.StartProcessingAsync();
+
+            var newOnlineUserQueueProcessor = client.CreateProcessor(_newOnlineUserQueueName);
+            newOnlineUserQueueProcessor.ProcessMessageAsync += OnNewOnlineUserQueueReceived;
+            newOnlineUserQueueProcessor.ProcessErrorAsync += ErrorHandler;
+            await newOnlineUserQueueProcessor.StartProcessingAsync();
             return;
         }
 
@@ -54,6 +66,54 @@ namespace SignalR.MessageBus
         {
             Console.WriteLine(args.Exception.ToString());
             return Task.CompletedTask;
+        }
+        private async Task OnNewOnlineUserQueueReceived(ProcessMessageEventArgs args)//OnNewOnline CHAT UserQueueReceived
+        {
+            var message = args.Message;
+            var body = Encoding.UTF8.GetString(message.Body);
+
+            var newOnlineUserEvent = JsonSerializer.Deserialize<NewOnlineUserEvent>(body);
+
+            if (newOnlineUserEvent is null)
+            {
+                throw new ArgumentNullException("Message is empty");
+            }
+
+            //var groupName = GetGroupName(sendMessageToSignalREvent.SenderEmail, sendMessageToSignalREvent.RecipientEmail);
+
+            //var values = await _redisDb.setle
+            //if (values.Contains(sendMessageToSignalREvent.RecipientEmail))
+            //{
+            //    sendMessageToSignalREvent.DateRead = DateTime.UtcNow;
+            //    var markChatMessageAsReadEvent = new MarkChatMessageAsReadEvent() { Id = sendMessageToSignalREvent.Id, DateRead = (DateTime)sendMessageToSignalREvent.DateRead };
+            //    await _messageBus.PublishMessage(markChatMessageAsReadEvent, "mark-chat-message-as-read");
+            //}
+            List<Task<bool>> listOfOnlineUsers = new();
+            foreach (var item in newOnlineUserEvent.NewOnlineUserChatFriends)
+            {
+                listOfOnlineUsers.Add(_redisDb.KeyExistsAsync($"presence-{item.UserId}"));
+            }
+            var resoult = await Task.WhenAll(listOfOnlineUsers);
+
+            ///resoult and newOnlineUserEvent.NewOnlineUserChatFriends merge razem !!
+            //List<Para> listaPar = listaNapisow.Zip(listaLiczb, (napis, liczba) => new Para(napis, liczba)).ToList();
+
+            List<User> onlineUsers = new();
+            for (int i = 0; i < newOnlineUserEvent.NewOnlineUserChatFriends.Count(); i++)
+            {
+                if (resoult[i])
+                {
+                    onlineUsers.Add(newOnlineUserEvent.NewOnlineUserChatFriends.ElementAt(i));
+                }
+            }
+
+            await _messagesHubContext.Clients.Users(newOnlineUserEvent.NewOnlineUserChatFriends.Select(x=>x.UserId)).SendAsync("UserIsOnline", newOnlineUserEvent.NewOnlineUser);
+            await _messagesHubContext.Clients.User(newOnlineUserEvent.NewOnlineUser.UserId).SendAsync("GetOnlineUsers", onlineUsers);
+            //await _messagesHubContext.Clients.All.SendAsync("GetOnlineUsers", "sdfsdfsdfs");
+
+            //await _presenceHubContext.Clients.User(sendMessageToSignalREvent.RecipientId).SendAsync("NewMessageReceived", new { senderEmail = sendMessageToSignalREvent.SenderEmail });
+
+            await args.CompleteMessageAsync(args.Message);
         }
         private async Task OnMessageToSignalRQueueReceived(ProcessMessageEventArgs args)
         {
@@ -77,7 +137,7 @@ namespace SignalR.MessageBus
                 await _messageBus.PublishMessage(markChatMessageAsReadEvent, "mark-chat-message-as-read");
             }
                 
-            await _messagesHubContext.Clients.Group(groupName).SendAsync("NewMessage", sendMessageToSignalREvent);
+            await _chatHubContext.Clients.Group(groupName).SendAsync("NewMessage", sendMessageToSignalREvent);
             await _presenceHubContext.Clients.User(sendMessageToSignalREvent.RecipientId).SendAsync("NewMessageReceived",new { senderEmail = sendMessageToSignalREvent.SenderEmail});
 
             await args.CompleteMessageAsync(args.Message);

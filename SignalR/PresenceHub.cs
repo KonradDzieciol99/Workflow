@@ -8,12 +8,12 @@ namespace SignalR
     public class PresenceHub : Hub
     {
         private readonly IConnectionMultiplexer _connectionMultiplexer;
-        private readonly IMapper _mapper;
+        //private readonly IMapper _mapper;
         private readonly IDatabase _redisDb;
-        public PresenceHub(IConnectionMultiplexer connectionMultiplexer, IMapper mapper)
+        public PresenceHub(IConnectionMultiplexer connectionMultiplexer)
         {
             _connectionMultiplexer = connectionMultiplexer;
-            _mapper = mapper;
+            //_mapper = mapper;
             _redisDb = _connectionMultiplexer.GetDatabase();
         }
 
@@ -24,8 +24,17 @@ namespace SignalR
 
            await _redisDb.SetAddAsync($"presence-{SenderEmail}", Context.ConnectionId);
 
+
+
+            //var onlineUsers = friendsInvitationDtos.Select(x => x.InviterUserId == userId ? new User() { UserId = x.InvitedUserId, UserEmail = x.InvitedUserEmail } : new User() { UserId = x.InviterUserId, UserEmail = x.InviterUserEmail });
+            //var newOnlineUserEvent = new NewOnlineUserEvent() { NewOnlineUserChatFriends = onlineUsers, NewOnlineUser = new User() { UserEmail = userEmail, UserId = userId } };
+            //await _messageBus.PublishMessage(newOnlineUserEvent, "new-online-user-queue");
+            
+            
+            
+            ///
             //var friendsIds = await GetFriendsIds();
-            //await Clients.Users(friendsIds).SendAsync("UserIsOnline", SenderEmail);
+            //await Clients.NewOnlineUserChatFriends(friendsIds).SendAsync("UserIsOnline", SenderEmail);
 
             //var currentUsers = await GetOnlineUsersEmails();
             //await Clients.Caller.SendAsync("GetOnlineUsers", currentUsers);

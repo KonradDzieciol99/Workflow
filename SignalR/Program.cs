@@ -99,8 +99,10 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapHub<MessagesHub>("/hub/Messages");
+app.MapHub<ChatHub>("/hub/Chat");
 
 app.MapHub<PresenceHub>("/hub/Presence");
+
+app.MapHub<MessagesHub>("/hub/Messages");
 
 await app.RunAsync();

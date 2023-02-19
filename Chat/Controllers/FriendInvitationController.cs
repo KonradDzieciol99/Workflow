@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using Chat.Dto;
 using Chat.Entity;
+using Chat.Events;
 using Chat.Repositories;
 using Mango.MessageBus;
 using MessageBus.Events;
+using MessageBus.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +13,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using User = MessageBus.Models.User;
 
 namespace Chat.Controllers
 {
@@ -75,7 +78,14 @@ namespace Chat.Controllers
         [HttpGet("GetAllFriends")]//with presence
         public async Task<ActionResult<UserDto>> GetAllFriends()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new HubException("User cannot be identified");
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+
+            if (userEmail is null || userId is null)
+            {
+                return BadRequest("User cannot be identified.");
+            }
+
 
             var friendsInvitation = await _unitOfWork.FriendInvitationRepository.GetAllFriends(userId);
 
@@ -86,8 +96,9 @@ namespace Chat.Controllers
 
             var friendsInvitationDtos = _mapper.Map<IEnumerable<FriendInvitation>, IEnumerable<FriendInvitationDto>>(friendsInvitation);
             //
-            var newOnlineUserEvent =  new NewOnlineUserEvent() { FriendInvitationDtos = friendsInvitationDtos }
-            await _messageBus.PublishMessage(newOnlineUserEvent, "new-online-user-queue");
+            ///var onlineUsers = friendsInvitationDtos.Select(x => x.InviterUserId == userId ? new User(){ UserId = x.InvitedUserId, UserEmail = x.InvitedUserEmail}: new User() { UserId = x.InviterUserId, UserEmail = x.InviterUserEmail });
+            ////var newOnlineUserEvent = new NewOnlineUserEvent() { NewOnlineUserChatFriends = onlineUsers, NewOnlineUser = new User() { UserEmail = userEmail, UserId = userId } };
+            ///await _messageBus.PublishMessage(newOnlineUserEvent, "new-online-user-queue");
             //
             return Ok(friendsInvitationDtos);
         }
