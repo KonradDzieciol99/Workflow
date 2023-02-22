@@ -1,5 +1,4 @@
-﻿using Email.Common.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,14 +15,14 @@ namespace Email.Controlers
             EmailSender = emailSender;
         }
         // GET: api/<ValuesController>
-        [HttpGet]
-        public async Task<IActionResult> Get()
-        {
-            var f = new NewUserRegisterEmail() { Token = "ddd", Email = "konradd990212@gmail.com" };
-            await EmailSender.SendConfirmEmailMessage(f);
+        //[HttpGet]
+        //public async Task<IActionResult> Get()
+        //{
+        //    var f = new NewUserRegisterEmail() { Token = "ddd", Email = "konradd990212@gmail.com" };
+        //    await EmailSender.SendConfirmEmailMessage(f);
 
-            return Ok();
-        }
+        //    return Ok();
+        //}
 
         // GET api/<ValuesController>/5
         [HttpGet("{id}")]

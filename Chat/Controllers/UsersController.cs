@@ -23,24 +23,37 @@ namespace Chat.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("FindUsersByEmail/{email}")]//SEARCH
-        public async Task<IEnumerable<UserDto>> FindUsersByEmailAsync(string email)
-        {
-            return _mapper.Map<IEnumerable<User>, IEnumerable<UserDto>>(await _unitOfWork.UserRepository.FindUsersByEmailAsync(email));
-        }
-        [HttpGet("test/{email}")]
-        public async Task<IEnumerable<UserSearchedFriendInvitationDto>> test(string email)
+        //[HttpGet("FindUsersByEmail/{email}")]//SEARCH
+        //public async Task<ActionResult<IEnumerable<UserDto>>> FindUsersByEmailAsync(string email)
+        //{
+
+
+        //    return Ok(_mapper.Map<IEnumerable<User>, IEnumerable<UserDto>>(await _unitOfWork.UserRepository.FindUsersByEmailAsync(email, userEmail)));
+        //}
+        //[HttpGet("test/{email}")]
+        //public async Task<ActionResult<IEnumerable<UserSearchedFriendInvitationDto>>> test(string email)
+        //{
+        //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //    var userEmail = User.FindFirstValue(ClaimTypes.Email);
+        //    if (userEmail is null || userId is null)
+        //    {return BadRequest("User cannot be identified"); }
+
+        //    var friendIds = await _unitOfWork.FriendInvitationRepository.findAllFriendIds(userId);
+
+        //    var users = await _unitOfWork.UserRepository.TEST(userEmail, email, friendIds);
+
+
+        //    return Ok(users);
+        //}
+        [HttpGet("test/{emailOfSearchedUser}")]
+        public async Task<ActionResult<IEnumerable<SearchedUserDto>>> test2(string emailOfSearchedUser)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userEmail = User.FindFirstValue(ClaimTypes.Email);
-
-            var friendIds = await _unitOfWork.FriendInvitationRepository.findAllFriendIds(userId);
-
-            var users = await _unitOfWork.UserRepository.TEST(userEmail, email, friendIds);
-
-
-            return users;
+            if (userEmail is null || userId is null)
+            { return BadRequest("User cannot be identified"); }
+            var users = await _unitOfWork.UserRepository.FindUsersByEmailAsync(userEmail, emailOfSearchedUser);
+            return Ok(users);
         }
-
     }
 }

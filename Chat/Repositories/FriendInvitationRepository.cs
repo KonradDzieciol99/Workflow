@@ -1,6 +1,8 @@
 ﻿using Chat.Entity;
 using Chat.Persistence;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Security.Cryptography;
 
 namespace Chat.Repositories
 {
@@ -69,6 +71,13 @@ namespace Chat.Repositories
         {
             var friendInvitations = await _applicationDbContext.FriendsInvitation.FindAsync(InviterUserId, InvitedUserId);
             return friendInvitations;
+        }
+
+        public async Task<List<FriendInvitation>?> FindAllAsync(string userId, string[] searchedUsersIds)
+        {
+            var keys = searchedUsersIds.Select(searchedUserId => new { searchedUserId = searchedUserId, userId = userId} );
+            return await _applicationDbContext.FriendsInvitation.Where(e => keys.Contains(new { searchedUserId = e.InviterUserId, userId = userId })).ToListAsync();
+
         }
     }
 }

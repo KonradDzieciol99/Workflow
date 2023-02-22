@@ -1,4 +1,7 @@
 ﻿using AutoMapper;
+using Mango.MessageBus;
+using MessageBus.Events;
+using MessageBus.Models;
 using Microsoft.AspNetCore.SignalR;
 using StackExchange.Redis;
 using System.Security.Claims;
@@ -8,11 +11,14 @@ namespace SignalR
     public class PresenceHub : Hub
     {
         private readonly IConnectionMultiplexer _connectionMultiplexer;
+        private readonly IMessageBus _messageBus;
+
         //private readonly IMapper _mapper;
         private readonly IDatabase _redisDb;
-        public PresenceHub(IConnectionMultiplexer connectionMultiplexer)
+        public PresenceHub(IConnectionMultiplexer connectionMultiplexer,IMessageBus messageBus)
         {
             _connectionMultiplexer = connectionMultiplexer;
+            this._messageBus = messageBus;
             //_mapper = mapper;
             _redisDb = _connectionMultiplexer.GetDatabase();
         }
@@ -20,18 +26,17 @@ namespace SignalR
         public override async Task OnConnectedAsync()
         {
             var httpContext = Context.GetHttpContext() ?? throw new ArgumentNullException("httpContext error");
-            var SenderEmail = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new HubException("User cannot be identified");
+            var email = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new HubException("User cannot be identified");
+            var id = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new HubException("User cannot be identified");
 
-           await _redisDb.SetAddAsync($"presence-{SenderEmail}", Context.ConnectionId);
-
-
+            await _redisDb.SetAddAsync($"presence-{email}", Context.ConnectionId);
 
             //var onlineUsers = friendsInvitationDtos.Select(x => x.InviterUserId == userId ? new User() { UserId = x.InvitedUserId, UserEmail = x.InvitedUserEmail } : new User() { UserId = x.InviterUserId, UserEmail = x.InviterUserEmail });
-            //var newOnlineUserEvent = new NewOnlineUserEvent() { NewOnlineUserChatFriends = onlineUsers, NewOnlineUser = new User() { UserEmail = userEmail, UserId = userId } };
-            //await _messageBus.PublishMessage(newOnlineUserEvent, "new-online-user-queue");
-            
-            
-            
+            var newOnlineUserEvent = new NewOnlineUserEvent() { NewOnlineUser = new SimpleUser() { UserEmail = email, UserId = id } };
+            await _messageBus.PublishMessage(newOnlineUserEvent, "new-online-user-queue");
+
+
+
             ///
             //var friendsIds = await GetFriendsIds();
             //await Clients.NewOnlineUserChatFriends(friendsIds).SendAsync("UserIsOnline", SenderEmail);
@@ -45,15 +50,19 @@ namespace SignalR
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             var httpContext = Context.GetHttpContext() ?? throw new ArgumentNullException("httpContext error");
-            var SenderEmail = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new HubException("User cannot be identified");
+            var email = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new HubException("User cannot be identified");
+            var id = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new HubException("User cannot be identified");
 
 
-            await _redisDb.SetRemoveAsync($"presence-{SenderEmail}", Context.ConnectionId);
-            var ConnectionLength = await _redisDb.SetLengthAsync($"presence-{SenderEmail}");
+            await _redisDb.SetRemoveAsync($"presence-{email}", Context.ConnectionId);
+            var ConnectionLength = await _redisDb.SetLengthAsync($"presence-{email}");
 
             if (ConnectionLength == 0)
             {
-                await _redisDb.KeyDeleteAsync($"presence-{SenderEmail}");
+                await _redisDb.KeyDeleteAsync($"presence-{email}");
+
+                var newOnlineUserEvent = new NewOfflineUserEvent() { User = new SimpleUser() { UserEmail = email, UserId = id } };
+                await _messageBus.PublishMessage(newOnlineUserEvent, "new-offline-user-topic");
 
                 //string[] InvitedUsersConnectionIds = await GetInvitedUsers();
                 //await Clients.Clients(InvitedUsersConnectionIds).SendAsync("UserIsOffline", userName);

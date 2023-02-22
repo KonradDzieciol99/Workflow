@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,11 +7,11 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
-using Chat.Events;
 using Mango.MessageBus;
 using MessageBus.Events;
 using MessageBus.Models;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Azure.Amqp.Framing;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
 
@@ -20,7 +21,12 @@ namespace SignalR.MessageBus
     {
         private readonly string _serviceBusConnectionString;
         private readonly string _sendMessageToSignalRQueueName;
-        private readonly string _newOnlineUserQueueName;
+        private readonly string _newOnlineUserWithFriendsQueueName;
+        private readonly string _newOnlineMessagesUserWithFriendsQueueName;
+        private readonly string _newOfflineUserWithFriendsQueueName;
+        private readonly string _friendInvitationAcceptedQueueName;
+
+        //private readonly string _newOnlineUserQueueName;
         private readonly IDatabase _redisDb;
         private readonly IMessageBus _messageBus;
         private readonly IConnectionMultiplexer _connectionMultiplexer;
@@ -44,7 +50,11 @@ namespace SignalR.MessageBus
             this._messagesHubContext = messagesHubContext;
             _serviceBusConnectionString = _configuration.GetValue<string>("ServiceBusConnectionString");
             _sendMessageToSignalRQueueName = _configuration.GetValue<string>("sendMessageToSignalRQueue");
-            _newOnlineUserQueueName = _configuration.GetValue<string>("newOnlineUserQueue");
+            _newOnlineUserWithFriendsQueueName = _configuration.GetValue<string>("newOnlineUserWithFriendsQueue");
+            _newOnlineMessagesUserWithFriendsQueueName = _configuration.GetValue<string>("NewOnlineMessagesUserWithFriendsQueue");
+            _newOfflineUserWithFriendsQueueName = _configuration.GetValue<string>("NewOfflineUserWithFriendsQueue");
+            _friendInvitationAcceptedQueueName = _configuration.GetValue<string>("FriendInvitationAcceptedQueue");
+
             _redisDb = _connectionMultiplexer.GetDatabase();
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -55,10 +65,26 @@ namespace SignalR.MessageBus
             sendMessageToSignalRQueueProcessor.ProcessErrorAsync += ErrorHandler;
             await sendMessageToSignalRQueueProcessor.StartProcessingAsync();
 
-            var newOnlineUserQueueProcessor = client.CreateProcessor(_newOnlineUserQueueName);
-            newOnlineUserQueueProcessor.ProcessMessageAsync += OnNewOnlineUserQueueReceived;
-            newOnlineUserQueueProcessor.ProcessErrorAsync += ErrorHandler;
-            await newOnlineUserQueueProcessor.StartProcessingAsync();
+            var newOnlineUserWithFriendsQueueProcessor = client.CreateProcessor(_newOnlineUserWithFriendsQueueName);//presenceHub
+            newOnlineUserWithFriendsQueueProcessor.ProcessMessageAsync += OnNewOnlineUserWithFriendsQueueReceived;
+            newOnlineUserWithFriendsQueueProcessor.ProcessErrorAsync += ErrorHandler;
+            await newOnlineUserWithFriendsQueueProcessor.StartProcessingAsync();
+           
+            var newOnlineMessagesUserWithFriendsQueueProcessor = client.CreateProcessor(_newOnlineMessagesUserWithFriendsQueueName);//messagesHub
+            newOnlineMessagesUserWithFriendsQueueProcessor.ProcessMessageAsync += OnNewOnlineMessagesUserWithFriendsQueueReceived;
+            newOnlineMessagesUserWithFriendsQueueProcessor.ProcessErrorAsync += ErrorHandler;
+            await newOnlineMessagesUserWithFriendsQueueProcessor.StartProcessingAsync();
+
+            var newOfflineUserWithFriendsQueueProcessor = client.CreateProcessor(_newOfflineUserWithFriendsQueueName);
+            newOfflineUserWithFriendsQueueProcessor.ProcessMessageAsync += OnNewOfflineUserWithFriendsQueueReceived;
+            newOfflineUserWithFriendsQueueProcessor.ProcessErrorAsync += ErrorHandler;
+            await newOfflineUserWithFriendsQueueProcessor.StartProcessingAsync();
+
+            var friendInvitationAcceptedQueueProcessor = client.CreateProcessor(_friendInvitationAcceptedQueueName);
+            friendInvitationAcceptedQueueProcessor.ProcessMessageAsync += OnFriendInvitationAcceptedQueueReceived;
+            friendInvitationAcceptedQueueProcessor.ProcessErrorAsync += ErrorHandler;
+            await friendInvitationAcceptedQueueProcessor.StartProcessingAsync();
+
             return;
         }
 
@@ -67,14 +93,96 @@ namespace SignalR.MessageBus
             Console.WriteLine(args.Exception.ToString());
             return Task.CompletedTask;
         }
-        private async Task OnNewOnlineUserQueueReceived(ProcessMessageEventArgs args)//OnNewOnline CHAT UserQueueReceived
+        private async Task OnFriendInvitationAcceptedQueueReceived(ProcessMessageEventArgs args)//OnNewOnline CHAT UserQueueReceived
         {
             var message = args.Message;
             var body = Encoding.UTF8.GetString(message.Body);
 
-            var newOnlineUserEvent = JsonSerializer.Deserialize<NewOnlineUserEvent>(body);
+            var friendInvitationAcceptedEvent = JsonSerializer.Deserialize<FriendInvitationAcceptedEvent>(body);
 
-            if (newOnlineUserEvent is null)
+            if (friendInvitationAcceptedEvent is null)
+            {
+                throw new ArgumentNullException("Message is empty");
+            }
+
+            await _messagesHubContext.Clients.User(friendInvitationAcceptedEvent.UserWhoseInvitationAccepted.UserId).SendAsync("FriendInvitationAccepted", friendInvitationAcceptedEvent.FriendInvitationDto);
+
+            var isOnline = await _redisDb.KeyExistsAsync($"presence-{friendInvitationAcceptedEvent.UserWhoAcceptedInvitation.UserEmail}");
+            if (isOnline)
+            {
+                await _messagesHubContext.Clients.User(friendInvitationAcceptedEvent.UserWhoseInvitationAccepted.UserId).SendAsync("UserIsOnline", friendInvitationAcceptedEvent.UserWhoAcceptedInvitation);
+            }
+
+            await args.CompleteMessageAsync(args.Message);
+        }
+        private async Task OnNewOfflineUserWithFriendsQueueReceived(ProcessMessageEventArgs args)//OnNewOnline CHAT UserQueueReceived
+        {
+            var message = args.Message;
+            var body = Encoding.UTF8.GetString(message.Body);
+
+            var newOfflineUserWithFriendsEvent = JsonSerializer.Deserialize<NewOfflineUserWithFriendsEvent>(body);
+
+            if (newOfflineUserWithFriendsEvent is null)
+            {
+                throw new ArgumentNullException("Message is empty");
+            }
+
+            //List<Task<bool>> listOfOnlineUsers = new();
+            //foreach (var item in newOfflineUserWithFriendsEvent.UserChatFriends)
+            //{
+            //    listOfOnlineUsers.Add(_redisDb.KeyExistsAsync($"presence-{item.UserEmail}"));// było UserId
+            //}
+            //var resoult = await Task.WhenAll(listOfOnlineUsers);
+
+            //List<SimpleUser> onlineUsers = new();
+            //for (int i = 0; i < newOfflineUserWithFriendsEvent.UserChatFriends.Count(); i++)
+            //{
+            //    if (resoult[i])
+            //    {
+            //        onlineUsers.Add(newOfflineUserWithFriendsEvent.UserChatFriends.ElementAt(i));
+            //    }
+            //}
+            await _messagesHubContext.Clients.Users(newOfflineUserWithFriendsEvent.UserChatFriends.Select(x => x.UserId)).SendAsync("UserIsOffline", newOfflineUserWithFriendsEvent.User);
+            await args.CompleteMessageAsync(args.Message);
+        }
+        private async Task OnNewOnlineMessagesUserWithFriendsQueueReceived(ProcessMessageEventArgs args)//OnNewOnline CHAT UserQueueReceived
+        {
+            var message = args.Message;
+            var body = Encoding.UTF8.GetString(message.Body);
+
+            var newOnlineMessagesUserWithFriendsEvent = JsonSerializer.Deserialize<NewOnlineMessagesUserWithFriendsEvent>(body);
+
+            if (newOnlineMessagesUserWithFriendsEvent is null)
+            {
+                throw new ArgumentNullException("Message is empty");
+            }
+
+            List<Task<bool>> listOfOnlineUsers = new();
+            foreach (var item in newOnlineMessagesUserWithFriendsEvent.NewOnlineUserChatFriends)
+            {
+                listOfOnlineUsers.Add(_redisDb.KeyExistsAsync($"presence-{item.UserEmail}"));// było UserId
+            }
+            var resoult = await Task.WhenAll(listOfOnlineUsers);
+
+            List<SimpleUser> onlineUsers = new();
+            for (int i = 0; i < newOnlineMessagesUserWithFriendsEvent.NewOnlineUserChatFriends.Count(); i++)
+            {
+                if (resoult[i])
+                {
+                    onlineUsers.Add(newOnlineMessagesUserWithFriendsEvent.NewOnlineUserChatFriends.ElementAt(i));
+                }
+            }
+            await _messagesHubContext.Clients.User(newOnlineMessagesUserWithFriendsEvent.NewOnlineUser.UserId).SendAsync("GetOnlineUsers", onlineUsers);
+            await args.CompleteMessageAsync(args.Message);
+        }
+        private async Task OnNewOnlineUserWithFriendsQueueReceived(ProcessMessageEventArgs args)//OnNewOnline CHAT UserQueueReceived
+        {
+            var message = args.Message;
+            var body = Encoding.UTF8.GetString(message.Body);
+
+            var newOnlineUserWithFriendsEvent = JsonSerializer.Deserialize<NewOnlineUserWithFriendsEvent>(body);
+
+            if (newOnlineUserWithFriendsEvent is null)
             {
                 throw new ArgumentNullException("Message is empty");
             }
@@ -89,26 +197,28 @@ namespace SignalR.MessageBus
             //    await _messageBus.PublishMessage(markChatMessageAsReadEvent, "mark-chat-message-as-read");
             //}
             List<Task<bool>> listOfOnlineUsers = new();
-            foreach (var item in newOnlineUserEvent.NewOnlineUserChatFriends)
+            foreach (var item in newOnlineUserWithFriendsEvent.NewOnlineUserChatFriends)
             {
-                listOfOnlineUsers.Add(_redisDb.KeyExistsAsync($"presence-{item.UserId}"));
+                listOfOnlineUsers.Add(_redisDb.KeyExistsAsync($"presence-{item.UserEmail}"));//UserId
             }
             var resoult = await Task.WhenAll(listOfOnlineUsers);
 
             ///resoult and newOnlineUserEvent.NewOnlineUserChatFriends merge razem !!
             //List<Para> listaPar = listaNapisow.Zip(listaLiczb, (napis, liczba) => new Para(napis, liczba)).ToList();
 
-            List<User> onlineUsers = new();
-            for (int i = 0; i < newOnlineUserEvent.NewOnlineUserChatFriends.Count(); i++)
+            List<SimpleUser> onlineUsers = new();
+            for (int i = 0; i < newOnlineUserWithFriendsEvent.NewOnlineUserChatFriends.Count(); i++)
             {
                 if (resoult[i])
                 {
-                    onlineUsers.Add(newOnlineUserEvent.NewOnlineUserChatFriends.ElementAt(i));
+                    onlineUsers.Add(newOnlineUserWithFriendsEvent.NewOnlineUserChatFriends.ElementAt(i));
                 }
             }
 
-            await _messagesHubContext.Clients.Users(newOnlineUserEvent.NewOnlineUserChatFriends.Select(x=>x.UserId)).SendAsync("UserIsOnline", newOnlineUserEvent.NewOnlineUser);
-            await _messagesHubContext.Clients.User(newOnlineUserEvent.NewOnlineUser.UserId).SendAsync("GetOnlineUsers", onlineUsers);
+            await _messagesHubContext.Clients.Users(newOnlineUserWithFriendsEvent.NewOnlineUserChatFriends.Select(x => x.UserId)).SendAsync("UserIsOnline", newOnlineUserWithFriendsEvent.NewOnlineUser);
+
+            /////////await _messagesHubContext.Clients.User(newOnlineUserWithFriendsEvent.NewOnlineUser.UserId).SendAsync("GetOnlineUsers", onlineUsers);
+
             //await _messagesHubContext.Clients.All.SendAsync("GetOnlineUsers", "sdfsdfsdfs");
 
             //await _presenceHubContext.Clients.User(sendMessageToSignalREvent.RecipientId).SendAsync("NewMessageReceived", new { senderEmail = sendMessageToSignalREvent.SenderEmail });

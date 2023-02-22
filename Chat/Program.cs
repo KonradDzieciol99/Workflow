@@ -1,3 +1,4 @@
+using AutoMapper;
 using Chat.Common.MapperProfiles;
 using Chat.MessageBus;
 using Chat.Persistence;
@@ -62,13 +63,17 @@ builder.Services.AddSingleton<IUserRepositorySingleton, UserRepositorySingleton>
 //    return new UserRepositorySingleton(optionBuilder.Options);
 //});
 
-builder.Services.AddHostedService<AzureServiceBusConsumer>(opt =>
-{
-    var userRepositorySingleton = opt.GetRequiredService<IUserRepositorySingleton>();
-    return new AzureServiceBusConsumer(builder.Configuration, userRepositorySingleton, optionBuilder.Options);
-});
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 builder.Services.AddSingleton<IMessageBus, AzureServiceBusMessageBus>();
+
+builder.Services.AddHostedService<AzureServiceBusConsumer>(opt =>
+{   
+    var mapper= opt.GetRequiredService<IMapper>();
+    var azureServiceBusMessageBus = opt.GetRequiredService<IMessageBus>();
+    var userRepositorySingleton = opt.GetRequiredService<IUserRepositorySingleton>();
+    return new AzureServiceBusConsumer(azureServiceBusMessageBus, mapper,builder.Configuration, userRepositorySingleton, optionBuilder.Options);
+});
+
 
 var app = builder.Build();
 

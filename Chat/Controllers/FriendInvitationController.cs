@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Chat.Dto;
 using Chat.Entity;
-using Chat.Events;
 using Chat.Repositories;
 using Mango.MessageBus;
 using MessageBus.Events;
@@ -13,7 +12,6 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using User = MessageBus.Models.User;
 
 namespace Chat.Controllers
 {
@@ -96,9 +94,9 @@ namespace Chat.Controllers
 
             var friendsInvitationDtos = _mapper.Map<IEnumerable<FriendInvitation>, IEnumerable<FriendInvitationDto>>(friendsInvitation);
             //
-            ///var onlineUsers = friendsInvitationDtos.Select(x => x.InviterUserId == userId ? new User(){ UserId = x.InvitedUserId, UserEmail = x.InvitedUserEmail}: new User() { UserId = x.InviterUserId, UserEmail = x.InviterUserEmail });
-            ////var newOnlineUserEvent = new NewOnlineUserEvent() { NewOnlineUserChatFriends = onlineUsers, NewOnlineUser = new User() { UserEmail = userEmail, UserId = userId } };
-            ///await _messageBus.PublishMessage(newOnlineUserEvent, "new-online-user-queue");
+            var users = friendsInvitationDtos.Select(x => x.InviterUserId == userId ? new SimpleUser() { UserId = x.InvitedUserId, UserEmail = x.InvitedUserEmail } : new SimpleUser() { UserId = x.InviterUserId, UserEmail = x.InviterUserEmail });
+            var newOnlineMessagesUserWithFriendsEvent = new NewOnlineMessagesUserWithFriendsEvent() { NewOnlineUserChatFriends = users, NewOnlineUser = new SimpleUser() { UserEmail = userEmail, UserId = userId } };
+            await _messageBus.PublishMessage(newOnlineMessagesUserWithFriendsEvent, "new-online-messages-user-with-friends-queue");
             //
             return Ok(friendsInvitationDtos);
         }
@@ -131,7 +129,14 @@ namespace Chat.Controllers
             friendInvitation.Confirmed = true;
 
             if (await _unitOfWork.Complete())
+            {
+                //
+                //var users = friendsInvitationDtos.Select(x => x.InviterUserId == userId ? new SimpleUser() { UserId = x.InvitedUserId, UserEmail = x.InvitedUserEmail } : new SimpleUser() { UserId = x.InviterUserId, UserEmail = x.InviterUserEmail });
+                var friendInvitationAcceptedEvent = new FriendInvitationAcceptedEvent() { FriendInvitationDto = _mapper.Map<FriendInvitationDtoGlobal>(friendInvitation) };
+                await _messageBus.PublishMessage(friendInvitationAcceptedEvent, "friend-invitation-accepted-queue");
+                //
                 return Ok();
+            };
 
             return BadRequest("The invitation cannot be confirmed.");
         }

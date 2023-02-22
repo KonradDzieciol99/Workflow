@@ -9,5 +9,6 @@ namespace Chat.Repositories
         public Task<IEnumerable<FriendInvitation>> GetAllInvitations(string UserId);
         public Task<FriendInvitation?> GetFriendInvitation(string InviterUserId, string InvitedUserId);
         public Task<IEnumerable<FriendInvitation>> GetAllFriends(string UserId);
+        public Task<List<FriendInvitation>> FindAllAsync(string userId, string[] searchedUsersIds);
     }
 }

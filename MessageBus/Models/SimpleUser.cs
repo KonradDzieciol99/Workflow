@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MessageBus.Models
 {
-    public class User
+    public class SimpleUser
     {
         public string UserId { get; set; }
         public string UserEmail { get; set; }

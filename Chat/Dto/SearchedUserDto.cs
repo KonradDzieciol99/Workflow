@@ -1,6 +1,6 @@
 ﻿namespace Chat.Dto
 {
-    public class UserSearchedFriendInvitationDto
+    public class SearchedUserDto
     {
         public string Id { get; set; }
         public string Email { get; set; }
