@@ -4,14 +4,20 @@ using Chat.MessageBus;
 using Chat.Persistence;
 using Chat.Repositories;
 using Mango.MessageBus;
+using MediatR;
+using MessageBus.Events;
+using MessageBus.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.Net.NetworkInformation;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -49,32 +55,30 @@ builder.Services.AddDbContext<ApplicationDbContext>(opt =>
 {
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DbContextConnString"));
 });
-
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-var optionBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-optionBuilder.UseSqlServer(builder.Configuration.GetConnectionString("DbContextConnString"));
-builder.Services.AddSingleton<IUserRepositorySingleton, UserRepositorySingleton>(opt =>
-{
-    return new UserRepositorySingleton(optionBuilder.Options);
-});
-//builder.Services.AddSingleton<IUserRepositorySingleton, UserRepositorySingleton>(opt =>
-//{
-//    return new UserRepositorySingleton(optionBuilder.Options);
-//});
-
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
-builder.Services.AddSingleton<IMessageBus, AzureServiceBusMessageBus>();
-
-builder.Services.AddHostedService<AzureServiceBusConsumer>(opt =>
-{   
-    var mapper= opt.GetRequiredService<IMapper>();
-    var azureServiceBusMessageBus = opt.GetRequiredService<IMessageBus>();
-    var userRepositorySingleton = opt.GetRequiredService<IUserRepositorySingleton>();
-    return new AzureServiceBusConsumer(azureServiceBusMessageBus, mapper,builder.Configuration, userRepositorySingleton, optionBuilder.Options);
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+builder.Services.AddAzureServiceBusSubscriber(opt =>
+{
+    var myTuple = ("wartoœæ1", "wartoœæ2");
+    var configuration = builder.Configuration;
+    opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString");
+    opt.QueueNameAndEventTypePair = new Dictionary<string, Type>()
+        {
+            {configuration.GetValue<string>("markChatMessageAsReadQueue"),typeof(MarkChatMessageAsReadEvent)},
+            {configuration.GetValue<string>("newOnlineUserQueue"),typeof(NewOnlineUserEvent)},
+            //{configuration.GetValue<string>("FriendInvitationAcceptedQueue"),typeof(FriendInvitationAcceptedEvent)},
+        };
+    opt.TopicNameWithSubscriptionNameAndEventTypePair = new Dictionary<Tuple<string, string>, Type>()
+    {
+        {Tuple.Create(configuration.GetValue<string>("AzureBusTopic"),configuration.GetValue<string>("AzureBusSubscription")),typeof(NewUserRegisterCreateUser)},
+        {Tuple.Create(configuration.GetValue<string>("newOfflineUserTopic"),configuration.GetValue<string>("newOfflineUserTopicChatSub")),typeof(NewOfflineUserEvent)},
+    };
 });
-
-
+builder.Services.AddAzureServiceBusSender(opt =>
+{
+    opt.ServiceBusConnectionString = builder.Configuration.GetValue<string>("ServiceBusConnectionString");
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

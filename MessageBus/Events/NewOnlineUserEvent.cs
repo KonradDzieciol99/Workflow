@@ -1,9 +1,10 @@
-﻿using MessageBus.Models;
+﻿using MediatR;
+using MessageBus.Models;
 using System.Collections.Generic;
 
 namespace MessageBus.Events
 {
-    public class NewOnlineUserEvent
+    public class NewOnlineUserEvent : IRequest
     {
         public SimpleUser NewOnlineUser { get; set; }
         //public IEnumerable<User> NewOnlineUserChatFriends { get; set; }

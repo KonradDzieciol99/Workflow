@@ -3,6 +3,7 @@ using Chat.Dto;
 using Chat.Entity;
 using Chat.Repositories;
 using Mango.MessageBus;
+using MessageBus;
 using MessageBus.Events;
 using MessageBus.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -23,9 +24,9 @@ namespace Chat.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IMessageBus _messageBus;
+        private readonly IAzureServiceBusSender _messageBus;
 
-        public FriendInvitationController(IUnitOfWork unitOfWork, IMapper mapper,IMessageBus messageBus)
+        public FriendInvitationController(IUnitOfWork unitOfWork, IMapper mapper, IAzureServiceBusSender messageBus)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;

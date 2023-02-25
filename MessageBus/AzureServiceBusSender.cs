@@ -1,25 +1,26 @@
-﻿
-using Azure.Messaging.ServiceBus;
+﻿using Azure.Messaging.ServiceBus;
+using MessageBus.Models;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Mango.MessageBus
+namespace MessageBus
 {
-    public class AzureServiceBusMessageBus : IMessageBus
+    public class AzureServiceBusSender: IAzureServiceBusSender
     {
-        //can be improved
-        //private string connectionString = "Endpoint=sb://workflowazureservicebus.servicebus.windows.net/;SharedAccessKeyName=AccessKey;SharedAccessKey=siRIzQcrn3bmCLkvdCklk/qFogTavWYhcMZQTtqB4j0=;EntityPath=newuserregister";
-        private string connectionString = "Endpoint=sb://workflowazureservicebus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=PLXZYECKYoA1ENmbkqz0TY4/eUaf6S7rFok7SczCaAs=";
-
+        private readonly AzureServiceBusSenderOptions _options;
+        public AzureServiceBusSender(IOptions<AzureServiceBusSenderOptions> options)
+        {
+            this._options = options.Value;
+        }
         public async Task PublishMessage<T>(T message, string queueOrTopicName)
         {
 
-            await using var client = new ServiceBusClient(connectionString);
+            await using var client = new ServiceBusClient(_options.ServiceBusConnectionString);
 
             ServiceBusSender sender = client.CreateSender(queueOrTopicName);
 

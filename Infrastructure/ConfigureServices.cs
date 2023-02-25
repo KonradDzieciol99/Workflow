@@ -32,7 +32,6 @@ namespace Microsoft.Extensions.DependencyInjection
                     opt.Password.RequireDigit = false;
                     opt.User.RequireUniqueEmail = true;
                     opt.SignIn.RequireConfirmedEmail = true;
-
                 })
                 .AddRoles<AppRole>()
                 .AddRoleManager<RoleManager<AppRole>>()

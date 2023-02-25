@@ -19,9 +19,9 @@ namespace Chat.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IMessageBus _messageBus;
+        private readonly IAzureServiceBusSender _messageBus;
 
-        public ChatController(IUnitOfWork unitOfWork, IMapper mapper,IMessageBus messageBus)
+        public ChatController(IUnitOfWork unitOfWork, IMapper mapper, IAzureServiceBusSender messageBus)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;

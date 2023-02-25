@@ -1,9 +1,10 @@
-﻿using MessageBus.Models;
+﻿using MediatR;
+using MessageBus.Models;
 using System.Collections.Generic;
 
 namespace MessageBus.Events
 {
-    public class NewOnlineMessagesUserWithFriendsEvent
+    public class NewOnlineMessagesUserWithFriendsEvent : IRequest
     {
         public NewOnlineMessagesUserWithFriendsEvent()
         {
