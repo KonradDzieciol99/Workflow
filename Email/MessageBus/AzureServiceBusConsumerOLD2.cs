@@ -1,5 +1,5 @@
 ﻿using Azure.Messaging.ServiceBus;
-using Email.Common.Models;
+using MessageBus.Events;
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;

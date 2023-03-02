@@ -121,7 +121,7 @@ namespace Socjal.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("NewOnlineUserChatFriends");
                 });
 
             modelBuilder.Entity("Socjal.API.Entity.FriendInvitation", b =>

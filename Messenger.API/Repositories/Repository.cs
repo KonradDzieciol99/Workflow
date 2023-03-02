@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Azure.Amqp.Framing;
+using Microsoft.EntityFrameworkCore;
 using Socjal.API.Persistence;
 using System.Linq.Expressions;
 
@@ -16,6 +17,11 @@ namespace Socjal.API.Repositories
         public void Add(TEntity entity)
         {
             _dbContext.Set<TEntity>().Add(entity);
+        }
+
+        public async Task<TEntity?> GetOneAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await _dbContext.Set<TEntity>().SingleOrDefaultAsync(predicate);
         }
 
         public void AddRange(IEnumerable<TEntity> entities)
