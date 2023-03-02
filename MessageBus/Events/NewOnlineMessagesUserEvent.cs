@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Mango.MessageBus;
+using MediatR;
 using MessageBus.Models;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MessageBus.Events
 {
-    public class NewOnlineMessagesUserEvent : IRequest
+    public class NewOnlineMessagesUserEvent : BaseMessage, IRequest
     {
         public SimpleUser NewOnlineUser { get; set; }
         public IEnumerable<SimpleUser> NewOnlineUserChatFriends { get; set; }

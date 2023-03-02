@@ -1,21 +1,25 @@
 ﻿using AutoMapper;
+using Azure.Core;
+using Azure.Core.Extensions;
 using Mango.MessageBus;
+using MessageBus;
 using MessageBus.Events;
 using MessageBus.Models;
 using Microsoft.AspNetCore.SignalR;
 using StackExchange.Redis;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace SignalR
 {
     public class PresenceHub : Hub
     {
         private readonly IConnectionMultiplexer _connectionMultiplexer;
-        private readonly IMessageBus _messageBus;
+        private readonly IAzureServiceBusSender _messageBus;
 
         //private readonly IMapper _mapper;
         private readonly IDatabase _redisDb;
-        public PresenceHub(IConnectionMultiplexer connectionMultiplexer,IMessageBus messageBus)
+        public PresenceHub(IConnectionMultiplexer connectionMultiplexer,IAzureServiceBusSender messageBus)
         {
             _connectionMultiplexer = connectionMultiplexer;
             this._messageBus = messageBus;
@@ -36,8 +40,10 @@ namespace SignalR
             await _messageBus.PublishMessage(newOnlineUserEvent, "new-online-user-queue");
 
 
+            var notificationsSerialized = _redisDb.HashScan($"user-notification-{email}", pageSize: 5);
+            var notifications = notificationsSerialized.Select(notification => JsonSerializer.Deserialize<BaseMessage>(notification.Value.ToString())).ToList();
+            await Clients.Caller.SendAsync("NotificationThread", notifications);
 
-            ///
             //var friendsIds = await GetFriendsIds();
             //await Clients.NewOnlineUserChatFriends(friendsIds).SendAsync("UserIsOnline", SenderEmail);
 

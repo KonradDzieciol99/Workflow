@@ -37,7 +37,6 @@ if (app.Environment.IsDevelopment())
         await initialiser.InitialiseAsync();
         await initialiser.SeedAsync();
     }
-
 }
 
 app.UseMiddleware<ExceptionMiddleware>();
@@ -45,7 +44,6 @@ app.UseHttpsRedirection();
 app.UseCors(CORSallowAny);
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 await app.RunAsync();

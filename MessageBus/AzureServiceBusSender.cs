@@ -1,4 +1,5 @@
 ﻿using Azure.Messaging.ServiceBus;
+using Mango.MessageBus;
 using MessageBus.Models;
 using Microsoft.Extensions.Options;
 using System;
@@ -17,8 +18,15 @@ namespace MessageBus
         {
             this._options = options.Value;
         }
-        public async Task PublishMessage<T>(T message, string queueOrTopicName)
+        public async Task PublishMessage<T>(T message, string queueOrTopicName) where T : BaseMessage
         {
+            //if (message.NotificationSender is null)
+            //{
+            //    //
+            //} sprawdzić czy się wywali jeśli coś będzie nie ok z polami
+
+            message.Id=Guid.NewGuid().ToString();
+            message.MessageCreated = DateTime.UtcNow;
 
             await using var client = new ServiceBusClient(_options.ServiceBusConnectionString);
 

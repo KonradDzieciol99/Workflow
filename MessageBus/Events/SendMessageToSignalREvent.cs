@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Mango.MessageBus;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MessageBus.Events
 {
-    public class SendMessageToSignalREvent: IRequest
+    public class SendMessageToSignalREvent : BaseMessage, IRequest
     {
         public int Id { get; set; }
         public string SenderId { get; set; }

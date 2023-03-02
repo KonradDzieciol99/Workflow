@@ -1,10 +1,11 @@
-﻿using MediatR;
+﻿using Mango.MessageBus;
+using MediatR;
 using MessageBus.Models;
 using System.Collections.Generic;
 
 namespace MessageBus.Events
 {
-    public class NewOnlineMessagesUserWithFriendsEvent : IRequest
+    public class NewOnlineMessagesUserWithFriendsEvent : BaseMessage, IRequest
     {
         public NewOnlineMessagesUserWithFriendsEvent()
         {

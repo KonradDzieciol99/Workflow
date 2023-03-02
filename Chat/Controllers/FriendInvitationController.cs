@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Azure.Amqp.Framing;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -36,15 +37,22 @@ namespace Chat.Controllers
         [HttpPost]
         public async Task<IActionResult> InviteFriend(UserDto InitedUserDto)
         {
-            var InviterId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new HubException("User cannot be identified");
-            var Inviter = await _unitOfWork.UserRepository.GetUserByIdAsync(InviterId);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+
+            if (userEmail is null || userId is null)
+            {
+                return BadRequest("User cannot be identified.");
+            }
+
+            var Inviter = await _unitOfWork.UserRepository.GetUserByIdAsync(userId);
             var InitedUser = await _unitOfWork.UserRepository.GetUserByIdAsync(InitedUserDto.Id);
 
             if (Inviter is null || InitedUser is null)
             {
                 return BadRequest("The specified users do not exist.");
             }
-            if (await _unitOfWork.FriendInvitationRepository.checkIfExistsAsync(InviterId, InitedUserDto.Id))
+            if (await _unitOfWork.FriendInvitationRepository.checkIfExistsAsync(userId, InitedUserDto.Id))
             {
                 return BadRequest("This invitation is already exist.");
             }
@@ -69,6 +77,18 @@ namespace Chat.Controllers
 
             if (await _unitOfWork.Complete())
             {
+                var friendInvitationAcceptedEvent = new InviteUserToFriendsEvent()
+                {
+
+                    NotificationRecipient = new SimpleUser() { UserEmail = friendInvitation.InvitedUserEmail, UserId = friendInvitation.InvitedUserId },
+                    NotificationSender = new SimpleUser() { UserEmail = userEmail, UserId = userId },
+                    EventType = "InviteUserToFriendsEvent",
+                    FriendInvitationDto = _mapper.Map<FriendInvitationDtoGlobal>(friendInvitation),
+                    UserWhoInvited = new SimpleUser() { UserEmail = userEmail, UserId = userId },
+                    InvitedUser = new SimpleUser() { UserEmail = friendInvitation.InvitedUserEmail, UserId = friendInvitation.InvitedUserId },
+                };
+                await _messageBus.PublishMessage(friendInvitationAcceptedEvent, "invite-user-to-friends-queue");
+
                 return Ok();
             }
             return BadRequest("User cannot be invited.");
@@ -95,10 +115,10 @@ namespace Chat.Controllers
 
             var friendsInvitationDtos = _mapper.Map<IEnumerable<FriendInvitation>, IEnumerable<FriendInvitationDto>>(friendsInvitation);
             //
-            var users = friendsInvitationDtos.Select(x => x.InviterUserId == userId ? new SimpleUser() { UserId = x.InvitedUserId, UserEmail = x.InvitedUserEmail } : new SimpleUser() { UserId = x.InviterUserId, UserEmail = x.InviterUserEmail });
-            var newOnlineMessagesUserWithFriendsEvent = new NewOnlineMessagesUserWithFriendsEvent() { NewOnlineUserChatFriends = users, NewOnlineUser = new SimpleUser() { UserEmail = userEmail, UserId = userId } };
-            await _messageBus.PublishMessage(newOnlineMessagesUserWithFriendsEvent, "new-online-messages-user-with-friends-queue");
-            //
+            //var users = friendsInvitationDtos.Select(x => x.InviterUserId == userId ? new SimpleUser() { UserId = x.InvitedUserId, UserEmail = x.InvitedUserEmail } : new SimpleUser() { UserId = x.InviterUserId, UserEmail = x.InviterUserEmail });
+            //var newOnlineMessagesUserWithFriendsEvent = new NewOnlineMessagesUserWithFriendsEvent() { NewOnlineUserChatFriends = users, NewOnlineUser = new SimpleUser() { UserEmail = userEmail, UserId = userId } };
+            //await _messageBus.PublishMessage(newOnlineMessagesUserWithFriendsEvent, "new-online-messages-user-with-friends-queue");
+            //??????????????????????????????????????????????????Po Co To
             return Ok(friendsInvitationDtos);
         }
         [HttpGet("GetAllInvitations")]
@@ -117,30 +137,39 @@ namespace Chat.Controllers
 
             return Ok(friendsInvitationDto);
         }
-        [HttpPost("AcceptFriendInvitation")]
-        public async Task<IActionResult> AcceptFriendInvitation(FriendInvitationDto friendInvitationDto)
-        {
-            var InvitedUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new HubException("User cannot be identified");
+        //[HttpPost("AcceptFriendInvitation")]
+        //public async Task<IActionResult> AcceptFriendInvitation(FriendInvitationDto friendInvitationDto)
+        //{
+        //    var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new Exception("User cannot be identified");
+        //    var userEmail = User.FindFirst(ClaimTypes.Email)?.Value ?? throw new Exception("User cannot be identified");
 
-            var friendInvitation = await _unitOfWork.FriendInvitationRepository.GetFriendInvitation(friendInvitationDto.InviterUserId, InvitedUserId);
+        //    var friendInvitation = await _unitOfWork.FriendInvitationRepository.GetFriendInvitation(friendInvitationDto.InviterUserId, userId);
 
-            if (friendInvitation == null)
-                return BadRequest("invitation does not exist");
+        //    if (friendInvitation == null)
+        //        return BadRequest("invitation does not exist");
 
-            friendInvitation.Confirmed = true;
+        //    friendInvitation.Confirmed = true;
+            
+        //    if (await _unitOfWork.Complete())
+        //    {
+        //        //
+        //        //var users = friendsInvitationDtos.Select(x => x.InviterUserId == userId ? new SimpleUser() { UserId = x.InvitedUserId, UserEmail = x.InvitedUserEmail } : new SimpleUser() { UserId = x.InviterUserId, UserEmail = x.InviterUserEmail });
+        //        var friendInvitationAcceptedEvent = new FriendInvitationAcceptedEvent() 
+        //        {
+        //            EventType = "FriendInvitationAcceptedEvent",
+        //            NotificationRecipient = new SimpleUser() { UserEmail = friendInvitation.InviterUserEmail, UserId = friendInvitation.InviterUserId },
+        //            NotificationSender = new SimpleUser() { UserEmail = userEmail, UserId = userId },
+        //            FriendInvitationDto = _mapper.Map<FriendInvitationDtoGlobal>(friendInvitation), 
+        //            UserWhoAcceptedInvitation = new SimpleUser() { UserEmail = userEmail, UserId = userId},
+        //            UserWhoseInvitationAccepted = new SimpleUser() { UserEmail = friendInvitation.InviterUserEmail, UserId = friendInvitation.InviterUserId },
+        //        };
+        //        await _messageBus.PublishMessage(friendInvitationAcceptedEvent, "friend-invitation-accepted-queue");
+        //        //
+        //        return Ok();
+        //    };
 
-            if (await _unitOfWork.Complete())
-            {
-                //
-                //var users = friendsInvitationDtos.Select(x => x.InviterUserId == userId ? new SimpleUser() { UserId = x.InvitedUserId, UserEmail = x.InvitedUserEmail } : new SimpleUser() { UserId = x.InviterUserId, UserEmail = x.InviterUserEmail });
-                var friendInvitationAcceptedEvent = new FriendInvitationAcceptedEvent() { FriendInvitationDto = _mapper.Map<FriendInvitationDtoGlobal>(friendInvitation) };
-                await _messageBus.PublishMessage(friendInvitationAcceptedEvent, "friend-invitation-accepted-queue");
-                //
-                return Ok();
-            };
-
-            return BadRequest("The invitation cannot be confirmed.");
-        }
+        //    return BadRequest("The invitation cannot be confirmed.");
+        //}
         [HttpPost("DeclineFriendInvitation")]
         public async Task<IActionResult> DeclineFriendInvitation(FriendInvitationDto friendInvitationDto)
         {
@@ -161,5 +190,41 @@ namespace Chat.Controllers
             return BadRequest("This invitation cannot be canceled.");
         }
 
+        //var testt = await _unitOfWork.FriendInvitationRepository.GetOneByIdAsync(friendInvitationDto.InviterUserId, userId);
+        [HttpPost("AcceptFriendInvitation")]
+        public async Task<IActionResult> AcceptFriendInvitation(string invitationSenderId)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new Exception("User cannot be identified");
+            var userEmail = User.FindFirst(ClaimTypes.Email)?.Value ?? throw new Exception("User cannot be identified");
+
+            //var friendInvitation = await _unitOfWork.FriendInvitationRepository.GetFriendInvitation(friendInvitationDto.InviterUserId, userId);
+            var friendInvitation = await _unitOfWork.FriendInvitationRepository.GetOneByIdAsync(invitationSenderId, userId);
+
+            if (friendInvitation == null)
+                return BadRequest("invitation does not exist");
+
+
+            friendInvitation.Confirmed = true;
+
+            if (await _unitOfWork.Complete())
+            {
+                //
+                //var users = friendsInvitationDtos.Select(x => x.InviterUserId == userId ? new SimpleUser() { UserId = x.InvitedUserId, UserEmail = x.InvitedUserEmail } : new SimpleUser() { UserId = x.InviterUserId, UserEmail = x.InviterUserEmail });
+                var friendInvitationAcceptedEvent = new FriendInvitationAcceptedEvent()
+                {
+                    EventType = "FriendInvitationAcceptedEvent",
+                    NotificationRecipient = new SimpleUser() { UserEmail = friendInvitation.InviterUserEmail, UserId = friendInvitation.InviterUserId },
+                    NotificationSender = new SimpleUser() { UserEmail = userEmail, UserId = userId },
+                    FriendInvitationDto = _mapper.Map<FriendInvitationDtoGlobal>(friendInvitation),
+                    UserWhoAcceptedInvitation = new SimpleUser() { UserEmail = userEmail, UserId = userId },
+                    UserWhoseInvitationAccepted = new SimpleUser() { UserEmail = friendInvitation.InviterUserEmail, UserId = friendInvitation.InviterUserId },
+                };
+                await _messageBus.PublishMessage(friendInvitationAcceptedEvent, "friend-invitation-accepted-queue");
+                //
+                return Ok();
+            };
+
+            return BadRequest("The invitation cannot be confirmed.");
+        }
     }
 }

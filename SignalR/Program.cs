@@ -1,8 +1,11 @@
 
 using Mango.MessageBus;
+using MessageBus.Events;
+using MessageBus.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using SignalR;
+using SignalR.Common.PipelineBehaviour;
 using SignalR.MessageBus;
 using StackExchange.Redis;
 
@@ -75,10 +78,34 @@ builder.Services.AddCors(opt =>
               });
 });
 
-builder.Services.AddHostedService<AzureServiceBusConsumer>();
-builder.Services.AddSingleton<IMessageBus, AzureServiceBusMessageBus>();
-
 //builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
+builder.Services.AddMediatR(opt =>
+{
+    opt.RegisterServicesFromAssembly(typeof(Program).Assembly);
+    //opt.AddOpenBehavior(typeof(CollectUserEventsNotificationBehaviour<,>));
+});
+builder.Services.AddAzureServiceBusSubscriber(opt =>
+{
+    var configuration = builder.Configuration;
+    opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString");
+    opt.QueueNameAndEventTypePair = new Dictionary<string, Type>()
+        {
+            {configuration.GetValue<string>("sendMessageToSignalRQueue"),typeof(SendMessageToSignalREvent)},
+            {configuration.GetValue<string>("newOnlineUserWithFriendsQueue"),typeof(NewOnlineUserWithFriendsEvent)},
+            {configuration.GetValue<string>("NewOnlineMessagesUserWithFriendsQueue"),typeof(NewOnlineMessagesUserWithFriendsEvent)},
+            {configuration.GetValue<string>("NewOfflineUserWithFriendsQueue"),typeof(NewOfflineUserWithFriendsEvent)},
+            {configuration.GetValue<string>("FriendInvitationAcceptedQueue"),typeof(FriendInvitationAcceptedEvent)},
+            {configuration.GetValue<string>("InviteUserToFriendsQueue"),typeof(InviteUserToFriendsEvent)},
+        };
+    //opt.TopicNameWithSubscriptionNameAndEventTypePair = new Dictionary<Tuple<string, string>, Type>()
+    //{
+    //    {Tuple.Create(configuration.GetValue<string>("AzureBusTopic"),configuration.GetValue<string>("AzureBusSubscription")),typeof(NewUserRegisterCreateUser)},
+    //};
+});
+builder.Services.AddAzureServiceBusSender(opt =>
+{
+    opt.ServiceBusConnectionString = builder.Configuration.GetValue<string>("ServiceBusConnectionString");
+});
 
 var app = builder.Build();
 

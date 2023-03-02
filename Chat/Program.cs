@@ -57,7 +57,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(opt =>
 });
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+builder.Services.AddMediatR(opt => 
+{
+    opt.RegisterServicesFromAssembly(typeof(Program).Assembly);
+    //opt.AddOpenBehavior(typeof(CollectUserEventsNotificationBehaviour<,>));
+});
 builder.Services.AddAzureServiceBusSubscriber(opt =>
 {
     var myTuple = ("wartoœæ1", "wartoœæ2");

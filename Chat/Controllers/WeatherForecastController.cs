@@ -42,10 +42,6 @@ namespace Chat.Controllers
         {
             var c = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var cc = new FriendInvitationAcceptedEvent();
-
-            await this.mediator.Send(cc);
-
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),

@@ -322,7 +322,6 @@ namespace SignalR.MessageBus
 
         //    await _orderRepository.AddOrder(orderHeader);
 
-
         //    PaymentRequestMessage paymentRequestMessage = new()
         //    {
         //        Name = orderHeader.FirstName + " " + orderHeader.LastName,

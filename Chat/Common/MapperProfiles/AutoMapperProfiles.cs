@@ -2,6 +2,7 @@
 using Chat.Dto;
 using Chat.Entity;
 using MessageBus.Events;
+using MessageBus.Models;
 
 namespace Chat.Common.MapperProfiles
 {
@@ -17,8 +18,12 @@ namespace Chat.Common.MapperProfiles
             CreateMap<UserDto, User>();
             CreateMap<FriendInvitationDto, FriendInvitation>();
             CreateMap<FriendInvitation, FriendInvitationDto>();
+
             CreateMap<Message, SendMessageToSignalREvent>();
             CreateMap<SendMessageToSignalREvent, Message>();
+
+            CreateMap<FriendInvitationDtoGlobal, FriendInvitation>();
+            CreateMap<FriendInvitation, FriendInvitationDtoGlobal>();
         }
     }
 }

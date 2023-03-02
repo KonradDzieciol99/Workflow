@@ -6,6 +6,7 @@ using Chat.Repositories;
 using Mango.MessageBus;
 using MessageBus;
 using MessageBus.Events;
+using MessageBus.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -31,7 +32,8 @@ namespace Chat.Controllers
         public async Task<IActionResult> SendMessage(CreateMessageDto createMessageDto)
         {
             var senderId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (senderId is null)
+            var senderEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+            if (senderId is null || senderEmail is null)
                 return BadRequest("User cannot be identified");
         
             var sender = await _unitOfWork.UserRepository.GetUserByIdAsync(senderId);
@@ -67,6 +69,8 @@ namespace Chat.Controllers
                 //OrderStatusChangedToAwaitingValidationIntegrationEvent
                 //var newUserRegisterCreateUser = new NewUserRegisterCreateUser() { Email = localUserRegisterSuccessEvent.LocalUserEmail, Id = localUserRegisterSuccessEvent.IdentityUserId };
                 var SendMessageToSignalREvent = _mapper.Map<SendMessageToSignalREvent>(message);
+                SendMessageToSignalREvent.NotificationSender = new SimpleUser() { UserEmail = senderEmail, UserId = senderId };
+                SendMessageToSignalREvent.NotificationRecipient = new SimpleUser() { UserEmail = message.RecipientEmail, UserId = message.RecipientId};
                 await _messageBus.PublishMessage(SendMessageToSignalREvent, "send-message-to-signalr");
                 return Ok();
             }
