@@ -1,7 +1,23 @@
 version: '3.8'
 services:
   redis:
-    image: redis
+    image: redis:latest
     container_name: redis_cache
     ports:
       - "6379:6379"
+  mongodb:
+    image: mongo:latest
+    container_name: mongo_db
+    ports:
+      - "27017:27017"
+  sql_server:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sql_server
+    ports:
+    - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Testpassword1!"
+
+  
+
