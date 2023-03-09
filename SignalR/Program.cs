@@ -1,5 +1,6 @@
 
 using Mango.MessageBus;
+using MediatR;
 using MessageBus.Events;
 using MessageBus.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -94,13 +95,20 @@ builder.Services.AddAzureServiceBusSubscriber(opt =>
             {configuration.GetValue<string>("newOnlineUserWithFriendsQueue"),typeof(NewOnlineUserWithFriendsEvent)},
             {configuration.GetValue<string>("NewOnlineMessagesUserWithFriendsQueue"),typeof(NewOnlineMessagesUserWithFriendsEvent)},
             {configuration.GetValue<string>("NewOfflineUserWithFriendsQueue"),typeof(NewOfflineUserWithFriendsEvent)},
-            {configuration.GetValue<string>("FriendInvitationAcceptedQueue"),typeof(FriendInvitationAcceptedEvent)},
-            {configuration.GetValue<string>("InviteUserToFriendsQueue"),typeof(InviteUserToFriendsEvent)},
+        //{configuration.GetValue<string>("FriendInvitationAcceptedQueue"),typeof(FriendInvitationAcceptedEvent)},
+        //{configuration.GetValue<string>("InviteUserToFriendsQueue"),typeof(InviteUserToFriendsEvent)},
+            {"notification-queue", typeof(NotificationEvent)}
         };
-    //opt.TopicNameWithSubscriptionNameAndEventTypePair = new Dictionary<Tuple<string, string>, Type>()
-    //{
-    //    {Tuple.Create(configuration.GetValue<string>("AzureBusTopic"),configuration.GetValue<string>("AzureBusSubscription")),typeof(NewUserRegisterCreateUser)},
-    //};
+    opt.TopicNameAndEventTypePair = new Dictionary<string, Type>()
+    {
+        {configuration.GetValue<string>("FriendInvitationAcceptedQueue"),typeof(FriendInvitationAcceptedEvent)},
+        {configuration.GetValue<string>("NewOfflineUserWithFriendsQueue"),typeof(InviteUserToFriendsEvent)},
+    };
+    opt.TopicNameWithSubscriptionName = new Dictionary<string, string>()
+    {
+        {configuration.GetValue<string>("FriendInvitationAcceptedQueue"),"signalr"},
+        {configuration.GetValue<string>("NewOfflineUserWithFriendsQueue"),"signalr"},
+    };
 });
 builder.Services.AddAzureServiceBusSender(opt =>
 {

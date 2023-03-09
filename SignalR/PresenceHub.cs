@@ -40,9 +40,9 @@ namespace SignalR
             await _messageBus.PublishMessage(newOnlineUserEvent, "new-online-user-queue");
 
 
-            var notificationsSerialized = _redisDb.HashScan($"user-notification-{email}", pageSize: 5);
-            var notifications = notificationsSerialized.Select(notification => JsonSerializer.Deserialize<BaseMessage>(notification.Value.ToString())).ToList();
-            await Clients.Caller.SendAsync("NotificationThread", notifications);
+            //var notificationsSerialized = _redisDb.HashScan($"user-notification-{email}", pageSize: 5);
+            //var notifications = notificationsSerialized.Select(notification => JsonSerializer.Deserialize<BaseMessage>(notification.Value.ToString())).ToList();
+            //await Clients.Caller.SendAsync("NotificationThread", notifications);
 
             //var friendsIds = await GetFriendsIds();
             //await Clients.NewOnlineUserChatFriends(friendsIds).SendAsync("UserIsOnline", SenderEmail);

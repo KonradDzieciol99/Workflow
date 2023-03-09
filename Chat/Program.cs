@@ -73,10 +73,20 @@ builder.Services.AddAzureServiceBusSubscriber(opt =>
             {configuration.GetValue<string>("newOnlineUserQueue"),typeof(NewOnlineUserEvent)},
             //{configuration.GetValue<string>("FriendInvitationAcceptedQueue"),typeof(FriendInvitationAcceptedEvent)},
         };
-    opt.TopicNameWithSubscriptionNameAndEventTypePair = new Dictionary<Tuple<string, string>, Type>()
+    //opt.TopicNameWithSubscriptionNameAndEventTypePair = new Dictionary<Tuple<string, string>, Type>()
+    //{
+    //    {Tuple.Create(configuration.GetValue<string>("AzureBusTopic"),configuration.GetValue<string>("AzureBusSubscription")),typeof(NewUserRegisterCreateUser)},
+    //    {Tuple.Create(configuration.GetValue<string>("newOfflineUserTopic"),configuration.GetValue<string>("newOfflineUserTopicChatSub")),typeof(NewOfflineUserEvent)},
+    //};
+    opt.TopicNameAndEventTypePair = new Dictionary<string, Type>()
     {
-        {Tuple.Create(configuration.GetValue<string>("AzureBusTopic"),configuration.GetValue<string>("AzureBusSubscription")),typeof(NewUserRegisterCreateUser)},
-        {Tuple.Create(configuration.GetValue<string>("newOfflineUserTopic"),configuration.GetValue<string>("newOfflineUserTopicChatSub")),typeof(NewOfflineUserEvent)},
+        {configuration.GetValue<string>("AzureBusTopic"),typeof(NewUserRegisterCreateUser)},
+        {configuration.GetValue<string>("newOfflineUserTopic"),typeof(NewOfflineUserEvent)},
+    };
+    opt.TopicNameWithSubscriptionName = new Dictionary<string, string>()
+    {
+        {configuration.GetValue<string>("AzureBusTopic"),configuration.GetValue<string>("AzureBusSubscription")},
+        {configuration.GetValue<string>("newOfflineUserTopic"),configuration.GetValue<string>("newOfflineUserTopicChatSub")},
     };
 });
 builder.Services.AddAzureServiceBusSender(opt =>

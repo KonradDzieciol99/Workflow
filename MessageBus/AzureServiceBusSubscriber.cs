@@ -35,12 +35,26 @@ namespace MessageBus
         {
             var client = new ServiceBusClient(_options.ServiceBusConnectionString);
 
-            foreach (var item in _options.QueueNameAndEventTypePair)
+            if (_options.QueueNameAndEventTypePair is not null)
             {
-                var BusProcessor = client.CreateProcessor(item.Key);
-                BusProcessor.ProcessMessageAsync += EventHandlerAsync;
-                BusProcessor.ProcessErrorAsync += ErrorHandler;
-                await BusProcessor.StartProcessingAsync();
+                foreach (var item in _options.QueueNameAndEventTypePair)
+                {
+                    var BusProcessor = client.CreateProcessor(item.Key);
+                    BusProcessor.ProcessMessageAsync += (args) => EventHandlerAsync(args, _options.QueueNameAndEventTypePair);
+                    BusProcessor.ProcessErrorAsync += ErrorHandler;
+                    await BusProcessor.StartProcessingAsync();
+                }
+            }
+
+            if (_options.TopicNameWithSubscriptionName is not null)
+            {
+                foreach (var item in _options.TopicNameWithSubscriptionName)
+                {
+                    var BusProcessor = client.CreateProcessor(item.Key, item.Value);
+                    BusProcessor.ProcessMessageAsync += (args) => EventHandlerAsync(args, _options.TopicNameAndEventTypePair);
+                    BusProcessor.ProcessErrorAsync += ErrorHandler;
+                    await BusProcessor.StartProcessingAsync();
+                }
             }
 
             return;
@@ -51,7 +65,7 @@ namespace MessageBus
             return Task.CompletedTask;
         }
 
-        private async Task EventHandlerAsync(ProcessMessageEventArgs args)
+        private async Task EventHandlerAsync(ProcessMessageEventArgs args, Dictionary<string, Type> topicOrQueueNameWithTypeEvent)
         {
             var message = args.Message;
             var body = Encoding.UTF8.GetString(message.Body);
@@ -61,7 +75,8 @@ namespace MessageBus
                 throw new ArgumentNullException($"Label is empty: {args}");
             }
 
-            var type = _options.QueueNameAndEventTypePair[label];
+            var type = topicOrQueueNameWithTypeEvent[label];
+            //var type = _options.QueueNameAndEventTypePair[label];
 
             MethodInfo sendAsyncMethod = this.GetType().GetMethod(nameof(SendAsync), BindingFlags.NonPublic | BindingFlags.Instance) ?? throw new ArgumentNullException("Something went wrong.");
 
