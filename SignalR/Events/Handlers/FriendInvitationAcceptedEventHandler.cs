@@ -2,7 +2,9 @@
 using MessageBus;
 using MessageBus.Events;
 using Microsoft.AspNetCore.SignalR;
+using SignalR.Models;
 using StackExchange.Redis;
+using System.Text.Json;
 
 namespace SignalR.Events.Handlers
 {
@@ -20,6 +22,7 @@ namespace SignalR.Events.Handlers
         }
         public async Task Handle(FriendInvitationAcceptedEvent request, CancellationToken cancellationToken)
         {
+
             await _messagesHubContext.Clients.User(request.UserWhoseInvitationAccepted.UserId).SendAsync("FriendInvitationAccepted", request.FriendInvitationDto);
 
             var isOnline = await _redisDb.KeyExistsAsync($"presence-{request.UserWhoAcceptedInvitation.UserEmail}");

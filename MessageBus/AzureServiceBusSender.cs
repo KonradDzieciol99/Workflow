@@ -1,5 +1,6 @@
 ﻿using Azure.Messaging.ServiceBus;
 using Mango.MessageBus;
+using MessageBus.Events;
 using MessageBus.Models;
 using Microsoft.Extensions.Options;
 using System;
@@ -24,9 +25,9 @@ namespace MessageBus
             //{
             //    //
             //} sprawdzić czy się wywali jeśli coś będzie nie ok z polami
-
-            message.Id=Guid.NewGuid().ToString();
+            //message.Id=Guid.NewGuid().ToString();
             message.MessageCreated = DateTime.UtcNow;
+            message.EventType = typeof(T).Name;
 
             await using var client = new ServiceBusClient(_options.ServiceBusConnectionString);
 
@@ -41,6 +42,23 @@ namespace MessageBus
             finalMessage.ApplicationProperties["Label"] = queueOrTopicName;
 
             await sender.SendMessageAsync(finalMessage);
+
+            //if (message is IUserPersistentNotification && message is not UserPersistentNotificationEvent)
+            //{
+            //    var userPersistentNotificationEvent = new UserPersistentNotificationEvent()
+            //    {
+            //        EventType = message.EventType,
+            //        Id = message.Id,
+            //        MessageCreated = message.MessageCreated,
+            //        NotificationRecipient = message.NotificationRecipient,
+            //        NotificationSender = message.NotificationSender,
+            //        IsDisplayed = false
+            //    };
+
+            //    await client.DisposeAsync();
+
+            //    await this.PublishMessage<UserPersistentNotificationEvent>(userPersistentNotificationEvent, "notification-queue");
+            //}
 
             await client.DisposeAsync();
         }

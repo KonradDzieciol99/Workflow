@@ -10,7 +10,7 @@ namespace MessageBus.Events
 {
     public class SendMessageToSignalREvent : BaseMessage, IRequest
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public string SenderId { get; set; }
         public string SenderEmail { get; set; }
         public string RecipientId { get; set; }

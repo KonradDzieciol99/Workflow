@@ -75,6 +75,9 @@ namespace Chat.Controllers
 
             _unitOfWork.FriendInvitationRepository.Add(friendInvitation);
 
+            //wysłanoZaproszenieDoZajomych
+            //otrzymanoZaprosznieDoznajmych
+
             if (await _unitOfWork.Complete())
             {
                 var friendInvitationAcceptedEvent = new InviteUserToFriendsEvent()

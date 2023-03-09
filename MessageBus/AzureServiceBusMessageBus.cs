@@ -1,5 +1,6 @@
 ﻿
 using Azure.Messaging.ServiceBus;
+using MessageBus;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -32,6 +33,12 @@ namespace Mango.MessageBus
             finalMessage.ApplicationProperties["Label"] = queueOrTopicName;
 
             await sender.SendMessageAsync(finalMessage);
+
+            if (finalMessage is IUserPersistentNotification)
+            {
+
+                await sender.SendMessageAsync(finalMessage);
+            }
 
             await client.DisposeAsync();
         }
