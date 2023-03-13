@@ -3,10 +3,12 @@ using AutoMapper.Internal;
 using Chat.Dto;
 using Chat.Entity;
 using Chat.Repositories;
+using Chat.Services;
 using Mango.MessageBus;
 using MessageBus;
 using MessageBus.Events;
 using MessageBus.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -21,12 +23,14 @@ namespace Chat.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IAzureServiceBusSender _messageBus;
+        private readonly IIdentityServerService _identityServerService;
 
-        public ChatController(IUnitOfWork unitOfWork, IMapper mapper, IAzureServiceBusSender messageBus)
+        public ChatController(IUnitOfWork unitOfWork, IMapper mapper, IAzureServiceBusSender messageBus, IIdentityServerService identityServerService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             this._messageBus = messageBus;
+            this._identityServerService = identityServerService;
         }
         [HttpPost]
         public async Task<IActionResult> SendMessage(CreateMessageDto createMessageDto)
@@ -35,32 +39,44 @@ namespace Chat.Controllers
             var senderEmail = User.FindFirst(ClaimTypes.Email)?.Value;
             if (senderId is null || senderEmail is null)
                 return BadRequest("User cannot be identified");
-        
-            var sender = await _unitOfWork.UserRepository.GetUserByIdAsync(senderId);
-            var recipient = await _unitOfWork.UserRepository.GetUserByEmailAsync(createMessageDto.RecipientEmail);
 
-            if (sender is null || recipient is null)
-            {
-                return BadRequest("The specified users do not exist.");
-            }
-            if (await _unitOfWork.FriendInvitationRepository.checkIfExistsAsync(senderId, recipient.Id))
-            {
-                return BadRequest("You must be friends with him to chat with him.");
-            }
-            if (sender.Id == recipient.Id)
+            //var sender = await _unitOfWork.UserRepository.GetUserByIdAsync(senderId);
+            //var recipient = await _unitOfWork.UserRepository.GetUserByEmailAsync(createMessageDto.RecipientEmail);
+            //var token = await HttpContext.GetTokenAsync("access_token");//"Bearer", 
+            //var recipient = await _identityServerService.CheckIfUserExistsAsync<UserDto?>(createMessageDto.RecipientEmail, token);
+
+
+
+            if (senderEmail == createMessageDto.RecipientEmail)
             {
                 return BadRequest("You can't invite yourself.");
             }
+
+            var invitation = await _unitOfWork.FriendInvitationRepository.GetInvitationAsync(senderId, createMessageDto.RecipientEmail);
+
+            if (invitation is null || invitation.Confirmed==false)
+            {
+                return BadRequest("You must be friends with him to chat with him.");
+            }
+            //if (recipient is null)
+            //{
+            //    return BadRequest("The specified user do not exist.");
+            //}
+            //if (await _unitOfWork.FriendInvitationRepository.checkIfExistsAsync(senderId, recipient.Id))
+            //{
+            //    return BadRequest("You must be friends with him to chat with him.");
+            //}
+
             var message = new Message
             {
-                Sender = sender,
-                SenderId = sender.Id,
-                Recipient = recipient,
-                RecipientId = recipient.Id,
-                SenderEmail = sender.Email,
-                RecipientEmail = recipient.Email,
+                //Sender = sender,
+                SenderId = senderId,
+                //Recipient = recipient,
+                RecipientId = invitation.InviterUserId == senderId ? invitation.InvitedUserId : invitation.InviterUserId,
+                SenderEmail = senderEmail,
+                RecipientEmail = invitation.InviterUserEmail == senderId ? invitation.InvitedUserEmail : invitation.InviterUserEmail,
                 Content = createMessageDto.Content
-            };
+            }; 
 
             _unitOfWork.MessageRepository.Add(message);
 

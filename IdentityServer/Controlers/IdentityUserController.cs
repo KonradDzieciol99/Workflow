@@ -78,6 +78,17 @@ namespace IdentityServer.Controlers
 
             return Ok(users);
         }
+        [HttpGet("CheckIfUserExists/{email}")] //m2m
+        public async Task<ActionResult<UserDto?>> CheckIfUserExists(string email)
+        {
+            //var user = await _unitOfWork.IdentityUserRepository.GetOneAsync(x=>x.Email==email);
 
+            var user = await _unitOfWork.IdentityUserRepository.GetUsersByEmailAsync(email);
+
+
+            //var userDto = new UserDto() { Email = email,Id=user.Id,PhotoUrl. };
+
+            return Ok(user);
+        }
     }
 }

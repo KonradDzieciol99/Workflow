@@ -46,16 +46,16 @@ namespace Chat.Controllers
 
         //    return Ok(users);
         //}
-        [HttpGet("test/{emailOfSearchedUser}")]
-        public async Task<ActionResult<IEnumerable<SearchedUserDto>>> test2(string emailOfSearchedUser)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userEmail = User.FindFirstValue(ClaimTypes.Email);
-            if (userEmail is null || userId is null)
-            { return BadRequest("User cannot be identified"); }
-            var users = await _unitOfWork.UserRepository.FindUsersByEmailAsync(userEmail, emailOfSearchedUser);
-            return Ok(users);
-        }
+        //[HttpGet("test/{emailOfSearchedUser}")]
+        //public async Task<ActionResult<IEnumerable<SearchedUserDto>>> test2(string emailOfSearchedUser)
+        //{
+        //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //    var userEmail = User.FindFirstValue(ClaimTypes.Email);
+        //    if (userEmail is null || userId is null)
+        //    { return BadRequest("User cannot be identified"); }
+        //    var users = await _unitOfWork.UserRepository.FindUsersByEmailAsync(userEmail, emailOfSearchedUser);
+        //    return Ok(users);
+        //}
 
     }
 }

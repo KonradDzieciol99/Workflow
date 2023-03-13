@@ -12,12 +12,10 @@ namespace Chat.Repositories
         {
             _dbContext = applicationDbContext;
         }
-
         public void Add(TEntity entity)
         {
             _dbContext.Set<TEntity>().Add(entity);
         }
-
         public void AddRange(IEnumerable<TEntity> entities)
         {
             _dbContext.Set<TEntity>().AddRange(entities);
@@ -34,7 +32,6 @@ namespace Chat.Repositories
         {
             _dbContext.Set<TEntity>().Remove(entity);
         }
-
         public void RemoveRange(IEnumerable<TEntity> entities)
         {
             _dbContext.Set<TEntity>().RemoveRange(entities);

@@ -2,7 +2,9 @@
 using Chat.Entity;
 using Chat.Persistence;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Cryptography;
 
 namespace Chat.Repositories
@@ -71,7 +73,7 @@ namespace Chat.Repositories
         public async Task<FriendInvitation?> GetFriendInvitation(string InviterUserId, string InvitedUserId)
         {
             var friendInvitations = await _applicationDbContext.FriendsInvitation.FindAsync(InviterUserId, InvitedUserId);
-            return friendInvitations;
+            return friendInvitations;//TODO DELETE this
         }
 
         //public async Task<List<FriendInvitation>?> FindAllAsync(string userId, string[] searchedUsersIds)
@@ -125,7 +127,20 @@ namespace Chat.Repositories
             //     )
             //    .ToListAsync();
         }
+        public async Task<bool> CheckIfUsersAreFriends(string userId,string recipientId)
+        {
+            return await _applicationDbContext.FriendsInvitation
+                    .AnyAsync(x => ((x.InviterUserId == userId && x.InvitedUserId == recipientId)
+                    || (x.InviterUserId == recipientId && x.InvitedUserId == userId)) && x.Confirmed == true);
+        }
+        public async Task<FriendInvitation?> GetInvitationAsync(string userId, string recipientId)
+        {
+            return await _applicationDbContext.FriendsInvitation
+                    .FirstOrDefaultAsync(x => (x.InviterUserId == userId && x.InvitedUserId == recipientId)
+                    || (x.InviterUserId == recipientId && x.InvitedUserId == userId));
+        }
     }
+
     public class testclass
     {
         public string searchedUserId { get; set; }
