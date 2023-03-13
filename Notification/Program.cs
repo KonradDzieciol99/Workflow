@@ -6,6 +6,7 @@ using MongoDB.Driver;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Amazon.Runtime.Internal.Transform;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,11 +69,13 @@ builder.Services.AddAzureServiceBusSubscriber(opt =>
         };
     opt.TopicNameAndEventTypePair = new Dictionary<string, Type>()
     {
+        {configuration.GetValue<string>("NewUserRegistrationEvent"),typeof(NewUserRegistrationEvent)},
         {"invite-user-to-friends-topic",typeof(InviteUserToFriendsEvent)},
         {"friend-invitation-accepted-topic",typeof(FriendInvitationAcceptedEvent)},
     };
     opt.TopicNameWithSubscriptionName = new Dictionary<string, string>()
     {
+        {configuration.GetValue<string>("NewUserRegistrationEvent"),configuration.GetValue<string>("NewUserRegistrationEventSubscription")},
         {"invite-user-to-friends-topic","notification"},
         {"friend-invitation-accepted-topic","notification"},
     };

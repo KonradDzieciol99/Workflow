@@ -32,6 +32,7 @@ namespace Notification.Events.Handlers
                 ObjectId = request.ObjectId,
                 EventType = request.EventType,
                 NotificationType = "NewFriendAdded",
+                Description = $"You and {request.NotificationSender.UserEmail} are friends now!",
                 Data = JsonSerializer.Serialize(request),
                 CreationDate = request.MessageCreated,
                 NotificationPartner = request.NotificationSender
@@ -43,6 +44,7 @@ namespace Notification.Events.Handlers
                 ObjectId = request.ObjectId,
                 EventType = request.EventType,
                 NotificationType = "NewFriendAdded",
+                Description = $"You and {request.NotificationRecipient.UserEmail} are friends now!",
                 Data = JsonSerializer.Serialize(request),
                 CreationDate = request.MessageCreated,
                 NotificationPartner = request.NotificationRecipient

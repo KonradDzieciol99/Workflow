@@ -64,7 +64,7 @@ namespace EmailSender.MessageBus
             var message = args.Message;
             var body = Encoding.UTF8.GetString(message.Body);
 
-            var registerEmailBusMessage = JsonSerializer.Deserialize<NewUserRegisterEmail>(body);
+            var registerEmailBusMessage = JsonSerializer.Deserialize<NewUserRegistrationEvent>(body);
 
             if (registerEmailBusMessage is null)
             {

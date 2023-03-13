@@ -8,22 +8,23 @@ using Duende.IdentityServer.Services;
 using Mango.MessageBus;
 using MessageBus;
 using MessageBus.Events;
+using IdentityServer.Entities;
 
 namespace IdentityServer.Persistence
 {
     public class ApplicationDbContextInitialiser
     {
-        private readonly IMessageBus _messageBus;
+       // private readonly IMessageBus _messageBus;
         private readonly ILogger<ApplicationDbContextInitialiser> _logger;
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<AppUser> _userManager;
         private readonly IEventService _events;
         //private readonly IMessageBus _messageBus;
         //private readonly RoleManager<AppRole> _roleManager;
 
-        public ApplicationDbContextInitialiser(IMessageBus messageBus,ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context, UserManager<IdentityUser> userManager/*,RoleManager<AppRole> roleManager*/ )
+        public ApplicationDbContextInitialiser(/*IMessageBus messageBus,*/ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context, UserManager<AppUser> userManager/*,RoleManager<AppRole> roleManager*/ )
         {
-            this._messageBus = messageBus;
+            //this._messageBus = messageBus;
             //this._events = events;
             _logger = logger;
             _context = context;
@@ -65,7 +66,7 @@ namespace IdentityServer.Persistence
             var alice = _userManager.FindByNameAsync("alice").Result;
             if (alice == null)
             {
-                alice = new IdentityUser
+                alice = new AppUser
                 {
                     UserName = "alice",
                     Email = "AliceSmith@email.com",
@@ -93,8 +94,8 @@ namespace IdentityServer.Persistence
                     throw new Exception(result.Errors.First().Description);
                 }
 
-                var newUserRegisterCreateUser = new NewUserRegisterCreateUser() { Email = alice.Email, Id = alice.Id };
-                await _messageBus.PublishMessage(newUserRegisterCreateUser, "new-user-register-create-user");
+                //var newUserRegisterCreateUser = new NewUserRegisterCreateUser() { Email = alice.Email, Id = alice.Id };
+                //await _messageBus.PublishMessage(newUserRegisterCreateUser, "new-user-register-create-user");
                 //await _events.RaiseAsync(new ExternalUserRegisterSuccessEvent(alice.Email, alice.Id));
 
                 // Log.Debug("alice created");
@@ -107,7 +108,7 @@ namespace IdentityServer.Persistence
             var bob = _userManager.FindByNameAsync("bob").Result;
             if (bob == null)
             {
-                bob = new IdentityUser
+                bob = new AppUser
                 {
                     UserName = "bob",
                     Email = "BobSmith@email.com",
@@ -134,8 +135,8 @@ namespace IdentityServer.Persistence
                 {
                     throw new Exception(result.Errors.First().Description);
                 }
-                var newUserRegisterCreateUser = new NewUserRegisterCreateUser() { Email = bob.Email, Id = bob.Id };
-                await _messageBus.PublishMessage(newUserRegisterCreateUser, "new-user-register-create-user");
+                //var newUserRegisterCreateUser = new NewUserRegisterCreateUser() { Email = bob.Email, Id = bob.Id };
+                //await _messageBus.PublishMessage(newUserRegisterCreateUser, "new-user-register-create-user");
                 //await _events.RaiseAsync(new ExternalUserRegisterSuccessEvent(bob.Email, bob.Id));
                 //Log.Debug("bob created");
             }

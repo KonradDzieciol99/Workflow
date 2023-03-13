@@ -4,6 +4,6 @@ namespace EmailSender
 {
     public interface IEmailSender
     {
-        public Task SendConfirmEmailMessage(NewUserRegisterEmail registerEmailBusMessage);
+        public Task SendConfirmEmailMessage(NewUserRegistrationEvent registerEmailBusMessage);
     }
 }

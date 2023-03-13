@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <Folder Include="Common\PipelineBehaviour\" />
+    <Folder Include="MessageBus\" />
   </ItemGroup>
 
 </Project>

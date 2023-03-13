@@ -7,6 +7,7 @@ using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Stores;
 using Duende.IdentityServer.Test;
+using IdentityServer.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -24,7 +25,7 @@ public class Index : PageModel
     private readonly IIdentityServerInteractionService _interaction;
     private readonly IClientStore _clientStore;
     private readonly IEventService _events;
-    private readonly SignInManager<IdentityUser> _signInManager;
+    private readonly SignInManager<AppUser> _signInManager;
     private readonly IAuthenticationSchemeProvider _schemeProvider;
     private readonly IIdentityProviderStore _identityProviderStore;
 
@@ -39,7 +40,7 @@ public class Index : PageModel
         IAuthenticationSchemeProvider schemeProvider,
         IIdentityProviderStore identityProviderStore,
         IEventService events,
-        SignInManager<IdentityUser> signInManager)
+        SignInManager<AppUser> signInManager)
     {
         _interaction = interaction;
         _clientStore = clientStore;

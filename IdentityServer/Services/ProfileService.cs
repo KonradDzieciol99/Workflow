@@ -2,6 +2,7 @@
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using IdentityModel;
+using IdentityServer.Entities;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
@@ -10,14 +11,14 @@ namespace IdentityServer.Services
     public class ProfileService : IProfileService
     {
 
-        private readonly IUserClaimsPrincipalFactory<IdentityUser> _userClaimsPrincipalFactory;
-        private readonly UserManager<IdentityUser> _userMgr;
+        private readonly IUserClaimsPrincipalFactory<AppUser> _userClaimsPrincipalFactory;
+        private readonly UserManager<AppUser> _userMgr;
         private readonly RoleManager<IdentityRole> _roleMgr;
 
         public ProfileService(
-            UserManager<IdentityUser> userMgr,
+            UserManager<AppUser> userMgr,
             RoleManager<IdentityRole> roleMgr,
-            IUserClaimsPrincipalFactory<IdentityUser> userClaimsPrincipalFactory)
+            IUserClaimsPrincipalFactory<AppUser> userClaimsPrincipalFactory)
         {
             _userMgr = userMgr;
             _roleMgr = roleMgr;
@@ -27,7 +28,7 @@ namespace IdentityServer.Services
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
             string sub = context.Subject.GetSubjectId();
-            IdentityUser user = await _userMgr.FindByIdAsync(sub);
+            AppUser user = await _userMgr.FindByIdAsync(sub);
             ClaimsPrincipal userClaims = await _userClaimsPrincipalFactory.CreateAsync(user);
 
             var fffffff = context.RequestedClaimTypes;
@@ -57,7 +58,7 @@ namespace IdentityServer.Services
         public async Task IsActiveAsync(IsActiveContext context)
         {
             string sub = context.Subject.GetSubjectId();
-            IdentityUser user = await _userMgr.FindByIdAsync(sub);
+            AppUser user = await _userMgr.FindByIdAsync(sub);
             context.IsActive = user != null;
         }
     }

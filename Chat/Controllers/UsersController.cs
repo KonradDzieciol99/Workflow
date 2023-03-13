@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Chat.Common.Models;
 using Chat.Dto;
 using Chat.Entity;
 using Chat.Repositories;
@@ -55,5 +56,6 @@ namespace Chat.Controllers
             var users = await _unitOfWork.UserRepository.FindUsersByEmailAsync(userEmail, emailOfSearchedUser);
             return Ok(users);
         }
+
     }
 }

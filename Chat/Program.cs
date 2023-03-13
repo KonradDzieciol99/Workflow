@@ -1,6 +1,5 @@
 using AutoMapper;
 using Chat.Common.MapperProfiles;
-using Chat.MessageBus;
 using Chat.Persistence;
 using Chat.Repositories;
 using Mango.MessageBus;
@@ -80,12 +79,12 @@ builder.Services.AddAzureServiceBusSubscriber(opt =>
     //};
     opt.TopicNameAndEventTypePair = new Dictionary<string, Type>()
     {
-        {configuration.GetValue<string>("AzureBusTopic"),typeof(NewUserRegisterCreateUser)},
+        //{configuration.GetValue<string>("AzureBusTopic"),typeof(NewUserRegisterCreateUser)},
         {configuration.GetValue<string>("newOfflineUserTopic"),typeof(NewOfflineUserEvent)},
     };
     opt.TopicNameWithSubscriptionName = new Dictionary<string, string>()
     {
-        {configuration.GetValue<string>("AzureBusTopic"),configuration.GetValue<string>("AzureBusSubscription")},
+        //{configuration.GetValue<string>("AzureBusTopic"),configuration.GetValue<string>("AzureBusSubscription")},
         {configuration.GetValue<string>("newOfflineUserTopic"),configuration.GetValue<string>("newOfflineUserTopicChatSub")},
     };
 });

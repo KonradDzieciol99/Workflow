@@ -3,6 +3,7 @@ using Duende.IdentityServer.Events;
 using Duende.IdentityServer.Extensions;
 using Duende.IdentityServer.Services;
 using IdentityModel;
+using IdentityServer.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -17,11 +18,11 @@ public class Index : PageModel
 {
     private readonly IIdentityServerInteractionService _interaction;
     private readonly IEventService _events;
-    private readonly SignInManager<IdentityUser> _signInManager;
+    private readonly SignInManager<AppUser> _signInManager;
     [BindProperty] 
     public string LogoutId { get; set; }
 
-    public Index(IIdentityServerInteractionService interaction, IEventService events, SignInManager<IdentityUser> signInManager)
+    public Index(IIdentityServerInteractionService interaction, IEventService events, SignInManager<AppUser> signInManager)
     {
         _interaction = interaction;
         _events = events;

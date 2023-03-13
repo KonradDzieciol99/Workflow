@@ -5,23 +5,19 @@ using System.Net;
 
 namespace EmailSender
 {
-    public class EmailSenderS : IEmailSender
+    public class Sender : ISender
     {
-        private readonly IFluentEmailFactory _fluentEmailFactory;
         private readonly string _verifyEmailUrl;
-        private readonly string _from;
+        private readonly IFluentEmail _fluentEmail;
 
-        public EmailSenderS(IFluentEmailFactory fluentEmailFactory, string verifyEmailUrl,string from)
+        public Sender(IFluentEmail fluentEmail, IConfiguration configuration)
         {
-            _fluentEmailFactory = fluentEmailFactory;
-            _verifyEmailUrl = verifyEmailUrl;
-            this._from = from;
+            _verifyEmailUrl = configuration["VerifyEmailUrl"];
+            this._fluentEmail = fluentEmail;
         }
-        public async Task SendConfirmEmailMessage(NewUserRegistrationEvent registerEmailBusMessage)
+        public async Task CreateConfirmEmailMessage(NewUserRegistrationEvent registerEmailBusMessage)
         {
 
-
-            IFluentEmail _fluentEmail = _fluentEmailFactory.Create();
             ///////////////////WebUtility.UrlEncode!!!!!!!!!!
             var url = $"{_verifyEmailUrl}?token={WebUtility.UrlEncode(registerEmailBusMessage.Token)}&email={registerEmailBusMessage.Email}";
 
@@ -30,7 +26,6 @@ namespace EmailSender
             var currentLocation = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location);
 
             var email = _fluentEmail.To(registerEmailBusMessage.Email)
-                                    .SetFrom(_from)
                                     .Tag("TEST")
                                     .Subject("Workflow Email verification")
                                     .UsingTemplateFromFile($@"{currentLocation}/Views/Emails/VerifyEmail.cshtml", verifyEmailModel);

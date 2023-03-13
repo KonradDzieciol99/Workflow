@@ -23,6 +23,7 @@ public static class Config
             new ApiScope("weatherapi.read"),
             new ApiScope("weatherapi.write"),
             new ApiScope(name: "email_access_token",displayName: "User Email.", userClaims: new[] { JwtClaimTypes.Email }),
+            new ApiScope(IdentityServerConstants.LocalApi.ScopeName),
         };
 
     public static IEnumerable<ApiResource> ApiResources => new[]
@@ -33,7 +34,10 @@ public static class Config
             ApiSecrets = new List<Secret> {new Secret("ScopeSecret".Sha256())},
             UserClaims = new List<string> {"role"}
         },
-        //new ApiResource("customer", "Customer API")
+        //new ApiResource("searchapi")
+        //{
+        //  Scopes = { IdentityServerConstants.LocalApi.ScopeName},  
+        //}
         //new ApiResource("email")
         //{
         //Scopes = { "customer.read", "customer.contact", "manage", "enumerate" },  
@@ -80,7 +84,9 @@ public static class Config
                     IdentityServerConstants.StandardScopes.Profile,
                     //"api1",
                     IdentityServerConstants.StandardScopes.Email,
-                    "email_access_token"
+                    "email_access_token",
+                    IdentityServerConstants.LocalApi.ScopeName,
+
                     //"weatherapi.read"
                     //"custom.profile",
                 },

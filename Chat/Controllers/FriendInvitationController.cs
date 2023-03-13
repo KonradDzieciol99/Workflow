@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Chat.Common.Models;
 using Chat.Dto;
 using Chat.Entity;
 using Chat.Repositories;
@@ -228,6 +229,22 @@ namespace Chat.Controllers
             };
 
             return BadRequest("The invitation cannot be confirmed.");
+        }
+        [HttpGet("test2")]
+        public async Task<ActionResult<IEnumerable<UserFriendStatusToTheUser>>> test22([FromQuery] string searcherId, [FromQuery(Name = "idOfSearchedUsers")] string[] ids)
+        {
+            if (searcherId is null)
+            {
+                return BadRequest("User cannot be identified");
+            }
+            if (ids.Length == 0)
+            {
+                return BadRequest("You need to search for at least one id");
+            }
+
+            var usersStatus = await _unitOfWork.FriendInvitationRepository.GetFriendsStatusAsync(searcherId, ids);
+
+            return Ok(usersStatus);
         }
     }
 }

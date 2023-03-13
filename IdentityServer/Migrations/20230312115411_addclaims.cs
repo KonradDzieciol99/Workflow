@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace IdentityServer.Migrations
 {
-    public partial class init : Migration
+    public partial class addclaims : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
