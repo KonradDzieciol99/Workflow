@@ -6,8 +6,6 @@ using MessageBus.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using SignalR;
-using SignalR.Common.PipelineBehaviour;
-using SignalR.MessageBus;
 using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -101,13 +99,20 @@ builder.Services.AddAzureServiceBusSubscriber(opt =>
         };
     opt.TopicNameAndEventTypePair = new Dictionary<string, Type>()
     {
-        {configuration.GetValue<string>("FriendInvitationAcceptedQueue"),typeof(FriendInvitationAcceptedEvent)},
-        {configuration.GetValue<string>("NewOfflineUserWithFriendsQueue"),typeof(InviteUserToFriendsEvent)},
+        //{configuration.GetValue<string>("FriendInvitationAcceptedQueue"),typeof(FriendInvitationAcceptedEvent)},
+        {configuration.GetValue<string>("FriendInvitationAcceptedTopic"),typeof(FriendInvitationAcceptedEvent)},
+        //{configuration.GetValue<string>("NewOfflineUserWithFriendsQueue"),typeof(InviteUserToFriendsEvent)},
+        {"invite-user-to-friends-topic",typeof(InviteUserToFriendsEvent)},
+        //{configuration.GetValue<string>("NewOfflineUserTopic"),typeof(InviteUserToFriendsEvent)},
     };
     opt.TopicNameWithSubscriptionName = new Dictionary<string, string>()
     {
-        {configuration.GetValue<string>("FriendInvitationAcceptedQueue"),"signalr"},
-        {configuration.GetValue<string>("NewOfflineUserWithFriendsQueue"),"signalr"},
+        {configuration.GetValue<string>("FriendInvitationAcceptedTopic"),"signalr"},
+        {"invite-user-to-friends-topic","signalr"},
+        //{configuration.GetValue<string>("FriendInvitationAcceptedQueue"),"signalr"},
+        //{configuration.GetValue<string>("NewOfflineUserTopic"),"signalr"},
+        //{configuration.GetValue<string>("NewOfflineUserWithFriendsQueue"),"signalr"},
+        //{configuration.GetValue<string>("NewOfflineUserWithFriendsQueue"),"signalr"},
     };
 });
 builder.Services.AddAzureServiceBusSender(opt =>

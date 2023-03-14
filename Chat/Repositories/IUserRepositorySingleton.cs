@@ -2,8 +2,8 @@
 
 namespace Chat.Repositories
 {
-    public interface IUserRepositorySingleton
-    {
-        Task<bool> AddUser(User user);
-    }
+    //public interface IUserRepositorySingleton
+    //{
+    //    Task<bool> AddUser(User user);
+    //}
 }

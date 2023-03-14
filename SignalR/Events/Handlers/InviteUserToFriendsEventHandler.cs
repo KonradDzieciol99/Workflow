@@ -16,7 +16,7 @@ namespace SignalR.Events.Handlers
         }
         public async Task Handle(InviteUserToFriendsEvent request, CancellationToken cancellationToken)
         {
-            await _presenceHubContext.Clients.User(request.InvitedUser.UserId).SendAsync("NewInvitationToFriendsReceived", new { inviterEmail = request.UserWhoInvited.UserEmail });
+            //await _presenceHubContext.Clients.User(request.InvitedUser.UserId).SendAsync("NewInvitationToFriendsReceived", new { inviterEmail = request.UserWhoInvited.UserEmail });
             await _messagesHubContext.Clients.User(request.InvitedUser.UserId).SendAsync("NewInvitationToFriendsReceived", request.FriendInvitationDto);
         }
     }

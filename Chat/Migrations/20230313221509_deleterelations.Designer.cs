@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Chat.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230219210843_first")]
-    partial class first
+    [Migration("20230313221509_deleterelations")]
+    partial class deleterelations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -53,18 +53,13 @@ namespace Chat.Migrations
 
                     b.HasKey("InviterUserId", "InvitedUserId");
 
-                    b.HasIndex("InvitedUserId");
-
                     b.ToTable("FriendsInvitation");
                 });
 
             modelBuilder.Entity("Chat.Entity.Message", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -85,7 +80,7 @@ namespace Chat.Migrations
 
                     b.Property<string>("RecipientId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("SenderDeleted")
                         .HasColumnType("bit");
@@ -96,81 +91,11 @@ namespace Chat.Migrations
 
                     b.Property<string>("SenderId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("RecipientId");
-
-                    b.HasIndex("SenderId");
 
                     b.ToTable("Messages");
-                });
-
-            modelBuilder.Entity("Chat.Entity.User", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhotoUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("Chat.Entity.FriendInvitation", b =>
-                {
-                    b.HasOne("Chat.Entity.User", "InvitedUser")
-                        .WithMany("FriendInvitationRecived")
-                        .HasForeignKey("InvitedUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Chat.Entity.User", "InviterUser")
-                        .WithMany("FriendInvitationSent")
-                        .HasForeignKey("InviterUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("InvitedUser");
-
-                    b.Navigation("InviterUser");
-                });
-
-            modelBuilder.Entity("Chat.Entity.Message", b =>
-                {
-                    b.HasOne("Chat.Entity.User", "Recipient")
-                        .WithMany("MessagesReceived")
-                        .HasForeignKey("RecipientId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Chat.Entity.User", "Sender")
-                        .WithMany("MessagesSent")
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Recipient");
-
-                    b.Navigation("Sender");
-                });
-
-            modelBuilder.Entity("Chat.Entity.User", b =>
-                {
-                    b.Navigation("FriendInvitationRecived");
-
-                    b.Navigation("FriendInvitationSent");
-
-                    b.Navigation("MessagesReceived");
-
-                    b.Navigation("MessagesSent");
                 });
 #pragma warning restore 612, 618
         }

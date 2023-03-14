@@ -2,6 +2,7 @@ using Duende.IdentityServer.Events;
 using Duende.IdentityServer.Services;
 using IdentityModel;
 using IdentityServer.Common.Models;
+using IdentityServer.Entities;
 using IdentityServer.Events;
 using IdentityServerHost.Pages.Login;
 using Microsoft.AspNetCore.Authorization;
@@ -16,14 +17,14 @@ namespace IdentityServer.Pages.Account.Register
     [AllowAnonymous]
     public class IndexModel : PageModel
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IEventService _events;
 
         public IndexModel(
-            UserManager<IdentityUser> userManager,
-                SignInManager<IdentityUser> signInManager,
+            UserManager<AppUser> userManager,
+                SignInManager<AppUser> signInManager,
                 RoleManager<IdentityRole> roleInManager,
                 IEventService events
               )
@@ -60,7 +61,7 @@ namespace IdentityServer.Pages.Account.Register
             //string returnUrl
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser()
+                var user = new AppUser()
                 {
                     UserName = Input.Email,
                     Email = Input.Email,

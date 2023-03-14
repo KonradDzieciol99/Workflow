@@ -20,4 +20,8 @@
     <ProjectReference Include="..\MessageBus\MessageBus.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Enums\" />
+  </ItemGroup>
+
 </Project>

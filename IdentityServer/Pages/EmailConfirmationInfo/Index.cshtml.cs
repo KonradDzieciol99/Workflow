@@ -1,3 +1,4 @@
+using IdentityServer.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,13 +10,13 @@ namespace IdentityServer.Pages.EmailConfirmationInfo
     [AllowAnonymous]
     public class IndexModel : PageModel
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleInManager;
         private IdentityUser User;
         public string UserEmail;
-        public IndexModel(UserManager<IdentityUser> userManager,
-                SignInManager<IdentityUser> signInManager,
+        public IndexModel(UserManager<AppUser> userManager,
+                SignInManager<AppUser> signInManager,
                 RoleManager<IdentityRole> roleInManager)
         {
             this._userManager = userManager;

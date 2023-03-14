@@ -1,8 +1,9 @@
 using AutoMapper;
 using Chat.Common.MapperProfiles;
-using Chat.MessageBus;
 using Chat.Persistence;
 using Chat.Repositories;
+using Chat.Services;
+using HttpMessage;
 using Mango.MessageBus;
 using MediatR;
 using MessageBus.Events;
@@ -80,12 +81,12 @@ builder.Services.AddAzureServiceBusSubscriber(opt =>
     //};
     opt.TopicNameAndEventTypePair = new Dictionary<string, Type>()
     {
-        {configuration.GetValue<string>("AzureBusTopic"),typeof(NewUserRegisterCreateUser)},
+        //{configuration.GetValue<string>("AzureBusTopic"),typeof(NewUserRegisterCreateUser)},
         {configuration.GetValue<string>("newOfflineUserTopic"),typeof(NewOfflineUserEvent)},
     };
     opt.TopicNameWithSubscriptionName = new Dictionary<string, string>()
     {
-        {configuration.GetValue<string>("AzureBusTopic"),configuration.GetValue<string>("AzureBusSubscription")},
+        //{configuration.GetValue<string>("AzureBusTopic"),configuration.GetValue<string>("AzureBusSubscription")},
         {configuration.GetValue<string>("newOfflineUserTopic"),configuration.GetValue<string>("newOfflineUserTopicChatSub")},
     };
 });
@@ -93,6 +94,11 @@ builder.Services.AddAzureServiceBusSender(opt =>
 {
     opt.ServiceBusConnectionString = builder.Configuration.GetValue<string>("ServiceBusConnectionString");
 });
+
+builder.Services.AddHttpClient<IIdentityServerService, IdentityServerService>()
+                .AddPolicyHandler(Policy.GetRetryPolicy())
+                .AddPolicyHandler(Policy.GetCircuitBreakerPolicy());
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

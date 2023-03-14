@@ -9,6 +9,7 @@ using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Test;
 using IdentityModel;
 using IdentityServer.Common.Models;
+using IdentityServer.Entities;
 using IdentityServer.Events;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -26,15 +27,15 @@ public class Callback : PageModel
 {
     private readonly IIdentityServerInteractionService _interaction;
     private readonly ILogger<Callback> _logger;
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<AppUser> _userManager;
     private readonly IEventService _events;
 
     public Callback(
         IIdentityServerInteractionService interaction,
         IEventService events,
         ILogger<Callback> logger,
-        SignInManager<IdentityUser> signInManager,
-        UserManager<IdentityUser> userManager)
+        SignInManager<AppUser> signInManager,
+        UserManager<AppUser> userManager)
     {
         _interaction = interaction;
         _logger = logger;
@@ -82,8 +83,9 @@ public class Callback : PageModel
             var claims = externalUser.Claims.ToList();
             claims.Remove(userIdClaim);
             var email = claims.Single(x => x.Type == ClaimTypes.Email).Value;
-            user = new IdentityUser(Guid.NewGuid().ToString()) { Email= email };
-
+            //user = new IdentityUser(Guid.NewGuid().ToString()) { Email= email };
+            user = new AppUser { Email = email,UserName= email };
+            //username=Guid.NewGuid().ToString() Email= email i nic wiecej !!!
             var resoult = await _userManager.CreateAsync(user);
             if (!resoult.Succeeded)
             {

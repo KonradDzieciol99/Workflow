@@ -5,20 +5,28 @@ using IdentityServer.Events;
 using IdentityServer.Persistence;
 using IdentityServer.Services;
 using Mango.MessageBus;
+using MessageBus.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Security.Claims;
-using static System.Formats.Asn1.AsnWriter;
+using Polly;
+using Polly.Extensions.Http;
+using IdentityServer.Repositories;
+using IdentityServer.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using MediatR;
+using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var configuration = builder.Configuration;
 
 //var migrationsAssembly = typeof(Config).Assembly.GetName().Name;
-
+builder.Services.AddControllers();
 builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -27,7 +35,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(configuration.GetConnectionString("DbContextConnString"));
 });
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(opt =>
+builder.Services.AddIdentity</*IdentityUser*/ AppUser, IdentityRole>(opt =>
 {
     //opt.Password.RequireNonAlphanumeric = false;
     //opt.Password.RequireUppercase = false;
@@ -54,7 +62,7 @@ builder.Services.AddIdentityServer(options =>
 .AddInMemoryApiResources(Config.ApiResources)
 .AddInMemoryApiScopes(Config.ApiScopes)
 .AddInMemoryClients(Config.Clients)
-.AddAspNetIdentity<IdentityUser>()
+.AddAspNetIdentity<AppUser/*IdentityUser*/>()
 .AddDeveloperSigningCredential();
 
 //.AddProfileService<ProfileService>(); ////narazie nie robi nic ponad ten zwyk³y
@@ -90,7 +98,7 @@ builder.Services.AddAuthentication()
     options.Scope.Add("openid");
     options.Scope.Add("User.Read");
 
-    options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "sub"); 
+    options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "sub");
 })
 //.AddMicrosoftAccount(opt =>
 //{
@@ -113,7 +121,7 @@ builder.Services.AddAuthentication()
     options.GetClaimsFromUserInfoEndpoint = true;//We need this option
     options.RequireHttpsMetadata = false;
     options.SaveTokens = true;
-    
+
     //options.Scope.Add("email");
     options.Scope.Add("profile");
     options.Scope.Add("email");
@@ -121,23 +129,99 @@ builder.Services.AddAuthentication()
     options.ResponseType = OpenIdConnectResponseType.Code;
 
 });
+//.AddJwtBearer(opt =>
+//{
+//    opt.RequireHttpsMetadata = false;
+//    opt.SaveToken = true;
+//    opt.Authority = "https://localhost:7122/";
+//    //opt.TokenValidationParameters = new TokenValidationParameters
+//    //{
+//    //    ValidateAudience = false,
+//    //};
+//    opt.Audience = IdentityServerConstants.LocalApi.ScopeName;
+//});
+//builder.Services.AddAuthentication(opt =>
+//{
+//    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+//})
+//.AddJwtBearer(opt =>
+//{
+//    opt.RequireHttpsMetadata = false;
+//    opt.SaveToken = true;
+//    opt.Authority = "https://localhost:7122/";
+//    opt.TokenValidationParameters = new TokenValidationParameters
+//    {
+//        ValidateAudience = false,
+//    };
+//});
+
+builder.Services.AddLocalApiAuthentication();
+//https://lurumad.github.io/aditional-api-endpoints-to-identityserver4
+//https://docs.duendesoftware.com/identityserver/v6/apis/add_apis/
 
 builder.Services.AddScoped<IEventSink, IdentityEvents>();
 
 builder.Services.AddScoped<ApplicationDbContextInitialiser>();
 
-builder.Services.AddSingleton<IMessageBus, AzureServiceBusMessageBus>();
+//builder.Services.AddSingleton<IMessageBus, AzureServiceBusMessageBus>();
+builder.Services.AddAzureServiceBusSender(opt =>
+{
+    opt.ServiceBusConnectionString = builder.Configuration.GetValue<string>("ServiceBusConnectionString");
+});
 
+builder.Services.AddHttpClient<IChatServiceHttpRequest, ChatServiceHttpRequest>(c => 
+{
+    c.BaseAddress = new Uri("https://localhost:7282");
+})
+.AddPolicyHandler(GetRetryPolicy())
+.AddPolicyHandler(GetCircuitBreakerPolicy());
+    //.AddHttpMessageHandler<LoggingDelegatingHandler>()
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+var CORSallowAny = "allowAny";
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy(name: CORSallowAny,
+              policy =>
+              {
+                  policy.WithOrigins("https://localhost:4200", "https://127.0.0.1:5500")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+              });
+});
 var app = builder.Build();
 
 app.UseHttpsRedirection();
+
+app.UseCors(CORSallowAny);
 
 app.UseIdentityServer();
 
 app.UseStaticFiles();
 app.UseRouting();
+//app.UseAuthorization();
+
+app.UseAuthentication();
+
 app.UseAuthorization();
+//
+
 app.MapRazorPages().RequireAuthorization();
+
+app.MapControllers().RequireAuthorization();
+    //.RequireAuthorization();
+
+//app.MapControllerRoute(
+//    name: "default",
+//    pattern: "{controller=IdentityUser}/{action=test22}/{id?}");
+
+//app.MapControllerRoute(
+//    name: "IdentityUser",
+//    pattern: "IdentityUser/search/{emailOfSearchedUser}",
+//    defaults: new { controller = "IdentityUser", action = "search" });
 
 if (app.Environment.IsDevelopment())
 {
@@ -150,3 +234,36 @@ if (app.Environment.IsDevelopment())
 }
 
 await app.RunAsync();
+
+
+
+static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+{
+    // In this case will wait for
+    //  2 ^ 1 = 2 seconds then
+    //  2 ^ 2 = 4 seconds then
+    //  2 ^ 3 = 8 seconds then
+    //  2 ^ 4 = 16 seconds then
+    //  2 ^ 5 = 32 seconds
+
+    return HttpPolicyExtensions
+        .HandleTransientHttpError()
+        .WaitAndRetryAsync(
+            retryCount: 5,
+            sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+            onRetry: (exception, retryCount, context) =>
+            {
+                //Log.Error($"Retry {retryCount} of {context.PolicyKey} at {context.OperationKey}, due to: {exception}.");
+                Console.WriteLine($"Retry {retryCount} of {context.PolicyKey} at {context.OperationKey}, due to: {exception}.");
+            });
+}
+
+static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
+{
+    return HttpPolicyExtensions
+        .HandleTransientHttpError()
+        .CircuitBreakerAsync(
+            handledEventsAllowedBeforeBreaking: 5,
+            durationOfBreak: TimeSpan.FromSeconds(30)
+        );
+}

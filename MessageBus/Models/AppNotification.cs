@@ -19,5 +19,6 @@ namespace MessageBus.Models
         public object Data { get; set; }
         public DateTime CreationDate { get; set; }
         public bool Displayed { get; set; } = false;
+        public string Description { get; set; }
     }
 }

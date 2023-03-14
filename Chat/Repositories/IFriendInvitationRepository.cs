@@ -1,4 +1,5 @@
-﻿using Chat.Entity;
+﻿using Chat.Common.Models;
+using Chat.Entity;
 
 namespace Chat.Repositories
 {
@@ -9,6 +10,8 @@ namespace Chat.Repositories
         public Task<IEnumerable<FriendInvitation>> GetAllInvitations(string UserId);
         public Task<FriendInvitation?> GetFriendInvitation(string InviterUserId, string InvitedUserId);
         public Task<IEnumerable<FriendInvitation>> GetAllFriends(string UserId);
-        public Task<List<FriendInvitation>> FindAllAsync(string userId, string[] searchedUsersIds);
+        //public Task<List<FriendInvitation>> FindAllAsync(string userId, string[] searchedUsersIds);
+        public Task<List<UserFriendStatusToTheUser>?> GetFriendsStatusAsync(string userId, string[] searchedUsersIds);
+        Task<FriendInvitation?> GetInvitationAsync(string userId, string recipientId);
     }
 }

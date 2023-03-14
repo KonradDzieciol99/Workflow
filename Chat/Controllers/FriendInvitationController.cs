@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
+using Chat.Common.Models;
 using Chat.Dto;
 using Chat.Entity;
 using Chat.Repositories;
+using Chat.Services;
 using Mango.MessageBus;
 using MessageBus;
 using MessageBus.Events;
 using MessageBus.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,12 +29,14 @@ namespace Chat.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IAzureServiceBusSender _messageBus;
+        private readonly IIdentityServerService _identityServerService;
 
-        public FriendInvitationController(IUnitOfWork unitOfWork, IMapper mapper, IAzureServiceBusSender messageBus)
+        public FriendInvitationController(IUnitOfWork unitOfWork, IMapper mapper, IAzureServiceBusSender messageBus, IIdentityServerService identityServerService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             this._messageBus = messageBus;
+            this._identityServerService = identityServerService;
         }
         // GET: api/Invitations/5
         [HttpPost]
@@ -39,37 +44,48 @@ namespace Chat.Controllers
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+            var userPhotUrl = User.FindFirst("picture")?.Value;
+            //var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
 
             if (userEmail is null || userId is null)
             {
                 return BadRequest("User cannot be identified.");
             }
 
-            var Inviter = await _unitOfWork.UserRepository.GetUserByIdAsync(userId);
-            var InitedUser = await _unitOfWork.UserRepository.GetUserByIdAsync(InitedUserDto.Id);
+            var token = await HttpContext.GetTokenAsync("access_token");//"Bearer", 
+            var InitedUser = await _identityServerService.CheckIfUserExistsAsync<UserDto?>(InitedUserDto.Email, token);
 
-            if (Inviter is null || InitedUser is null)
+            if (InitedUser is null)
             {
                 return BadRequest("The specified users do not exist.");
             }
+
+            //var Inviter = await _unitOfWork.UserRepository.GetUserByIdAsync(userId);
+            //var InitedUser = await _unitOfWork.UserRepository.GetUserByIdAsync(InitedUserDto.Id);
+
+            //if (Inviter is null || InitedUser is null)
+            //{
+            //    return BadRequest("The specified users do not exist.");
+            //}
             if (await _unitOfWork.FriendInvitationRepository.checkIfExistsAsync(userId, InitedUserDto.Id))
             {
                 return BadRequest("This invitation is already exist.");
             }
-            if (Inviter.Id == InitedUser.Id)
+            if (userEmail == InitedUserDto.Email)
             {
                 return BadRequest("You can't invite yourself.");
             }
+
             FriendInvitation friendInvitation = new()
             {
-                InviterUserId = Inviter.Id,
-                InviterUserEmail = Inviter.Email,
-                InviterPhotoUrl = Inviter.PhotoUrl,
-                InviterUser = Inviter,
+                InviterUserId = userId,
+                InviterUserEmail = userEmail,
+                InviterPhotoUrl = userPhotUrl,
+                //InviterUser = Inviter,
                 InvitedUserEmail = InitedUser.Email,
                 InvitedUserId = InitedUser.Id,
                 InvitedPhotoUrl = InitedUser.PhotoUrl,
-                InvitedUser = InitedUser,
+                //InvitedUser = InitedUser,
                 Confirmed = false
             };
 
@@ -90,7 +106,7 @@ namespace Chat.Controllers
                     UserWhoInvited = new SimpleUser() { UserEmail = userEmail, UserId = userId },
                     InvitedUser = new SimpleUser() { UserEmail = friendInvitation.InvitedUserEmail, UserId = friendInvitation.InvitedUserId },
                 };
-                await _messageBus.PublishMessage(friendInvitationAcceptedEvent, "invite-user-to-friends-queue");
+                await _messageBus.PublishMessage(friendInvitationAcceptedEvent, "invite-user-to-friends-topic");
 
                 return Ok();
             }
@@ -228,6 +244,22 @@ namespace Chat.Controllers
             };
 
             return BadRequest("The invitation cannot be confirmed.");
+        }
+        [HttpGet("test2")]
+        public async Task<ActionResult<IEnumerable<UserFriendStatusToTheUser>>> test22([FromQuery] string searcherId, [FromQuery(Name = "idOfSearchedUsers")] string[] ids)
+        {
+            if (searcherId is null)
+            {
+                return BadRequest("User cannot be identified");
+            }
+            if (ids.Length == 0)
+            {
+                return BadRequest("You need to search for at least one id");
+            }
+
+            var usersStatus = await _unitOfWork.FriendInvitationRepository.GetFriendsStatusAsync(searcherId, ids);
+
+            return Ok(usersStatus);
         }
     }
 }
