@@ -53,7 +53,7 @@ namespace Chat.Controllers
             }
 
             var token = await HttpContext.GetTokenAsync("access_token");//"Bearer", 
-            var InitedUser = await _identityServerService.CheckIfUserExistsAsync<UserDto?>(userEmail, token);
+            var InitedUser = await _identityServerService.CheckIfUserExistsAsync<UserDto?>(InitedUserDto.Email, token);
 
             if (InitedUser is null)
             {

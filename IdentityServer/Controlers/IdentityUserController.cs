@@ -65,7 +65,7 @@ namespace IdentityServer.Controlers
             //        Status = c.Where(v=>v.UserId == userId).FirstOrDefault()?.Status ?? UserFriendStatusType.Stranger,
             //    }
             //);
-            users.ForEach(user => user.Status = userFriendStatus.FirstOrDefault(v => v.UserId == userId)?.Status ?? UserFriendStatusType.Stranger);
+            users.ForEach(user => user.Status = userFriendStatus.FirstOrDefault(v => v.UserId == user.Id)?.Status ?? UserFriendStatusType.Stranger);
 
 
             //foreach (var user in users)
