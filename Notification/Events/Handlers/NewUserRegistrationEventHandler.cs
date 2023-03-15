@@ -2,7 +2,9 @@
 using MessageBus;
 using MessageBus.Events;
 using MessageBus.Models;
+using MongoDB.Bson;
 using MongoDB.Driver;
+using Notification.Models;
 using System.Text.Json;
 
 namespace Notification.Events.Handlers
@@ -19,26 +21,37 @@ namespace Notification.Events.Handlers
         }
         public async Task Handle(NewUserRegistrationEvent request, CancellationToken cancellationToken)
         {
-            var collection = _mongoDatabase.GetCollection<AppNotification>("Notifications");
+            var collection = _mongoDatabase.GetCollection<AppNotificationMongo>("Notifications");
 
-            AppNotification notification = new AppNotification()
+            AppNotificationMongo notification = new AppNotificationMongo()
             {
                 Id = Guid.NewGuid().ToString(),
                 UserId = request.NotificationRecipient.UserId,
-                ObjectId = request.ObjectId,
+                ObjectId = JsonSerializer.Serialize(request.ObjectId),
                 EventType = request.EventType,
                 NotificationType = "WelcomeNotification",
                 Data = JsonSerializer.Serialize(request),
-                Description = $"Thank you for registering {request.Email}, have fun testing!",
+                Description = $"Thank you for registering {request.NotificationRecipient.UserEmail}, have fun testing!",
                 CreationDate = request.MessageCreated,
-                NotificationPartner = request.NotificationSender
+                NotificationPartner = new SimpleUser("", "Workflow@Workflow.com", "https://res.cloudinary.com/ddmmg4wb2/image/upload/v1673385489/workflow-management_ssnvgy.jpg")
             };
             await collection.InsertOneAsync(notification);
 
             var notificationEventForSender = new NotificationEvent()
             {
-                AppNotification = notification,
-            };
+                AppNotification = new AppNotification()
+                {
+                    Id = notification.Id,
+                    UserId = request.NotificationRecipient.UserId,
+                    ObjectId = request.ObjectId,
+                    EventType = request.EventType,
+                    NotificationType = "WelcomeNotification",
+                    Data = request,
+                    Description = $"Thank you for registering {request.NotificationRecipient.UserEmail}, have fun testing!",
+                    CreationDate = request.MessageCreated,
+                    NotificationPartner = new SimpleUser("", "Workflow@Workflow.com", "https://res.cloudinary.com/ddmmg4wb2/image/upload/v1673385489/workflow-management_ssnvgy.jpg")
+                }
+        };
 
             await _azureServiceBusSender.PublishMessage(notificationEventForSender, "notification-queue");
 

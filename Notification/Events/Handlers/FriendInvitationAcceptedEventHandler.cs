@@ -4,6 +4,7 @@ using MessageBus;
 using MessageBus.Events;
 using MessageBus.Models;
 using Microsoft.AspNetCore.SignalR;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Notification.Models;
 using System.Text.Json;
@@ -23,13 +24,13 @@ namespace Notification.Events.Handlers
         public async Task Handle(FriendInvitationAcceptedEvent request, CancellationToken cancellationToken)
         {
 
-            var collection = _mongoDatabase.GetCollection<AppNotification>("Notifications");
+            var collection = _mongoDatabase.GetCollection<AppNotificationMongo>("Notifications");
 
-            AppNotification notificationForRecipient = new AppNotification()
+            AppNotificationMongo notificationForRecipient = new AppNotificationMongo()
             {
                 Id = Guid.NewGuid().ToString(),
                 UserId = request.NotificationRecipient.UserId,
-                ObjectId = request.ObjectId,
+                ObjectId = JsonSerializer.Serialize(request.ObjectId),
                 EventType = request.EventType,
                 NotificationType = "NewFriendAdded",
                 Description = $"You and {request.NotificationSender.UserEmail} are friends now!",
@@ -37,11 +38,11 @@ namespace Notification.Events.Handlers
                 CreationDate = request.MessageCreated,
                 NotificationPartner = request.NotificationSender
             };
-            AppNotification notificationForSender = new AppNotification()
+            AppNotificationMongo notificationForSender = new AppNotificationMongo()
             {
                 Id = Guid.NewGuid().ToString(),
                 UserId = request.NotificationSender.UserId,
-                ObjectId = request.ObjectId,
+                ObjectId = JsonSerializer.Serialize(request.ObjectId),
                 EventType = request.EventType,
                 NotificationType = "NewFriendAdded",
                 Description = $"You and {request.NotificationRecipient.UserEmail} are friends now!",
@@ -49,17 +50,39 @@ namespace Notification.Events.Handlers
                 CreationDate = request.MessageCreated,
                 NotificationPartner = request.NotificationRecipient
             };
-            AppNotification[] notificationsArray = { notificationForRecipient, notificationForSender };
+            AppNotificationMongo[] notificationsArray = { notificationForRecipient, notificationForSender };
 
             await collection.InsertManyAsync(notificationsArray);
 
             var notificationEventForRecipient = new NotificationEvent()
             {
-                AppNotification = notificationForRecipient,
+                AppNotification = new AppNotification()
+                {
+                    Id = notificationForRecipient.Id,
+                    UserId = request.NotificationRecipient.UserId,
+                    ObjectId = request.ObjectId,
+                    EventType = request.EventType,
+                    NotificationType = "NewFriendAdded",
+                    Description = $"You and {request.NotificationSender.UserEmail} are friends now!",
+                    Data = request,
+                    CreationDate = request.MessageCreated,
+                    NotificationPartner = request.NotificationSender
+                }
             };
             var notificationEventForSender = new NotificationEvent()
             {
-                AppNotification = notificationForSender,
+                AppNotification = new AppNotification()
+                {
+                    Id = notificationForSender.Id,
+                    UserId = request.NotificationSender.UserId,
+                    ObjectId = request.ObjectId,
+                    EventType = request.EventType,
+                    NotificationType = "NewFriendAdded",
+                    Description = $"You and {request.NotificationRecipient.UserEmail} are friends now!",
+                    Data = request,
+                    CreationDate = request.MessageCreated,
+                    NotificationPartner = request.NotificationRecipient
+                }
             };
 
             await _azureServiceBusSender.PublishMessage(notificationEventForRecipient, "notification-queue");
@@ -67,5 +90,6 @@ namespace Notification.Events.Handlers
 
             return;
         }
+
     }
 }

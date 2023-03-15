@@ -5,6 +5,7 @@ using IdentityServer.Entities;
 using Mango.MessageBus;
 using MessageBus;
 using MessageBus.Events;
+using MessageBus.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace IdentityServer.Events
@@ -27,7 +28,12 @@ namespace IdentityServer.Events
             {
                 var localUserRegisterSuccessEvent = (LocalUserRegisterSuccessEvent)evt;
                 //var registerEmailBusMessage = new RegisterEmailBusMessage() { Email = localUserRegisterSuccessEvent.LocalUserEmail, Token = localUserRegisterSuccessEvent.LocalUserActivateToken };
-                var registerEmailBusMessage = new NewUserRegistrationEvent() { Email = localUserRegisterSuccessEvent.LocalUserEmail, Token = localUserRegisterSuccessEvent.LocalUserActivateToken };
+                var registerEmailBusMessage = new NewUserRegistrationEvent()
+                {
+                    NotificationRecipient = new SimpleUser() { UserEmail = localUserRegisterSuccessEvent.LocalUserEmail, UserId = localUserRegisterSuccessEvent.IdentityUserId },
+                    Email = localUserRegisterSuccessEvent.LocalUserEmail,
+                    Token = localUserRegisterSuccessEvent.LocalUserActivateToken
+                };
                 await _messageBus.PublishMessage(registerEmailBusMessage, "new-user-registration-event");
 
 
@@ -45,3 +51,13 @@ namespace IdentityServer.Events
         }
     }
 }
+//var friendInvitationAcceptedEvent = new InviteUserToFriendsEvent()
+//{
+
+//    NotificationRecipient = new SimpleUser() { UserEmail = friendInvitation.InvitedUserEmail, UserId = friendInvitation.InvitedUserId },
+//    NotificationSender = new SimpleUser() { UserEmail = userEmail, UserId = userId },
+//    EventType = "InviteUserToFriendsEvent",
+//    FriendInvitationDto = _mapper.Map<FriendInvitationDtoGlobal>(friendInvitation),
+//    UserWhoInvited = new SimpleUser() { UserEmail = userEmail, UserId = userId },
+//    InvitedUser = new SimpleUser() { UserEmail = friendInvitation.InvitedUserEmail, UserId = friendInvitation.InvitedUserId },
+//};
