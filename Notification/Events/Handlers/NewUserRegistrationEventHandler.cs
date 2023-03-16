@@ -23,14 +23,17 @@ namespace Notification.Events.Handlers
         {
             var collection = _mongoDatabase.GetCollection<AppNotificationMongo>("Notifications");
 
+            var ObjectIdAsString = JsonSerializer.Serialize(request.ObjectId);
+            var stringId = JsonSerializer.Deserialize<string>(ObjectIdAsString);
+
             AppNotificationMongo notification = new AppNotificationMongo()
             {
                 Id = Guid.NewGuid().ToString(),
                 UserId = request.NotificationRecipient.UserId,
-                ObjectId = JsonSerializer.Serialize(request.ObjectId),
+                ObjectId = new BsonDocument { { "Id", stringId },},
                 EventType = request.EventType,
                 NotificationType = "WelcomeNotification",
-                Data = JsonSerializer.Serialize(request),
+                //Data = JsonSerializer.Serialize(request),
                 Description = $"Thank you for registering {request.NotificationRecipient.UserEmail}, have fun testing!",
                 CreationDate = request.MessageCreated,
                 NotificationPartner = new SimpleUser("", "Workflow@Workflow.com", "https://res.cloudinary.com/ddmmg4wb2/image/upload/v1673385489/workflow-management_ssnvgy.jpg")
@@ -46,7 +49,7 @@ namespace Notification.Events.Handlers
                     ObjectId = request.ObjectId,
                     EventType = request.EventType,
                     NotificationType = "WelcomeNotification",
-                    Data = request,
+                    //Data = request,
                     Description = $"Thank you for registering {request.NotificationRecipient.UserEmail}, have fun testing!",
                     CreationDate = request.MessageCreated,
                     NotificationPartner = new SimpleUser("", "Workflow@Workflow.com", "https://res.cloudinary.com/ddmmg4wb2/image/upload/v1673385489/workflow-management_ssnvgy.jpg")

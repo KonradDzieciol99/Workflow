@@ -98,7 +98,7 @@ namespace Chat.Controllers
             {
                 var friendInvitationAcceptedEvent = new InviteUserToFriendsEvent()
                 {
-                    ObjectId = new { inviterUserId=friendInvitation.InviterUserId, invitedUserId=friendInvitation.InvitedUserId },
+                    ObjectId = new FriendInvitationId(){ InviterUserId=friendInvitation.InviterUserId, InvitedUserId=friendInvitation.InvitedUserId },
                     NotificationRecipient = new SimpleUser() { UserEmail = friendInvitation.InvitedUserEmail, UserId = friendInvitation.InvitedUserId },
                     NotificationSender = new SimpleUser() { UserEmail = userEmail, UserId = userId },
                     EventType = "InviteUserToFriendsEvent",
@@ -235,6 +235,7 @@ namespace Chat.Controllers
                 //var users = friendsInvitationDtos.Select(x => x.InviterUserId == userId ? new SimpleUser() { UserId = x.InvitedUserId, UserEmail = x.InvitedUserEmail } : new SimpleUser() { UserId = x.InviterUserId, UserEmail = x.InviterUserEmail });
                 var friendInvitationAcceptedEvent = new FriendInvitationAcceptedEvent()
                 {
+                    ObjectId = new FriendInvitationId() { InviterUserId = friendInvitation.InviterUserId, InvitedUserId = friendInvitation.InvitedUserId },
                     EventType = "FriendInvitationAcceptedEvent",
                     NotificationRecipient = new SimpleUser() { UserEmail = friendInvitation.InviterUserEmail, UserId = friendInvitation.InviterUserId },
                     NotificationSender = new SimpleUser() { UserEmail = userEmail, UserId = userId },

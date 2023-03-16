@@ -1,7 +1,10 @@
-﻿using MessageBus.Models;
+﻿using MediatR;
+using MessageBus.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Notification.Models;
 using System.Security.Claims;
@@ -30,22 +33,49 @@ namespace Notification.Controllers
             var collection = _mongoDatabase.GetCollection<AppNotificationMongo>("Notifications");
 
             var filter = Builders<AppNotificationMongo>.Filter.Eq(x => x.UserId, userId);
+            //var projection = Builders<AppNotificationMongo>.Projection.Expression(
+            //        x => new AppNotification
+            //        {
+            //            Id = x.Id,
+            //            UserId = x.UserId,
+            //            //ObjectId = x.ObjectId,
+            //            ObjectId = BsonTypeMapper.MapToDotNetValue(x.ObjectId),
+            //            EventType = x.EventType,
+            //            NotificationPartner = x.NotificationPartner,
+            //            NotificationType = x.NotificationType,
+            //            CreationDate = x.CreationDate,
+            //            Displayed = x.Displayed,
+            //            Description = x.Description
+            //        });
+
             var result = await collection.Find(filter).ToListAsync();
 
-            var transformedResult = result.Select(x => new AppNotification
+            //var transformedResult = result.Select(x => new AppNotification
+            //{
+            //    Id = x.Id,
+            //    UserId = x.UserId,
+            //    ObjectId = x.ObjectId.IsNullOrEmpty() ? null : JsonSerializer.Deserialize<JsonElement>(x.ObjectId),
+            //    EventType = x.EventType,
+            //    NotificationType = x.NotificationType,
+            //    Data = null/*JsonSerializer.Deserialize<JsonElement>(x.Data)*/,
+            //    Description = x.Description,
+            //    CreationDate = x.CreationDate,
+            //    NotificationPartner = x.NotificationPartner
+            //}).ToList();
+            var notifications = result.Select(x => new AppNotification
             {
                 Id = x.Id,
                 UserId = x.UserId,
-                ObjectId = x.ObjectId.IsNullOrEmpty() ? null : JsonSerializer.Deserialize<JsonElement>(x.ObjectId),
+                ObjectId = x.ObjectId != null ? BsonTypeMapper.MapToDotNetValue(x.ObjectId) : null,
                 EventType = x.EventType,
+                NotificationPartner = x.NotificationPartner,
                 NotificationType = x.NotificationType,
-                Data = null/*JsonSerializer.Deserialize<JsonElement>(x.Data)*/,
-                Description = x.Description,
                 CreationDate = x.CreationDate,
-                NotificationPartner = x.NotificationPartner
+                Displayed = x.Displayed,
+                Description = x.Description
             }).ToList();
 
-            return Ok(transformedResult);
+            return Ok(notifications);
         }
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(string id)
@@ -78,7 +108,7 @@ namespace Notification.Controllers
 
             var filter = Builders<AppNotification>.Filter.Eq(n => n.Id, id);
 
-            var result=collection.DeleteOne(filter);
+            var result=await collection.DeleteOneAsync(filter);
 
             if (result.DeletedCount == 1)
             {

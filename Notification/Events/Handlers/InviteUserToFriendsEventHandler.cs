@@ -22,6 +22,9 @@ namespace Notification.Events.Handlers
         }
         public async Task Handle(InviteUserToFriendsEvent request, CancellationToken cancellationToken)
         {
+
+            var ObjectIdAsString = JsonSerializer.Serialize(request.ObjectId);
+            var friendInvitationId = JsonSerializer.Deserialize<FriendInvitationId>(ObjectIdAsString);
             AppNotificationMongo notificationForRecipient;
             AppNotificationMongo notificationForSender;
             List<AppNotificationMongo> notificationsArray = new List<AppNotificationMongo>();
@@ -31,11 +34,11 @@ namespace Notification.Events.Handlers
                 {
                     Id = Guid.NewGuid().ToString(),
                     UserId = request.NotificationRecipient.UserId,
-                    ObjectId = JsonSerializer.Serialize(request.ObjectId),
+                    ObjectId = new BsonDocument { { "InviterUserId", friendInvitationId.InviterUserId }, { "InvitedUserId", friendInvitationId.InvitedUserId } },
                     EventType = request.EventType,
                     NotificationType = "FriendRequestReceived",
                     Description = $"You have received a friend request from {request.NotificationSender.UserEmail}",
-                    Data = JsonSerializer.Serialize(request),
+                    // = JsonSerializer.Serialize(request),
                     CreationDate = request.MessageCreated,
                     NotificationPartner = request.NotificationSender
                 };
@@ -43,11 +46,11 @@ namespace Notification.Events.Handlers
                 {
                     Id = Guid.NewGuid().ToString(),
                     UserId = request.NotificationSender.UserId,
-                    ObjectId = JsonSerializer.Serialize(request.ObjectId),
+                    ObjectId = new BsonDocument { { "InviterUserId", friendInvitationId.InviterUserId }, { "InvitedUserId", friendInvitationId.InvitedUserId } },
                     EventType = request.EventType,
                     NotificationType = "FriendRequestSent",
                     Description = $"You sent a friend request to {request.NotificationRecipient.UserEmail}",
-                    Data = JsonSerializer.Serialize(request),    
+                    //Data = JsonSerializer.Serialize(request),    
                     CreationDate = request.MessageCreated,
                     NotificationPartner = request.NotificationRecipient
                 };
@@ -56,6 +59,7 @@ namespace Notification.Events.Handlers
 
                 var collection = _mongoDatabase.GetCollection<AppNotificationMongo>("Notifications");
                 await collection.InsertManyAsync(notificationsArray);
+
             }
             catch (Exception)
             {
@@ -73,11 +77,11 @@ namespace Notification.Events.Handlers
                     EventType = request.EventType,
                     NotificationType = "FriendRequestReceived",
                     Description = $"You have received a friend request from {request.NotificationSender.UserEmail}",
-                    Data = request,
+                    //Data = request,
                     CreationDate = request.MessageCreated,
                     NotificationPartner = request.NotificationSender
                 }
-        };
+            };
             var notificationEventForSender = new NotificationEvent()
             {
                 AppNotification = new AppNotification()
@@ -88,11 +92,13 @@ namespace Notification.Events.Handlers
                     EventType = request.EventType,
                     NotificationType = "FriendRequestSent",
                     Description = $"You sent a friend request to {request.NotificationRecipient.UserEmail}",
-                    Data = request,
+                    //Data = request,
                     CreationDate = request.MessageCreated,
                     NotificationPartner = request.NotificationRecipient
                 }
-        };
+            };
+
+
 
             await _azureServiceBusSender.PublishMessage(notificationEventForRecipient, "notification-queue");
             await _azureServiceBusSender.PublishMessage(notificationEventForSender, "notification-queue");
