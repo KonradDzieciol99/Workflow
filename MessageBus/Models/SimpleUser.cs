@@ -8,6 +8,17 @@ namespace MessageBus.Models
 {
     public class SimpleUser
     {
+        public SimpleUser()
+        {
+            
+        }
+        public SimpleUser(string userId, string userEmail, string? userPhotoUrl)
+        {
+            UserId = userId;
+            UserEmail = userEmail;
+            this.userPhotoUrl = userPhotoUrl;
+        }
+
         public string UserId { get; set; }
         public string UserEmail { get; set; }
         public string? userPhotoUrl { get; set; }

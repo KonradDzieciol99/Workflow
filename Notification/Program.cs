@@ -52,13 +52,21 @@ builder.Services.AddMediatR(opt =>
     opt.RegisterServicesFromAssembly(typeof(Program).Assembly);
 });
 
-builder.Services.AddSingleton<IMongoDatabase>(sp =>
-{
-    var connectionString = builder.Configuration.GetConnectionString("MongoDB");
-    var client = new MongoClient(connectionString);
-    var databaseName = builder.Configuration.GetValue<string>("MongoDb:DatabaseName");
-    return client.GetDatabase(databaseName);
-});
+var connectionString = builder.Configuration.GetConnectionString("MongoDB");
+var databaseName = builder.Configuration.GetValue<string>("MongoDb:DatabaseName");
+var mongoClient = new MongoClient(connectionString);
+var mongoDatabase = mongoClient.GetDatabase(databaseName);
+builder.Services.AddSingleton<IMongoClient>(mongoClient);
+builder.Services.AddSingleton<IMongoDatabase>(mongoDatabase);
+
+//var mongoDbConnectionString = builder.Configuration.GetConnectionString("MongoDb");
+//builder.Services.AddSingleton<IMongoDatabase>(sp =>
+//{
+
+//    //var client = new MongoClient(connectionString);
+
+//    return mongoClient.GetDatabase(databaseName);
+//});
 
 builder.Services.AddAzureServiceBusSubscriber(opt =>
 {
