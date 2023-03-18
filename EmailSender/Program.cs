@@ -2,6 +2,7 @@ using EmailSender;
 using EmailSender.Extension;
 using EmailSender.MessageBus;
 using FluentEmail.Core;
+using MessageBus;
 using MessageBus.Events;
 using MessageBus.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -55,17 +56,18 @@ builder.Services.AddAzureServiceBusSubscriber(opt =>
 {
     var configuration = builder.Configuration;
     opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString");
-    opt.QueueNameAndEventTypePair = new Dictionary<string, Type>()
-    {
-    };
-    opt.TopicNameAndEventTypePair = new Dictionary<string, Type>()
-    {
-        {configuration.GetValue<string>("NewUserRegistrationEvent"),typeof(NewUserRegistrationEvent)},
-    };
-    opt.TopicNameWithSubscriptionName = new Dictionary<string, string>()
-    {
-        {configuration.GetValue<string>("NewUserRegistrationEvent"),configuration.GetValue<string>("NewUserRegistrationEventSubscription")},
-    };
+    opt.SubscriptionName = "email-sender";
+    //opt.QueueNameAndEventTypePair = new Dictionary<string, Type>()
+    //{
+    //};
+    //opt.TopicNameAndEventTypePair = new Dictionary<string, Type>()
+    //{
+    //    {configuration.GetValue<string>("NewUserRegistrationEvent"),typeof(NewUserRegistrationEvent)},
+    //};
+    //opt.TopicNameWithSubscriptionName = new Dictionary<string, string>()
+    //{
+    //    {configuration.GetValue<string>("NewUserRegistrationEvent"),configuration.GetValue<string>("NewUserRegistrationEventSubscription")},
+    //};
 });
 builder.Services.AddAzureServiceBusSender(opt =>
 {
@@ -73,6 +75,11 @@ builder.Services.AddAzureServiceBusSender(opt =>
 });
 
 var app = builder.Build();
+
+
+var eventBus = app.Services.GetRequiredService<AzureServiceBusSubscriber>();// nie potrzeba tworzyæ scope bo to singletone
+
+eventBus.Subscribe<NewUserRegistrationEvent>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -36,10 +36,11 @@ namespace MessageBus
             string jsonMessage = JsonSerializer.Serialize(message);
             ServiceBusMessage finalMessage = new ServiceBusMessage(Encoding.UTF8.GetBytes(jsonMessage))
             {
-                CorrelationId = Guid.NewGuid().ToString()
+                CorrelationId = Guid.NewGuid().ToString(),
+                Subject = message.EventType
             };
 
-            finalMessage.ApplicationProperties["Label"] = queueOrTopicName;
+            //finalMessage.ApplicationProperties["Label"] = queueOrTopicName;
 
             await sender.SendMessageAsync(finalMessage);
 
