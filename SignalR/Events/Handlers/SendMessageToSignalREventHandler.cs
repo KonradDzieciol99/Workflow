@@ -36,7 +36,7 @@ namespace SignalR.Events.Handlers
             {
                 request.DateRead = DateTime.UtcNow;
                 var markChatMessageAsReadEvent = new MarkChatMessageAsReadEvent() { Id = request.Id, DateRead = (DateTime)request.DateRead };
-                await _azureServiceBusSender.PublishMessage(markChatMessageAsReadEvent, "mark-chat-message-as-read");
+                await _azureServiceBusSender.PublishMessage(markChatMessageAsReadEvent);
             }
 
             await _chatHubContext.Clients.Group(groupName).SendAsync("NewMessage", request);

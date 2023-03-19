@@ -31,7 +31,7 @@ namespace Chat.Events.Handlers
 
             var onlineUsers = friendsInvitationDtos.Select(x => x.InviterUserId == request.NewOnlineUser.UserId ? new SimpleUser() { UserId = x.InvitedUserId, UserEmail = x.InvitedUserEmail } : new SimpleUser() { UserId = x.InviterUserId, UserEmail = x.InviterUserEmail });
             var newOnlineUserWithFriendsEvent = new NewOnlineUserWithFriendsEvent() { NewOnlineUserChatFriends = onlineUsers, NewOnlineUser = new SimpleUser() { UserEmail = request.NewOnlineUser.UserEmail, UserId = request.NewOnlineUser.UserId } };
-            await _messageBus.PublishMessage(newOnlineUserWithFriendsEvent, "new-online-user-with-friends-queue");
+            await _messageBus.PublishMessage(newOnlineUserWithFriendsEvent);
         }
     }
 }

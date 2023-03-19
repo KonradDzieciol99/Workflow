@@ -32,7 +32,7 @@ namespace Chat.Events.Handlers
             var users = friendsInvitationDtos.Select(x => x.InviterUserId == request.User.UserId ? new SimpleUser() { UserId = x.InvitedUserId, UserEmail = x.InvitedUserEmail } : new SimpleUser() { UserId = x.InviterUserId, UserEmail = x.InviterUserEmail });
 
             var newOfflineUserWithFriendsEvent = new NewOfflineUserWithFriendsEvent() { UserChatFriends = users, User = new SimpleUser() { UserEmail = request.User.UserEmail, UserId = request.User.UserId } };
-            await _messageBus.PublishMessage(newOfflineUserWithFriendsEvent, "new-offline-user-with-friends-queue");
+            await _messageBus.PublishMessage(newOfflineUserWithFriendsEvent);
         }
     }
 }

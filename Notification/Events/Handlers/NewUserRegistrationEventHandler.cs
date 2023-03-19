@@ -56,7 +56,7 @@ namespace Notification.Events.Handlers
                 }
         };
 
-            await _azureServiceBusSender.PublishMessage(notificationEventForSender, "notification-queue");
+            await _azureServiceBusSender.PublishMessage(notificationEventForSender);
 
             await Task.CompletedTask;
 

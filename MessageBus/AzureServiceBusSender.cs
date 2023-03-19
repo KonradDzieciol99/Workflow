@@ -15,11 +15,12 @@ namespace MessageBus
     public class AzureServiceBusSender: IAzureServiceBusSender
     {
         private readonly AzureServiceBusSenderOptions _options;
+        private readonly string _topicName = "workflow_event_bus";
         public AzureServiceBusSender(IOptions<AzureServiceBusSenderOptions> options)
         {
             this._options = options.Value;
         }
-        public async Task PublishMessage<T>(T message, string queueOrTopicName) where T : BaseMessage
+        public async Task PublishMessage<T>(T message) where T : BaseMessage
         {
             //if (message.NotificationSender is null)
             //{
@@ -31,7 +32,7 @@ namespace MessageBus
 
             await using var client = new ServiceBusClient(_options.ServiceBusConnectionString);
 
-            ServiceBusSender sender = client.CreateSender(queueOrTopicName);
+            ServiceBusSender sender = client.CreateSender(_topicName);
 
             string jsonMessage = JsonSerializer.Serialize(message);
             ServiceBusMessage finalMessage = new ServiceBusMessage(Encoding.UTF8.GetBytes(jsonMessage))

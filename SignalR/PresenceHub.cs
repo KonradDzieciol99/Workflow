@@ -37,7 +37,7 @@ namespace SignalR
 
             //var onlineUsers = friendsInvitationDtos.Select(x => x.InviterUserId == userId ? new User() { UserId = x.InvitedUserId, UserEmail = x.InvitedUserEmail } : new User() { UserId = x.InviterUserId, UserEmail = x.InviterUserEmail });
             var newOnlineUserEvent = new NewOnlineUserEvent() { NewOnlineUser = new SimpleUser() { UserEmail = email, UserId = id } };
-            await _messageBus.PublishMessage(newOnlineUserEvent, "new-online-user-queue");
+            await _messageBus.PublishMessage(newOnlineUserEvent);
 
 
             //var notificationsSerialized = _redisDb.HashScan($"user-notification-{email}", pageSize: 5);
@@ -68,7 +68,7 @@ namespace SignalR
                 await _redisDb.KeyDeleteAsync($"presence-{email}");
 
                 var newOnlineUserEvent = new NewOfflineUserEvent() { User = new SimpleUser() { UserEmail = email, UserId = id } };
-                await _messageBus.PublishMessage(newOnlineUserEvent, "new-offline-user-topic");
+                await _messageBus.PublishMessage(newOnlineUserEvent);
 
                 //string[] InvitedUsersConnectionIds = await GetInvitedUsers();
                 //await Clients.Clients(InvitedUsersConnectionIds).SendAsync("UserIsOffline", userName);
