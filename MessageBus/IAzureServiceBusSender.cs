@@ -9,6 +9,6 @@ namespace MessageBus
 {
     public interface IAzureServiceBusSender
     {
-        Task PublishMessage<T>(T message, string queueOrTopicName) where T : BaseMessage;
+        Task PublishMessage<T>(T message) where T : BaseMessage;
     }
 }

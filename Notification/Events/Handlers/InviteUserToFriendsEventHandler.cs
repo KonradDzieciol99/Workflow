@@ -98,10 +98,8 @@ namespace Notification.Events.Handlers
                 }
             };
 
-
-
-            await _azureServiceBusSender.PublishMessage(notificationEventForRecipient, "notification-queue");
-            await _azureServiceBusSender.PublishMessage(notificationEventForSender, "notification-queue");
+            await _azureServiceBusSender.PublishMessage(notificationEventForRecipient);
+            await _azureServiceBusSender.PublishMessage(notificationEventForSender);
 
             return;
         }

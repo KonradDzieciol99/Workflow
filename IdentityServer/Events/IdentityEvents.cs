@@ -34,7 +34,7 @@ namespace IdentityServer.Events
                     Email = localUserRegisterSuccessEvent.LocalUserEmail,
                     Token = localUserRegisterSuccessEvent.LocalUserActivateToken
                 };
-                await _messageBus.PublishMessage(registerEmailBusMessage, "new-user-registration-event");
+                await _messageBus.PublishMessage(registerEmailBusMessage);
 
 
                 //var newUserRegisterCreateUser = new NewUserRegisterCreateUser() { Email = localUserRegisterSuccessEvent.LocalUserEmail, Id = localUserRegisterSuccessEvent.IdentityUserId };

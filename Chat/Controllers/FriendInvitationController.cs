@@ -106,7 +106,7 @@ namespace Chat.Controllers
                     UserWhoInvited = new SimpleUser() { UserEmail = userEmail, UserId = userId },
                     InvitedUser = new SimpleUser() { UserEmail = friendInvitation.InvitedUserEmail, UserId = friendInvitation.InvitedUserId },
                 };
-                await _messageBus.PublishMessage(friendInvitationAcceptedEvent, "invite-user-to-friends-topic");
+                await _messageBus.PublishMessage(friendInvitationAcceptedEvent);
 
                 return Ok();
             }
@@ -243,7 +243,7 @@ namespace Chat.Controllers
                     UserWhoAcceptedInvitation = new SimpleUser() { UserEmail = userEmail, UserId = userId },
                     UserWhoseInvitationAccepted = new SimpleUser() { UserEmail = friendInvitation.InviterUserEmail, UserId = friendInvitation.InviterUserId },
                 };
-                await _messageBus.PublishMessage(friendInvitationAcceptedEvent, "friend-invitation-accepted-topic");
+                await _messageBus.PublishMessage(friendInvitationAcceptedEvent);
                 //
                 return Ok();
             };

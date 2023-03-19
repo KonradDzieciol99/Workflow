@@ -88,7 +88,7 @@ namespace Chat.Controllers
                 var SendMessageToSignalREvent = _mapper.Map<SendMessageToSignalREvent>(message);
                 SendMessageToSignalREvent.NotificationSender = new SimpleUser() { UserEmail = senderEmail, UserId = senderId };
                 SendMessageToSignalREvent.NotificationRecipient = new SimpleUser() { UserEmail = message.RecipientEmail, UserId = message.RecipientId};
-                await _messageBus.PublishMessage(SendMessageToSignalREvent, "send-message-to-signalr");
+                await _messageBus.PublishMessage(SendMessageToSignalREvent);
                 return Ok();
             }
 

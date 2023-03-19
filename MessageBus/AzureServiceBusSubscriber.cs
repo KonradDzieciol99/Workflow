@@ -14,7 +14,6 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Collections.Specialized.BitVector32;
 
 namespace MessageBus
 {
@@ -23,39 +22,54 @@ namespace MessageBus
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IMediator _mediator;
         private readonly AzureServiceBusSubscriberOptions _options;
+        private readonly string _topicName = "workflow_event_bus";
+        private readonly string _subscriptionName;
+        private readonly Dictionary<string, Type> _events;
 
         public AzureServiceBusSubscriber(IServiceScopeFactory serviceScopeFactory, IMediator mediator, IOptions<AzureServiceBusSubscriberOptions> options)
         {
             this._serviceScopeFactory = serviceScopeFactory;
             this._mediator = mediator;
             this._options = options.Value;
+            _options.Validate();
+            //_topicName = topicName;
+            _subscriptionName = _options.SubscriptionName;
+            _events = new Dictionary<string, Type>();
+           RemoveAllRulesAsync().GetAwaiter().GetResult();
+            // string topicName, string subscriptionName
+
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var client = new ServiceBusClient(_options.ServiceBusConnectionString);
 
-            if (_options.QueueNameAndEventTypePair is not null)
-            {
-                foreach (var item in _options.QueueNameAndEventTypePair)
-                {
-                    var BusProcessor = client.CreateProcessor(item.Key);
-                    BusProcessor.ProcessMessageAsync += (args) => EventHandlerAsync(args, _options.QueueNameAndEventTypePair);
-                    BusProcessor.ProcessErrorAsync += ErrorHandler;
-                    await BusProcessor.StartProcessingAsync();
-                }
-            }
+            //if (_options.QueueNameAndEventTypePair is not null)
+            //{
+            //    foreach (var item in _options.QueueNameAndEventTypePair)
+            //    {
+            //var BusProcessor = client.CreateProcessor(item.Key);
+            //BusProcessor.ProcessMessageAsync += (args) => EventHandlerAsync(args, _options.QueueNameAndEventTypePair);
+            //BusProcessor.ProcessErrorAsync += ErrorHandler;
+            //await BusProcessor.StartProcessingAsync();
+            //    }
+            //}
 
-            if (_options.TopicNameWithSubscriptionName is not null)
-            {
-                foreach (var item in _options.TopicNameWithSubscriptionName)
-                {
-                    var BusProcessor = client.CreateProcessor(item.Key, item.Value);
-                    BusProcessor.ProcessMessageAsync += (args) => EventHandlerAsync(args, _options.TopicNameAndEventTypePair);
-                    BusProcessor.ProcessErrorAsync += ErrorHandler;
-                    await BusProcessor.StartProcessingAsync();
-                }
-            }
+            //if (_options.TopicNameWithSubscriptionName is not null)
+            //{
+            //    foreach (var item in _options.TopicNameWithSubscriptionName)
+            //    {
+            //var BusProcessor = client.CreateProcessor(item.Key, item.Value);
+            //BusProcessor.ProcessMessageAsync += (args) => EventHandlerAsync(args, _options.TopicNameAndEventTypePair);
+            //BusProcessor.ProcessErrorAsync += ErrorHandler;
+            //await BusProcessor.StartProcessingAsync();
+            //    }
+            //}
+
+            var BusProcessor = client.CreateProcessor(_topicName, _subscriptionName);
+            BusProcessor.ProcessMessageAsync += EventHandlerAsync;
+            BusProcessor.ProcessErrorAsync += ErrorHandler;
+            await BusProcessor.StartProcessingAsync();
 
             return;
         }
@@ -65,17 +79,23 @@ namespace MessageBus
             return Task.CompletedTask;
         }
 
-        private async Task EventHandlerAsync(ProcessMessageEventArgs args, Dictionary<string, Type> topicOrQueueNameWithTypeEvent)
+        private async Task EventHandlerAsync(ProcessMessageEventArgs args)
         {
             var message = args.Message;
             var body = Encoding.UTF8.GetString(message.Body);
-            var label = args.Message.ApplicationProperties["Label"] as string;
-            if (label == null)
-            {
-                throw new ArgumentNullException($"Label is empty: {args}");
-            }
+            //var label = args.Message.ApplicationProperties["Label"] as string;
+            //if (label == null)
+            //{
+            //    throw new ArgumentNullException($"Label is empty: {args}");
+            //}
 
-            var type = topicOrQueueNameWithTypeEvent[label];
+            //var type = topicOrQueueNameWithTypeEvent[label];
+            
+            var type = _events[message.Subject];
+            if (type == null)
+            {
+                throw new ArgumentNullException("You did not subscribe to this event");
+            }
             //var type = _options.QueueNameAndEventTypePair[label];
 
             MethodInfo sendAsyncMethod = this.GetType().GetMethod(nameof(SendAsync), BindingFlags.NonPublic | BindingFlags.Instance) ?? throw new ArgumentNullException("Something went wrong.");
@@ -88,15 +108,93 @@ namespace MessageBus
         }
         private async Task SendAsync<T>(string eventJSON)
         {
-            var decodedEvent = JsonSerializer.Deserialize<T>(eventJSON);
+            var @event = JsonSerializer.Deserialize<T>(eventJSON);
 
-            if (decodedEvent is null) { throw new ArgumentNullException($"Message is empty{decodedEvent}"); }
+            if (@event is null) { throw new ArgumentNullException($"Message is empty{@event}"); }
 
             using (var scope = _serviceScopeFactory.CreateScope())
             {
                 var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-                var response = await mediator.Send(decodedEvent);
+                var response = await mediator.Send(@event);
             }
+            return;
+        }
+
+        //public async Task Subscribe<T, TH>()
+        public async Task Subscribe<T>()
+            //where T : IntegrationEvent
+            //where TH : IIntegrationEventHandler<T>
+        {
+
+            var _administrationClient = new ServiceBusAdministrationClient(_options.ServiceBusConnectionString);
+
+            var eventName = typeof(T).Name;
+
+            //var containsKey = _subsManager.HasSubscriptionsForEvent<T>();
+            //if (!containsKey)
+            //{
+                try
+                {
+                    await _administrationClient.CreateRuleAsync(_topicName, _subscriptionName, new CreateRuleOptions
+                    {
+                        Filter = new CorrelationRuleFilter() { Subject = eventName },
+                        Name = eventName
+                    });
+                    _events.Add(eventName, typeof(T));
+                }
+                //catch (ServiceBusException)
+                catch (Exception)
+                {
+                //_logger.LogWarning("The messaging entity {eventName} already exists.", eventName);
+                    throw;
+                }
+            //}
+
+            //_logger.LogInformation("Subscribing to event {EventName} with {EventHandler}", eventName, typeof(TH).Name);
+
+            //_subsManager.AddSubscription<T, TH>();
+
+            await Task.CompletedTask;
+
+            return;
+        }
+        //private async Task RemoveDefaultRule()
+        //{
+        //    var _administrationClient = new ServiceBusAdministrationClient(_options.ServiceBusConnectionString);
+
+        //    try
+        //    {
+        //        await _administrationClient.DeleteRuleAsync(_topicName, _subscriptionName, RuleProperties.DefaultRuleName);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw;
+        //    }
+
+        //        await Task.CompletedTask;
+
+        //    return;
+        //}
+        private async Task RemoveAllRulesAsync()
+        {
+            var _administrationClient = new ServiceBusAdministrationClient(_options.ServiceBusConnectionString);
+
+            try
+            {
+                 var rules =  _administrationClient.GetRulesAsync(_topicName, _subscriptionName);
+
+                await foreach (var rule in rules)
+                {
+                    await _administrationClient.DeleteRuleAsync(_topicName, _subscriptionName, rule.Name);
+                }
+            }
+            catch (Exception ex) 
+            {
+                throw;
+                //_logger.LogWarning("The messaging entity {DefaultRuleName} Could not be found.", RuleProperties.DefaultRuleName);
+            }
+            await Task.CompletedTask;
+
             return;
         }
     }

@@ -6,6 +6,7 @@ using Chat.Services;
 using HttpMessage;
 using Mango.MessageBus;
 using MediatR;
+using MessageBus;
 using MessageBus.Events;
 using MessageBus.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -65,30 +66,31 @@ builder.Services.AddMediatR(opt =>
 });
 builder.Services.AddAzureServiceBusSubscriber(opt =>
 {
-    var myTuple = ("wartoœæ1", "wartoœæ2");
+    opt.SubscriptionName = "chat";
+    //var myTuple = ("wartoœæ1", "wartoœæ2");
     var configuration = builder.Configuration;
     opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString");
-    opt.QueueNameAndEventTypePair = new Dictionary<string, Type>()
-        {
-            {configuration.GetValue<string>("markChatMessageAsReadQueue"),typeof(MarkChatMessageAsReadEvent)},
-            {configuration.GetValue<string>("newOnlineUserQueue"),typeof(NewOnlineUserEvent)},
-            //{configuration.GetValue<string>("FriendInvitationAcceptedQueue"),typeof(FriendInvitationAcceptedEvent)},
-        };
-    //opt.TopicNameWithSubscriptionNameAndEventTypePair = new Dictionary<Tuple<string, string>, Type>()
+    //opt.QueueNameAndEventTypePair = new Dictionary<string, Type>()
+    //    {
+    //        {configuration.GetValue<string>("markChatMessageAsReadQueue"),typeof(MarkChatMessageAsReadEvent)},
+    //        {configuration.GetValue<string>("newOnlineUserQueue"),typeof(NewOnlineUserEvent)},
+    //        //{configuration.GetValue<string>("FriendInvitationAcceptedQueue"),typeof(FriendInvitationAcceptedEvent)},
+    //    };
+    ////opt.TopicNameWithSubscriptionNameAndEventTypePair = new Dictionary<Tuple<string, string>, Type>()
+    ////{
+    ////    {Tuple.Create(configuration.GetValue<string>("AzureBusTopic"),configuration.GetValue<string>("AzureBusSubscription")),typeof(NewUserRegisterCreateUser)},
+    ////    {Tuple.Create(configuration.GetValue<string>("newOfflineUserTopic"),configuration.GetValue<string>("newOfflineUserTopicChatSub")),typeof(NewOfflineUserEvent)},
+    ////};
+    //opt.TopicNameAndEventTypePair = new Dictionary<string, Type>()
     //{
-    //    {Tuple.Create(configuration.GetValue<string>("AzureBusTopic"),configuration.GetValue<string>("AzureBusSubscription")),typeof(NewUserRegisterCreateUser)},
-    //    {Tuple.Create(configuration.GetValue<string>("newOfflineUserTopic"),configuration.GetValue<string>("newOfflineUserTopicChatSub")),typeof(NewOfflineUserEvent)},
+    //    //{configuration.GetValue<string>("AzureBusTopic"),typeof(NewUserRegisterCreateUser)},
+    //    {configuration.GetValue<string>("newOfflineUserTopic"),typeof(NewOfflineUserEvent)},
     //};
-    opt.TopicNameAndEventTypePair = new Dictionary<string, Type>()
-    {
-        //{configuration.GetValue<string>("AzureBusTopic"),typeof(NewUserRegisterCreateUser)},
-        {configuration.GetValue<string>("newOfflineUserTopic"),typeof(NewOfflineUserEvent)},
-    };
-    opt.TopicNameWithSubscriptionName = new Dictionary<string, string>()
-    {
-        //{configuration.GetValue<string>("AzureBusTopic"),configuration.GetValue<string>("AzureBusSubscription")},
-        {configuration.GetValue<string>("newOfflineUserTopic"),configuration.GetValue<string>("newOfflineUserTopicChatSub")},
-    };
+    //opt.TopicNameWithSubscriptionName = new Dictionary<string, string>()
+    //{
+    //    //{configuration.GetValue<string>("AzureBusTopic"),configuration.GetValue<string>("AzureBusSubscription")},
+    //    {configuration.GetValue<string>("newOfflineUserTopic"),configuration.GetValue<string>("newOfflineUserTopicChatSub")},
+    //};
 });
 builder.Services.AddAzureServiceBusSender(opt =>
 {
@@ -121,6 +123,13 @@ if (app.Environment.IsDevelopment())
         }
     }
 }
+
+var eventBus = app.Services.GetRequiredService<AzureServiceBusSubscriber>();// nie potrzeba tworzyæ scope bo to singletone
+
+eventBus.Subscribe<MarkChatMessageAsReadEvent>();
+eventBus.Subscribe<NewOnlineUserEvent>();
+eventBus.Subscribe<NewOfflineUserEvent>();
+
 
 app.UseHttpsRedirection();
 

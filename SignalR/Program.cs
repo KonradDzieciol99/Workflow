@@ -1,6 +1,7 @@
 
 using Mango.MessageBus;
 using MediatR;
+using MessageBus;
 using MessageBus.Events;
 using MessageBus.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -87,33 +88,34 @@ builder.Services.AddAzureServiceBusSubscriber(opt =>
 {
     var configuration = builder.Configuration;
     opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString");
-    opt.QueueNameAndEventTypePair = new Dictionary<string, Type>()
-        {
-            {configuration.GetValue<string>("sendMessageToSignalRQueue"),typeof(SendMessageToSignalREvent)},
-            {configuration.GetValue<string>("newOnlineUserWithFriendsQueue"),typeof(NewOnlineUserWithFriendsEvent)},
-            {configuration.GetValue<string>("NewOnlineMessagesUserWithFriendsQueue"),typeof(NewOnlineMessagesUserWithFriendsEvent)},
-            {configuration.GetValue<string>("NewOfflineUserWithFriendsQueue"),typeof(NewOfflineUserWithFriendsEvent)},
-        //{configuration.GetValue<string>("FriendInvitationAcceptedQueue"),typeof(FriendInvitationAcceptedEvent)},
-        //{configuration.GetValue<string>("InviteUserToFriendsQueue"),typeof(InviteUserToFriendsEvent)},
-            {"notification-queue", typeof(NotificationEvent)}
-        };
-    opt.TopicNameAndEventTypePair = new Dictionary<string, Type>()
-    {
-        //{configuration.GetValue<string>("FriendInvitationAcceptedQueue"),typeof(FriendInvitationAcceptedEvent)},
-        {configuration.GetValue<string>("FriendInvitationAcceptedTopic"),typeof(FriendInvitationAcceptedEvent)},
-        //{configuration.GetValue<string>("NewOfflineUserWithFriendsQueue"),typeof(InviteUserToFriendsEvent)},
-        {"invite-user-to-friends-topic",typeof(InviteUserToFriendsEvent)},
-        //{configuration.GetValue<string>("NewOfflineUserTopic"),typeof(InviteUserToFriendsEvent)},
-    };
-    opt.TopicNameWithSubscriptionName = new Dictionary<string, string>()
-    {
-        {configuration.GetValue<string>("FriendInvitationAcceptedTopic"),"signalr"},
-        {"invite-user-to-friends-topic","signalr"},
-        //{configuration.GetValue<string>("FriendInvitationAcceptedQueue"),"signalr"},
-        //{configuration.GetValue<string>("NewOfflineUserTopic"),"signalr"},
-        //{configuration.GetValue<string>("NewOfflineUserWithFriendsQueue"),"signalr"},
-        //{configuration.GetValue<string>("NewOfflineUserWithFriendsQueue"),"signalr"},
-    };
+    opt.SubscriptionName = "signalr";
+    //opt.QueueNameAndEventTypePair = new Dictionary<string, Type>()
+    //    {
+    //        {configuration.GetValue<string>("sendMessageToSignalRQueue"),typeof(SendMessageToSignalREvent)},
+    //        {configuration.GetValue<string>("newOnlineUserWithFriendsQueue"),typeof(NewOnlineUserWithFriendsEvent)},
+    //        {configuration.GetValue<string>("NewOnlineMessagesUserWithFriendsQueue"),typeof(NewOnlineMessagesUserWithFriendsEvent)},
+    //        {configuration.GetValue<string>("NewOfflineUserWithFriendsQueue"),typeof(NewOfflineUserWithFriendsEvent)},
+    //    //{configuration.GetValue<string>("FriendInvitationAcceptedQueue"),typeof(FriendInvitationAcceptedEvent)},
+    //    //{configuration.GetValue<string>("InviteUserToFriendsQueue"),typeof(InviteUserToFriendsEvent)},
+    //        {"notification-queue", typeof(NotificationEvent)}
+    //    };
+    //opt.TopicNameAndEventTypePair = new Dictionary<string, Type>()
+    //{
+    //    //{configuration.GetValue<string>("FriendInvitationAcceptedQueue"),typeof(FriendInvitationAcceptedEvent)},
+    //    {configuration.GetValue<string>("FriendInvitationAcceptedTopic"),typeof(FriendInvitationAcceptedEvent)},
+    //    //{configuration.GetValue<string>("NewOfflineUserWithFriendsQueue"),typeof(InviteUserToFriendsEvent)},
+    //    {"invite-user-to-friends-topic",typeof(InviteUserToFriendsEvent)},
+    //    //{configuration.GetValue<string>("NewOfflineUserTopic"),typeof(InviteUserToFriendsEvent)},
+    //};
+    //opt.TopicNameWithSubscriptionName = new Dictionary<string, string>()
+    //{
+    //    {configuration.GetValue<string>("FriendInvitationAcceptedTopic"),"signalr"},
+    //    {"invite-user-to-friends-topic","signalr"},
+    //    //{configuration.GetValue<string>("FriendInvitationAcceptedQueue"),"signalr"},
+    //    //{configuration.GetValue<string>("NewOfflineUserTopic"),"signalr"},
+    //    //{configuration.GetValue<string>("NewOfflineUserWithFriendsQueue"),"signalr"},
+    //    //{configuration.GetValue<string>("NewOfflineUserWithFriendsQueue"),"signalr"},
+    //};
 });
 builder.Services.AddAzureServiceBusSender(opt =>
 {
@@ -121,6 +123,21 @@ builder.Services.AddAzureServiceBusSender(opt =>
 });
 
 var app = builder.Build();
+
+var eventBus = app.Services.GetRequiredService<AzureServiceBusSubscriber>();// nie potrzeba tworzyæ scope bo to singletone
+
+var subscribeTasks = new List<Task>
+{
+    eventBus.Subscribe<SendMessageToSignalREvent>(),
+    eventBus.Subscribe<NewOnlineUserWithFriendsEvent>(),
+    eventBus.Subscribe<NewOnlineMessagesUserWithFriendsEvent>(),
+    eventBus.Subscribe<NewOfflineUserWithFriendsEvent>(),
+    eventBus.Subscribe<FriendInvitationAcceptedEvent>(),
+    eventBus.Subscribe<InviteUserToFriendsEvent>(),
+    eventBus.Subscribe<NotificationEvent>(),
+};
+
+await Task.WhenAll(subscribeTasks);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
