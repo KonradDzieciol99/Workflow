@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
+using SignalR.Models;
 using StackExchange.Redis;
 using System.Security.Claims;
 
@@ -28,15 +29,15 @@ namespace SignalR
             var recipientEmail = httpContext.Request.Query["RecipientEmail"].ToString();
             if (string.IsNullOrEmpty(recipientEmail))
                 throw new HubException("User cannot be identified");
-            var SenderEmail = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new HubException("User cannot be identified");
+            var UserEmail = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new HubException("User cannot be identified");
 
-            var groupName = GetGroupName(SenderEmail, recipientEmail);
+            var groupName = GetGroupName(UserEmail, recipientEmail);
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
 
             //await _redisDb.HashSetAsync(groupName, Context.ConnectionId, recipientEmail);
-            await _redisDb.HashSetAsync(groupName, Context.ConnectionId, SenderEmail);
+            await _redisDb.HashSetAsync(groupName, Context.ConnectionId, UserEmail);
 
-            List<string> groupMembers = new() { SenderEmail };
+            List<string> groupMembers = new() { UserEmail };
 
             var values = await _redisDb.HashValuesAsync(groupName);
             if (values.Contains(recipientEmail))
@@ -76,7 +77,56 @@ namespace SignalR
             var stringCompare = string.CompareOrdinal(caller, other) < 0;
             return stringCompare ? $"{caller}-{other}" : $"{other}-{caller}";
         }
+        public async Task UserIsTyping()
+        {
+            var httpContext = Context.GetHttpContext() ?? throw new ArgumentNullException("httpContext error");
+            var recipientEmail = httpContext.Request.Query["RecipientEmail"].ToString();
+            if (string.IsNullOrEmpty(recipientEmail))
+                throw new HubException("User cannot be identified");
+            var userEmail = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new HubException("User cannot be identified");
 
+            var groupName = GetGroupName(userEmail, recipientEmail);
+
+            //List<ChatGroupMember> groupMembers = new() { new ChatGroupMember() { UserEmail = userEmail, IsTyping = true } };
+
+            await Clients.Group(groupName).SendAsync("UserIsTyping", userEmail);
+        }
+        //public async Task UserIsTyping()
+        //{
+        //    var httpContext = Context.GetHttpContext() ?? throw new ArgumentNullException("httpContext error");
+        //    var recipientEmail = httpContext.Request.Query["RecipientEmail"].ToString();
+        //    if (string.IsNullOrEmpty(recipientEmail))
+        //        throw new HubException("User cannot be identified");
+        //    var userEmail = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new HubException("User cannot be identified");
+
+        //    var groupName = GetGroupName(userEmail, recipientEmail);
+
+        //    List<ChatGroupMember> groupMembers = new() { new ChatGroupMember() { UserEmail = userEmail, IsTyping = true } };
+
+        //    var values = await _redisDb.HashValuesAsync(groupName);
+        //    if (values.Contains(recipientEmail))
+        //        groupMembers.Add(new ChatGroupMember() { UserEmail = recipientEmail });
+
+        //    await Clients.Group(groupName).SendAsync("UpdatedGroup", groupMembers);
+        //}
+        //public async Task UserStoppedTyping()
+        //{
+        //    var httpContext = Context.GetHttpContext() ?? throw new ArgumentNullException("httpContext error");
+        //    var recipientEmail = httpContext.Request.Query["RecipientEmail"].ToString();
+        //    if (string.IsNullOrEmpty(recipientEmail))
+        //        throw new HubException("User cannot be identified");
+        //    var userEmail = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new HubException("User cannot be identified");
+
+        //    var groupName = GetGroupName(userEmail, recipientEmail);
+
+        //    List<ChatGroupMember> groupMembers = new() { new ChatGroupMember() { UserEmail = userEmail} };
+
+        //    var values = await _redisDb.HashValuesAsync(groupName);
+        //    if (values.Contains(recipientEmail))
+        //        groupMembers.Add(new ChatGroupMember() { UserEmail = recipientEmail });
+
+        //    await Clients.Group(groupName).SendAsync("UpdatedGroup", groupMembers);
+        //}
         //public async Task SendMessage(CreateMessageDto createMessageDto)
         //{
         //    var httpContext = Context.GetHttpContext() ?? throw new ArgumentNullException("httpContext error");
@@ -108,16 +158,16 @@ namespace SignalR
         //        message.DateRead = DateTime.UtcNow;
 
 
-    ////    else
-    ////    {
-    ////        var connections = await PresenceTracker.GetConnectionsForUser(recipient.UserName);
-    ////        if (connections != null)
-    ////        {
-    ////            await _presenceHub.Clients.Clients(connections).SendAsync("NewMessageReceived",
-    ////                new { username = sender.UserName, knownAs = sender.KnownAs
-    ////});
-    ////        }
-    ////    }
+        ////    else
+        ////    {
+        ////        var connections = await PresenceTracker.GetConnectionsForUser(recipient.UserName);
+        ////        if (connections != null)
+        ////        {
+        ////            await _presenceHub.Clients.Clients(connections).SendAsync("NewMessageReceived",
+        ////                new { username = sender.UserName, knownAs = sender.KnownAs
+        ////});
+        ////        }
+        ////    }
 
         //    _unitOfWork.MessageRepository.Add(message);
 

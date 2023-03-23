@@ -91,7 +91,7 @@ public static class Config
                     //"custom.profile",
                 },
                 
-                RequireConsent = true,//// ????
+                RequireConsent = false,//// ????
                 AllowRememberConsent = true,/// ?????
                 AccessTokenLifetime = 600,
                 

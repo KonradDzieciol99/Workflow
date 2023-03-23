@@ -14,7 +14,7 @@ namespace Chat.Events.Handlers
         }
         public async Task Handle(MarkChatMessageAsReadEvent request, CancellationToken cancellationToken)
         {
-            var message = await _unitOfWork.MessageRepository.GetOneAsync(x => x.Id == request.Id);
+            var message = await _unitOfWork.MessageRepository.GetOneAsync(x => x.Id == request.ObjectId.ToString());
 
             if (message is null)
                 throw new ArgumentNullException($"I can't find the chat message from event:{request}");

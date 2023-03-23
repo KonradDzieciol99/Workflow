@@ -139,6 +139,12 @@ namespace Chat.Repositories
                     .FirstOrDefaultAsync(x => (x.InviterUserId == userId && x.InvitedUserId == recipientId)
                     || (x.InviterUserId == recipientId && x.InvitedUserId == userId));
         }
+        public async Task<FriendInvitation?> GetInvitationByEmailAsync(string userEmail, string recipientEmail)
+        {
+            return await _applicationDbContext.FriendsInvitation
+                    .FirstOrDefaultAsync(x => (x.InviterUserEmail == userEmail && x.InvitedUserEmail == recipientEmail)
+                    || (x.InviterUserEmail == recipientEmail && x.InvitedUserEmail == userEmail));
+        }
     }
 
     public class testclass

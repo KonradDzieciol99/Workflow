@@ -33,26 +33,26 @@ namespace Notification.Events.Handlers
                 notificationForRecipient = new AppNotificationMongo()
                 {
                     Id = Guid.NewGuid().ToString(),
-                    UserId = request.NotificationRecipient.UserId,
+                    UserId = request.EventRecipient.UserId,
                     ObjectId = new BsonDocument { { "InviterUserId", friendInvitationId.InviterUserId }, { "InvitedUserId", friendInvitationId.InvitedUserId } },
                     EventType = request.EventType,
                     NotificationType = "FriendRequestReceived",
-                    Description = $"You have received a friend request from {request.NotificationSender.UserEmail}",
+                    Description = $"You have received a friend request from {request.EventSender.UserEmail}",
                     // = JsonSerializer.Serialize(request),
                     CreationDate = request.MessageCreated,
-                    NotificationPartner = request.NotificationSender
+                    NotificationPartner = request.EventSender
                 };
                 notificationForSender = new AppNotificationMongo()
                 {
                     Id = Guid.NewGuid().ToString(),
-                    UserId = request.NotificationSender.UserId,
+                    UserId = request.EventSender.UserId,
                     ObjectId = new BsonDocument { { "InviterUserId", friendInvitationId.InviterUserId }, { "InvitedUserId", friendInvitationId.InvitedUserId } },
                     EventType = request.EventType,
                     NotificationType = "FriendRequestSent",
-                    Description = $"You sent a friend request to {request.NotificationRecipient.UserEmail}",
+                    Description = $"You sent a friend request to {request.EventRecipient.UserEmail}",
                     //Data = JsonSerializer.Serialize(request),    
                     CreationDate = request.MessageCreated,
-                    NotificationPartner = request.NotificationRecipient
+                    NotificationPartner = request.EventRecipient
                 };
                 notificationsArray.Add(notificationForRecipient);
                 notificationsArray.Add(notificationForSender);
@@ -72,14 +72,14 @@ namespace Notification.Events.Handlers
                 AppNotification = new AppNotification()
                 {
                     Id = notificationForRecipient.Id,
-                    UserId = request.NotificationRecipient.UserId,
+                    UserId = request.EventRecipient.UserId,
                     ObjectId = request.ObjectId,
                     EventType = request.EventType,
                     NotificationType = "FriendRequestReceived",
-                    Description = $"You have received a friend request from {request.NotificationSender.UserEmail}",
+                    Description = $"You have received a friend request from {request.EventSender.UserEmail}",
                     //Data = request,
                     CreationDate = request.MessageCreated,
-                    NotificationPartner = request.NotificationSender
+                    NotificationPartner = request.EventSender
                 }
             };
             var notificationEventForSender = new NotificationEvent()
@@ -87,14 +87,14 @@ namespace Notification.Events.Handlers
                 AppNotification = new AppNotification()
                 {
                     Id = notificationForSender.Id,
-                    UserId = request.NotificationSender.UserId,
+                    UserId = request.EventSender.UserId,
                     ObjectId = request.ObjectId,
                     EventType = request.EventType,
                     NotificationType = "FriendRequestSent",
-                    Description = $"You sent a friend request to {request.NotificationRecipient.UserEmail}",
+                    Description = $"You sent a friend request to {request.EventRecipient.UserEmail}",
                     //Data = request,
                     CreationDate = request.MessageCreated,
-                    NotificationPartner = request.NotificationRecipient
+                    NotificationPartner = request.EventRecipient
                 }
             };
 

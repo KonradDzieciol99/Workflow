@@ -22,7 +22,7 @@ namespace MessageBus
         }
         public async Task PublishMessage<T>(T message) where T : BaseMessage
         {
-            //if (message.NotificationSender is null)
+            //if (message.EventSender is null)
             //{
             //    //
             //} sprawdzić czy się wywali jeśli coś będzie nie ok z polami
@@ -52,8 +52,8 @@ namespace MessageBus
             //        EventType = message.EventType,
             //        Id = message.Id,
             //        MessageCreated = message.MessageCreated,
-            //        NotificationRecipient = message.NotificationRecipient,
-            //        NotificationSender = message.NotificationSender,
+            //        EventRecipient = message.EventRecipient,
+            //        EventSender = message.EventSender,
             //        IsDisplayed = false
             //    };
 

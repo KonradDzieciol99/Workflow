@@ -99,8 +99,8 @@ namespace Chat.Controllers
                 var friendInvitationAcceptedEvent = new InviteUserToFriendsEvent()
                 {
                     ObjectId = new FriendInvitationId(){ InviterUserId=friendInvitation.InviterUserId, InvitedUserId=friendInvitation.InvitedUserId },
-                    NotificationRecipient = new SimpleUser() { UserEmail = friendInvitation.InvitedUserEmail, UserId = friendInvitation.InvitedUserId },
-                    NotificationSender = new SimpleUser() { UserEmail = userEmail, UserId = userId },
+                    EventRecipient = new SimpleUser() { UserEmail = friendInvitation.InvitedUserEmail, UserId = friendInvitation.InvitedUserId },
+                    EventSender = new SimpleUser() { UserEmail = userEmail, UserId = userId },
                     EventType = "InviteUserToFriendsEvent",
                     FriendInvitationDto = _mapper.Map<FriendInvitationDtoGlobal>(friendInvitation),
                     UserWhoInvited = new SimpleUser() { UserEmail = userEmail, UserId = userId },
@@ -176,8 +176,8 @@ namespace Chat.Controllers
         //        var friendInvitationAcceptedEvent = new FriendInvitationAcceptedEvent() 
         //        {
         //            EventType = "FriendInvitationAcceptedEvent",
-        //            NotificationRecipient = new SimpleUser() { UserEmail = friendInvitation.InviterUserEmail, UserId = friendInvitation.InviterUserId },
-        //            NotificationSender = new SimpleUser() { UserEmail = userEmail, UserId = userId },
+        //            EventRecipient = new SimpleUser() { UserEmail = friendInvitation.InviterUserEmail, UserId = friendInvitation.InviterUserId },
+        //            EventSender = new SimpleUser() { UserEmail = userEmail, UserId = userId },
         //            FriendInvitationDto = _mapper.Map<FriendInvitationDtoGlobal>(friendInvitation), 
         //            UserWhoAcceptedInvitation = new SimpleUser() { UserEmail = userEmail, UserId = userId},
         //            UserWhoseInvitationAccepted = new SimpleUser() { UserEmail = friendInvitation.InviterUserEmail, UserId = friendInvitation.InviterUserId },
@@ -192,7 +192,13 @@ namespace Chat.Controllers
         [HttpPost("DeclineFriendInvitation")]
         public async Task<IActionResult> DeclineFriendInvitation(FriendInvitationId friendInvitationId)
         {
-            var InitedUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new HubException("User cannot be identified");
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+
+            if (userEmail is null || userId is null)
+            {
+                return BadRequest("User cannot be identified.");
+            }
 
             //var friendInvitation = await _unitOfWork.FriendInvitationRepository.GetFriendInvitation(friendInvitationDto.InviterUserId, InitedUserId);
 
@@ -206,8 +212,24 @@ namespace Chat.Controllers
             _unitOfWork.FriendInvitationRepository.Remove(friendInvitation);
 
             if (await _unitOfWork.Complete())
-                return Ok();
+            {
+                var friendInvitationAcceptedEvent = new RemoveUserFromFriendsEvent()
+                {
+                    ObjectId = new FriendInvitationId() { InviterUserId = friendInvitation.InviterUserId, InvitedUserId = friendInvitation.InvitedUserId },
+                    EventRecipient = new SimpleUser() { 
+                        UserEmail = friendInvitation.InvitedUserEmail == userEmail ? friendInvitation.InviterUserEmail : friendInvitation.InvitedUserEmail,
+                        UserId = friendInvitation.InvitedUserId == userId ? friendInvitation.InviterUserId : friendInvitation.InvitedUserId,
+                    },
+                    EventSender = new SimpleUser() { UserEmail = userEmail, UserId = userId },
+                    //FriendInvitationDto = _mapper.Map<FriendInvitationDtoGlobal>(friendInvitation),
+                    //UserWhoInvited = new SimpleUser() { UserEmail = userEmail, UserId = userId },
+                    //InvitedUser = new SimpleUser() { UserEmail = friendInvitation.InvitedUserEmail, UserId = friendInvitation.InvitedUserId },
+                };
+                await _messageBus.PublishMessage(friendInvitationAcceptedEvent);
 
+
+                return Ok();
+            }
             return BadRequest("This invitation cannot be canceled.");
         }
 
@@ -237,8 +259,8 @@ namespace Chat.Controllers
                 {
                     ObjectId = new FriendInvitationId() { InviterUserId = friendInvitation.InviterUserId, InvitedUserId = friendInvitation.InvitedUserId },
                     EventType = "FriendInvitationAcceptedEvent",
-                    NotificationRecipient = new SimpleUser() { UserEmail = friendInvitation.InviterUserEmail, UserId = friendInvitation.InviterUserId },
-                    NotificationSender = new SimpleUser() { UserEmail = userEmail, UserId = userId },
+                    EventRecipient = new SimpleUser() { UserEmail = friendInvitation.InviterUserEmail, UserId = friendInvitation.InviterUserId },
+                    EventSender = new SimpleUser() { UserEmail = userEmail, UserId = userId },
                     FriendInvitationDto = _mapper.Map<FriendInvitationDtoGlobal>(friendInvitation),
                     UserWhoAcceptedInvitation = new SimpleUser() { UserEmail = userEmail, UserId = userId },
                     UserWhoseInvitationAccepted = new SimpleUser() { UserEmail = friendInvitation.InviterUserEmail, UserId = friendInvitation.InviterUserId },

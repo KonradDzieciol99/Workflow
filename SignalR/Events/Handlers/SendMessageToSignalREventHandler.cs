@@ -35,7 +35,11 @@ namespace SignalR.Events.Handlers
             if (values.Contains(request.RecipientEmail))
             {
                 request.DateRead = DateTime.UtcNow;
-                var markChatMessageAsReadEvent = new MarkChatMessageAsReadEvent() { Id = request.Id, DateRead = (DateTime)request.DateRead };
+                var markChatMessageAsReadEvent = new MarkChatMessageAsReadEvent() 
+                {
+                    DateRead = (DateTime)request.DateRead,
+                    ObjectId = request.ObjectId,
+                };
                 await _azureServiceBusSender.PublishMessage(markChatMessageAsReadEvent);
             }
 
