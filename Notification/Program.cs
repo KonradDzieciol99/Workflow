@@ -98,9 +98,15 @@ var app = builder.Build();
 
 var eventBus = app.Services.GetRequiredService<AzureServiceBusSubscriber>();// nie potrzeba tworzyæ scope bo to singletone
 
-eventBus.Subscribe<NewUserRegistrationEvent>();
-eventBus.Subscribe<InviteUserToFriendsEvent>();
-eventBus.Subscribe<FriendInvitationAcceptedEvent>();
+var subscribeTasks = new List<Task>
+{
+    eventBus.Subscribe<NewUserRegistrationEvent>(),
+    eventBus.Subscribe<InviteUserToFriendsEvent>(),
+    eventBus.Subscribe<FriendInvitationAcceptedEvent>(),
+    eventBus.Subscribe<RemoveUserFromFriendsEvent>(),
+};
+
+await Task.WhenAll(subscribeTasks);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

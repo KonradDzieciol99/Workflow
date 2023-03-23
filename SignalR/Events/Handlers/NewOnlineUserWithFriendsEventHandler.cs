@@ -37,6 +37,7 @@ namespace SignalR.Events.Handlers
             }
 
             await _messagesHubContext.Clients.Users(request.NewOnlineUserChatFriends.Select(x => x.UserId)).SendAsync("UserIsOnline", request.NewOnlineUser);
+            await _messagesHubContext.Clients.User(request.NewOnlineUser.UserId).SendAsync("GetOnlineUsers", onlineUsers);
 
             return;
         }

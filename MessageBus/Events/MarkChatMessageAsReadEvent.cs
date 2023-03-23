@@ -12,5 +12,6 @@ namespace MessageBus.Events
     {
         //public int Id { get; set; }
         public DateTime DateRead { get; set; }
+        //public string MessageId { get; set; }
     }
 }

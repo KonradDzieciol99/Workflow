@@ -29,8 +29,8 @@ namespace SignalR.Common.PipelineBehaviour
                 {
                     new HashEntry(Guid.NewGuid().ToString(), JsonSerializer.Serialize(message)),
                 };
-                await _redisDb.HashSetAsync($"user-notification-{message.NotificationRecipient.UserEmail}", value);
-                await _redisDb.HashSetAsync($"user-notification-{message.NotificationSender.UserEmail}", value);
+                await _redisDb.HashSetAsync($"user-notification-{message.EventRecipient.UserEmail}", value);
+                await _redisDb.HashSetAsync($"user-notification-{message.EventSender.UserEmail}", value);
 
             }
 

@@ -24,11 +24,18 @@ namespace SignalR.Events.Handlers
         {
 
             await _messagesHubContext.Clients.User(request.UserWhoseInvitationAccepted.UserId).SendAsync("FriendInvitationAccepted", request.FriendInvitationDto);
+            //tutaj też ten drugi user
+            await _messagesHubContext.Clients.User(request.EventSender.UserId).SendAsync("FriendInvitationAccepted", request.FriendInvitationDto);
 
             var isOnline = await _redisDb.KeyExistsAsync($"presence-{request.UserWhoAcceptedInvitation.UserEmail}");
             if (isOnline)
             {
                 await _messagesHubContext.Clients.User(request.UserWhoseInvitationAccepted.UserId).SendAsync("UserIsOnline", request.UserWhoAcceptedInvitation);
+            }
+            isOnline = await _redisDb.KeyExistsAsync($"presence-{request.EventRecipient.UserEmail}");
+            if (isOnline)
+            {
+                await _messagesHubContext.Clients.User(request.EventSender.UserId).SendAsync("UserIsOnline", request.EventRecipient);
             }
             return;
         }

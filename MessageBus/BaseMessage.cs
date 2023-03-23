@@ -16,10 +16,12 @@ namespace Mango.MessageBus
         //[BsonRepresentation(BsonType.ObjectId)]
         public string? Id { get; set; }
         public DateTime MessageCreated { get; set; }
-        public SimpleUser? NotificationRecipient { get; set; }
-        public SimpleUser? NotificationSender { get; set; }
+        public SimpleUser? EventRecipient { get; set; }
+        public SimpleUser? EventSender { get; set; } = new SimpleUser() { UserId = "System",UserEmail="System" };
         public string EventType { get; set; }
         public object? ObjectId { get; set; }//streamId
+
+        //public SimpleUser? EventSender { get; set; }
         //w zależności od tego czy zakceptowane czy nie zakceptowane czy oczekujące
         //będzie sie zmieniał po prostu rozaj eventu 
     }

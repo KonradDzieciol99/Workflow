@@ -52,7 +52,7 @@ namespace Chat.Controllers
                 return BadRequest("You can't invite yourself.");
             }
 
-            var invitation = await _unitOfWork.FriendInvitationRepository.GetInvitationAsync(senderId, createMessageDto.RecipientEmail);
+            var invitation = await _unitOfWork.FriendInvitationRepository.GetInvitationByEmailAsync(senderEmail, createMessageDto.RecipientEmail);
 
             if (invitation is null || invitation.Confirmed==false)
             {
@@ -74,7 +74,7 @@ namespace Chat.Controllers
                 //Recipient = recipient,
                 RecipientId = invitation.InviterUserId == senderId ? invitation.InvitedUserId : invitation.InviterUserId,
                 SenderEmail = senderEmail,
-                RecipientEmail = invitation.InviterUserEmail == senderId ? invitation.InvitedUserEmail : invitation.InviterUserEmail,
+                RecipientEmail = invitation.InviterUserEmail == senderEmail ? invitation.InvitedUserEmail : invitation.InviterUserEmail,
                 Content = createMessageDto.Content
             }; 
 
@@ -85,10 +85,11 @@ namespace Chat.Controllers
                 //OrderStatusChangedToAwaitingValidationIntegrationEvent
                 //var newUserRegisterCreateUser = new NewUserRegisterCreateUser() { Email = localUserRegisterSuccessEvent.LocalUserEmail, Id = localUserRegisterSuccessEvent.IdentityUserId };
 
-                var SendMessageToSignalREvent = _mapper.Map<SendMessageToSignalREvent>(message);
-                SendMessageToSignalREvent.NotificationSender = new SimpleUser() { UserEmail = senderEmail, UserId = senderId };
-                SendMessageToSignalREvent.NotificationRecipient = new SimpleUser() { UserEmail = message.RecipientEmail, UserId = message.RecipientId};
-                await _messageBus.PublishMessage(SendMessageToSignalREvent);
+                var sendMessageToSignalREvent = _mapper.Map<SendMessageToSignalREvent>(message);
+                sendMessageToSignalREvent.ObjectId = message.Id;
+                sendMessageToSignalREvent.EventSender = new SimpleUser() { UserEmail = senderEmail, UserId = senderId };
+                sendMessageToSignalREvent.EventRecipient = new SimpleUser() { UserEmail = message.RecipientEmail, UserId = message.RecipientId};
+                await _messageBus.PublishMessage(sendMessageToSignalREvent);
                 return Ok();
             }
 

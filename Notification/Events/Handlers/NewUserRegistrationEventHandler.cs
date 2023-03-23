@@ -29,12 +29,12 @@ namespace Notification.Events.Handlers
             AppNotificationMongo notification = new AppNotificationMongo()
             {
                 Id = Guid.NewGuid().ToString(),
-                UserId = request.NotificationRecipient.UserId,
+                UserId = request.EventRecipient.UserId,
                 ObjectId = new BsonDocument { { "Id", stringId },},
                 EventType = request.EventType,
                 NotificationType = "WelcomeNotification",
                 //Data = JsonSerializer.Serialize(request),
-                Description = $"Thank you for registering {request.NotificationRecipient.UserEmail}, have fun testing!",
+                Description = $"Thank you for registering {request.EventRecipient.UserEmail}, have fun testing!",
                 CreationDate = request.MessageCreated,
                 NotificationPartner = new SimpleUser("", "Workflow@Workflow.com", "https://res.cloudinary.com/ddmmg4wb2/image/upload/v1673385489/workflow-management_ssnvgy.jpg")
             };
@@ -45,12 +45,12 @@ namespace Notification.Events.Handlers
                 AppNotification = new AppNotification()
                 {
                     Id = notification.Id,
-                    UserId = request.NotificationRecipient.UserId,
+                    UserId = request.EventRecipient.UserId,
                     ObjectId = request.ObjectId,
                     EventType = request.EventType,
                     NotificationType = "WelcomeNotification",
                     //Data = request,
-                    Description = $"Thank you for registering {request.NotificationRecipient.UserEmail}, have fun testing!",
+                    Description = $"Thank you for registering {request.EventRecipient.UserEmail}, have fun testing!",
                     CreationDate = request.MessageCreated,
                     NotificationPartner = new SimpleUser("", "Workflow@Workflow.com", "https://res.cloudinary.com/ddmmg4wb2/image/upload/v1673385489/workflow-management_ssnvgy.jpg")
                 }

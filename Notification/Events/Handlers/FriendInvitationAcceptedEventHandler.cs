@@ -34,26 +34,26 @@ namespace Notification.Events.Handlers
             AppNotificationMongo notificationForRecipient = new AppNotificationMongo()
             {
                 Id = Guid.NewGuid().ToString(),
-                UserId = request.NotificationRecipient.UserId,
+                UserId = request.EventRecipient.UserId,
                 ObjectId = new BsonDocument { { "InviterUserId", friendInvitationId.InviterUserId }, { "InvitedUserId", friendInvitationId.InvitedUserId } },
                 EventType = request.EventType,
                 NotificationType = "NewFriendAdded",
-                Description = $"You and {request.NotificationSender.UserEmail} are friends now!",
+                Description = $"You and {request.EventSender.UserEmail} are friends now!",
                 //Data = JsonSerializer.Serialize(request),
                 CreationDate = request.MessageCreated,
-                NotificationPartner = request.NotificationSender
+                NotificationPartner = request.EventSender
             };
             AppNotificationMongo notificationForSender = new AppNotificationMongo()
             {
                 Id = Guid.NewGuid().ToString(),
-                UserId = request.NotificationSender.UserId,
+                UserId = request.EventSender.UserId,
                 ObjectId = new BsonDocument { { "InviterUserId", friendInvitationId.InviterUserId }, { "InvitedUserId", friendInvitationId.InvitedUserId } },
                 EventType = request.EventType,
                 NotificationType = "NewFriendAdded",
-                Description = $"You and {request.NotificationRecipient.UserEmail} are friends now!",
+                Description = $"You and {request.EventRecipient.UserEmail} are friends now!",
                 //Data = JsonSerializer.Serialize(request),
                 CreationDate = request.MessageCreated,
-                NotificationPartner = request.NotificationRecipient
+                NotificationPartner = request.EventRecipient
             };
 
 
@@ -73,21 +73,21 @@ namespace Notification.Events.Handlers
 
                 //foreach ( var item in resoult ) 
                 //{
-                //    if (item.UserId == request.NotificationRecipient.UserId)
+                //    if (item.UserId == request.EventRecipient.UserId)
                 //    {
                 //        notificationForRecipient.Id = item.Id;
                 //    }
-                //    if (item.UserId == request.NotificationSender.UserId)
+                //    if (item.UserId == request.EventSender.UserId)
                 //    {
                 //        notificationForSender.Id = item.Id;
                 //    }
                 //}
-                var oldRecipientNotification=resoult.FirstOrDefault(x => x.UserId == request.NotificationRecipient.UserId);
+                var oldRecipientNotification=resoult.FirstOrDefault(x => x.UserId == request.EventRecipient.UserId);
                 if (oldRecipientNotification is not null)
                 {
                     notificationForRecipient.Id = oldRecipientNotification.Id;
                 }
-                var oldSenderNotification = resoult.FirstOrDefault(x => x.UserId == request.NotificationSender.UserId);
+                var oldSenderNotification = resoult.FirstOrDefault(x => x.UserId == request.EventSender.UserId);
                 if (oldSenderNotification is not null)
                 {
                     notificationForSender.Id = oldSenderNotification.Id;
@@ -96,8 +96,8 @@ namespace Notification.Events.Handlers
                 //await collection.InsertManyAsync(notificationsArray);
                 //await collection.DeleteManyAsync();
                 var replaceOptions = new ReplaceOptions { IsUpsert = false };
-                await collection.ReplaceOneAsync(x=>x.UserId==request.NotificationRecipient.UserId, notificationForRecipient, replaceOptions);
-                await collection.ReplaceOneAsync(x=>x.UserId==request.NotificationSender.UserId, notificationForSender, replaceOptions);
+                await collection.ReplaceOneAsync(x => x.Id == oldRecipientNotification.Id, notificationForRecipient, replaceOptions);
+                await collection.ReplaceOneAsync(x => x.Id == oldSenderNotification.Id, notificationForSender, replaceOptions);
             }
             catch (Exception)
             {
@@ -111,14 +111,14 @@ namespace Notification.Events.Handlers
                 AppNotification = new AppNotification()
                 {
                     Id = notificationForRecipient.Id,
-                    UserId = request.NotificationRecipient.UserId,
+                    UserId = request.EventRecipient.UserId,
                     ObjectId = request.ObjectId,
                     EventType = request.EventType,
                     NotificationType = "NewFriendAdded",
-                    Description = $"You and {request.NotificationSender.UserEmail} are friends now!",
+                    Description = $"You and {request.EventSender.UserEmail} are friends now!",
                     //Data = request,
                     CreationDate = request.MessageCreated,
-                    NotificationPartner = request.NotificationSender
+                    NotificationPartner = request.EventSender
                 }
             };
             var notificationEventForSender = new NotificationEvent()
@@ -126,14 +126,14 @@ namespace Notification.Events.Handlers
                 AppNotification = new AppNotification()
                 {
                     Id = notificationForSender.Id,
-                    UserId = request.NotificationSender.UserId,
+                    UserId = request.EventSender.UserId,
                     ObjectId = request.ObjectId,
                     EventType = request.EventType,
                     NotificationType = "NewFriendAdded",
-                    Description = $"You and {request.NotificationRecipient.UserEmail} are friends now!",
+                    Description = $"You and {request.EventRecipient.UserEmail} are friends now!",
                     //Data = request,
                     CreationDate = request.MessageCreated,
-                    NotificationPartner = request.NotificationRecipient
+                    NotificationPartner = request.EventRecipient
                 }
             };
 

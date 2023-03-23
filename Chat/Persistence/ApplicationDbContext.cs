@@ -26,7 +26,7 @@ namespace Chat.Persistence
             builder.Entity<Message>(opt =>
             {
                 opt.HasKey(x => x.Id);
-
+                opt.Property(x => x.Id).ValueGeneratedOnAdd();
                 //opt.HasOne(m => m.Sender)
                 //.WithMany(u => u.MessagesSent)
                 //.HasForeignKey(m => m.SenderId)
