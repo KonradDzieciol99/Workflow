@@ -142,12 +142,15 @@ namespace MessageBus
                     });
                     _events.Add(eventName, typeof(T));
                 }
-                //catch (ServiceBusException)
-                catch (Exception)
+                catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.MessagingEntityAlreadyExists)
                 {
-                //_logger.LogWarning("The messaging entity {eventName} already exists.", eventName);
-                    throw;
+                    //_logger.LogWarning("The messaging entity {eventName} already exists.", eventName);
                 }
+                catch (Exception ex)
+                {
+                    //_logger.LogWarning("The messaging entity {eventName} already exists.", eventName);
+                    throw;
+                }   
             //}
 
             //_logger.LogInformation("Subscribing to event {EventName} with {EventHandler}", eventName, typeof(TH).Name);
