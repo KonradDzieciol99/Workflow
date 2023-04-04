@@ -27,6 +27,15 @@ namespace Projects.DataAccess
                 .WithOne(x => x.Project)
                 .HasForeignKey(x => x.ProjectId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+                opt.Property(x => x.Id).ValueGeneratedOnAdd();
+            });
+
+            builder.Entity<ProjectMember>(opt =>
+            {
+                opt.HasKey(x => x.Id);
+
+                opt.Property(x => x.Id).ValueGeneratedOnAdd();
             });
         }
     }

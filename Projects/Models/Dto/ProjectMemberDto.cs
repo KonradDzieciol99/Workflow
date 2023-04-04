@@ -4,6 +4,15 @@ namespace Projects.Models.Dto
 {
     public class ProjectMemberDto
     {
+        public ProjectMemberDto(string id, string userId, string userEmail, ProjectMemberType type, string projectId)
+        {
+            Id = id;
+            UserId = userId;
+            UserEmail = userEmail;
+            Type = type;
+            ProjectId = projectId;
+        }
+
         public string Id { get; set; }
         public string UserId { get; set; }
         public string UserEmail { get; set; }

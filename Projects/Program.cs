@@ -1,3 +1,5 @@
+using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +11,8 @@ using Projects.Entity;
 using Projects.Models;
 using Projects.Models.Dto;
 using Projects.Repositories;
+using System.Collections.ObjectModel;
+using System.Reflection;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -54,6 +58,9 @@ builder.Services.AddCors(opt =>
               });
 });
 
+builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+
 var app = builder.Build();
 
 
@@ -95,6 +102,7 @@ app.MapGet("/weatherforecast", () =>
 .WithOpenApi();
 
 app.MapGet("/api/projects/", async ([FromServices] IUnitOfWork unitOfWork,
+                          [FromServices] IMapper mapper,
                           ClaimsPrincipal user,
                           [AsParameters] AppParams @params) =>
 {
@@ -106,15 +114,15 @@ app.MapGet("/api/projects/", async ([FromServices] IUnitOfWork unitOfWork,
 
     var projects = await unitOfWork.ProjectMemberRepository.GetUserProjects(userId, @params);
 
-    return Results.Ok(projects);
+    return Results.Ok(mapper.Map<List<ProjectDto>>(projects));
 
-});
-    
-    //.RequireAuthorization();
+}).RequireAuthorization()
+.AddEndpointFilter<ValidatorFilter<AppParams>>();
 
 app.MapPost("api/projects/", async ([FromServices] IUnitOfWork unitOfWork,
-                             [FromServices] ClaimsPrincipal user,
-                             [FromBody] ProjectDto projectDto ) =>
+                            [FromServices] IMapper mapper,
+                             ClaimsPrincipal user,
+                             [AsParameters] CreateProjectDto projectDto) =>
 {
     var userEmail = user.FindFirstValue(ClaimTypes.Email);
     var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -125,16 +133,17 @@ app.MapPost("api/projects/", async ([FromServices] IUnitOfWork unitOfWork,
 
     var member = new ProjectMember(userId, userEmail, ProjectMemberType.Admin);
 
-    var project = new Project(projectDto.Name, new List<ProjectMember> { member });
+    var project = new Project(projectDto.Name, new List<ProjectMember>(){ member });
 
     unitOfWork.ProjectRepository.Add(project);
 
     if (await unitOfWork.Complete())
-        return Results.Ok(new ProjectDto());
-    
+        return Results.Ok(mapper.Map<ProjectDto>(project));
+
     return Results.BadRequest("Error occurred during project creation.");
 
-}).RequireAuthorization();
+}).RequireAuthorization()
+.AddEndpointFilter<ValidatorFilter<CreateProjectDto>>();
 
 app.Run();
 

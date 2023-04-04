@@ -8,7 +8,7 @@ namespace Projects.Models
         public int Skip { get; set; } = 0;
         public int Take { get; set; } = 10;
         public string? OrderBy { get; set; } = null;
-        public bool? IsDescending { get; set; } = false;
+        public bool? IsDescending { get; set; } = null;
         public string? Filter { get; set; } = null;
         public string? GroupBy { get; set; } = null;
         public string? Search { get; set; } = null;

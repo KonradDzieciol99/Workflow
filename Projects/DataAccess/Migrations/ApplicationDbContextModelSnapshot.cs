@@ -24,6 +24,7 @@ namespace Projects.DataAccess.Migrations
             modelBuilder.Entity("Projects.Entity.Project", b =>
                 {
                     b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
@@ -38,11 +39,15 @@ namespace Projects.DataAccess.Migrations
             modelBuilder.Entity("Projects.Entity.ProjectMember", b =>
                 {
                     b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProjectId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserEmail")
                         .IsRequired()

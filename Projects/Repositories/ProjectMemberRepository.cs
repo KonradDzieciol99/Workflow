@@ -29,7 +29,9 @@ namespace Projects.Repositories
 
             query = query.Skip(appParams.Skip)
                          .Take(appParams.Take)
-                         .Where(pm => pm.UserId == userId);
+                         .Where(pm => pm.UserId == userId)
+                         .Include(pm => pm.Project)
+                         .ThenInclude(p => p.ProjectMembers);
 
             if (string.IsNullOrWhiteSpace(appParams.OrderBy) == false && appParams.IsDescending.HasValue)
             {
@@ -42,6 +44,8 @@ namespace Projects.Repositories
             }
 
             return await query.Select(pm => pm.Project)
+                              //.Include(p=>p.ProjectMembers)
+                              //.Distinct()
                               .ToListAsync();
         }
     }

@@ -11,7 +11,7 @@ using Projects.DataAccess;
 namespace Projects.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230327200454_init")]
+    [Migration("20230403143908_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -27,6 +27,7 @@ namespace Projects.DataAccess.Migrations
             modelBuilder.Entity("Projects.Entity.Project", b =>
                 {
                     b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
@@ -41,11 +42,15 @@ namespace Projects.DataAccess.Migrations
             modelBuilder.Entity("Projects.Entity.ProjectMember", b =>
                 {
                     b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProjectId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserEmail")
                         .IsRequired()
