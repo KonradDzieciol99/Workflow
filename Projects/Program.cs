@@ -133,7 +133,7 @@ app.MapPost("api/projects/", async ([FromServices] IUnitOfWork unitOfWork,
 
     var member = new ProjectMember(userId, userEmail, ProjectMemberType.Admin);
 
-    var project = new Project(projectDto.Name, new List<ProjectMember>(){ member });
+    var project = new Project(projectDto.Name,/*"asdfas",*/"u", member.UserId, member, new List<ProjectMember>(){ member });
 
     unitOfWork.ProjectRepository.Add(project);
 

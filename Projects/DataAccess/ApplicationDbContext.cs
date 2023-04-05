@@ -35,6 +35,11 @@ namespace Projects.DataAccess
             {
                 opt.HasKey(x => x.Id);
 
+                opt.HasOne<Project>(x => x.LedProject)
+                .WithOne(x => x.Leader)
+                .HasForeignKey<Project>(x => x.LeaderId)
+                .IsRequired(false);
+
                 opt.Property(x => x.Id).ValueGeneratedOnAdd();
             });
         }

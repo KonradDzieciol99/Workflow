@@ -4,6 +4,7 @@ namespace Projects.Entity
 {
     public class ProjectMember
     {
+
         public ProjectMember()
         {
             
@@ -15,6 +16,16 @@ namespace Projects.Entity
             Type = type;
         }
 
+        public ProjectMember(string userId, string userEmail, Project project, Project ledProject, ProjectMemberType type = ProjectMemberType.Member)
+        {
+            UserId = userId;
+            UserEmail = userEmail;
+            Type = type;
+            //ProjectId = projectId;
+            Project = project;
+            LedProject = ledProject;
+        }
+
         public string Id { get; set; }
         public string UserId { get; set; }
         public string UserEmail { get; set; }
@@ -22,5 +33,8 @@ namespace Projects.Entity
 
         public string ProjectId { get; set; }
         public Project Project { get; set; }
+        //public string? LedProjectId { get; set; }
+        public Project LedProject { get; set; }
+
     }
 }
