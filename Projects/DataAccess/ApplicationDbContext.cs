@@ -24,7 +24,7 @@ namespace Projects.DataAccess
                 opt.HasKey(x => x.Id);
 
                 opt.HasMany<ProjectMember>(x => x.ProjectMembers)
-                .WithOne(x => x.Project)
+                .WithOne(x => x.MotherProject)
                 .HasForeignKey(x => x.ProjectId)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -34,11 +34,6 @@ namespace Projects.DataAccess
             builder.Entity<ProjectMember>(opt =>
             {
                 opt.HasKey(x => x.Id);
-
-                opt.HasOne<Project>(x => x.LedProject)
-                .WithOne(x => x.Leader)
-                .HasForeignKey<Project>(x => x.LeaderId)
-                .IsRequired(false);
 
                 opt.Property(x => x.Id).ValueGeneratedOnAdd();
             });

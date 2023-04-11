@@ -16,7 +16,8 @@ namespace Projects.Models.Dto
         public string Id { get; set; }
         public string UserId { get; set; }
         public string UserEmail { get; set; }
-        public ProjectMemberType Type { get; set; } = ProjectMemberType.Member;
+        public ProjectMemberType Type { get; set; }
+        public string PhotoUrl { get; set; }
         public string ProjectId { get; set; }
 
     }

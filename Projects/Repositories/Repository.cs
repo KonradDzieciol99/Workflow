@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Projects.DataAccess;
+using Projects.Entity;
 using System.Linq.Expressions;
 
 namespace Projects.Repositories
 {
-    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
+    public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEntity
     {
         private readonly ApplicationDbContext _dbContext;
 
@@ -39,6 +40,10 @@ namespace Projects.Repositories
         public void RemoveRange(IEnumerable<TEntity> entities)
         {
             _dbContext.Set<TEntity>().RemoveRange(entities);
+        }
+        public async Task<int> ExecuteDeleteAsync(string id)
+        {
+            return await _dbContext.Set<TEntity>().Where(x => x.Id == id).ExecuteDeleteAsync();
         }
     }
 }

@@ -22,15 +22,13 @@ namespace Projects.Repositories
         //                                                    .Select(pm => pm.Project)
         //                                                    .ToListAsync();
         //}
-        public async Task<List<Project>> GetUserProjects(string userId,AppParams appParams)
+        //public async Task<List<Project>> GetUserProjects(string userId,AppParams appParams)
+        public async Task<(List<Project> Projects, int TotalCount)> GetUserProjects(string userId,AppParams appParams)
         {
 
             var query = applicationDbContext.ProjectMembers.AsQueryable();
 
-            query = query.Skip(appParams.Skip)
-                         .Take(appParams.Take)
-                         .Where(pm => pm.UserId == userId)
-                         .Include(pm => pm.Project)
+            query = query.Include(pm => pm.MotherProject)
                          .ThenInclude(p => p.ProjectMembers);
 
             if (string.IsNullOrWhiteSpace(appParams.OrderBy) == false && appParams.IsDescending.HasValue)
@@ -38,15 +36,20 @@ namespace Projects.Repositories
                 query.OrderBy(appParams.OrderBy, appParams.IsDescending.Value);
             }
 
-            if (string.IsNullOrWhiteSpace(appParams.Search) == false)
+            query = string.IsNullOrWhiteSpace(appParams.Search) switch
             {
-                query.Where(x => x.Project.Name.StartsWith(appParams.Search));
-            }
+                true => query.Where(x => x.UserId == userId), 
+                false => query.Where(x => x.UserId == userId && x.MotherProject.Name.StartsWith(appParams.Search)),
+            };
 
-            return await query.Select(pm => pm.Project)
-                              //.Include(p=>p.ProjectMembers)
-                              //.Distinct()
+            int totalCount = await query.CountAsync();
+
+            var projects = await query.Select(pm => pm.MotherProject)
+                              .Skip(appParams.Skip)
+                              .Take(appParams.Take)
                               .ToListAsync();
+
+            return (projects, totalCount);
         }
     }
 }

@@ -1,4 +1,18 @@
 
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using Microsoft.AspNetCore.Mvc;
+using Photos.Models;
+using System.ComponentModel;
+using System.IO;
+using System.IO.Pipes;
+using System.Net.Mime;
+using static System.Net.WebRequestMethods;
+using System.Xml.Linq;
+using FluentValidation;
+using System.Reflection;
+using Photos.Common;
+
 namespace Photos
 {
     public class Program
@@ -7,16 +21,32 @@ namespace Photos
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
             builder.Services.AddAuthorization();
-
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddScoped(opt =>
+            {
+                return new BlobServiceClient(builder.Configuration.GetConnectionString("AzureStorage"));
+            });
+
+            builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+            var CORSallowAny = "allowAny";
+            builder.Services.AddCors(opt =>
+            {
+                opt.AddPolicy(name: CORSallowAny,
+                          policy =>
+                          {
+                              policy.WithOrigins("https://localhost:4200", "https://127.0.0.1:5500")
+                                .AllowAnyHeader()
+                                .AllowAnyMethod()
+                                .AllowCredentials();
+                          });
+            });
+
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -25,26 +55,53 @@ namespace Photos
 
             app.UseHttpsRedirection();
 
+            app.UseCors(CORSallowAny);
+
             app.UseAuthorization();
 
-            var summaries = new[]
+            app.MapPost("/api/uploadIcon", async ([AsParameters] IconUploadRequest IconUploadRequest) =>
             {
-                "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-            };
 
-            app.MapGet("/weatherforecast", (HttpContext httpContext) =>
-            {
-                var forecast = Enumerable.Range(1, 5).Select(index =>
-                    new WeatherForecast
+                var blobPhotosContainerClient = IconUploadRequest.blobServiceClient.GetBlobContainerClient(builder.Configuration.GetValue<string>("AzureBlobStorage:BlobContainerProjectsIcons"));
+                var blobClient = blobPhotosContainerClient.GetBlobClient(IconUploadRequest.Name);
+                var blobUploadOptions = new BlobUploadOptions
+                {
+                    HttpHeaders = new BlobHttpHeaders
                     {
-                        Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                        TemperatureC = Random.Shared.Next(-20, 55),
-                        Summary = summaries[Random.Shared.Next(summaries.Length)]
-                    })
-                    .ToArray();
-                return forecast;
+                        ContentType = "image/jpeg",
+                        ContentDisposition = "inline"
+                    },
+                };
+
+                var result = await blobClient.UploadAsync(IconUploadRequest.File.OpenReadStream(), blobUploadOptions);
+
+                return Results.Ok();
             })
-            .WithName("GetWeatherForecast")
+            .WithOpenApi()
+            //.RequireAuthorization()
+            .AddEndpointFilter<ValidatorFilter<IconUploadRequest>>();
+
+            app.MapGet("/api/getProjectsIcons", async ([FromServices] BlobServiceClient blobServiceClient) =>
+            {
+                var blobPhotosContainerClient = blobServiceClient.GetBlobContainerClient(builder.Configuration.GetValue<string>("AzureBlobStorage:BlobContainerProjectsIcons"));
+
+                List<Icon> files = new List<Icon>();
+
+                await foreach (BlobItem file in blobPhotosContainerClient.GetBlobsAsync())
+                {
+                    string uri = blobPhotosContainerClient.Uri.ToString();
+                    var name = file.Name;
+                    var fullUri = $"{uri}/{name}";
+
+                    files.Add(new Icon
+                    {
+                        Url = fullUri,
+                        Name = name,
+                    });
+                }
+
+                return Results.Ok(files);
+            })
             .WithOpenApi();
 
             app.Run();

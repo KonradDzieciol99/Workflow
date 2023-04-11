@@ -23,6 +23,7 @@ public static class Config
             new ApiScope("weatherapi.read"),
             new ApiScope("weatherapi.write"),
             new ApiScope(name: "email_access_token",displayName: "User Email.", userClaims: new[] { JwtClaimTypes.Email }),
+            new ApiScope(name: "picture_access_token",displayName: "User Picture.", userClaims: new[] { JwtClaimTypes.Picture }),
             new ApiScope(IdentityServerConstants.LocalApi.ScopeName),
         };
 
@@ -86,6 +87,7 @@ public static class Config
                     IdentityServerConstants.StandardScopes.Email,
                     "email_access_token",
                     IdentityServerConstants.LocalApi.ScopeName,
+                    "picture_access_token",
 
                     //"weatherapi.read"
                     //"custom.profile",

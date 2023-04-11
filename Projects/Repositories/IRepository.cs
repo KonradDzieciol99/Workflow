@@ -11,6 +11,7 @@ namespace Projects.Repositories
         Task<TEntity?> GetOneAsync(Expression<Func<TEntity, bool>> predicate);
         Task<TEntity?> GetOneByIdAsync(params object?[]? keyValues);
         Task<List<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> predicate);
+        Task<int> ExecuteDeleteAsync(string id);
 
     }
 }

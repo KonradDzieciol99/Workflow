@@ -27,6 +27,10 @@ namespace Projects.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("IconUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -41,6 +45,10 @@ namespace Projects.DataAccess.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("PhotoUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProjectId")
                         .IsRequired()
@@ -66,13 +74,13 @@ namespace Projects.DataAccess.Migrations
 
             modelBuilder.Entity("Projects.Entity.ProjectMember", b =>
                 {
-                    b.HasOne("Projects.Entity.Project", "Project")
+                    b.HasOne("Projects.Entity.Project", "MotherProject")
                         .WithMany("ProjectMembers")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Project");
+                    b.Navigation("MotherProject");
                 });
 
             modelBuilder.Entity("Projects.Entity.Project", b =>

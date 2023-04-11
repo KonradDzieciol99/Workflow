@@ -11,7 +11,7 @@ using Projects.DataAccess;
 namespace Projects.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230403143908_init")]
+    [Migration("20230410153925_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -30,6 +30,10 @@ namespace Projects.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("IconUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -44,6 +48,10 @@ namespace Projects.DataAccess.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("PhotoUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProjectId")
                         .IsRequired()
@@ -69,13 +77,13 @@ namespace Projects.DataAccess.Migrations
 
             modelBuilder.Entity("Projects.Entity.ProjectMember", b =>
                 {
-                    b.HasOne("Projects.Entity.Project", "Project")
+                    b.HasOne("Projects.Entity.Project", "MotherProject")
                         .WithMany("ProjectMembers")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Project");
+                    b.Navigation("MotherProject");
                 });
 
             modelBuilder.Entity("Projects.Entity.Project", b =>

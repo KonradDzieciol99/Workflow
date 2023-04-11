@@ -112,17 +112,25 @@ app.MapGet("/api/projects/", async ([FromServices] IUnitOfWork unitOfWork,
     if (userId is null || userEmail is null)
         return Results.BadRequest("User cannot be identified.");
 
-    var projects = await unitOfWork.ProjectMemberRepository.GetUserProjects(userId, @params);
+    var result = await unitOfWork.ProjectMemberRepository.GetUserProjects(userId, @params);
 
-    return Results.Ok(mapper.Map<List<ProjectDto>>(projects));
+    var projectsWithTotalCount = new ProjectsWithTotalCount()
+    {
+        Count = result.TotalCount,
+        Result = mapper.Map<List<ProjectDto>>(result.Projects)
+    };
 
-}).RequireAuthorization()
+    return Results.Ok(projectsWithTotalCount);
+
+})
+.WithOpenApi()
+.RequireAuthorization()
 .AddEndpointFilter<ValidatorFilter<AppParams>>();
 
 app.MapPost("api/projects/", async ([FromServices] IUnitOfWork unitOfWork,
                             [FromServices] IMapper mapper,
-                             ClaimsPrincipal user,
-                             [AsParameters] CreateProjectDto projectDto) =>
+                            ClaimsPrincipal user,
+                            [FromBody] CreateProjectDto projectDto) =>
 {
     var userEmail = user.FindFirstValue(ClaimTypes.Email);
     var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -131,9 +139,9 @@ app.MapPost("api/projects/", async ([FromServices] IUnitOfWork unitOfWork,
     if (userId is null || userEmail is null)
         return Results.BadRequest("User cannot be identified.");
 
-    var member = new ProjectMember(userId, userEmail, ProjectMemberType.Admin);
+    var member = new ProjectMember() {Type=ProjectMemberType.Leader,UserEmail=userEmail,UserId=userId,PhotoUrl=userPhotUrl};
 
-    var project = new Project(projectDto.Name,/*"asdfas",*/"u", member.UserId, member, new List<ProjectMember>(){ member });
+    var project = new Project() {IconUrl=projectDto.Icon.Url,Name=projectDto.Name,ProjectMembers = new List<ProjectMember>{ member }};
 
     unitOfWork.ProjectRepository.Add(project);
 
@@ -142,8 +150,35 @@ app.MapPost("api/projects/", async ([FromServices] IUnitOfWork unitOfWork,
 
     return Results.BadRequest("Error occurred during project creation.");
 
-}).RequireAuthorization()
+})
+.WithOpenApi()
+.RequireAuthorization()
 .AddEndpointFilter<ValidatorFilter<CreateProjectDto>>();
+
+app.MapDelete("api/projects/{id}", async ([FromServices] IUnitOfWork unitOfWork,
+                            [FromServices] IMapper mapper,
+                            ClaimsPrincipal user,
+                            [FromRoute] string id) =>
+{
+    var userEmail = user.FindFirstValue(ClaimTypes.Email);
+    var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
+    if (userId is null || userEmail is null)
+        return Results.BadRequest("User cannot be identified.");
+    if (id is null)
+        return Results.BadRequest("Enter the ID of the project to be deleted.");
+
+    var resoult = await unitOfWork.ProjectRepository.ExecuteDeleteAsync(id);
+
+    if (resoult>0)
+        return Results.Ok();
+
+    return Results.BadRequest("Project could not be deleted.");
+
+})
+.WithOpenApi()
+.RequireAuthorization();
+//.AddEndpointFilter<ValidatorFilter<CreateProjectDto>>();
 
 app.Run();
 
