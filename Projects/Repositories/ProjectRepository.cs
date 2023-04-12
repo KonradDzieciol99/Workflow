@@ -12,5 +12,9 @@ namespace Projects.Repositories
         {
             this._applicationDbContext = applicationDbContext;
         }
+        //public async Task<Project> GetOneAsync(string projectName,string userId)
+        //{
+        //    //return await _applicationDbContext.Projects.Where(x=>x.Name==projectName);
+        //}
     }
 }

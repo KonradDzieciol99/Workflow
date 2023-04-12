@@ -25,10 +25,10 @@ namespace Projects.Repositories
         {
             return await _dbContext.Set<TEntity>().FindAsync(keyValues);
         }
-        public async Task<TEntity?> GetOneAsync(Expression<Func<TEntity, bool>> predicate)
-        {
-            return await _dbContext.Set<TEntity>().SingleOrDefaultAsync(predicate);
-        }
+        //public async Task<TEntity?> GetOneAsync(Expression<Func<TEntity, bool>> predicate)
+        //{
+        //    return await _dbContext.Set<TEntity>().SingleOrDefaultAsync(predicate);
+        //}
         public async Task<List<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> predicate)
         {
             return await _dbContext.Set<TEntity>().Where(predicate).ToListAsync();

@@ -23,6 +23,14 @@ namespace Projects.Repositories
         //                                                    .ToListAsync();
         //}
         //public async Task<List<Project>> GetUserProjects(string userId,AppParams appParams)
+        public async Task<Project?> GetOneAsync(string projectName, string userId)
+        {
+            return await applicationDbContext.ProjectMembers.Include(pm => pm.MotherProject)
+                                                            .ThenInclude(p => p.ProjectMembers)
+                                                            .Where(x => x.UserId == userId && x.MotherProject.Name == projectName)
+                                                            .Select(x => x.MotherProject)
+                                                            .FirstOrDefaultAsync();
+        }
         public async Task<(List<Project> Projects, int TotalCount)> GetUserProjects(string userId,AppParams appParams)
         {
 

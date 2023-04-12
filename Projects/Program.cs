@@ -101,6 +101,27 @@ app.MapGet("/weatherforecast", () =>
 .WithName("GetWeatherForecast")
 .WithOpenApi();
 
+app.MapGet("/api/projects/{name}", async ([FromServices] IUnitOfWork unitOfWork,
+                          [FromServices] IMapper mapper,
+                          ClaimsPrincipal user,
+                          [FromRoute] string name) =>
+{
+    var userEmail = user.FindFirstValue(ClaimTypes.Email);
+    var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
+    if (userId is null || userEmail is null)
+        return Results.BadRequest("User cannot be identified.");
+
+    var project = await unitOfWork.ProjectMemberRepository.GetOneAsync(name, userId);
+
+    if (project is null)
+        return Results.BadRequest("Project cannot be found.");
+
+    return Results.Ok(mapper.Map<ProjectDto>(project));
+})
+.WithOpenApi()
+.RequireAuthorization();
+
 app.MapGet("/api/projects/", async ([FromServices] IUnitOfWork unitOfWork,
                           [FromServices] IMapper mapper,
                           ClaimsPrincipal user,
