@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -24,7 +25,7 @@ namespace MessageBus
         private readonly AzureServiceBusSubscriberOptions _options;
         private readonly string _topicName = "workflow_event_bus";
         private readonly string _subscriptionName;
-        private readonly Dictionary<string, Type> _events;
+        private readonly ConcurrentDictionary<string, Type> _events;
 
         public AzureServiceBusSubscriber(IServiceScopeFactory serviceScopeFactory, IMediator mediator, IOptions<AzureServiceBusSubscriberOptions> options)
         {
@@ -34,7 +35,7 @@ namespace MessageBus
             _options.Validate();
             //_topicName = topicName;
             _subscriptionName = _options.SubscriptionName;
-            _events = new Dictionary<string, Type>();
+            _events = new ConcurrentDictionary<string, Type>();
            RemoveAllRulesAsync().GetAwaiter().GetResult();
             // string topicName, string subscriptionName
 
@@ -140,14 +141,17 @@ namespace MessageBus
                         Filter = new CorrelationRuleFilter() { Subject = eventName },
                         Name = eventName
                     });
-                    _events.Add(eventName, typeof(T));
+                    _events.TryAdd(eventName, typeof(T));
                 }
-                //catch (ServiceBusException)
-                catch (Exception)
+                catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.MessagingEntityAlreadyExists)
                 {
-                //_logger.LogWarning("The messaging entity {eventName} already exists.", eventName);
-                    throw;
+                    //_logger.LogWarning("The messaging entity {eventName} already exists.", eventName);
                 }
+                catch (Exception ex)
+                {
+                    //_logger.LogWarning("The messaging entity {eventName} already exists.", eventName);
+                    throw;
+                }   
             //}
 
             //_logger.LogInformation("Subscribing to event {EventName} with {EventHandler}", eventName, typeof(TH).Name);
@@ -187,6 +191,11 @@ namespace MessageBus
                 {
                     await _administrationClient.DeleteRuleAsync(_topicName, _subscriptionName, rule.Name);
                 }
+            }
+            catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.MessageNotFound || ex.Reason == ServiceBusFailureReason.MessagingEntityNotFound)
+            {
+                Console.WriteLine(ex.Message);
+                //_logger.LogWarning("The messaging entity {eventName} already exists.", eventName);
             }
             catch (Exception ex) 
             {
