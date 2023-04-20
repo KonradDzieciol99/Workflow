@@ -2,6 +2,6 @@
 {
     public interface IProjectsService
     {
-        Task<bool> CheckIfUserIsAMemberOfProject(string userId, string token);
+        Task<bool> CheckIfUserIsAMemberOfProject(string userId, string projectId, string token);
     }
 }

@@ -201,6 +201,15 @@ app.MapDelete("api/projects/{id}", async ([FromServices] IUnitOfWork unitOfWork,
 .RequireAuthorization();
 //.AddEndpointFilter<ValidatorFilter<CreateProjectDto>>();
 
+app.MapGet("/api/projects/CheckIfUserIsAMemberOfProject", async ([FromServices] IUnitOfWork unitOfWork,
+                          [AsParameters] CheckIfUserIsAMemberOfProjectRequest request) =>
+{
+    var result = await unitOfWork.ProjectMemberRepository.CheckIfUserIsAMemberOfProject(request.ProjectId, request.UserId);
+    return Results.Ok(result);
+})
+.WithOpenApi()
+.RequireAuthorization();
+
 app.Run();
 
 
