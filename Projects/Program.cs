@@ -65,7 +65,7 @@ builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
 builder.Services.AddAzureServiceBusSender(opt =>
 {
-    opt.ServiceBusConnectionString = builder.Configuration.GetValue<string>("ServiceBusConnectionString") ?? throw new ArgumentNullException(nameof(opt.ServiceBusConnectionString));
+    opt.ServiceBusConnectionString = builder.Configuration.GetConnectionString(name: "ServiceBusConnectionString") ?? throw new ArgumentNullException(nameof(opt.ServiceBusConnectionString));
 });
 
 
