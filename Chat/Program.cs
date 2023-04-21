@@ -4,7 +4,6 @@ using Chat.Persistence;
 using Chat.Repositories;
 using Chat.Services;
 using HttpMessage;
-using Mango.MessageBus;
 using MediatR;
 using MessageBus;
 using MessageBus.Events;

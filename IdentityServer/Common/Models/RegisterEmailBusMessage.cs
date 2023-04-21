@@ -1,4 +1,4 @@
-﻿using Mango.MessageBus;
+﻿using MessageBus;
 
 namespace IdentityServer.Common.Models
 {

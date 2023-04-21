@@ -14,6 +14,9 @@ using Projects.Repositories;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Security.Claims;
+using MessageBus.Extensions;
+using MessageBus;
+using MessageBus.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,6 +62,11 @@ builder.Services.AddCors(opt =>
 });
 
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+builder.Services.AddAzureServiceBusSender(opt =>
+{
+    opt.ServiceBusConnectionString = builder.Configuration.GetConnectionString(name: "ServiceBusConnectionString") ?? throw new ArgumentNullException(nameof(opt.ServiceBusConnectionString));
+});
 
 
 var app = builder.Build();
@@ -149,6 +157,7 @@ app.MapGet("/api/projects/", async ([FromServices] IUnitOfWork unitOfWork,
 .AddEndpointFilter<ValidatorFilter<AppParams>>();
 
 app.MapPost("api/projects/", async ([FromServices] IUnitOfWork unitOfWork,
+                            [FromServices] IAzureServiceBusSender azureServiceBusSender,
                             [FromServices] IMapper mapper,
                             ClaimsPrincipal user,
                             [FromBody] CreateProjectDto projectDto) =>
@@ -167,7 +176,10 @@ app.MapPost("api/projects/", async ([FromServices] IUnitOfWork unitOfWork,
     unitOfWork.ProjectRepository.Add(project);
 
     if (await unitOfWork.Complete())
+    {
+        await azureServiceBusSender.PublishMessage(mapper.Map<ProjectMemberAddedEvent>(member));
         return Results.Ok(mapper.Map<ProjectDto>(project));
+    }
 
     return Results.BadRequest("Error occurred during project creation.");
 
@@ -200,6 +212,15 @@ app.MapDelete("api/projects/{id}", async ([FromServices] IUnitOfWork unitOfWork,
 .WithOpenApi()
 .RequireAuthorization();
 //.AddEndpointFilter<ValidatorFilter<CreateProjectDto>>();
+
+app.MapGet("/api/projects/CheckIfUserIsAMemberOfProject", async ([FromServices] IUnitOfWork unitOfWork,
+                          [AsParameters] CheckIfUserIsAMemberOfProjectRequest request) =>
+{
+    var result = await unitOfWork.ProjectMemberRepository.CheckIfUserIsAMemberOfProject(request.ProjectId, request.UserId);
+    return Results.Ok(result);
+})
+.WithOpenApi()
+.RequireAuthorization();
 
 app.Run();
 

@@ -1,5 +1,4 @@
-﻿using Mango.MessageBus;
-using MediatR;
+﻿using MediatR;
 using MessageBus;
 using MessageBus.Events;
 using Microsoft.AspNetCore.SignalR;

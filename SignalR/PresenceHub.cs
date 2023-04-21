@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Azure.Core;
 using Azure.Core.Extensions;
-using Mango.MessageBus;
 using MessageBus;
 using MessageBus.Events;
 using MessageBus.Models;

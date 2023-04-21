@@ -1,5 +1,4 @@
-﻿using Mango.MessageBus;
-using MessageBus.Models;
+﻿using MessageBus.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;

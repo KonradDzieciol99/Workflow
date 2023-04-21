@@ -2,7 +2,6 @@
 using Duende.IdentityServer.Services;
 using IdentityServer.Common.Models;
 using IdentityServer.Entities;
-using Mango.MessageBus;
 using MessageBus;
 using MessageBus.Events;
 using MessageBus.Models;

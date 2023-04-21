@@ -59,5 +59,9 @@ namespace Projects.Repositories
 
             return (projects, totalCount);
         }
+        public async Task<bool> CheckIfUserIsAMemberOfProject(string projectId, string userId)
+        {
+            return await applicationDbContext.ProjectMembers.AnyAsync(x => x.UserId == userId && x.MotherProject.Id == projectId);
+        }
     }
 }

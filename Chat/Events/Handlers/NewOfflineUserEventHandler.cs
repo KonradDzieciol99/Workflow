@@ -2,7 +2,6 @@
 using Chat.Dto;
 using Chat.Entity;
 using Chat.Repositories;
-using Mango.MessageBus;
 using MediatR;
 using MessageBus;
 using MessageBus.Events;

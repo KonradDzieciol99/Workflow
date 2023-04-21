@@ -6,7 +6,6 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using Mango.MessageBus;
 using System.Net.Http.Json;
 using System.Text.Json;
 using EmailSender;
