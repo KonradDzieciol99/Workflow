@@ -10,6 +10,7 @@ namespace Tasks.Common
         {
             CreateMap<CreateAppTaskDto, AppTask>();
             CreateMap<AppTask, CreateAppTaskDto>();
+
         }
     }
 }

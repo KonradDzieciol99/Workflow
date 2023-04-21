@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Mango.MessageBus
+namespace MessageBus
 {
     public interface IMessageBus
     {

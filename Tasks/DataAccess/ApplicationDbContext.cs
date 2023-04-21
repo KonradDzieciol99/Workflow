@@ -11,6 +11,7 @@ namespace Tasks.DataAccess
         }
 
         public DbSet<AppTask> AppTasks { get; set; }
+        public DbSet<ProjectMember> ProjectMembers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -27,6 +28,14 @@ namespace Tasks.DataAccess
 
                 opt.Property(x => x.Id).ValueGeneratedOnAdd();
             });
+
+            builder.Entity<AppTask>(opt =>
+            {
+                opt.HasKey(x => x.Id);
+
+                opt.Property(x => x.Id).ValueGeneratedNever();
+            });
+
         }
     }
 

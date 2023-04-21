@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace MessageBus.Events
 {
-    public class RemoveUserFromFriendsEvent : BaseMessage
+    public class ProjectMemberRemovedEvent : BaseMessage
     {
+        public string UserId { get; set; }
+        public string ProjectId { get; set; }
 
     }
 }

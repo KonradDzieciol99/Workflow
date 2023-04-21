@@ -5,7 +5,6 @@ using static System.Formats.Asn1.AsnWriter;
 using System.Security.Claims;
 using IdentityServer.Events;
 using Duende.IdentityServer.Services;
-using Mango.MessageBus;
 using MessageBus;
 using MessageBus.Events;
 using IdentityServer.Entities;

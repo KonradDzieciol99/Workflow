@@ -8,7 +8,7 @@ namespace Tasks.Repositories
         private bool disposed = false;
 
         public IAppTaskRepository AppTaskRepository => new AppTaskRepository(_applicationDbContext);
-
+        public IProjectMemberRepository ProjectMemberRepository => new ProjectMemberRepository(_applicationDbContext);
         public UnitOfWork(ApplicationDbContext applicationDbContext)
         {
             _applicationDbContext = applicationDbContext;

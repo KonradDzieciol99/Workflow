@@ -1,4 +1,3 @@
-using Mango.MessageBus;
 using MessageBus.Events;
 using MessageBus.Extensions;
 using MongoDB.Driver.Core.Configuration;

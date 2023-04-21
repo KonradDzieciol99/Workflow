@@ -1,5 +1,4 @@
-﻿using Mango.MessageBus;
-using MediatR;
+﻿using MediatR;
 
 namespace MessageBus.Events
 {

@@ -8,16 +8,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mango.MessageBus
+namespace MessageBus
 {
-    public class BaseMessage: IRequest
+    public class BaseMessage : IRequest
     {
         //[BsonId]
         //[BsonRepresentation(BsonType.ObjectId)]
         public string? Id { get; set; }
         public DateTime MessageCreated { get; set; }
         public SimpleUser? EventRecipient { get; set; }
-        public SimpleUser? EventSender { get; set; } = new SimpleUser() { UserId = "System",UserEmail="System" };
+        public SimpleUser? EventSender { get; set; } = new SimpleUser() { UserId = "System", UserEmail = "System" };
         public string EventType { get; set; }
         public object? ObjectId { get; set; }//streamId
 

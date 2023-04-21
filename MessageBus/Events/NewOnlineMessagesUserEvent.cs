@@ -1,5 +1,4 @@
-﻿using Mango.MessageBus;
-using MediatR;
+﻿using MediatR;
 using MessageBus.Models;
 using System;
 using System.Collections.Generic;

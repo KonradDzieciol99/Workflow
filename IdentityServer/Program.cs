@@ -4,7 +4,6 @@ using IdentityModel;
 using IdentityServer.Events;
 using IdentityServer.Persistence;
 using IdentityServer.Services;
-using Mango.MessageBus;
 using MessageBus.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;

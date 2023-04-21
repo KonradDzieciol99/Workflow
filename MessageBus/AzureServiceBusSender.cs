@@ -1,5 +1,4 @@
 ﻿using Azure.Messaging.ServiceBus;
-using Mango.MessageBus;
 using MessageBus.Events;
 using MessageBus.Models;
 using Microsoft.Extensions.Options;

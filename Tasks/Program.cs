@@ -1,4 +1,5 @@
 using AutoMapper;
+using Azure.Core;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,9 @@ using Tasks.Entity;
 using Tasks.Models;
 using Tasks.Models.Dtos;
 using Tasks.Repositories;
-
+using MessageBus.Extensions;
+using MessageBus.Events;
+using MessageBus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,9 +60,37 @@ builder.Services.AddCors(opt =>
               });
 });
 
+
+builder.Services.AddAzureServiceBusSubscriber(opt =>
+{
+    var configuration = builder.Configuration;
+    opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString") ?? throw new ArgumentNullException(nameof(opt.ServiceBusConnectionString));
+    opt.SubscriptionName = "tasks";
+});
+
+//builder.Services.AddAzureServiceBusSender(opt =>
+//{
+//    opt.ServiceBusConnectionString = builder.Configuration.GetValue<string>("ServiceBusConnectionString") ?? throw new ArgumentNullException(nameof(opt.ServiceBusConnectionString));
+//});
+
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
+builder.Services.AddMediatR(opt =>
+{
+    opt.RegisterServicesFromAssembly(typeof(Program).Assembly);
+});
+
 var app = builder.Build();
+
+var eventBus = app.Services.GetRequiredService<AzureServiceBusSubscriber>();// nie potrzeba tworzyæ scope bo to singletone
+var subscribeTasks = new List<Task>
+{
+    eventBus.Subscribe<ProjectMemberAddedEvent>(),
+    eventBus.Subscribe<ProjectMemberUpdatedEvent>(),
+    eventBus.Subscribe<ProjectMemberRemovedEvent>(),
+};
+await Task.WhenAll(subscribeTasks);
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -76,6 +107,7 @@ app.UseAuthorization();
 app.MapPost("/api",async ([FromServices] IUnitOfWork unitOfWork,
                           [FromServices] IMapper mapper,
                           ClaimsPrincipal user,
+                          HttpContext context,
                           [AsParameters] CreateAppTaskDto createAppTask) =>
 {
 
@@ -85,6 +117,13 @@ app.MapPost("/api",async ([FromServices] IUnitOfWork unitOfWork,
 
     if (userId is null || userEmail is null)
         return Results.BadRequest("User cannot be identified.");
+
+    var projectsServiceResult = await unitOfWork.ProjectMemberRepository.CheckIfUserIsAMemberOfProject(createAppTask.ProjectId, userId);
+
+    if (projectsServiceResult == false) { 
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        await context.Response.WriteAsync("You are not a member of this project");
+    }
 
     var appTask = mapper.Map<AppTask>(createAppTask);
 
