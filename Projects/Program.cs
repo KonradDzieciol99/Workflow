@@ -17,6 +17,9 @@ using System.Security.Claims;
 using MessageBus.Extensions;
 using MessageBus;
 using MessageBus.Events;
+using Projects.Endpoints.MapProjectMember;
+using Projects.Common.Authorization.Requirements;
+using Projects.Common.Authorization.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,7 +42,26 @@ builder.Services.AddAuthentication(opt =>
         ValidateAudience = false,
     };
 });
-builder.Services.AddAuthorization();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("MembershipPolicy", policy =>
+    policy.AddRequirements(
+        new MembershipRequirement()
+    ));
+    options.AddPolicy("ManagementPolicy", policy =>
+    policy.AddRequirements(
+        new ManagementRequirement()
+        ));
+    options.AddPolicy("AuthorPolicy", policy =>
+    policy.AddRequirements(
+        new AuthorRequirement()
+        ));
+});
+
+builder.Services.AddScoped<IAuthorizationHandler, ManagementRequirementHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, MembershipRequirementHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, AuthorRequirementHandler>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(opt =>
 {
@@ -68,12 +90,8 @@ builder.Services.AddAzureServiceBusSender(opt =>
     opt.ServiceBusConnectionString = builder.Configuration.GetConnectionString(name: "ServiceBusConnectionString") ?? throw new ArgumentNullException(nameof(opt.ServiceBusConnectionString));
 });
 
-
 var app = builder.Build();
 
-
-
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -89,139 +107,21 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+var endpoints = app.MapGroup("/api")
+                   .WithOpenApi()
+                   .RequireAuthorization()
+                   .AddEndpointFilter(async (invocationContext, next) =>
+                   {
+                        var logger = invocationContext.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                        logger.LogInformation($"Received request for: {invocationContext.HttpContext.Request.Path}");
+                        return await next(invocationContext);
+                   }); 
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+endpoints.MapGroup("/projectMembers")
+         .MapProjectMemberEnpoints();
 
-app.MapGet("/api/projects/{name}", async ([FromServices] IUnitOfWork unitOfWork,
-                          [FromServices] IMapper mapper,
-                          ClaimsPrincipal user,
-                          [FromRoute] string name) =>
-{
-    var userEmail = user.FindFirstValue(ClaimTypes.Email);
-    var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-
-    if (userId is null || userEmail is null)
-        return Results.BadRequest("User cannot be identified.");
-
-    var project = await unitOfWork.ProjectMemberRepository.GetOneAsync(name, userId);
-
-    if (project is null)
-        return Results.BadRequest("Project cannot be found.");
-
-    return Results.Ok(mapper.Map<ProjectDto>(project));
-})
-.WithOpenApi()
-.RequireAuthorization();
-
-app.MapGet("/api/projects/", async ([FromServices] IUnitOfWork unitOfWork,
-                          [FromServices] IMapper mapper,
-                          ClaimsPrincipal user,
-                          [AsParameters] AppParams @params) =>
-{
-    var userEmail = user.FindFirstValue(ClaimTypes.Email);
-    var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-
-    if (userId is null || userEmail is null)
-        return Results.BadRequest("User cannot be identified.");
-
-    var result = await unitOfWork.ProjectMemberRepository.GetUserProjects(userId, @params);
-
-    var projectsWithTotalCount = new ProjectsWithTotalCount()
-    {
-        Count = result.TotalCount,
-        Result = mapper.Map<List<ProjectDto>>(result.Projects)
-    };
-
-    return Results.Ok(projectsWithTotalCount);
-
-})
-.WithOpenApi()
-.RequireAuthorization()
-.AddEndpointFilter<ValidatorFilter<AppParams>>();
-
-app.MapPost("api/projects/", async ([FromServices] IUnitOfWork unitOfWork,
-                            [FromServices] IAzureServiceBusSender azureServiceBusSender,
-                            [FromServices] IMapper mapper,
-                            ClaimsPrincipal user,
-                            [FromBody] CreateProjectDto projectDto) =>
-{
-    var userEmail = user.FindFirstValue(ClaimTypes.Email);
-    var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-    var userPhotUrl = user.FindFirstValue("picture");
-
-    if (userId is null || userEmail is null)
-        return Results.BadRequest("User cannot be identified.");
-
-    var member = new ProjectMember() {Type=ProjectMemberType.Leader,UserEmail=userEmail,UserId=userId,PhotoUrl=userPhotUrl};
-
-    var project = new Project() {IconUrl=projectDto.Icon.Url,Name=projectDto.Name,ProjectMembers = new List<ProjectMember>{ member }};
-
-    unitOfWork.ProjectRepository.Add(project);
-
-    if (await unitOfWork.Complete())
-    {
-        await azureServiceBusSender.PublishMessage(mapper.Map<ProjectMemberAddedEvent>(member));
-        return Results.Ok(mapper.Map<ProjectDto>(project));
-    }
-
-    return Results.BadRequest("Error occurred during project creation.");
-
-})
-.WithOpenApi()
-.RequireAuthorization()
-.AddEndpointFilter<ValidatorFilter<CreateProjectDto>>();
-
-app.MapDelete("api/projects/{id}", async ([FromServices] IUnitOfWork unitOfWork,
-                            [FromServices] IMapper mapper,
-                            ClaimsPrincipal user,
-                            [FromRoute] string id) =>
-{
-    var userEmail = user.FindFirstValue(ClaimTypes.Email);
-    var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-
-    if (userId is null || userEmail is null)
-        return Results.BadRequest("User cannot be identified.");
-    if (id is null)
-        return Results.BadRequest("Enter the ID of the project to be deleted.");
-
-    var resoult = await unitOfWork.ProjectRepository.ExecuteDeleteAsync(id);
-
-    if (resoult>0)
-        return Results.Ok();
-
-    return Results.BadRequest("Project could not be deleted.");
-
-})
-.WithOpenApi()
-.RequireAuthorization();
-//.AddEndpointFilter<ValidatorFilter<CreateProjectDto>>();
-
-app.MapGet("/api/projects/CheckIfUserIsAMemberOfProject", async ([FromServices] IUnitOfWork unitOfWork,
-                          [AsParameters] CheckIfUserIsAMemberOfProjectRequest request) =>
-{
-    var result = await unitOfWork.ProjectMemberRepository.CheckIfUserIsAMemberOfProject(request.ProjectId, request.UserId);
-    return Results.Ok(result);
-})
-.WithOpenApi()
-.RequireAuthorization();
-
+endpoints.MapGroup("/projects")
+         .MapProjectsEnpoints();
 app.Run();
 
 
