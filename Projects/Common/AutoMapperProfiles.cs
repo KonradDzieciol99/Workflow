@@ -17,6 +17,9 @@ namespace Projects.Common
 
             CreateMap<ProjectMemberAddedEvent, ProjectMember>();
             CreateMap<ProjectMember, ProjectMemberAddedEvent>();
+
+            CreateMap<CreateProjectMemberDto, ProjectMember>();
+            CreateMap<ProjectMember, CreateProjectMemberDto>();
             
         }
     }

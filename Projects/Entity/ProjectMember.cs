@@ -33,5 +33,10 @@ namespace Projects.Entity
         public string ProjectId { get; set; }
         public Project MotherProject { get; set; }
 
+        public bool CanBeDeleted()
+        {
+            return this.Type != ProjectMemberType.Leader;
+        }
+
     }
 }

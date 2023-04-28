@@ -5,7 +5,7 @@ namespace Projects.Models
 {
     public class AppParams
     {
-        public int Skip { get; set; } = 0;
+        public int? Skip { get; set; }
         public int Take { get; set; } = 10;
         public string? OrderBy { get; set; } = null;
         public bool? IsDescending { get; set; } = null;

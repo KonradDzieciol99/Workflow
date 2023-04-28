@@ -95,7 +95,7 @@ public static class Config
                 
                 RequireConsent = false,//// ????
                 AllowRememberConsent = true,/// ?????
-                AccessTokenLifetime = 600,
+                AccessTokenLifetime = 6000,
                 
             },
         };
