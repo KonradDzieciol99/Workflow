@@ -28,5 +28,10 @@ namespace Tasks.Repositories
                                                                     n => n.Type,
                                                                     n => projectMemberType));
         }
+        public async Task<int> RemoveAllProjectMembersAsync(string projectId)
+        {
+            return await applicationDbContext.ProjectMembers.Where(x => x.ProjectId == projectId)
+                                                            .ExecuteDeleteAsync();
+        }
     }
 }

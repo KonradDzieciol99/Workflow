@@ -88,6 +88,7 @@ var subscribeTasks = new List<Task>
     eventBus.Subscribe<ProjectMemberAddedEvent>(),
     eventBus.Subscribe<ProjectMemberUpdatedEvent>(),
     eventBus.Subscribe<ProjectMemberRemovedEvent>(),
+    eventBus.Subscribe<ProjectRemovedEvent>(),
 };
 await Task.WhenAll(subscribeTasks);
 

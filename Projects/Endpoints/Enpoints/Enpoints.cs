@@ -175,6 +175,7 @@ namespace Projects.Endpoints.MapProjectMember
             group.MapDelete("/{id}", async ([FromServices] IUnitOfWork unitOfWork,
                                         [FromServices] IMapper mapper,
                                         ClaimsPrincipal user,
+                                        [FromServices] IAzureServiceBusSender azureServiceBusSender,
                                         HttpContext context,
                                         IAuthorizationService authorizationService,
                                         [FromRoute] string id) =>
@@ -195,7 +196,11 @@ namespace Projects.Endpoints.MapProjectMember
                 var resoult = await unitOfWork.ProjectRepository.ExecuteDeleteAsync(id);
 
                 if (resoult > 0)
+                {
+                    await azureServiceBusSender.PublishMessage(new ProjectRemovedEvent() {ProjectId=id});
                     return Results.NoContent();
+                }
+                    
 
                 return Results.BadRequest("Project could not be deleted.");
             });
