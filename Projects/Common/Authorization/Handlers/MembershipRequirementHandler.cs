@@ -6,7 +6,7 @@ using System.Security.Claims;
 
 namespace Projects.Common.Authorization.Handlers
 {
-    public class MembershipRequirementHandler : AuthorizationHandler<MembershipRequirement, ProjectMember>
+    public class MembershipRequirementHandler : AuthorizationHandler<MembershipRequirement, string>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -14,7 +14,7 @@ namespace Projects.Common.Authorization.Handlers
         {
             this._unitOfWork = unitOfWork;
         }
-        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, MembershipRequirement requirement, ProjectMember resource)
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, MembershipRequirement requirement, string resource)
         {
 
             var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new ArgumentNullException(nameof(ClaimTypes.NameIdentifier));
