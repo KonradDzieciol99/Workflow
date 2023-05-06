@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
 using HttpMessage.Extensions;
+using System.Net;
+using HttpMessage.Models.Exceptions;
 
 namespace HttpMessage
 {
@@ -56,20 +58,24 @@ namespace HttpMessage
                 apiResponse = await _client.SendAsync(message);
 
 
-                //if (apiResponse.IsSuccessStatusCode)
-                //{
-                //    // kod odpowiedzi jest w zakresie 200-299 (sukces), można przetwarzać odpowiedź
-                //    string responseBody = await apiResponse.Content.ReadAsStringAsync();
-                //    // ...
-                //}
-                //else
-                //{
-                //    // kod odpowiedzi nie jest w zakresie sukcesu, należy obsłużyć błąd
-                //    string errorResponse = await apiResponse.Content.ReadAsStringAsync();
-                //    // ...
-                //} //ale jak działają te polityki ?
-
-
+                if (!apiResponse.IsSuccessStatusCode)      
+                {
+                    switch (apiResponse.StatusCode)
+                    {
+                        case HttpStatusCode.BadRequest:
+                            throw new BadRequestException(await apiResponse.Content.ReadAsStringAsync());
+                        case HttpStatusCode.Unauthorized:
+                            throw new UnauthorizedException(await apiResponse.Content.ReadAsStringAsync());
+                        case HttpStatusCode.Forbidden:
+                            throw new ForbiddenException(await apiResponse.Content.ReadAsStringAsync());
+                        case HttpStatusCode.NotFound:
+                            throw new NotFoundException(await apiResponse.Content.ReadAsStringAsync());
+                        default:
+                            throw new HttpRequestException(await apiResponse.Content.ReadAsStringAsync());
+                    }
+                } 
+                
+                //ale jak działają te polityki longpoly?
 
                 var apiContent = await apiResponse.Content.ReadAsStringAsync();
 
