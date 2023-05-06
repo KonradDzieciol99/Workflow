@@ -29,7 +29,7 @@ namespace Tasks.DataAccess
                 opt.Property(x => x.Id).ValueGeneratedOnAdd();
             });
 
-            builder.Entity<AppTask>(opt =>
+            builder.Entity<ProjectMember>(opt =>
             {
                 opt.HasKey(x => x.Id);
 

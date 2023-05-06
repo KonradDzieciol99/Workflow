@@ -13,6 +13,7 @@ namespace Projects.Repositories
         Task<int> RemoveAsync(string projectId, string userId);
         Task<ProjectMember?> GetProjectMemberAsync(string projectId, string userId);
         Task<bool> CheckIfUserIsALeaderAsync(string projectId, string userId);
+        Task<ProjectMember?> GetAsync(string projectMemberId);
 
     }
 }

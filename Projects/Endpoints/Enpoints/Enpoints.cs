@@ -11,6 +11,8 @@ using Projects.Repositories;
 using Projects.Entity;
 using Projects.Models;
 using Microsoft.Azure.Amqp.Framing;
+using System.ComponentModel.DataAnnotations;
+using Projects.Common.Requests;
 
 namespace Projects.Endpoints.MapProjectMember
 {
@@ -19,11 +21,12 @@ namespace Projects.Endpoints.MapProjectMember
         public static RouteGroupBuilder MapProjectMemberEnpoints(this RouteGroupBuilder group)
         {
 
-            group.MapPost("/", async ([FromServices] IUnitOfWork unitOfWork,
+            group.MapPost("/{projectId}/projectMembers", async ([FromServices] IUnitOfWork unitOfWork,
                                         [FromServices] IAzureServiceBusSender azureServiceBusSender,
                                         [FromServices] IMapper mapper,
                                         ClaimsPrincipal user,
                                         HttpContext context,
+                                        [FromRoute] string projectId,
                                         [FromBody] CreateProjectMemberDto createProjectMember,
                                         IAuthorizationService authorizationService
                                         ) =>
@@ -51,23 +54,23 @@ namespace Projects.Endpoints.MapProjectMember
             })
             .AddEndpointFilter<ValidatorFilter<CreateProjectMemberDto>>();
 
-            group.MapDelete("/", async ([FromServices] IUnitOfWork unitOfWork,
+            group.MapDelete("/{projectId}/projectMembers/{projectMemberId}", async ([FromServices] IUnitOfWork unitOfWork,
                             [FromServices] IAzureServiceBusSender azureServiceBusSender,
                             [FromServices] IMapper mapper,
                             ClaimsPrincipal user,
-                            HttpContext context,
-                            IAuthorizationService authorizationService,
-                            [AsParameters] RemoveProjectMemberDto removeProjectMember) => //sprawdzić czy uzytkownik do usuniecie nie jest liderem
+                            [FromServices] IAuthorizationService authorizationService,
+                            [FromRoute] string projectMemberId,
+                            [FromRoute] string projectId) => //sprawdzić czy uzytkownik do usuniecie nie jest liderem
             {
                 var userEmail = user.FindFirstValue(ClaimTypes.Email);
                 var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                var authorizationResult = await authorizationService.AuthorizeAsync(user, removeProjectMember.ProjectId, "ManagementPolicy");
+                var authorizationResult = await authorizationService.AuthorizeAsync(user, projectId, "ManagementPolicy");
                 if (!authorizationResult.Succeeded)
                     return Results.Forbid();
 
-                var projectMember = await unitOfWork.ProjectMemberRepository.GetProjectMemberAsync(removeProjectMember.ProjectId, removeProjectMember.UserId);
-                
+                var projectMember = await unitOfWork.ProjectMemberRepository.GetAsync(projectMemberId);
+
                 if (projectMember is null)
                     return Results.BadRequest("Such member does not exist.");
 
@@ -80,14 +83,51 @@ namespace Projects.Endpoints.MapProjectMember
 
                 if (await unitOfWork.Complete())
                 {
-                    await azureServiceBusSender.PublishMessage(mapper.Map<ProjectMemberRemovedEvent>(removeProjectMember));
+                    await azureServiceBusSender.PublishMessage(new ProjectMemberRemovedEvent() { ProjectMemberId = projectMemberId });
                     return Results.NoContent();
                 }
 
                 return Results.BadRequest("Error occurred during member removing.");
 
-            })
-            .AddEndpointFilter<ValidatorFilter<RemoveProjectMemberDto>>();
+            });
+            //.AddEndpointFilter<ValidatorFilter<RemoveProjectMemberDto>>();
+            group.MapPut("/{projectId}/projectMembers/{projectMemberId}", async ([FromServices] IUnitOfWork unitOfWork,
+                [FromServices] IAzureServiceBusSender azureServiceBusSender,
+                [FromServices] IMapper mapper,
+                ClaimsPrincipal user,
+                [FromServices] IAuthorizationService authorizationService,
+                [FromRoute] string projectMemberId,
+                [FromRoute] string projectId,
+                [FromBody] UpdateProjectMemberDto UpdateProjectMemberDto) => 
+            {
+                var userEmail = user.FindFirstValue(ClaimTypes.Email);
+                var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                var authorizationResult = await authorizationService.AuthorizeAsync(user, projectId, "ManagementPolicy");
+                if (!authorizationResult.Succeeded)
+                    return Results.Forbid();
+
+                var projectMember = await unitOfWork.ProjectMemberRepository.GetAsync(projectMemberId);
+
+                if (projectMember is null)
+                    return Results.BadRequest("Such member does not exist.");
+
+                var result = projectMember.CanBeDeleted();
+
+                if (!result)
+                    return Results.BadRequest("Project leader cannot be removed.");
+
+                unitOfWork.ProjectMemberRepository.Remove(projectMember);
+
+                if (await unitOfWork.Complete())
+                {
+                    await azureServiceBusSender.PublishMessage(new ProjectMemberRemovedEvent() { ProjectMemberId = projectMemberId });
+                    return Results.NoContent();
+                }
+
+                return Results.BadRequest("Error occurred during member removing.");
+
+            });
 
             return group;
         }
@@ -110,7 +150,7 @@ namespace Projects.Endpoints.MapProjectMember
                 if (!authorizationResult.Succeeded)
                     return Results.Forbid();
 
-                var project = await unitOfWork.ProjectRepository.GetOneByIdAsync(id);
+                var project = await unitOfWork.ProjectRepository.GetOneAsync(id);
 
                 if (project is null)
                     return Results.BadRequest("Project cannot be found.");
@@ -118,29 +158,25 @@ namespace Projects.Endpoints.MapProjectMember
                 return Results.Ok(mapper.Map<ProjectDto>(project));
             });
 
-            group.MapGet("/", async ([FromServices] IUnitOfWork unitOfWork,
-                                      [FromServices] IMapper mapper,
-                                      ClaimsPrincipal user,
-                                      [AsParameters] AppParams @params) =>
+            group.MapGet("/", async ([AsParameters] GetProjectsRequest request, [AsParameters] AppParams @params) =>
             {
-                var userEmail = user.FindFirstValue(ClaimTypes.Email);
-                var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+                var userEmail = request.user.FindFirstValue(ClaimTypes.Email);
+                var userId = request.user.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 if (userId is null || userEmail is null)
                     return Results.BadRequest("User cannot be identified.");
 
-                var result = await unitOfWork.ProjectMemberRepository.GetUserProjects(userId, @params);
+                var result = await request.unitOfWork.ProjectMemberRepository.GetUserProjects(userId, @params);
 
                 var projectsWithTotalCount = new ProjectsWithTotalCount()
                 {
                     Count = result.TotalCount,
-                    Result = mapper.Map<List<ProjectDto>>(result.Projects)
+                    Result = request.mapper.Map<List<ProjectDto>>(result.Projects)
                 };
 
                 return Results.Ok(projectsWithTotalCount);
-
-            })
-            .AddEndpointFilter<ValidatorFilter<AppParams>>();
+            });
+            //.AddEndpointFilter<ValidatorFilter<AppParams>>();
 
             group.MapPost("/", async ([FromServices] IUnitOfWork unitOfWork,
                                         [FromServices] IAzureServiceBusSender azureServiceBusSender,

@@ -119,12 +119,9 @@ app.MapPost("/api",async ([FromServices] IUnitOfWork unitOfWork,
     if (userId is null || userEmail is null)
         return Results.BadRequest("User cannot be identified.");
 
-    var projectsServiceResult = await unitOfWork.ProjectMemberRepository.CheckIfUserIsAMemberOfProject(createAppTask.ProjectId, userId);
-
-    if (projectsServiceResult == false) { 
-        context.Response.StatusCode = StatusCodes.Status403Forbidden;
-        await context.Response.WriteAsync("You are not a member of this project");
-    }
+    var result = await unitOfWork.ProjectMemberRepository.CheckIfUserIsAMemberOfProject(createAppTask.ProjectId, userId);//polityka
+    if (result == false)
+        return Results.Forbid();
 
     var appTask = mapper.Map<AppTask>(createAppTask);
 
@@ -138,6 +135,32 @@ app.MapPost("/api",async ([FromServices] IUnitOfWork unitOfWork,
 //ValidationFilter
 .WithOpenApi()
 .RequireAuthorization();
+
+
+app.MapGet("/api/{projectId}", async ([FromServices] IUnitOfWork unitOfWork,
+                          [FromServices] IMapper mapper,
+                          ClaimsPrincipal user,
+                          [AsParameters] AppParams @params,
+                          string projectId) =>
+{
+
+    var userEmail = user.FindFirstValue(ClaimTypes.Email);
+    var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
+    if (userId is null || userEmail is null)
+        return Results.BadRequest("User cannot be identified.");
+
+
+    var result = await unitOfWork.ProjectMemberRepository.CheckIfUserIsAMemberOfProject(projectId, userId);//polityka
+    if (result == false)
+        return Results.Forbid();
+
+    var tasks = await unitOfWork.AppTaskRepository.GetAllProjectTasksAsync(projectId);
+
+    return Results.Ok(tasks);
+})
+.RequireAuthorization();
+
 
 
 app.Run();

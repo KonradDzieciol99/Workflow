@@ -17,7 +17,7 @@ namespace Tasks.Events.Handlers
         }
         public async Task Handle(ProjectMemberRemovedEvent request, CancellationToken cancellationToken)
         {
-            var result = await _unitOfWork.ProjectMemberRepository.RemoveAsync(request.ProjectId, request.UserId);
+            var result = await _unitOfWork.ProjectMemberRepository.RemoveAsync(request.ProjectMemberId);
 
             if(result > 0)
             {

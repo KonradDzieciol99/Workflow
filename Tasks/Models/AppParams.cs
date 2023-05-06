@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 
-namespace Projects.Models
+namespace Tasks.Models
 {
     public class AppParams
     {

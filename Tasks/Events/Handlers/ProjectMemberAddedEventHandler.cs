@@ -18,7 +18,18 @@ namespace Tasks.Events.Handlers
         }
         public async Task Handle(ProjectMemberAddedEvent request, CancellationToken cancellationToken)
         {
-            _unitOfWork.ProjectMemberRepository.Add(_mapper.Map<ProjectMember>(request));
+
+            var projectMember = new ProjectMember()
+            {
+                Id = request.ProjectMemberId,
+                UserEmail = request.UserEmail,
+                UserId = request.UserId,
+                Type = (ProjectMemberType)request.Type,
+                PhotoUrl = request.PhotoUrl,
+                ProjectId = request.ProjectId
+            };
+
+            _unitOfWork.ProjectMemberRepository.Add(projectMember);
 
             if (!await _unitOfWork.Complete())
                 throw new InvalidOperationException("An error occurred while adding a project member.");
