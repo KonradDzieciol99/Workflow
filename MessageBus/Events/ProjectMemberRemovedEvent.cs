@@ -8,8 +8,6 @@ namespace MessageBus.Events
 {
     public class ProjectMemberRemovedEvent : BaseMessage
     {
-        public string UserId { get; set; }
-        public string ProjectId { get; set; }
-
+        public string ProjectMemberId { get; set; }
     }
 }

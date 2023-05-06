@@ -37,6 +37,10 @@ namespace Projects.Entity
         {
             return this.Type != ProjectMemberType.Leader;
         }
+        public async Task ChangeType()
+        {
+
+        }
 
     }
 }

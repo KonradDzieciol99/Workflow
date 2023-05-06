@@ -20,6 +20,10 @@ using MessageBus.Events;
 using Projects.Endpoints.MapProjectMember;
 using Projects.Common.Authorization.Requirements;
 using Projects.Common.Authorization.Handlers;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.Extensions.Logging;
+using System.Net;
+using Azure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -107,6 +111,29 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
+//app.UseExceptionHandler(appError =>
+//{
+//    appError.Run(async context =>
+//    {
+//        var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+//        if (exception is BadHttpRequestException myCustomException)
+//        {
+//            // Obs³uga konkretnego wyj¹tku
+//            context.Response.ContentType = "application/json";
+//            context.Response.StatusCode = 400; // Ustaw odpowiedni kod statusu
+//            var response = new { message = myCustomException.Message };
+//            var jsonResponse = System.Text.Json.JsonSerializer.Serialize(response);
+//            await context.Response.WriteAsync(jsonResponse);
+//        }
+//        //else
+//        //{
+//        //    // Przekazanie kontroler do nastêpnego middleware
+//        //    context.Response.StatusCode = 500; // Ustaw odpowiedni kod statusu dla innych b³êdów
+//        //    await context.Response.WriteAsync("Wyst¹pi³ inny b³¹d: " + exception?.Message);
+//        //}
+//    });
+//});
+
 var endpoints = app.MapGroup("/api")
                    .WithOpenApi()
                    .RequireAuthorization()
@@ -117,11 +144,12 @@ var endpoints = app.MapGroup("/api")
                         return await next(invocationContext);
                    }); 
 
-endpoints.MapGroup("/projectMembers")
-         .MapProjectMemberEnpoints();
+//endpoints.MapGroup("/projectMembers")
+//         .MapProjectMemberEnpoints();
 
 endpoints.MapGroup("/projects")
-         .MapProjectsEnpoints();
+         .MapProjectsEnpoints()
+         .MapProjectMemberEnpoints();
 app.Run();
 
 

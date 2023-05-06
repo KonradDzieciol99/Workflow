@@ -16,14 +16,14 @@ namespace Tasks.Repositories
         {
             return await applicationDbContext.ProjectMembers.AnyAsync(x => x.UserId == userId && x.ProjectId == projectId);
         }
-        public async Task<int> RemoveAsync(string projectId, string userId)
+        public async Task<int> RemoveAsync(string projectMemberId)
         {
-            return await applicationDbContext.ProjectMembers.Where(x => x.UserId == userId && x.ProjectId == projectId)
+            return await applicationDbContext.ProjectMembers.Where(x => x.Id == projectMemberId)
                                                             .ExecuteDeleteAsync();
         }
-        public async Task<int> UpdateAsync(string projectId, string userId , ProjectMemberType projectMemberType)
+        public async Task<int> UpdateAsync(string projectMemberId, ProjectMemberType projectMemberType)
         {
-            return await applicationDbContext.ProjectMembers.Where(x => x.UserId == userId && x.ProjectId == projectId)
+            return await applicationDbContext.ProjectMembers.Where(x => x.Id == projectMemberId)
                                                                 .ExecuteUpdateAsync(s => s.SetProperty(
                                                                     n => n.Type,
                                                                     n => projectMemberType));
@@ -33,5 +33,6 @@ namespace Tasks.Repositories
             return await applicationDbContext.ProjectMembers.Where(x => x.ProjectId == projectId)
                                                             .ExecuteDeleteAsync();
         }
+
     }
 }

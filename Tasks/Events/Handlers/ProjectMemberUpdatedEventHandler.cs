@@ -17,7 +17,7 @@ namespace Tasks.Events.Handlers
         }
         public async Task Handle(ProjectMemberUpdatedEvent request, CancellationToken cancellationToken)
         {
-            var result = await _unitOfWork.ProjectMemberRepository.UpdateAsync(request.ProjectId, request.UserId, (ProjectMemberType)request.Type);
+            var result = await _unitOfWork.ProjectMemberRepository.UpdateAsync(request.projectMemberId, (ProjectMemberType)request.Type);
 
             if (!await _unitOfWork.Complete())
                 throw new InvalidOperationException("An error occurred while updating a project member.");
