@@ -19,7 +19,7 @@ namespace MessageBus
         {
             this._options = options.Value;
         }
-        public async Task PublishMessage<T>(T message) where T : BaseMessage
+        public async Task PublishMessage<T>(T message) where T : IntegrationEvent
         {
             //if (message.EventSender is null)
             //{
