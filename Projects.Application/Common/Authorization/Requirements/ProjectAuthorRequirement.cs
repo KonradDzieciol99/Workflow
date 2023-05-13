@@ -2,5 +2,8 @@
 
 namespace Projects.Application.Common.Authorization.Requirements
 {
-    public class ProjectAuthorRequirement : IAuthorizationRequirement { }
+    public class ProjectAuthorRequirement : IAuthorizationRequirement 
+    {
+        public string ProjectId { get; set; }
+    }
 }
