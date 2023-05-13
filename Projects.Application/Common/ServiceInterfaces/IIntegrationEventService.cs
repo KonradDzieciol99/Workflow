@@ -14,7 +14,7 @@ namespace Projects.Application.Common.ServiceInterfaces
 
         public void RemoveIntegrationEvent(IntegrationEvent domainEvent);
 
-        public void ClearIntegrationEvent();
+        //public void ClearIntegrationEvent();
         public Task PublishEventsThroughEventBusAsync();
     }
 }

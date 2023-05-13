@@ -32,10 +32,10 @@ namespace Projects.Infrastructure.Services
             _integrationEvents.Remove(integrationEvent);
         }
 
-        public void ClearIntegrationEvent()
-        {
-            _integrationEvents.Clear();
-        }
+        //public void ClearIntegrationEvent()
+        //{
+        //    _integrationEvents.Clear();
+        //}
         public async Task PublishEventsThroughEventBusAsync()
         {
             foreach (var IntegrationEvent in _integrationEvents)
