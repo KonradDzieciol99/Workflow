@@ -20,35 +20,38 @@ namespace Projects.Application.ProjectMembers.Commands;
 
 public record AddProjectMemberCommand(string UserId,
                         string UserEmail,
-                        string PhotoUrl,
+                        string? PhotoUrl,
                         ProjectMemberType Type,
-                        string ProjectId) : IRequest<ProjectMemberDto>, IAuthorizationRequest
+                        string ProjectId) : IAuthorizationRequest<ProjectMemberDto>
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement()
     {
-        return new List<IAuthorizationRequirement>() { new ProjectManagementRequirement() { ProjectId = ProjectId } };
+        var listOfRequirements = new List<IAuthorizationRequirement>() 
+        { 
+            new ProjectMembershipRequirement(ProjectId),
+            new ProjectManagementRequirement(ProjectId)
+        };
+        return listOfRequirements;
     }
 }
 
 public class AddProjectMemberCommandHandler : IRequestHandler<AddProjectMemberCommand, ProjectMemberDto>
 {
     private readonly IUnitOfWork _unitOfWork;
-
     public AddProjectMemberCommandHandler(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
     }
-
     public async Task<ProjectMemberDto> Handle(AddProjectMemberCommand request, CancellationToken cancellationToken)
     {
-        var newMember = new ProjectMember(request.UserId,request.UserEmail,request.PhotoUrl,request.Type,request.ProjectId);
+        var newMember = new ProjectMember(request.UserId, request.UserEmail, request.PhotoUrl, request.Type, request.ProjectId);
 
         _unitOfWork.ProjectMemberRepository.Add(newMember);
 
         await _unitOfWork.Complete();
 
         var projectMemberDto = new ProjectMemberDto(newMember.Id, newMember.UserId, newMember.UserEmail, newMember.Type, newMember.ProjectId);
-        
+
         return projectMemberDto;
     }
 }

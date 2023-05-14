@@ -11,10 +11,7 @@ namespace Projects.Application.Common.ServiceInterfaces
     public interface IIntegrationEventService
     {
         public void AddIntegrationEvent(IntegrationEvent domainEvent);
-
         public void RemoveIntegrationEvent(IntegrationEvent domainEvent);
-
-        //public void ClearIntegrationEvent();
         public Task PublishEventsThroughEventBusAsync();
     }
 }

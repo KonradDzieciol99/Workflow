@@ -49,21 +49,22 @@ builder.Services.AddAuthentication(opt =>
     };
 });
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("ProjectMembershipPolicy", policy =>
-    policy.AddRequirements(
-        new ProjectMembershipRequirement()
-    ));
-    options.AddPolicy("ProjectManagementPolicy", policy =>
-    policy.AddRequirements(
-        new ProjectManagementRequirement()
-        ));
-    options.AddPolicy("ProjectAuthorPolicy", policy =>
-    policy.AddRequirements(
-        new ProjectAuthorRequirement()
-        ));
-});
+builder.Services.AddAuthorization();
+//builder.Services.AddAuthorization(options =>
+//{
+//    options.AddPolicy("ProjectMembershipPolicy", policy =>
+//    policy.AddRequirements(
+//        new ProjectMembershipRequirement()
+//    ));
+//    options.AddPolicy("ProjectManagementPolicy", policy =>
+//    policy.AddRequirements(
+//        new ProjectManagementRequirement()
+//        ));
+//    options.AddPolicy("ProjectAuthorPolicy", policy =>
+//    policy.AddRequirements(
+//        new ProjectAuthorRequirement()
+//        ));
+//});
 
 builder.Services.AddScoped<IAuthorizationHandler, ProjectManagementRequirementHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, ProjectMembershipRequirementHandler>();
