@@ -8,29 +8,27 @@ namespace Projects.Domain.Entities
 
         private ProjectMember(){}
 
-        public ProjectMember(string userId, string userEmail, string photoUrl, ProjectMemberType type, string projectId)
+        public ProjectMember(string userId, string userEmail, string? photoUrl, ProjectMemberType type, string projectId)
         {
             UserId = userId;
             UserEmail = userEmail;
             PhotoUrl = photoUrl;
             Type = type;
-            ProjectId = projectId;
-
-            this.AddProjectMember(this);
+            ProjectId = projectId;          
         }
 
         public string Id { get; set; }
         public string UserId { get; set; }
         public string UserEmail { get; set; }
-        public string PhotoUrl { get; set; }
+        public string? PhotoUrl { get; set; }
         public ProjectMemberType Type { get; set; } = ProjectMemberType.Member;
 
         public string ProjectId { get; set; }
         public Project MotherProject { get; set; }
 
-        private void AddProjectMember(ProjectMember projectMember)
+        public void AddProjectMember()
         {
-            var projectMemberAddedDomainEvent = new ProjectMemberAddedDomainEvent(projectMember);
+            var projectMemberAddedDomainEvent = new ProjectMemberAddedDomainEvent(this);
 
             this.AddDomainEvent(projectMemberAddedDomainEvent);
         }

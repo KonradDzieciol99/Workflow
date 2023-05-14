@@ -33,7 +33,7 @@ namespace Projects.Infrastructure.DataAccess
 
             builder.Entity<ProjectMember>(opt =>
             {
-                opt.HasKey(x => x.Id);
+                opt.HasKey(x => new { x.UserId,x.ProjectId });
 
                 opt.Property(x => x.Id).ValueGeneratedOnAdd();
             });

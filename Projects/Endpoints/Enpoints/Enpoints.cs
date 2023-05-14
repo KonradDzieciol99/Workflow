@@ -22,8 +22,6 @@ namespace Projects.Endpoints.Enpoints
         {
 
             group.MapPost("/{projectId}/projectMembers", async (
-                                        //[FromRoute] string projectId,
-                                        //[FromBody] CreateProjectMemberDto createProjectMember,
                                         [FromRoute] string projectId,
                                         [FromServices] IMediator mediator,
                                         [FromBody] AddProjectMemberCommand command
@@ -34,7 +32,6 @@ namespace Projects.Endpoints.Enpoints
 
                 return Results.Ok(await mediator.Send(command));
             });
-            //.AddEndpointFilter<ValidatorFilter<CreateProjectMemberDto>>();
 
             //group.MapDelete("/{projectId}/projectMembers/{projectMemberId}", async ([FromServices] IUnitOfWork unitOfWork,
             //                [FromServices] IAzureServiceBusSender azureServiceBusSender,
@@ -72,45 +69,44 @@ namespace Projects.Endpoints.Enpoints
             //    return Results.BadRequest("Error occurred during member removing.");
 
             //});
-            //.AddEndpointFilter<ValidatorFilter<RemoveProjectMemberDto>>();
 
-        //    group.MapPut("/{projectId}/projectMembers/{projectMemberId}", async ([FromServices] IUnitOfWork unitOfWork,
-        //        [FromServices] IAzureServiceBusSender azureServiceBusSender,
-        //        [FromServices] IMapper mapper,
-        //        ClaimsPrincipal user,
-        //        [FromServices] IAuthorizationService authorizationService,
-        //        [FromRoute] string projectMemberId,
-        //        [FromRoute] string projectId,
-        //        [FromBody] UpdateProjectMemberDto UpdateProjectMemberDto) =>
-        //    {
-        //        var userEmail = user.FindFirstValue(ClaimTypes.Email);
-        //        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            //    group.MapPut("/{projectId}/projectMembers/{projectMemberId}", async ([FromServices] IUnitOfWork unitOfWork,
+            //        [FromServices] IAzureServiceBusSender azureServiceBusSender,
+            //        [FromServices] IMapper mapper,
+            //        ClaimsPrincipal user,
+            //        [FromServices] IAuthorizationService authorizationService,
+            //        [FromRoute] string projectMemberId,
+            //        [FromRoute] string projectId,
+            //        [FromBody] UpdateProjectMemberDto UpdateProjectMemberDto) =>
+            //    {
+            //        var userEmail = user.FindFirstValue(ClaimTypes.Email);
+            //        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        //        var authorizationResult = await authorizationService.AuthorizeAsync(user, projectId, "ManagementPolicy");
-        //        if (!authorizationResult.Succeeded)
-        //            return Results.Forbid();
+            //        var authorizationResult = await authorizationService.AuthorizeAsync(user, projectId, "ManagementPolicy");
+            //        if (!authorizationResult.Succeeded)
+            //            return Results.Forbid();
 
-        //        var projectMember = await unitOfWork.ProjectMemberRepository.GetAsync(projectMemberId);
+            //        var projectMember = await unitOfWork.ProjectMemberRepository.GetAsync(projectMemberId);
 
-        //        if (projectMember is null)
-        //            return Results.BadRequest("Such member does not exist.");
+            //        if (projectMember is null)
+            //            return Results.BadRequest("Such member does not exist.");
 
-        //        var result = projectMember.CanBeDeleted();
+            //        var result = projectMember.CanBeDeleted();
 
-        //        if (!result)
-        //            return Results.BadRequest("Project leader cannot be removed.");
+            //        if (!result)
+            //            return Results.BadRequest("Project leader cannot be removed.");
 
-        //        unitOfWork.ProjectMemberRepository.Remove(projectMember);
+            //        unitOfWork.ProjectMemberRepository.Remove(projectMember);
 
-        //        if (await unitOfWork.Complete())
-        //        {
-        //            await azureServiceBusSender.PublishMessage(new ProjectMemberRemovedEvent() { ProjectMemberId = projectMemberId });
-        //            return Results.NoContent();
-        //        }
+            //        if (await unitOfWork.Complete())
+            //        {
+            //            await azureServiceBusSender.PublishMessage(new ProjectMemberRemovedEvent() { ProjectMemberId = projectMemberId });
+            //            return Results.NoContent();
+            //        }
 
-        //        return Results.BadRequest("Error occurred during member removing.");
+            //        return Results.BadRequest("Error occurred during member removing.");
 
-        //    });
+            //    });
 
             return group;
         }

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Projects.Common;
-using Projects.DataAccess;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Security.Claims;
@@ -26,6 +25,7 @@ using Projects.Application.Common.Authorization.Requirements;
 using Projects.Application.Common.ServiceInterfaces;
 using Projects.Services;
 using Projects.Infrastructure.Services;
+using Projects.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
