@@ -7,11 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MessageBus\MessageBus.csproj" />
-    <ProjectReference Include="..\Projects.Domain\Projects.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="ProjectMembers\Queries\" />
     <Folder Include="Projects\DomainEventHandlers\" />
     <Folder Include="Projects\Queries\" />
@@ -23,6 +18,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MessageBus\MessageBus.csproj" />
+    <ProjectReference Include="..\Projects.Domain\Projects.Domain.csproj" />
   </ItemGroup>
 
 </Project>

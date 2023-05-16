@@ -17,12 +17,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Projects.Application\Projects.Application.csproj" />
-    <ProjectReference Include="..\Projects.Domain\Projects.Domain.csproj" />
+    <Folder Include="DataAccess\Migrations\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DataAccess\Migrations\" />
+    <ProjectReference Include="..\MessageBus\MessageBus.csproj" />
+    <ProjectReference Include="..\Projects.Application\Projects.Application.csproj" />
+    <ProjectReference Include="..\Projects.Domain\Projects.Domain.csproj" />
   </ItemGroup>
 
 </Project>
