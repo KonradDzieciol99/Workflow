@@ -20,7 +20,7 @@ namespace SignalR.Common.PipelineBehaviour
         {
             if (request is IUserPersistentNotification)
             {
-                var message = request as IntegrationEvent;
+                var message = request as BaseMessage;
                 if (message is null)
                     return await next();
 

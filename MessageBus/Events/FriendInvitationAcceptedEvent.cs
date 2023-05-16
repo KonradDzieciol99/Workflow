@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MessageBus.Events
 {
-    public class FriendInvitationAcceptedEvent : IntegrationEvent, IRequest, IUserPersistentNotification
+    public class FriendInvitationAcceptedEvent : BaseMessage, IRequest, IUserPersistentNotification
     {
         public FriendInvitationDtoGlobal FriendInvitationDto { get; set; }
         public SimpleUser UserWhoseInvitationAccepted { get; set; }

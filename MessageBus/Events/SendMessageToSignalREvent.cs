@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MessageBus.Events
 {
-    public class SendMessageToSignalREvent : IntegrationEvent, IRequest
+    public class SendMessageToSignalREvent : BaseMessage, IRequest
     {
         //public int Id { get; set; }
         public string SenderId { get; set; }

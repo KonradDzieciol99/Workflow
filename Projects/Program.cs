@@ -6,26 +6,24 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Projects.Common;
+using Projects.DataAccess;
+using Projects.Entity;
+using Projects.Models;
+using Projects.Models.Dto;
+using Projects.Repositories;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Security.Claims;
 using MessageBus.Extensions;
 using MessageBus;
 using MessageBus.Events;
+using Projects.Endpoints.MapProjectMember;
+using Projects.Common.Authorization.Requirements;
+using Projects.Common.Authorization.Handlers;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Extensions.Logging;
 using System.Net;
 using Azure;
-using Projects.Endpoints.Enpoints;
-using Projects.Infrastructure.Repositories;
-using Projects.Infrastructure.DataAccess;
-using Projects.Application.Common.Mappings;
-using Projects.Application.Common.Authorization.Handlers;
-using Projects.Application.Common.Authorization.Requirements;
-using Projects.Application.Common.ServiceInterfaces;
-using Projects.Services;
-using Projects.Infrastructure.Services;
-using Projects.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,28 +47,25 @@ builder.Services.AddAuthentication(opt =>
     };
 });
 
-builder.Services.AddAuthorization();
-//builder.Services.AddAuthorization(options =>
-//{
-//    options.AddPolicy("ProjectMembershipPolicy", policy =>
-//    policy.AddRequirements(
-//        new ProjectMembershipRequirement()
-//    ));
-//    options.AddPolicy("ProjectManagementPolicy", policy =>
-//    policy.AddRequirements(
-//        new ProjectManagementRequirement()
-//        ));
-//    options.AddPolicy("ProjectAuthorPolicy", policy =>
-//    policy.AddRequirements(
-//        new ProjectAuthorRequirement()
-//        ));
-//});
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("MembershipPolicy", policy =>
+    policy.AddRequirements(
+        new MembershipRequirement()
+    ));
+    options.AddPolicy("ManagementPolicy", policy =>
+    policy.AddRequirements(
+        new ManagementRequirement()
+        ));
+    options.AddPolicy("AuthorPolicy", policy =>
+    policy.AddRequirements(
+        new AuthorRequirement()
+        ));
+});
 
-builder.Services.AddScoped<IAuthorizationHandler, ProjectManagementRequirementHandler>();
-builder.Services.AddScoped<IAuthorizationHandler, ProjectMembershipRequirementHandler>();
-builder.Services.AddScoped<IAuthorizationHandler, ProjectAuthorRequirementHandler>();
-
-
+builder.Services.AddScoped<IAuthorizationHandler, ManagementRequirementHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, MembershipRequirementHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, AuthorRequirementHandler>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(opt =>
 {
@@ -98,22 +93,6 @@ builder.Services.AddAzureServiceBusSender(opt =>
 {
     opt.ServiceBusConnectionString = builder.Configuration.GetConnectionString(name: "ServiceBusConnectionString") ?? throw new ArgumentNullException(nameof(opt.ServiceBusConnectionString));
 });
-
-builder.Services.AddAzureServiceBusSubscriber(opt =>
-{
-    var configuration = builder.Configuration;
-    opt.ServiceBusConnectionString = configuration.GetConnectionString(name: "ServiceBusConnectionString") ?? throw new ArgumentNullException(nameof(opt.ServiceBusConnectionString));
-    opt.SubscriptionName = "projects";
-});
-
-builder.Services.AddMediatR(opt => opt.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
-
-builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-
-builder.Services.AddHttpContextAccessor();
-
-builder.Services.AddApplicationServices();
-builder.Services.AddScoped<IIntegrationEventService, IntegrationEventService>();
 
 var app = builder.Build();
 
@@ -163,7 +142,7 @@ var endpoints = app.MapGroup("/api")
                         var logger = invocationContext.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
                         logger.LogInformation($"Received request for: {invocationContext.HttpContext.Request.Path}");
                         return await next(invocationContext);
-                   });
+                   }); 
 
 //endpoints.MapGroup("/projectMembers")
 //         .MapProjectMemberEnpoints();
@@ -171,7 +150,6 @@ var endpoints = app.MapGroup("/api")
 endpoints.MapGroup("/projects")
          .MapProjectsEnpoints()
          .MapProjectMemberEnpoints();
-
 app.Run();
 
 
