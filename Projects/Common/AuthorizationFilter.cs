@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Projects.Models;
 
 namespace Projects.Common
 {

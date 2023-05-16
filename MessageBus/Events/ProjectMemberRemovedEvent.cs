@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MessageBus.Events
 {
-    public class ProjectMemberRemovedEvent : BaseMessage
+    public class ProjectMemberRemovedEvent : IntegrationEvent
     {
         public string ProjectMemberId { get; set; }
     }
