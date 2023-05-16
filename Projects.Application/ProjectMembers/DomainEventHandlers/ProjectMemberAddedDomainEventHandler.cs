@@ -20,7 +20,7 @@ public class ProjectMemberAddedDomainEventHandler : INotificationHandler<Project
     {
         this._integrationEventService = integrationEventService;
     }
-    public async Task Handle(ProjectMemberAddedDomainEvent notification, CancellationToken cancellationToken)
+    public Task Handle(ProjectMemberAddedDomainEvent notification, CancellationToken cancellationToken)
     {
 
         var @event = new ProjectMemberAddedEvent(notification.Member.Id, notification.Member.UserId,
@@ -28,5 +28,7 @@ public class ProjectMemberAddedDomainEventHandler : INotificationHandler<Project
                                      notification.Member.ProjectId,(ProjectMemberTypeMessageBus)notification.Member.Type);
 
         _integrationEventService.AddIntegrationEvent(@event);
+
+        return Task.CompletedTask;
     }
 }
