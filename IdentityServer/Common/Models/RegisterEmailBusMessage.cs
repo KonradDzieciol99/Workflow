@@ -2,7 +2,7 @@
 
 namespace IdentityServer.Common.Models
 {
-    public class RegisterEmailBusMessage:IntegrationEvent
+    public class RegisterEmailBusMessage:BaseMessage
     {
         public string Email { get; set; }
         public string Token { get; set; }

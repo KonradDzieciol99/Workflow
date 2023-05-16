@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MessageBus.Events
 {
-    public class RemoveUserFromFriendsEvent : IntegrationEvent
+    public class RemoveUserFromFriendsEvent : BaseMessage
     {
 
     }

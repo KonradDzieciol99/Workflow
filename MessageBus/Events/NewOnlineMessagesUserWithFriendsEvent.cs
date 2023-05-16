@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace MessageBus.Events
 {
-    public class NewOnlineMessagesUserWithFriendsEvent : IntegrationEvent, IRequest
+    public class NewOnlineMessagesUserWithFriendsEvent : BaseMessage, IRequest
     {
         public NewOnlineMessagesUserWithFriendsEvent()
         {

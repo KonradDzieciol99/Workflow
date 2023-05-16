@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MessageBus.Events
 {
-    public class NewOfflineUserWithFriendsEvent : IntegrationEvent, IRequest
+    public class NewOfflineUserWithFriendsEvent : BaseMessage, IRequest
     {
         public SimpleUser User { get; set; }
         public IEnumerable<SimpleUser> UserChatFriends { get; set; }

@@ -3,108 +3,131 @@ using MessageBus.Events;
 using MessageBus;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Projects.Models.Dto;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Projects.Common;
-using Projects.Application.Common.Models.Dto;
-using Projects.Application.Common.Models;
-using Projects.Domain.Interfaces;
-using MediatR;
-using Projects.Application.ProjectMembers.Commands;
+using Projects.Repositories;
+using Projects.Entity;
+using Projects.Models;
+using Microsoft.Azure.Amqp.Framing;
+using System.ComponentModel.DataAnnotations;
+using Projects.Common.Requests;
 
-namespace Projects.Endpoints.Enpoints
+namespace Projects.Endpoints.MapProjectMember
 {
     public static class Enpoints
     {
         public static RouteGroupBuilder MapProjectMemberEnpoints(this RouteGroupBuilder group)
         {
 
-            group.MapPost("/{projectId}/projectMembers", async (
+            group.MapPost("/{projectId}/projectMembers", async ([FromServices] IUnitOfWork unitOfWork,
+                                        [FromServices] IAzureServiceBusSender azureServiceBusSender,
+                                        [FromServices] IMapper mapper,
+                                        ClaimsPrincipal user,
+                                        HttpContext context,
                                         [FromRoute] string projectId,
-                                        [FromServices] IMediator mediator,
-                                        [FromBody] AddProjectMemberCommand command
+                                        [FromBody] CreateProjectMemberDto createProjectMember,
+                                        IAuthorizationService authorizationService
                                         ) =>
             {
-                if (projectId != command.ProjectId)
-                    return Results.BadRequest();
 
-                return Results.Ok(await mediator.Send(command));
+                var userEmail = user.FindFirstValue(ClaimTypes.Email);
+                var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                var authorizationResult = await authorizationService.AuthorizeAsync(user, createProjectMember.ProjectId, "ManagementPolicy");
+                if (!authorizationResult.Succeeded)
+                    return Results.Forbid();
+
+                var newMember = mapper.Map<ProjectMember>(createProjectMember);
+
+                unitOfWork.ProjectMemberRepository.Add(newMember);
+
+                if (await unitOfWork.Complete())
+                {
+                    await azureServiceBusSender.PublishMessage(mapper.Map<ProjectMemberAddedEvent>(newMember));
+                    return Results.Ok(newMember);
+                }
+
+                return Results.BadRequest("Error occurred during member creation.");
+
+            })
+            .AddEndpointFilter<ValidatorFilter<CreateProjectMemberDto>>();
+
+            group.MapDelete("/{projectId}/projectMembers/{projectMemberId}", async ([FromServices] IUnitOfWork unitOfWork,
+                            [FromServices] IAzureServiceBusSender azureServiceBusSender,
+                            [FromServices] IMapper mapper,
+                            ClaimsPrincipal user,
+                            [FromServices] IAuthorizationService authorizationService,
+                            [FromRoute] string projectMemberId,
+                            [FromRoute] string projectId) => //sprawdzić czy uzytkownik do usuniecie nie jest liderem
+            {
+                var userEmail = user.FindFirstValue(ClaimTypes.Email);
+                var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                var authorizationResult = await authorizationService.AuthorizeAsync(user, projectId, "ManagementPolicy");
+                if (!authorizationResult.Succeeded)
+                    return Results.Forbid();
+
+                var projectMember = await unitOfWork.ProjectMemberRepository.GetAsync(projectMemberId);
+
+                if (projectMember is null)
+                    return Results.BadRequest("Such member does not exist.");
+
+                var result = projectMember.CanBeDeleted();
+
+                if (!result)
+                    return Results.BadRequest("Project leader cannot be removed.");
+
+                unitOfWork.ProjectMemberRepository.Remove(projectMember);
+
+                if (await unitOfWork.Complete())
+                {
+                    await azureServiceBusSender.PublishMessage(new ProjectMemberRemovedEvent() { ProjectMemberId = projectMemberId });
+                    return Results.NoContent();
+                }
+
+                return Results.BadRequest("Error occurred during member removing.");
+
             });
+            //.AddEndpointFilter<ValidatorFilter<RemoveProjectMemberDto>>();
+            group.MapPut("/{projectId}/projectMembers/{projectMemberId}", async ([FromServices] IUnitOfWork unitOfWork,
+                [FromServices] IAzureServiceBusSender azureServiceBusSender,
+                [FromServices] IMapper mapper,
+                ClaimsPrincipal user,
+                [FromServices] IAuthorizationService authorizationService,
+                [FromRoute] string projectMemberId,
+                [FromRoute] string projectId,
+                [FromBody] UpdateProjectMemberDto UpdateProjectMemberDto) => 
+            {
+                var userEmail = user.FindFirstValue(ClaimTypes.Email);
+                var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            //group.MapDelete("/{projectId}/projectMembers/{projectMemberId}", async ([FromServices] IUnitOfWork unitOfWork,
-            //                [FromServices] IAzureServiceBusSender azureServiceBusSender,
-            //                [FromServices] IMapper mapper,
-            //                ClaimsPrincipal user,
-            //                [FromServices] IAuthorizationService authorizationService,
-            //                [FromRoute] string projectMemberId,
-            //                [FromRoute] string projectId) => //sprawdzić czy uzytkownik do usuniecie nie jest liderem
-            //{
-            //    var userEmail = user.FindFirstValue(ClaimTypes.Email);
-            //    var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+                var authorizationResult = await authorizationService.AuthorizeAsync(user, projectId, "ManagementPolicy");
+                if (!authorizationResult.Succeeded)
+                    return Results.Forbid();
 
-            //    var authorizationResult = await authorizationService.AuthorizeAsync(user, projectId, "ManagementPolicy");
-            //    if (!authorizationResult.Succeeded)
-            //        return Results.Forbid();
+                var projectMember = await unitOfWork.ProjectMemberRepository.GetAsync(projectMemberId);
 
-            //    var projectMember = await unitOfWork.ProjectMemberRepository.GetAsync(projectMemberId);
+                if (projectMember is null)
+                    return Results.BadRequest("Such member does not exist.");
 
-            //    if (projectMember is null)
-            //        return Results.BadRequest("Such member does not exist.");
+                var result = projectMember.CanBeDeleted();
 
-            //    var result = projectMember.CanBeDeleted();
+                if (!result)
+                    return Results.BadRequest("Project leader cannot be removed.");
 
-            //    if (!result)
-            //        return Results.BadRequest("Project leader cannot be removed.");
+                unitOfWork.ProjectMemberRepository.Remove(projectMember);
 
-            //    unitOfWork.ProjectMemberRepository.Remove(projectMember);
+                if (await unitOfWork.Complete())
+                {
+                    await azureServiceBusSender.PublishMessage(new ProjectMemberRemovedEvent() { ProjectMemberId = projectMemberId });
+                    return Results.NoContent();
+                }
 
-            //    if (await unitOfWork.Complete())
-            //    {
-            //        await azureServiceBusSender.PublishMessage(new ProjectMemberRemovedEvent() { ProjectMemberId = projectMemberId });
-            //        return Results.NoContent();
-            //    }
+                return Results.BadRequest("Error occurred during member removing.");
 
-            //    return Results.BadRequest("Error occurred during member removing.");
-
-            //});
-
-            //    group.MapPut("/{projectId}/projectMembers/{projectMemberId}", async ([FromServices] IUnitOfWork unitOfWork,
-            //        [FromServices] IAzureServiceBusSender azureServiceBusSender,
-            //        [FromServices] IMapper mapper,
-            //        ClaimsPrincipal user,
-            //        [FromServices] IAuthorizationService authorizationService,
-            //        [FromRoute] string projectMemberId,
-            //        [FromRoute] string projectId,
-            //        [FromBody] UpdateProjectMemberDto UpdateProjectMemberDto) =>
-            //    {
-            //        var userEmail = user.FindFirstValue(ClaimTypes.Email);
-            //        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            //        var authorizationResult = await authorizationService.AuthorizeAsync(user, projectId, "ManagementPolicy");
-            //        if (!authorizationResult.Succeeded)
-            //            return Results.Forbid();
-
-            //        var projectMember = await unitOfWork.ProjectMemberRepository.GetAsync(projectMemberId);
-
-            //        if (projectMember is null)
-            //            return Results.BadRequest("Such member does not exist.");
-
-            //        var result = projectMember.CanBeDeleted();
-
-            //        if (!result)
-            //            return Results.BadRequest("Project leader cannot be removed.");
-
-            //        unitOfWork.ProjectMemberRepository.Remove(projectMember);
-
-            //        if (await unitOfWork.Complete())
-            //        {
-            //            await azureServiceBusSender.PublishMessage(new ProjectMemberRemovedEvent() { ProjectMemberId = projectMemberId });
-            //            return Results.NoContent();
-            //        }
-
-            //        return Results.BadRequest("Error occurred during member removing.");
-
-            //    });
+            });
 
             return group;
         }
@@ -112,110 +135,111 @@ namespace Projects.Endpoints.Enpoints
         public static RouteGroupBuilder MapProjectsEnpoints(this RouteGroupBuilder group)
         {
 
-        //    group.MapGet("/{id}", async ([FromServices] IUnitOfWork unitOfWork,
-        //                              [FromServices] IMapper mapper,
-        //                              ClaimsPrincipal user,
-        //                              [FromRoute] string id,
-        //                              HttpContext context,
-        //                              IAuthorizationService authorizationService) =>
-        //    {
-        //        var userEmail = user.FindFirstValue(ClaimTypes.Email);
-        //        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            group.MapGet("/{id}", async ([FromServices] IUnitOfWork unitOfWork,
+                                      [FromServices] IMapper mapper,
+                                      ClaimsPrincipal user,
+                                      [FromRoute] string id,
+                                      HttpContext context,
+                                      IAuthorizationService authorizationService) =>
+            {
+                var userEmail = user.FindFirstValue(ClaimTypes.Email);
+                var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        //        var authorizationResult = await authorizationService.AuthorizeAsync(user, id, "MembershipPolicy");
+                var authorizationResult = await authorizationService.AuthorizeAsync(user, id, "MembershipPolicy");
 
-        //        if (!authorizationResult.Succeeded)
-        //            return Results.Forbid();
+                if (!authorizationResult.Succeeded)
+                    return Results.Forbid();
 
-        //        var project = await unitOfWork.ProjectRepository.GetOneAsync(id);
+                var project = await unitOfWork.ProjectRepository.GetOneAsync(id);
 
-        //        if (project is null)
-        //            return Results.BadRequest("Project cannot be found.");
+                if (project is null)
+                    return Results.BadRequest("Project cannot be found.");
 
-        //        return Results.Ok(mapper.Map<ProjectDto>(project));
-        //    });
+                return Results.Ok(mapper.Map<ProjectDto>(project));
+            });
 
-        //    group.MapGet("/", async ([AsParameters] GetProjectsRequest request, [AsParameters] AppParams @params) =>
-        //    {
-        //        var userEmail = request.user.FindFirstValue(ClaimTypes.Email);
-        //        var userId = request.user.FindFirstValue(ClaimTypes.NameIdentifier);
+            group.MapGet("/", async ([AsParameters] GetProjectsRequest request, [AsParameters] AppParams @params) =>
+            {
+                var userEmail = request.user.FindFirstValue(ClaimTypes.Email);
+                var userId = request.user.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        //        if (userId is null || userEmail is null)
-        //            return Results.BadRequest("User cannot be identified.");
+                if (userId is null || userEmail is null)
+                    return Results.BadRequest("User cannot be identified.");
 
-        //        var result = await request.unitOfWork.ProjectMemberRepository.GetUserProjects(userId, @params);
+                var result = await request.unitOfWork.ProjectMemberRepository.GetUserProjects(userId, @params);
 
-        //        var projectsWithTotalCount = new ProjectsWithTotalCount()
-        //        {
-        //            Count = result.TotalCount,
-        //            Result = request.mapper.Map<List<ProjectDto>>(result.Projects)
-        //        };
+                var projectsWithTotalCount = new ProjectsWithTotalCount()
+                {
+                    Count = result.TotalCount,
+                    Result = request.mapper.Map<List<ProjectDto>>(result.Projects)
+                };
 
-        //        return Results.Ok(projectsWithTotalCount);
-        //    });
+                return Results.Ok(projectsWithTotalCount);
+            });
+            //.AddEndpointFilter<ValidatorFilter<AppParams>>();
 
-        //    group.MapPost("/", async ([FromServices] IUnitOfWork unitOfWork,
-        //                                [FromServices] IAzureServiceBusSender azureServiceBusSender,
-        //                                [FromServices] IMapper mapper,
-        //                                ClaimsPrincipal user,
-        //                                [FromBody] CreateProjectDto projectDto) =>
-        //    {
-        //        var userEmail = user.FindFirstValue(ClaimTypes.Email);
-        //        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-        //        var userPhotUrl = user.FindFirstValue("picture");
+            group.MapPost("/", async ([FromServices] IUnitOfWork unitOfWork,
+                                        [FromServices] IAzureServiceBusSender azureServiceBusSender,
+                                        [FromServices] IMapper mapper,
+                                        ClaimsPrincipal user,
+                                        [FromBody] CreateProjectDto projectDto) =>
+            {
+                var userEmail = user.FindFirstValue(ClaimTypes.Email);
+                var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+                var userPhotUrl = user.FindFirstValue("picture");
 
-        //        if (userId is null || userEmail is null)
-        //            return Results.BadRequest("User cannot be identified.");
+                if (userId is null || userEmail is null)
+                    return Results.BadRequest("User cannot be identified.");
 
-        //        var member = new ProjectMember() { Type = ProjectMemberType.Leader, UserEmail = userEmail, UserId = userId, PhotoUrl = userPhotUrl };
+                var member = new ProjectMember() { Type = ProjectMemberType.Leader, UserEmail = userEmail, UserId = userId, PhotoUrl = userPhotUrl };
 
-        //        var project = new Project() { IconUrl = projectDto.Icon.Url, Name = projectDto.Name, ProjectMembers = new List<ProjectMember> { member } };
+                var project = new Project() { IconUrl = projectDto.Icon.Url, Name = projectDto.Name, ProjectMembers = new List<ProjectMember> { member } };
 
-        //        unitOfWork.ProjectRepository.Add(project);
+                unitOfWork.ProjectRepository.Add(project);
 
-        //        if (await unitOfWork.Complete())
-        //        {
-        //            await azureServiceBusSender.PublishMessage(mapper.Map<ProjectMemberAddedEvent>(member));
-        //            return Results.Ok(mapper.Map<ProjectDto>(project));
-        //        }
+                if (await unitOfWork.Complete())
+                {
+                    await azureServiceBusSender.PublishMessage(mapper.Map<ProjectMemberAddedEvent>(member));
+                    return Results.Ok(mapper.Map<ProjectDto>(project));
+                }
 
-        //        return Results.BadRequest("Error occurred during project creation.");
+                return Results.BadRequest("Error occurred during project creation.");
 
-        //    })
-        //    .AddEndpointFilter<ValidatorFilter<CreateProjectDto>>();
+            })
+            .AddEndpointFilter<ValidatorFilter<CreateProjectDto>>();
 
-        //    group.MapDelete("/{id}", async ([FromServices] IUnitOfWork unitOfWork,
-        //                                [FromServices] IMapper mapper,
-        //                                ClaimsPrincipal user,
-        //                                [FromServices] IAzureServiceBusSender azureServiceBusSender,
-        //                                HttpContext context,
-        //                                IAuthorizationService authorizationService,
-        //                                [FromRoute] string id) =>
-        //    {
-        //        var userEmail = user.FindFirstValue(ClaimTypes.Email);
-        //        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            group.MapDelete("/{id}", async ([FromServices] IUnitOfWork unitOfWork,
+                                        [FromServices] IMapper mapper,
+                                        ClaimsPrincipal user,
+                                        [FromServices] IAzureServiceBusSender azureServiceBusSender,
+                                        HttpContext context,
+                                        IAuthorizationService authorizationService,
+                                        [FromRoute] string id) =>
+            {
+                var userEmail = user.FindFirstValue(ClaimTypes.Email);
+                var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        //        if (userId is null || userEmail is null)
-        //            return Results.BadRequest("User cannot be identified.");
-        //        if (id is null)
-        //            return Results.BadRequest("Enter the ID of the project to be deleted.");
+                if (userId is null || userEmail is null)
+                    return Results.BadRequest("User cannot be identified.");
+                if (id is null)
+                    return Results.BadRequest("Enter the ID of the project to be deleted.");
 
-        //        var authorizationResult = await authorizationService.AuthorizeAsync(user, id, "AuthorPolicy");
+                var authorizationResult = await authorizationService.AuthorizeAsync(user, id, "AuthorPolicy");
 
-        //        if (!authorizationResult.Succeeded)
-        //            return TypedResults.Forbid();
+                if (!authorizationResult.Succeeded)
+                    return TypedResults.Forbid();
 
-        //        var resoult = await unitOfWork.ProjectRepository.ExecuteDeleteAsync(id);
+                var resoult = await unitOfWork.ProjectRepository.ExecuteDeleteAsync(id);
 
-        //        if (resoult > 0)
-        //        {
-        //            await azureServiceBusSender.PublishMessage(new ProjectRemovedEvent() { ProjectId = id });
-        //            return Results.NoContent();
-        //        }
+                if (resoult > 0)
+                {
+                    await azureServiceBusSender.PublishMessage(new ProjectRemovedEvent() {ProjectId=id});
+                    return Results.NoContent();
+                }
+                    
 
-
-        //        return Results.BadRequest("Project could not be deleted.");
-        //    });
+                return Results.BadRequest("Project could not be deleted.");
+            });
             return group;
         }
 

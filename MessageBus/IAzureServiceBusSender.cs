@@ -8,6 +8,6 @@ namespace MessageBus
 {
     public interface IAzureServiceBusSender
     {
-        Task PublishMessage<T>(T message) where T : IntegrationEvent;
+        Task PublishMessage<T>(T message) where T : BaseMessage;
     }
 }

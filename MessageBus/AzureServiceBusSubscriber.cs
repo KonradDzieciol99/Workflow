@@ -192,11 +192,11 @@ namespace MessageBus
                     await _administrationClient.DeleteRuleAsync(_topicName, _subscriptionName, rule.Name);
                 }
             }
-            //catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.MessageNotFound || ex.Reason == ServiceBusFailureReason.MessagingEntityNotFound)
-            //{
-            //    Console.WriteLine(ex.Message);
-            //    //_logger.LogWarning("The messaging entity {eventName} already exists.", eventName);
-            //} to jest chyba wogole źle
+            catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.MessageNotFound || ex.Reason == ServiceBusFailureReason.MessagingEntityNotFound)
+            {
+                Console.WriteLine(ex.Message);
+                //_logger.LogWarning("The messaging entity {eventName} already exists.", eventName);
+            }
             catch (Exception ex) 
             {
                 throw;

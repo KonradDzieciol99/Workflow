@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MessageBus.Events
 {
-    public class NewOfflineUserEvent : IntegrationEvent, IRequest
+    public class NewOfflineUserEvent : BaseMessage, IRequest
     {
         public SimpleUser User { get; set; }
     }
