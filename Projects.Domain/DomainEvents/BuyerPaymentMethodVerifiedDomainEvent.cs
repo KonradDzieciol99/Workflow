@@ -1,4 +1,4 @@
-﻿namespace Projects.Domain.Events;
+﻿namespace Projects.Domain.DomainEvents;
 
 public class BuyerAndPaymentMethodVerifiedDomainEvent
 //: INotification

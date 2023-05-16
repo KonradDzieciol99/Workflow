@@ -1,12 +1,12 @@
 ﻿using Projects.Domain.Common.Models;
 using Projects.Domain.DomainEvents;
 
-namespace Projects.Domain.Entities
+namespace Projects.Domain.AggregatesModel.ProjectAggregate
 {
     public class ProjectMember : BaseEntity
     {
 
-        private ProjectMember(){}
+        private ProjectMember() { }
 
         public ProjectMember(string userId, string userEmail, string? photoUrl, ProjectMemberType type, string projectId)
         {
@@ -14,7 +14,7 @@ namespace Projects.Domain.Entities
             UserEmail = userEmail;
             PhotoUrl = photoUrl;
             Type = type;
-            ProjectId = projectId;          
+            ProjectId = projectId;
         }
 
         public string Id { get; set; }
@@ -30,7 +30,7 @@ namespace Projects.Domain.Entities
         {
             var projectMemberAddedDomainEvent = new ProjectMemberAddedDomainEvent(this);
 
-            this.AddDomainEvent(projectMemberAddedDomainEvent);
+            AddDomainEvent(projectMemberAddedDomainEvent);
         }
 
         public bool CanBeDeleted()

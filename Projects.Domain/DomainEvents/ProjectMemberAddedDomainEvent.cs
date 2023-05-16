@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using Projects.Domain.Entities;
+using Projects.Domain.AggregatesModel.ProjectAggregate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
