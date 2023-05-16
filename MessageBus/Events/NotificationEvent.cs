@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MessageBus.Events
 {
-    public class NotificationEvent : BaseMessage
+    public class NotificationEvent : IntegrationEvent
     {
         public AppNotification AppNotification { get; set; }
 

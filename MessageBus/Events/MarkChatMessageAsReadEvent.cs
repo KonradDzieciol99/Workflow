@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MessageBus.Events
 {
-    public class MarkChatMessageAsReadEvent : BaseMessage, IRequest
+    public class MarkChatMessageAsReadEvent : IntegrationEvent, IRequest
     {
         //public int Id { get; set; }
         public DateTime DateRead { get; set; }
