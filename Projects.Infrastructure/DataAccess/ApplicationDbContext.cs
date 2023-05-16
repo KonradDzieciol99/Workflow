@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Projects.Domain.Entities;
+using Projects.Domain.AggregatesModel.ProjectAggregate;
 using System.Diagnostics;
 using System.Reflection.Emit;
 

@@ -8,13 +8,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Projects.Domain.Entities;
 using Projects.Application.Common.ServiceInterfaces;
 using Projects.Application.Common.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Projects.Application.Common.Authorization.Requirements;
 using Projects.Application.Common.Models.Dto;
+using Projects.Domain.AggregatesModel.ProjectAggregate;
 
 namespace Projects.Application.ProjectMembers.Commands;
 
@@ -26,8 +26,8 @@ public record AddProjectMemberCommand(string UserId,
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement()
     {
-        var listOfRequirements = new List<IAuthorizationRequirement>() 
-        { 
+        var listOfRequirements = new List<IAuthorizationRequirement>()
+        {
             new ProjectMembershipRequirement(ProjectId),
             new ProjectManagementRequirement(ProjectId)
         };
@@ -44,9 +44,11 @@ public class AddProjectMemberCommandHandler : IRequestHandler<AddProjectMemberCo
     }
     public async Task<ProjectMemberDto> Handle(AddProjectMemberCommand request, CancellationToken cancellationToken)
     {
+        var project = await _unitOfWork.ProjectRepository.GetOneAsync(request.ProjectId);
+
         var newMember = new ProjectMember(request.UserId, request.UserEmail, request.PhotoUrl, request.Type, request.ProjectId);
 
-        _unitOfWork.ProjectMemberRepository.Add(newMember);
+        project.AddProjectMember(newMember);
 
         await _unitOfWork.Complete();
 

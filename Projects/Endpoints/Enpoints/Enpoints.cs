@@ -6,12 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Projects.Common;
-using Projects.Domain.Entities;
 using Projects.Application.Common.Models.Dto;
 using Projects.Application.Common.Models;
 using Projects.Domain.Interfaces;
 using MediatR;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using Projects.Application.ProjectMembers.Commands;
 
 namespace Projects.Endpoints.Enpoints

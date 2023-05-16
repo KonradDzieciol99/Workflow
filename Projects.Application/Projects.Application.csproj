@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <Folder Include="ProjectMembers\Queries\" />
-    <Folder Include="Projects\Commands\" />
     <Folder Include="Projects\DomainEventHandlers\" />
     <Folder Include="Projects\Queries\" />
   </ItemGroup>

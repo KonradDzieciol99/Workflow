@@ -1,15 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Projects.Domain.Entities;
+using Projects.Domain.AggregatesModel.ProjectAggregate;
 using Projects.Domain.Interfaces;
 using Projects.Infrastructure.DataAccess;
 
 namespace Projects.Infrastructure.Repositories
 {
-    public class ProjectRepository : Repository<Project>, IProjectRepository
+    public class ProjectRepository : IProjectRepository
     {
         private readonly ApplicationDbContext _applicationDbContext;
 
-        public ProjectRepository(ApplicationDbContext applicationDbContext) : base(applicationDbContext)
+        public ProjectRepository(ApplicationDbContext applicationDbContext) 
         {
             _applicationDbContext = applicationDbContext;
         }
@@ -21,7 +21,15 @@ namespace Projects.Infrastructure.Repositories
         {
             return await _applicationDbContext.Projects.Where(x => x.Id == id).ExecuteDeleteAsync();
         }
+        private readonly ApplicationDbContext _dbContext;
 
-
+        public void Add(Project entity)
+        {
+            _dbContext.Projects.Add(entity);
+        }
+        public void Remove(Project entity)
+        {
+            _dbContext.Projects.Remove(entity);
+        }
     }
 }

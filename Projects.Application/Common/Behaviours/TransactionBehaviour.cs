@@ -1,11 +1,10 @@
-﻿namespace Projects.Application.Common.Behaviours;
-
-using Azure;
+﻿using Azure;
+using Projects.Application.Common.ServiceInterfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Projects.Application.Common.ServiceInterfaces;
 
+namespace Projects.Application.Common.Behaviours;
 public class TransactionBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
 {
     private readonly IUnitOfWork _unitOfWork;

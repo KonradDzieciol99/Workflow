@@ -23,7 +23,7 @@ namespace Projects.Infrastructure.Repositories
             _mediator = mediator;
         }
 
-        public IProjectMemberRepository ProjectMemberRepository => new ProjectMemberRepository(_applicationDbContext);
+        public IReadOnlyProjectMemberRepository ProjectMemberRepository => new ReadOnlyProjectMemberRepository(_applicationDbContext);
 
         public IProjectRepository ProjectRepository => new ProjectRepository(_applicationDbContext);
 

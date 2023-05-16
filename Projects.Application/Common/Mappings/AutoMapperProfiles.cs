@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using MessageBus.Events;
 using Projects.Application.Common.Models.Dto;
-using Projects.Domain.Entities;
+using Projects.Domain.AggregatesModel.ProjectAggregate;
 
 namespace Projects.Application.Common.Mappings
 {

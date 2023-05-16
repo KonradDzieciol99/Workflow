@@ -5,8 +5,7 @@ namespace Projects.Application.Common.ServiceInterfaces
 {
     public interface IUnitOfWork
     {
-        //IFriendInvitationRepository FriendInvitationRepository { get; }
-        IProjectMemberRepository ProjectMemberRepository { get; }
+        IReadOnlyProjectMemberRepository ProjectMemberRepository { get; }
         IProjectRepository ProjectRepository { get; }
         Task<bool> Complete();
         bool HasChanges();

@@ -2,24 +2,24 @@
 using System.Linq;
 using System.Linq.Expressions;
 using Projects.Infrastructure.DataAccess;
-using Projects.Domain.Entities;
 using Projects.Infrastructure.Common;
 using Projects.Domain.Interfaces;
 using Projects.Domain.Common.Models;
+using Projects.Domain.AggregatesModel.ProjectAggregate;
 
 namespace Projects.Infrastructure.Repositories
 {
-    public class ProjectMemberRepository : Repository<ProjectMember>, IProjectMemberRepository
+    public class ReadOnlyProjectMemberRepository : IReadOnlyProjectMemberRepository
     {
-        private readonly ApplicationDbContext applicationDbContext;
+        private readonly IQueryable<ProjectMember> ProjectMembersQuery;
 
-        public ProjectMemberRepository(ApplicationDbContext applicationDbContext) : base(applicationDbContext)
+        public ReadOnlyProjectMemberRepository(ApplicationDbContext applicationDbContext)
         {
-            this.applicationDbContext = applicationDbContext;
+            this.ProjectMembersQuery = applicationDbContext.ProjectMembers.AsNoTracking();
         }
         public async Task<Project?> GetOneAsync(string projectName, string userId)
         {
-            return await applicationDbContext.ProjectMembers.Include(pm => pm.MotherProject)
+            return await ProjectMembersQuery.Include(pm => pm.MotherProject)
                                                             .ThenInclude(p => p.ProjectMembers)
                                                             .Where(x => x.UserId == userId && x.MotherProject.Name == projectName)
                                                             .Select(x => x.MotherProject)
@@ -27,17 +27,17 @@ namespace Projects.Infrastructure.Repositories
         }
         public async Task<ProjectMember?> GetAsync(string projectMemberId)
         {
-            return await applicationDbContext.ProjectMembers.SingleOrDefaultAsync(x => x.Id == projectMemberId);
+            return await ProjectMembersQuery.SingleOrDefaultAsync(x => x.Id == projectMemberId);
         }
         public async Task<ProjectMember?> GetProjectMemberAsync(string projectId, string userId)
         {
-            return await applicationDbContext.ProjectMembers.SingleOrDefaultAsync(x => x.UserId == userId && x.MotherProject.Id == projectId);
+            return await ProjectMembersQuery.SingleOrDefaultAsync(x => x.UserId == userId && x.MotherProject.Id == projectId);
         }
 
         public async Task<(List<Project> Projects, int TotalCount)> GetUserProjects(string userId, AppParams appParams)
         {
 
-            var query = applicationDbContext.ProjectMembers.AsQueryable();
+            var query = ProjectMembersQuery.AsQueryable();
 
             query = query.Include(pm => pm.MotherProject)
                          .ThenInclude(p => p.ProjectMembers);
@@ -56,29 +56,29 @@ namespace Projects.Infrastructure.Repositories
             int totalCount = await query.CountAsync();
 
             var projects = await query.Select(pm => pm.MotherProject)
-                              .Skip(appParams.Skip ?? 0)
-                              .Take(appParams.Take)
-                              .ToListAsync();
+                                      .Skip(appParams.Skip ?? 0)
+                                      .Take(appParams.Take)
+                                      .ToListAsync();
 
             return (projects, totalCount);
         }
         public async Task<bool> CheckIfUserIsAMemberOfProject(string projectId, string userId)
         {
-            return await applicationDbContext.ProjectMembers.AnyAsync(x => x.UserId == userId && x.ProjectId == projectId);
+            return await ProjectMembersQuery.AnyAsync(x => x.UserId == userId && x.ProjectId == projectId);
         }
         public async Task<bool> CheckIfUserHasRightsToMenageUserAsync(string projectId, string userId)
         {
-            return await applicationDbContext.ProjectMembers.AnyAsync(x => x.UserId == userId && x.ProjectId == projectId
+            return await ProjectMembersQuery.AnyAsync(x => x.UserId == userId && x.ProjectId == projectId
                                                                     && (x.Type == ProjectMemberType.Admin || x.Type == ProjectMemberType.Leader));
         }
         public async Task<bool> CheckIfUserIsALeaderAsync(string projectId, string userId)
         {
-            return await applicationDbContext.ProjectMembers.AnyAsync(x => x.UserId == userId && x.ProjectId == projectId
+            return await ProjectMembersQuery.AnyAsync(x => x.UserId == userId && x.ProjectId == projectId
                                                                     && x.Type == ProjectMemberType.Leader);
         }
         public async Task<int> RemoveAsync(string projectId, string userId)
         {
-            return await applicationDbContext.ProjectMembers.Where(x => x.UserId == userId && x.MotherProject.Id == projectId
+            return await ProjectMembersQuery.Where(x => x.UserId == userId && x.MotherProject.Id == projectId
                                                                     && x.Type != ProjectMemberType.Leader).ExecuteDeleteAsync();
         }
     }
