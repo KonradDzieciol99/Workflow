@@ -3,7 +3,7 @@ using Projects.Domain.Common.Models;
 
 namespace Projects.Domain.Interfaces
 {
-    public interface IReadOnlyProjectMemberRepository //: IReadOnlyRepository<ProjectMember>
+    public interface IReadOnlyProjectMemberRepository
     {
         Task<(List<Project> Projects, int TotalCount)> GetUserProjects(string userId, AppParams appParams);
         Task<Project?> GetOneAsync(string projectName, string userId);

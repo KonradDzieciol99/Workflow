@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Projects.Domain.AggregatesModel.ProjectAggregate;
-using Projects.Domain.Interfaces;
 using Projects.Infrastructure.DataAccess;
 
 namespace Projects.Infrastructure.Repositories

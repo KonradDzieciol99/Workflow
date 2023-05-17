@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Projects.Application.Common.ServiceInterfaces;
+using Projects.Domain.AggregatesModel.ProjectAggregate;
 using Projects.Domain.Interfaces;
 using Projects.Infrastructure.Common;
 using Projects.Infrastructure.DataAccess;
@@ -26,6 +27,9 @@ namespace Projects.Infrastructure.Repositories
         public IReadOnlyProjectMemberRepository ProjectMemberRepository => new ReadOnlyProjectMemberRepository(_applicationDbContext);
 
         public IProjectRepository ProjectRepository => new ProjectRepository(_applicationDbContext);
+
+        public IReadOnlyProjectRepository ReadOnlyProjectRepository => new ReadOnlyProjectRepository(_applicationDbContext);
+
 
         public async Task<bool> Complete()
         {
