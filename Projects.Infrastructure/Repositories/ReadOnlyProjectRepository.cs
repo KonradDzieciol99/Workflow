@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Projects.Application.Common.Interfaces;
 using Projects.Domain.AggregatesModel.ProjectAggregate;
-using Projects.Domain.Interfaces;
 using Projects.Infrastructure.DataAccess;
 using System;
 using System.Collections.Generic;

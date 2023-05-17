@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Projects.Application.Common.Authorization;
 using Projects.Application.Common.Exceptions;
-using Projects.Application.Common.ServiceInterfaces;
+using Projects.Application.Common.Interfaces;
 
 namespace Projects.Application.Common.Behaviours;
 

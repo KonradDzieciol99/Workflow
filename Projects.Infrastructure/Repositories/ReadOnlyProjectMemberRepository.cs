@@ -3,9 +3,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using Projects.Infrastructure.DataAccess;
 using Projects.Infrastructure.Common;
-using Projects.Domain.Interfaces;
 using Projects.Domain.Common.Models;
 using Projects.Domain.AggregatesModel.ProjectAggregate;
+using Projects.Application.Common.Interfaces;
+using Projects.Application.Common.Models;
 
 namespace Projects.Infrastructure.Repositories
 {
@@ -34,13 +35,16 @@ namespace Projects.Infrastructure.Repositories
             return await ProjectMembersQuery.SingleOrDefaultAsync(x => x.UserId == userId && x.MotherProject.Id == projectId);
         }
 
-        public async Task<(List<Project> Projects, int TotalCount)> GetUserProjects(string userId, AppParams appParams)
+        /// <summary>
+        /// Excluding members.
+        /// </summary>
+        public async Task<(List<Project> Projects, int TotalCount)> Get(string userId, AppParams appParams)
         {
 
             var query = ProjectMembersQuery.AsQueryable();
 
-            query = query.Include(pm => pm.MotherProject)
-                         .ThenInclude(p => p.ProjectMembers);
+            query = query.Include(pm => pm.MotherProject);
+                         //.ThenInclude(p => p.ProjectMembers);
 
             if (string.IsNullOrWhiteSpace(appParams.OrderBy) == false && appParams.IsDescending.HasValue)
             {

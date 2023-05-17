@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Projects.Application.Projects.Queries
 {
-    public class GetProjectQueryValidatord : AbstractValidator<GetProjectQuery>
+    public class GetProjectQueryValidator : AbstractValidator<GetProjectQuery>
     {
-        public GetProjectQueryValidatord()
+        public GetProjectQueryValidator()
         {
             RuleFor(x => x.ProjectId).NotEmpty();
         }

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Projects.Application.Common.ServiceInterfaces;
+using Projects.Application.Common.Interfaces;
 using System.Net;
 using System.Security.Claims;
 

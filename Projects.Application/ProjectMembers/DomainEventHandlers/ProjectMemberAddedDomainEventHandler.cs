@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Projects.Application.Common.ServiceInterfaces;
+using Projects.Application.Common.Interfaces;
 
 namespace Projects.Application.ProjectMembers.DomainEventHandlers;
 

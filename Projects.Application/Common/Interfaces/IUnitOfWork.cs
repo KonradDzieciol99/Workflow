@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
 using Projects.Domain.AggregatesModel.ProjectAggregate;
-using Projects.Domain.Interfaces;
 
-namespace Projects.Application.Common.ServiceInterfaces;
+namespace Projects.Application.Common.Interfaces;
 
 public interface IUnitOfWork
 {
-    IReadOnlyProjectMemberRepository ProjectMemberRepository { get; }
+    IReadOnlyProjectMemberRepository ReadOnlyProjectMemberRepository { get; }
     IProjectRepository ProjectRepository { get; }
     IReadOnlyProjectRepository ReadOnlyProjectRepository { get; }
     Task<bool> Complete();

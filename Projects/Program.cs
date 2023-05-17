@@ -22,10 +22,10 @@ using Projects.Infrastructure.DataAccess;
 using Projects.Application.Common.Mappings;
 using Projects.Application.Common.Authorization.Handlers;
 using Projects.Application.Common.Authorization.Requirements;
-using Projects.Application.Common.ServiceInterfaces;
 using Projects.Services;
 using Projects.Infrastructure.Services;
 using Projects.Application;
+using Projects.Application.Common.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 

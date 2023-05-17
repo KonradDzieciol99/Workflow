@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
-using Projects.Application.Common.ServiceInterfaces;
+using Projects.Application.Common.Exceptions;
+using Projects.Application.Common.Interfaces;
 
 namespace Projects.Services;
 
@@ -9,9 +10,9 @@ public class CurrentUserService : ICurrentUserService
 
     public CurrentUserService(IHttpContextAccessor httpContextAccessor)
     {
-        _httpContextAccessor = httpContextAccessor;
+        _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(_httpContextAccessor));
     }
 
-    public string? UserId => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-    public ClaimsPrincipal? User => _httpContextAccessor.HttpContext?.User;
+    public string UserId => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new UnauthorizedException();
+    public ClaimsPrincipal User => _httpContextAccessor.HttpContext?.User ?? throw new UnauthorizedException();
 }

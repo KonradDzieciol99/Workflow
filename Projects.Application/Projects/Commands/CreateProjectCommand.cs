@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Projects.Application.Common.Authorization;
 using Projects.Application.Common.Models;
 using Projects.Application.Common.Models.Dto;
-using Projects.Application.Common.ServiceInterfaces;
 using Projects.Application.ProjectMembers.Commands;
 using System;
 using System.Collections.Generic;

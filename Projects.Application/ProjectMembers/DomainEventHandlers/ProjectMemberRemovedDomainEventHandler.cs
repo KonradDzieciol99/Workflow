@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using MessageBus.Events;
-using Projects.Application.Common.ServiceInterfaces;
+using Projects.Application.Common.Interfaces;
 using Projects.Domain.DomainEvents;
 using System;
 using System.Collections.Generic;

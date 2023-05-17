@@ -1,6 +1,6 @@
 ﻿using Projects.Domain.AggregatesModel.ProjectAggregate;
 
-namespace Projects.Domain.Interfaces;
+namespace Projects.Application.Common.Interfaces;
 
 public interface IReadOnlyProjectRepository
 {

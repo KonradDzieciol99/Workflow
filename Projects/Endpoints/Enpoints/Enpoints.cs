@@ -98,24 +98,10 @@ namespace Projects.Endpoints.Enpoints
                 return await mediator.Send(new GetProjectQuery(projectId));
             });
 
-            //    group.MapGet("/", async ([AsParameters] GetProjectsRequest request, [AsParameters] AppParams @params) =>
-            //    {
-            //        var userEmail = request.user.FindFirstValue(ClaimTypes.Email);
-            //        var userId = request.user.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            //        if (userId is null || userEmail is null)
-            //            return Results.BadRequest("User cannot be identified.");
-
-            //        var result = await request.unitOfWork.ProjectMemberRepository.GetUserProjects(userId, @params);
-
-            //        var projectsWithTotalCount = new ProjectsWithTotalCount()
-            //        {
-            //            Count = result.TotalCount,
-            //            Result = request.mapper.Map<List<ProjectDto>>(result.Projects)
-            //        };
-
-            //        return Results.Ok(projectsWithTotalCount);
-            //    });
+            group.MapGet("/", async ([FromServices] IMediator mediator, [AsParameters] AppParams @params) =>
+            {
+                return await mediator.Send(new GetProjectsQuery(@params));
+            });
 
             //    group.MapPost("/", async ([FromServices] IUnitOfWork unitOfWork,
             //                                [FromServices] IAzureServiceBusSender azureServiceBusSender,
