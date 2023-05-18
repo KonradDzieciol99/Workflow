@@ -67,9 +67,9 @@ namespace Projects.Controllers
         }
 
         [HttpGet]
-        public async Task<ProjectsWithTotalCount> Get([FromQuery] AppParams @params)
+        public async Task<ProjectsWithTotalCount> Get([FromQuery] GetProjectsQuery query)
         {
-            return await mediator.Send(new GetProjectsQuery(@params));
+            return await mediator.Send(query);
         }
 
         [HttpPost]

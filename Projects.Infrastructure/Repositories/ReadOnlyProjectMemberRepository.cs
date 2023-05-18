@@ -7,6 +7,7 @@ using Projects.Domain.Common.Models;
 using Projects.Domain.AggregatesModel.ProjectAggregate;
 using Projects.Application.Common.Interfaces;
 using Projects.Application.Common.Models;
+using Projects.Application.Projects.Queries;
 
 namespace Projects.Infrastructure.Repositories
 {
@@ -38,7 +39,7 @@ namespace Projects.Infrastructure.Repositories
         /// <summary>
         /// Excluding members.
         /// </summary>
-        public async Task<(List<Project> Projects, int TotalCount)> Get(string userId, AppParams appParams)
+        public async Task<(List<Project> Projects, int TotalCount)> Get(string userId, GetProjectsQuery appParams)
         {
 
             var query = ProjectMembersQuery.AsQueryable();
