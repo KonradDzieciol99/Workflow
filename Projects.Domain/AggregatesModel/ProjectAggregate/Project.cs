@@ -38,5 +38,9 @@ namespace Projects.Domain.AggregatesModel.ProjectAggregate
 
             this.AddDomainEvent(new ProjectMemberRemovedDomainEvent(member));
         }
+        public void RemoveProject()
+        {
+            this.AddDomainEvent(new ProjectRemovedDomainEvent(this));
+        }
     }
 }

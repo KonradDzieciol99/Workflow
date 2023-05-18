@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="ProjectMembers\Queries\" />
-    <Folder Include="Projects\DomainEventHandlers\" />
   </ItemGroup>
 
   <ItemGroup>
