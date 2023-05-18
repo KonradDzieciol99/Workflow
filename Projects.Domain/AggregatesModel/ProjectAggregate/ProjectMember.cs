@@ -8,13 +8,13 @@ namespace Projects.Domain.AggregatesModel.ProjectAggregate
 
         private ProjectMember() { }
 
-        public ProjectMember(string userId, string userEmail, string? photoUrl, ProjectMemberType type, string projectId)
+        public ProjectMember(string userId, string userEmail, string? photoUrl, ProjectMemberType type/*, string projectId*/)
         {
             UserId = userId;
             UserEmail = userEmail;
             PhotoUrl = photoUrl;
             Type = type;
-            ProjectId = projectId;
+            //ProjectId = projectId;
         }
 
         public string Id { get; set; }

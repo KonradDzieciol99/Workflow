@@ -18,43 +18,41 @@ using Microsoft.Azure.Amqp.Encoding;
 using Azure.Core;
 using Projects.Application.Common.Interfaces;
 using Microsoft.Azure.Amqp.Framing;
+using Projects.Application.Common.Authorization.Requirements;
 
 namespace Projects.Application.Projects.Commands;
 
-public record CreateProjectCommand(string Name, Icon Icon) : IAuthorizationRequest<ProjectDto>
+public record DeleteProjectCommand(string ProjectId) : IAuthorizationRequest
 {
-    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new List<IAuthorizationRequirement> { };
+    public List<IAuthorizationRequirement> GetAuthorizationRequirement() =>
+        new List<IAuthorizationRequirement> 
+        {
+            new ProjectMembershipRequirement(ProjectId),
+            new ProjectAuthorRequirement(ProjectId)
+        };
 }
-//public class CreateProjectCommand : IAuthorizationRequest<ProjectDto>
-//{
-//    public string Name { get; set; }
-//    public Icon Icon { get; set; }
-//    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new List<IAuthorizationRequirement> { };
-//}
-public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand, ProjectDto>
+
+public class DeleteProjectCommandHandler : IRequestHandler<DeleteProjectCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUserService;
     private readonly IMapper _mapper;
 
-    public CreateProjectCommandHandler(IUnitOfWork unitOfWork,ICurrentUserService currentUserService,IMapper mapper)
+    public DeleteProjectCommandHandler(IUnitOfWork unitOfWork,ICurrentUserService currentUserService,IMapper mapper)
     {
         this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(_unitOfWork));
         this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(_currentUserService));
         this._mapper = mapper ?? throw new ArgumentNullException(nameof(_mapper));
     }
-    public async Task<ProjectDto> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
+
+    public async Task Handle(DeleteProjectCommand request, CancellationToken cancellationToken)
     {
-        var project = new Project(request.Name,request.Icon.Url){};
+        var project = await _unitOfWork.ProjectRepository.GetOneAsync(request.ProjectId);
 
-        var member = new ProjectMember(_currentUserService.UserId, _currentUserService.UserEmail,_currentUserService.UserPhoto, ProjectMemberType.Leader);
+        project.RemoveProject();
 
-        project.AddProjectMember(member);
-
-        _unitOfWork.ProjectRepository.Add(project);
+        _unitOfWork.ProjectRepository.Remove(project);
 
         await _unitOfWork.Complete();
-
-        return _mapper.Map<ProjectDto>(project);
     }
 }

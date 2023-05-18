@@ -8,13 +8,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Projects.Application.Common.ServiceInterfaces;
 using Projects.Application.Common.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Projects.Application.Common.Authorization.Requirements;
 using Projects.Application.Common.Models.Dto;
 using Projects.Domain.AggregatesModel.ProjectAggregate;
+using Projects.Application.Common.Interfaces;
 
 namespace Projects.Application.ProjectMembers.Commands;
 
@@ -46,7 +46,7 @@ public class AddProjectMemberCommandHandler : IRequestHandler<AddProjectMemberCo
     {
         var project = await _unitOfWork.ProjectRepository.GetOneAsync(request.ProjectId);
 
-        var newMember = new ProjectMember(request.UserId, request.UserEmail, request.PhotoUrl, request.Type, request.ProjectId);
+        var newMember = new ProjectMember(request.UserId, request.UserEmail, request.PhotoUrl, request.Type/*, request.ProjectId*/);
 
         project.AddProjectMember(newMember);
 

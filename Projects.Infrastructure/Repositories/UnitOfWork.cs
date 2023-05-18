@@ -3,8 +3,8 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using Projects.Application.Common.ServiceInterfaces;
-using Projects.Domain.Interfaces;
+using Projects.Application.Common.Interfaces;
+using Projects.Domain.AggregatesModel.ProjectAggregate;
 using Projects.Infrastructure.Common;
 using Projects.Infrastructure.DataAccess;
 using System.Threading;
@@ -23,9 +23,12 @@ namespace Projects.Infrastructure.Repositories
             _mediator = mediator;
         }
 
-        public IReadOnlyProjectMemberRepository ProjectMemberRepository => new ReadOnlyProjectMemberRepository(_applicationDbContext);
+        public IReadOnlyProjectMemberRepository ReadOnlyProjectMemberRepository => new ReadOnlyProjectMemberRepository(_applicationDbContext);
 
         public IProjectRepository ProjectRepository => new ProjectRepository(_applicationDbContext);
+
+        public IReadOnlyProjectRepository ReadOnlyProjectRepository => new ReadOnlyProjectRepository(_applicationDbContext);
+
 
         public async Task<bool> Complete()
         {

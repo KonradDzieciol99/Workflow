@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Projects.Application.Common.ServiceInterfaces
+namespace Projects.Application.Common.Interfaces
 {
     public interface IIntegrationEventService
     {

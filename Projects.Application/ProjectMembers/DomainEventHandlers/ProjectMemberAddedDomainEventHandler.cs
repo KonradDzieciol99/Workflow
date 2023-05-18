@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Projects.Application.Common.ServiceInterfaces;
+using Projects.Application.Common.Interfaces;
 
 namespace Projects.Application.ProjectMembers.DomainEventHandlers;
 
@@ -20,13 +20,15 @@ public class ProjectMemberAddedDomainEventHandler : INotificationHandler<Project
     {
         this._integrationEventService = integrationEventService;
     }
-    public async Task Handle(ProjectMemberAddedDomainEvent notification, CancellationToken cancellationToken)
+    public Task Handle(ProjectMemberAddedDomainEvent notification, CancellationToken cancellationToken)
     {
-
+        //sprawdzić czy dostaje Id
         var @event = new ProjectMemberAddedEvent(notification.Member.Id, notification.Member.UserId,
                                     notification.Member.UserEmail, notification.Member.PhotoUrl,
                                      notification.Member.ProjectId,(ProjectMemberTypeMessageBus)notification.Member.Type);
 
         _integrationEventService.AddIntegrationEvent(@event);
+
+        return Task.CompletedTask;
     }
 }

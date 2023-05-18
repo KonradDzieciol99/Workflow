@@ -1,8 +1,6 @@
-﻿using Projects.Domain.AggregatesModel.ProjectAggregate;
-
-namespace Projects.Domain.Interfaces
+﻿namespace Projects.Domain.AggregatesModel.ProjectAggregate
 {
-    public interface IProjectRepository 
+    public interface IProjectRepository
     {
 
         Task<Project?> GetOneAsync(string projectId);

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Projects.Application.Common.Authorization.Requirements;
-using Projects.Application.Common.ServiceInterfaces;
+using Projects.Application.Common.Interfaces;
 using System.Security.Claims;
 
 namespace Projects.Application.Common.Authorization.Handlers
@@ -18,7 +18,7 @@ namespace Projects.Application.Common.Authorization.Handlers
             var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new ArgumentNullException(nameof(ClaimTypes.NameIdentifier));
             var projectId = requirement.ProjectId ?? throw new ArgumentNullException(nameof(context.Resource));
 
-            var result = await _unitOfWork.ProjectMemberRepository.CheckIfUserHasRightsToMenageUserAsync(projectId, userId);
+            var result = await _unitOfWork.ReadOnlyProjectMemberRepository.CheckIfUserHasRightsToMenageUserAsync(projectId, userId);
 
             if (result)
                 context.Succeed(requirement);

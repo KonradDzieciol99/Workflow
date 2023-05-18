@@ -1,5 +1,5 @@
 using AutoMapper;
-using FluentValidation;
+//using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,10 +22,12 @@ using Projects.Infrastructure.DataAccess;
 using Projects.Application.Common.Mappings;
 using Projects.Application.Common.Authorization.Handlers;
 using Projects.Application.Common.Authorization.Requirements;
-using Projects.Application.Common.ServiceInterfaces;
 using Projects.Services;
 using Projects.Infrastructure.Services;
 using Projects.Application;
+using Projects.Application.Common.Interfaces;
+using Projects.Middleware;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -92,7 +94,7 @@ builder.Services.AddCors(opt =>
               });
 });
 
-builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+//builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
 builder.Services.AddAzureServiceBusSender(opt =>
 {
@@ -154,6 +156,7 @@ app.UseAuthorization();
 //        //}
 //    });
 //});
+app.UseMiddleware<ExceptionMiddleware>();
 
 var endpoints = app.MapGroup("/api")
                    .WithOpenApi()

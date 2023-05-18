@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using MessageBus;
-using Projects.Application.Common.ServiceInterfaces;
+using Projects.Application.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
