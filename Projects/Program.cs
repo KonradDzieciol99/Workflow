@@ -136,44 +136,9 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-//app.UseExceptionHandler(appError =>
-//{
-//    appError.Run(async context =>
-//    {
-//        var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
-//        if (exception is BadHttpRequestException myCustomException)
-//        {
-//            // Obs³uga konkretnego wyj¹tku
-//            context.Response.ContentType = "application/json";
-//            context.Response.StatusCode = 400; // Ustaw odpowiedni kod statusu
-//            var response = new { message = myCustomException.Message };
-//            var jsonResponse = System.Text.Json.JsonSerializer.Serialize(response);
-//            await context.Response.WriteAsync(jsonResponse);
-//        }
-//        //else
-//        //{
-//        //    // Przekazanie kontroler do nastêpnego middleware
-//        //    context.Response.StatusCode = 500; // Ustaw odpowiedni kod statusu dla innych b³êdów
-//        //    await context.Response.WriteAsync("Wyst¹pi³ inny b³¹d: " + exception?.Message);
-//        //}
-//    });
-//});
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
-
-//var endpoints = app.MapGroup("/api")
-//                   .WithOpenApi()
-//                   .RequireAuthorization()
-//                   .AddEndpointFilter(async (invocationContext, next) =>
-//                   {
-//                        var logger = invocationContext.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-//                        logger.LogInformation($"Received request for: {invocationContext.HttpContext.Request.Path}");
-//                        return await next(invocationContext);
-//                   });
-//endpoints.MapGroup("/projects")
-//         .MapProjectsEnpoints()
-//         .MapProjectMemberEnpoints();
 
 app.Run();
 
