@@ -117,6 +117,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddApplicationServices();
 builder.Services.AddScoped<IIntegrationEventService, IntegrationEventService>();
 
+builder.Services.AddControllers();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -158,22 +160,20 @@ app.UseAuthorization();
 //});
 app.UseMiddleware<ExceptionMiddleware>();
 
-var endpoints = app.MapGroup("/api")
-                   .WithOpenApi()
-                   .RequireAuthorization()
-                   .AddEndpointFilter(async (invocationContext, next) =>
-                   {
-                        var logger = invocationContext.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-                        logger.LogInformation($"Received request for: {invocationContext.HttpContext.Request.Path}");
-                        return await next(invocationContext);
-                   });
+app.MapControllers();
 
-//endpoints.MapGroup("/projectMembers")
+//var endpoints = app.MapGroup("/api")
+//                   .WithOpenApi()
+//                   .RequireAuthorization()
+//                   .AddEndpointFilter(async (invocationContext, next) =>
+//                   {
+//                        var logger = invocationContext.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+//                        logger.LogInformation($"Received request for: {invocationContext.HttpContext.Request.Path}");
+//                        return await next(invocationContext);
+//                   });
+//endpoints.MapGroup("/projects")
+//         .MapProjectsEnpoints()
 //         .MapProjectMemberEnpoints();
-
-endpoints.MapGroup("/projects")
-         .MapProjectsEnpoints()
-         .MapProjectMemberEnpoints();
 
 app.Run();
 
