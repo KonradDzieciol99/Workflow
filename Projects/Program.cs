@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Extensions.Logging;
 using System.Net;
 using Azure;
-using Projects.Endpoints.Enpoints;
 using Projects.Infrastructure.Repositories;
 using Projects.Infrastructure.DataAccess;
 using Projects.Application.Common.Mappings;
@@ -28,96 +27,20 @@ using Projects.Application;
 using Projects.Application.Common.Interfaces;
 using Projects.Middleware;
 using FluentValidation;
+using Projects.Infrastructure;
+using Projects;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddAuthentication(opt =>
-{
-    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(opt => {
-    opt.RequireHttpsMetadata = false;
-    opt.SaveToken = true;
-    opt.Authority = "https://localhost:7122/";
-    opt.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateAudience = false,
-    };
-});
-
-builder.Services.AddAuthorization();
-//builder.Services.AddAuthorization(options =>
-//{
-//    options.AddPolicy("ProjectMembershipPolicy", policy =>
-//    policy.AddRequirements(
-//        new ProjectMembershipRequirement()
-//    ));
-//    options.AddPolicy("ProjectManagementPolicy", policy =>
-//    policy.AddRequirements(
-//        new ProjectManagementRequirement()
-//        ));
-//    options.AddPolicy("ProjectAuthorPolicy", policy =>
-//    policy.AddRequirements(
-//        new ProjectAuthorRequirement()
-//        ));
-//});
-
-builder.Services.AddScoped<IAuthorizationHandler, ProjectManagementRequirementHandler>();
-builder.Services.AddScoped<IAuthorizationHandler, ProjectMembershipRequirementHandler>();
-builder.Services.AddScoped<IAuthorizationHandler, ProjectAuthorRequirementHandler>();
-
-
-
-builder.Services.AddDbContext<ApplicationDbContext>(opt =>
-{
-    opt.UseSqlServer(builder.Configuration.GetConnectionString("DbContextConnString"));
-});
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
-
-var CORSallowAny = "allowAny";
-builder.Services.AddCors(opt =>
-{
-    opt.AddPolicy(name: CORSallowAny,
-              policy =>
-              {
-                  policy.WithOrigins("https://localhost:4200", "https://127.0.0.1:5500")
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .AllowCredentials();
-              });
-});
-
-//builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-
-builder.Services.AddAzureServiceBusSender(opt =>
-{
-    opt.ServiceBusConnectionString = builder.Configuration.GetConnectionString(name: "ServiceBusConnectionString") ?? throw new ArgumentNullException(nameof(opt.ServiceBusConnectionString));
-});
-
-builder.Services.AddAzureServiceBusSubscriber(opt =>
-{
-    var configuration = builder.Configuration;
-    opt.ServiceBusConnectionString = configuration.GetConnectionString(name: "ServiceBusConnectionString") ?? throw new ArgumentNullException(nameof(opt.ServiceBusConnectionString));
-    opt.SubscriptionName = "projects";
-});
-
-builder.Services.AddMediatR(opt => opt.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
-
-builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-
-builder.Services.AddHttpContextAccessor();
-
 builder.Services.AddApplicationServices();
-builder.Services.AddScoped<IIntegrationEventService, IntegrationEventService>();
-
-builder.Services.AddControllers();
+builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddWebAPIServices();
 
 var app = builder.Build();
 
@@ -130,7 +53,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors(CORSallowAny);
+app.UseCors("allowAny");
 
 app.UseAuthentication();
 
@@ -141,7 +64,6 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.MapControllers();
 
 app.Run();
-
 
 async Task ApplyMigration()
 {
