@@ -23,9 +23,14 @@ namespace Projects.Application.Projects.Commands;
 
 public record CreateProjectCommand(string Name, Icon Icon) : IAuthorizationRequest<ProjectDto>
 {
-    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new List<IAuthorizationRequirement> {};
+    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new List<IAuthorizationRequirement> { };
 }
-
+//public class CreateProjectCommand : IAuthorizationRequest<ProjectDto>
+//{
+//    public string Name { get; set; }
+//    public Icon Icon { get; set; }
+//    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new List<IAuthorizationRequirement> { };
+//}
 public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand, ProjectDto>
 {
     private readonly IUnitOfWork _unitOfWork;

@@ -60,7 +60,7 @@ namespace Projects.Infrastructure.Repositories
             int totalCount = await query.CountAsync();
 
             var projects = await query.Select(pm => pm.MotherProject)
-                                      .Skip(appParams.Skip ?? 0)
+                                      .Skip(appParams.Skip)
                                       .Take(appParams.Take)
                                       .ToListAsync();
 
