@@ -14,44 +14,42 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Projects.Domain.AggregatesModel.ProjectAggregate;
+using Microsoft.Azure.Amqp.Encoding;
+using Azure.Core;
+using Projects.Application.Common.Interfaces;
+using Microsoft.Azure.Amqp.Framing;
 
 namespace Projects.Application.Projects.Commands;
 
 public record CreateProjectCommand(string Name, Icon Icon) : IAuthorizationRequest<ProjectDto>
 {
-    public List<IAuthorizationRequirement> GetAuthorizationRequirement()
-    {
-        throw new NotImplementedException();
-    }
+    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new List<IAuthorizationRequirement> {};
 }
 
-//public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand, ProjectDto>
-//{
-//    private readonly IUnitOfWork _unitOfWork;
-//    public CreateProjectCommandHandler(IUnitOfWork unitOfWork)
-//    {
-//        _unitOfWork = unitOfWork;
-//    }
-//    public Task<ProjectDto> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
-//    {
-//        //var userEmail = user.FindFirstValue(ClaimTypes.Email);
-//        //var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-//        //var userPhotUrl = user.FindFirstValue("picture");
+public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand, ProjectDto>
+{
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentUserService _currentUserService;
+    private readonly IMapper _mapper;
 
-//        ////if (userId is null || userEmail is null)
-//        ////    return Results.BadRequest("User cannot be identified.");
+    public CreateProjectCommandHandler(IUnitOfWork unitOfWork,ICurrentUserService currentUserService,IMapper mapper)
+    {
+        this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(_unitOfWork));
+        this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(_currentUserService));
+        this._mapper = mapper ?? throw new ArgumentNullException(nameof(_mapper));
+    }
+    public async Task<ProjectDto> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
+    {
+        var project = new Project(request.Name,request.Icon.Url){};
 
-//        //var member = new ProjectMember() { Type = ProjectMemberType.Leader, UserEmail = userEmail, UserId = userId, PhotoUrl = userPhotUrl };
+        var member = new ProjectMember(_currentUserService.UserId, _currentUserService.UserEmail,_currentUserService.UserPhoto, ProjectMemberType.Leader);
 
-//        //var project = new Project() { IconUrl = projectDto.Icon.Url, Name = projectDto.Name, ProjectMembers = new List<ProjectMember> { member } };
-//        //unitOfWork.ProjectRepository.Add(project);
+        project.AddProjectMember(member);
 
-//        //if (await unitOfWork.Complete())
-//        //{
-//        //    await azureServiceBusSender.PublishMessage(mapper.Map<ProjectMemberAddedEvent>(member));
-//        //    return Results.Ok(mapper.Map<ProjectDto>(project));
-//        //}
+        _unitOfWork.ProjectRepository.Add(project);
 
-//        //return Results.BadRequest("Error occurred during project creation.");
-//    }
-//}
+        await _unitOfWork.Complete();
+
+        return _mapper.Map<ProjectDto>(project);
+    }
+}

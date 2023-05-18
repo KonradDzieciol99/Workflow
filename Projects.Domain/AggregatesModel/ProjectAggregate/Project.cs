@@ -7,11 +7,7 @@ namespace Projects.Domain.AggregatesModel.ProjectAggregate
 {
     public class Project : BaseEntity
     {
-        private Project()
-        {
-
-        }
-
+        private Project(){ }
         public Project(string name, string iconUrl)
         {
             Name = name;

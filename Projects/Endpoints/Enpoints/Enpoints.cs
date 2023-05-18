@@ -13,6 +13,8 @@ using MediatR;
 using Projects.Application.ProjectMembers.Commands;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using Projects.Application.Projects.Queries;
+using Projects.Application.Projects.Commands;
+using Microsoft.AspNetCore.Http;
 
 namespace Projects.Endpoints.Enpoints
 {
@@ -103,35 +105,15 @@ namespace Projects.Endpoints.Enpoints
                 return await mediator.Send(new GetProjectsQuery(@params));
             });
 
-            //    group.MapPost("/", async ([FromServices] IUnitOfWork unitOfWork,
-            //                                [FromServices] IAzureServiceBusSender azureServiceBusSender,
-            //                                [FromServices] IMapper mapper,
-            //                                ClaimsPrincipal user,
-            //                                [FromBody] CreateProjectDto projectDto) =>
-            //    {
-            //        var userEmail = user.FindFirstValue(ClaimTypes.Email);
-            //        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-            //        var userPhotUrl = user.FindFirstValue("picture");
+            group.MapPost("/", async ([FromServices] IMediator mediator, [FromBody] CreateProjectCommand command, HttpContext httpContext) =>
+            {
+                var result = await mediator.Send(command);
 
-            //        if (userId is null || userEmail is null)
-            //            return Results.BadRequest("User cannot be identified.");
+                var url = httpContext.Request.Path + "/" + result.Id;
 
-            //        var member = new ProjectMember() { Type = ProjectMemberType.Leader, UserEmail = userEmail, UserId = userId, PhotoUrl = userPhotUrl };
+                return Results.Created(url, result);
 
-            //        var project = new Project() { IconUrl = projectDto.Icon.Url, Name = projectDto.Name, ProjectMembers = new List<ProjectMember> { member } };
-
-            //        unitOfWork.ProjectRepository.Add(project);
-
-            //        if (await unitOfWork.Complete())
-            //        {
-            //            await azureServiceBusSender.PublishMessage(mapper.Map<ProjectMemberAddedEvent>(member));
-            //            return Results.Ok(mapper.Map<ProjectDto>(project));
-            //        }
-
-            //        return Results.BadRequest("Error occurred during project creation.");
-
-            //    })
-            //    .AddEndpointFilter<ValidatorFilter<CreateProjectDto>>();
+            });
 
             //    group.MapDelete("/{id}", async ([FromServices] IUnitOfWork unitOfWork,
             //                                [FromServices] IMapper mapper,
