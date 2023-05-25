@@ -22,7 +22,6 @@ public class ProjectMemberAddedDomainEventHandler : INotificationHandler<Project
     }
     public Task Handle(ProjectMemberAddedDomainEvent notification, CancellationToken cancellationToken)
     {
-        //sprawdzić czy dostaje Id
         var @event = new ProjectMemberAddedEvent(notification.Member.Id, notification.Member.UserId,
                                     notification.Member.UserEmail, notification.Member.PhotoUrl,
                                      notification.Member.ProjectId,(ProjectMemberTypeMessageBus)notification.Member.Type);

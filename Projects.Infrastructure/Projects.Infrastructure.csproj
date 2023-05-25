@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Folder Include="DataAccess\Migrations\" />
+    <Folder Include="DataAccess\Migrations\" />
   </ItemGroup>
 
   <ItemGroup>

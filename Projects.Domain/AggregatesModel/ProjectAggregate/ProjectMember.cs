@@ -10,13 +10,12 @@ namespace Projects.Domain.AggregatesModel.ProjectAggregate
 
         public ProjectMember(string userId, string userEmail, string? photoUrl, ProjectMemberType type/*, string projectId*/)
         {
+            Id = Guid.NewGuid().ToString();
             UserId = userId;
             UserEmail = userEmail;
             PhotoUrl = photoUrl;
             Type = type;
-            //ProjectId = projectId;
         }
-
         public string Id { get; set; }
         public string UserId { get; set; }
         public string UserEmail { get; set; }
@@ -25,22 +24,5 @@ namespace Projects.Domain.AggregatesModel.ProjectAggregate
 
         public string ProjectId { get; set; }
         public Project MotherProject { get; set; }
-
-        public void AddProjectMember()
-        {
-            var projectMemberAddedDomainEvent = new ProjectMemberAddedDomainEvent(this);
-
-            AddDomainEvent(projectMemberAddedDomainEvent);
-        }
-
-        public bool CanBeDeleted()
-        {
-            return Type != ProjectMemberType.Leader;
-        }
-        public async Task ChangeType()
-        {
-
-        }
-
     }
 }
