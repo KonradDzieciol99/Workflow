@@ -28,7 +28,10 @@ namespace Projects.Infrastructure.DataAccess
                 .HasForeignKey(x => x.ProjectId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-                opt.Property(x => x.Id).ValueGeneratedOnAdd();
+                //opt.Property(x => x.Id).UseHiLo("Order_HiLo");
+                //opt.Property(x => x.Id).ValueGeneratedOnAdd
+
+                opt.Property(x => x.Id).ValueGeneratedNever();
             });
 
             builder.Entity<ProjectMember>(opt =>

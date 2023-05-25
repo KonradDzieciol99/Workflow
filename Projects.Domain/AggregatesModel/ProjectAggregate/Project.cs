@@ -10,8 +10,10 @@ namespace Projects.Domain.AggregatesModel.ProjectAggregate
         private Project(){ }
         public Project(string name, string iconUrl)
         {
+            Id = Guid.NewGuid().ToString();
             Name = name;
             IconUrl = iconUrl;
+            ProjectMembers = new List<ProjectMember>();
         }
 
         public string Id { get; private set; }

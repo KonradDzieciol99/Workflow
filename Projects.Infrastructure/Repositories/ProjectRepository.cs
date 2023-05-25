@@ -10,7 +10,7 @@ namespace Projects.Infrastructure.Repositories
 
         public ProjectRepository(ApplicationDbContext applicationDbContext) 
         {
-            _applicationDbContext = applicationDbContext;
+            _applicationDbContext = applicationDbContext  ?? throw new ArgumentNullException(nameof(_applicationDbContext));
         }
         public async Task<Project?> GetOneAsync(string projectId)
         {
@@ -24,11 +24,11 @@ namespace Projects.Infrastructure.Repositories
 
         public void Add(Project entity)
         {
-            _dbContext.Projects.Add(entity);
+            _applicationDbContext.Projects.Add(entity);
         }
         public void Remove(Project entity)
         {
-            _dbContext.Projects.Remove(entity);
+            _applicationDbContext.Projects.Remove(entity);
         }
     }
 }
