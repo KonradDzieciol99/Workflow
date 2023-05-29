@@ -129,7 +129,6 @@ eventBus.Subscribe<MarkChatMessageAsReadEvent>();
 eventBus.Subscribe<NewOnlineUserEvent>();
 eventBus.Subscribe<NewOfflineUserEvent>();
 
-
 app.UseHttpsRedirection();
 
 app.UseCors(CORSallowAny);
