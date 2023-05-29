@@ -29,11 +29,38 @@ using Projects.Middleware;
 using FluentValidation;
 using Projects.Infrastructure;
 using Projects;
+using Serilog;
+using Serilog.Sinks.SystemConsole.Themes;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//builder.Logging.ClearProviders();
+
+// Use Serilog
+//builder.Host.UseSerilog((hostContext, services, configuration) => {
+//    configuration
+//        //.WriteTo.File("serilog-file.txt")
+//        .WriteTo.Console();
+//});
+
+//var Logger = new LoggerConfiguration()
+//    .MinimumLevel.Debug()
+//    .WriteTo.Console()
+//    .WriteTo.File("logs/myapp.txt", rollingInterval: RollingInterval.Day)
+//    .CreateLogger();
+
+//builder.Logging.ClearProviders();
+//builder.Logging.AddSerilog(Logger);
+
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+//builder.Host.UseSerilog((ctx, lc) => lc
+//    .WriteTo.Console());
+
+//builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
+
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -41,6 +68,15 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddWebAPIServices();
+
+//builder.Host.UseSerilog((context,config) => config.MinimumLevel.Debug().WriteTo.Console(theme: AnsiConsoleTheme.Code));
+
+builder.Host.UseSerilog((context, services, loggerConfiguration) => loggerConfiguration
+    .WriteTo.Console(theme: AnsiConsoleTheme.Code).WriteTo.Debug());
+//builder.Services.AddLogging();
+
+
+
 
 var app = builder.Build();
 
