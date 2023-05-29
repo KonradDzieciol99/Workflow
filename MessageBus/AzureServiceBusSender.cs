@@ -19,7 +19,7 @@ namespace MessageBus
         {
             this._options = options.Value;
         }
-        public async Task PublishMessage<T>(T message) where T : IntegrationEvent
+        public async Task PublishMessage(IntegrationEvent message)
         {
             //if (message.EventSender is null)
             //{
@@ -27,13 +27,13 @@ namespace MessageBus
             //} sprawdzić czy się wywali jeśli coś będzie nie ok z polami
             //message.Id=Guid.NewGuid().ToString();
             message.MessageCreated = DateTime.UtcNow;
-            message.EventType = typeof(T).Name;
+            message.EventType = message.GetType().Name;
 
             await using var client = new ServiceBusClient(_options.ServiceBusConnectionString);
 
             ServiceBusSender sender = client.CreateSender(_topicName);
 
-            string jsonMessage = JsonSerializer.Serialize(message);
+            string jsonMessage = JsonSerializer.Serialize(message, message.GetType());
             ServiceBusMessage finalMessage = new ServiceBusMessage(Encoding.UTF8.GetBytes(jsonMessage))
             {
                 CorrelationId = Guid.NewGuid().ToString(),

@@ -8,13 +8,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Projects.Application.Common.Authorization
-{
-    public interface IAuthorizationRequest<out TResponse> : IRequest<TResponse>, IBaseAuthorizationRequest{}
-    public interface IAuthorizationRequest : IBaseAuthorizationRequest, IRequest{}
-    public interface IBaseAuthorizationRequest
-    {
-        public List<IAuthorizationRequirement> GetAuthorizationRequirement();
-    }
+namespace Projects.Application.Common.Authorization;
 
+public interface IAuthorizationRequest<out TResponse> : IRequest<TResponse>, IBaseAuthorizationRequest{}
+public interface IAuthorizationRequest : IBaseAuthorizationRequest, IRequest{}
+public interface IBaseAuthorizationRequest
+{
+    public List<IAuthorizationRequirement> GetAuthorizationRequirement();
 }

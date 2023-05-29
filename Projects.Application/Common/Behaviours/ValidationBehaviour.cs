@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Projects.Application.Common.Behaviours;
 
@@ -7,14 +8,17 @@ public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TReque
      where TRequest : notnull
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;
+    private readonly ILogger<ValidationBehaviour<TRequest, TResponse>> _logger;
 
-    public ValidationBehaviour(IEnumerable<IValidator<TRequest>> validators)
+    public ValidationBehaviour(IEnumerable<IValidator<TRequest>> validators, ILogger<ValidationBehaviour<TRequest, TResponse>> logger)
     {
         _validators = validators;
+        this._logger = logger;
     }
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("krowa!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!ssssssssssssssssssssssssssssssssssss");
         if (_validators.Any())
         {
             var context = new ValidationContext<TRequest>(request);
