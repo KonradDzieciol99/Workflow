@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using MessageBus.Events;
-using Tasks.Repositories;
+using Tasks.Infrastructure.Repositories;
 
 namespace Tasks.Events.Handlers
 {

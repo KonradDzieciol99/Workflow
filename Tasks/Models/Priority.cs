@@ -1,4 +1,3 @@
-﻿namespace Tasks.Models
-{
-    public enum Priority{Low,Medium,High}
-}
+﻿namespace Tasks.Models;
+
+public enum Priority{Low,Medium,High}

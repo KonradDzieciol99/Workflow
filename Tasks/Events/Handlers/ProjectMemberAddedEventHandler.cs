@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using MediatR;
 using MessageBus.Events;
-using Tasks.Entity;
-using Tasks.Repositories;
+using Tasks.Domain.Entity;
+using Tasks.Infrastructure.Repositories;
+using Tasks.Models;
 
 namespace Tasks.Events.Handlers
 {
@@ -19,15 +20,12 @@ namespace Tasks.Events.Handlers
         public async Task Handle(ProjectMemberAddedEvent request, CancellationToken cancellationToken)
         {
 
-            var projectMember = new ProjectMember()
-            {
-                Id = request.ProjectMemberId,
-                UserEmail = request.UserEmail,
-                UserId = request.UserId,
-                Type = (ProjectMemberType)request.Type,
-                PhotoUrl = request.PhotoUrl,
-                ProjectId = request.ProjectId
-            };
+            var projectMember = new ProjectMember(request.ProjectMemberId,
+                                                  request.UserId,
+                                                  request.UserEmail,
+                                                  request.PhotoUrl,
+                                                  (ProjectMemberType)request.Type,
+                                                  request.ProjectId);
 
             _unitOfWork.ProjectMemberRepository.Add(projectMember);
 

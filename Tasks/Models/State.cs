@@ -1,5 +1,3 @@
-﻿namespace Tasks.Models
-{
-    public enum State { ToDo, InProgress, Done }
+﻿namespace Tasks.Models;
 
-}
+public enum State { ToDo, InProgress, Done }
