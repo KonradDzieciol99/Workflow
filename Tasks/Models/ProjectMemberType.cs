@@ -1,6 +1,2 @@
-﻿public enum ProjectMemberType
-{
-    Leader,
-    Admin,
-    Member,
-}
+﻿namespace Tasks.Models;
+public enum ProjectMemberType{Leader,Admin,Member}

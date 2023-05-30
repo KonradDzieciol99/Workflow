@@ -8,7 +8,7 @@ namespace MessageBus.Events
 {
     public class ProjectMemberAddedEvent : IntegrationEvent
     {
-        public ProjectMemberAddedEvent(string projectMemberId, string userId, string userEmail, string photoUrl, string projectId, ProjectMemberTypeMessageBus type = ProjectMemberTypeMessageBus.Member)
+        public ProjectMemberAddedEvent(string projectMemberId, string userId, string userEmail, string photoUrl, string projectId, int type = 2)
         {
             ProjectMemberId = projectMemberId ?? throw new ArgumentNullException(nameof(projectMemberId));
             UserId = userId ?? throw new ArgumentNullException(nameof(userId));
@@ -22,7 +22,7 @@ namespace MessageBus.Events
         public string UserId { get; set; }
         public string UserEmail { get; set; }
         public string PhotoUrl { get; set; }
-        public ProjectMemberTypeMessageBus Type { get; set; }
+        public int Type { get; set; }
         public string ProjectId { get; set; }
     }
 }
