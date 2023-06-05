@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Projects.Domain.Common.Models;
 
-namespace Projects.Infrastructure.Common;
+namespace Projects.Infrastructure.Common.Extensions;
 
 public static class MediatorExtensions
 {

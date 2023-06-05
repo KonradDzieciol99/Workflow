@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Projects.Application.Common.Interfaces;
 using Projects.Domain.AggregatesModel.ProjectAggregate;
-using Projects.Infrastructure.Common;
+using Projects.Infrastructure.Common.Extensions;
 using Projects.Infrastructure.DataAccess;
 using System.Threading;
 using System.Transactions;
