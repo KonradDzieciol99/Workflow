@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tasks.Application.AppTasks.Commands;
 using Tasks.Application.AppTasks.Queries;
-using Tasks.Models.Dtos;
+using Tasks.Application.Common.Models;
 
 namespace Tasks.Controllers;
 
@@ -19,7 +19,7 @@ public class TaskController : ControllerBase
         this._mediator = mediator;
     }
     [HttpGet]
-    public async Task<ActionResult<List<AppTaskDto>>> Get([FromRoute] string projectId, [FromQuery] GetAppTasksQuery query)
+    public async Task<ActionResult<AppTaskDtosWithTotalCount>> Get([FromRoute] string projectId, [FromQuery] GetAppTasksQuery query)
     {
         if (projectId != query.ProjectId)
             return BadRequest();

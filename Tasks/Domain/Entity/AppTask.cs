@@ -1,26 +1,42 @@
 ﻿using System.Threading.Tasks;
 using Tasks.Application.AppTasks.Commands;
+using Tasks.Domain.Common.Models;
 using Tasks.Domain.Exceptions;
-using Tasks.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Tasks.Domain.Entity
 {
     public class AppTask : BaseEntity
     {
-        public string Name { get; set; }
-        public string? Description { get; set; }
-        public string ProjectId { get; set; }
-        public string? TaskAssigneeMemberId { get; set; }
-        public string? TaskAssigneeMemberEmail { get; set; }
-        public string? TaskAssigneeMemberPhotoUrl { get; set; }
-        public Priority Priority { get; set; }
-        public State State { get; set; }
-        public DateTime DueDate { get; set; }
-        public DateTime StartDate { get; set; }
+        private AppTask(){}
+        public AppTask(string name, string? description, string projectId, string? taskAssigneeMemberId, string? taskAssigneeMemberEmail, string? taskAssigneeMemberPhotoUrl, Priority priority, State state, DateTime dueDate, DateTime startDate, string? taskLeaderId)
+        {
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Description = description;
+            ProjectId = projectId ?? throw new ArgumentNullException(nameof(projectId));
+            TaskAssigneeMemberId = taskAssigneeMemberId;
+            TaskAssigneeMemberEmail = taskAssigneeMemberEmail;
+            TaskAssigneeMemberPhotoUrl = taskAssigneeMemberPhotoUrl;
+            Priority = priority;
+            State = state;
+            DueDate = dueDate;
+            StartDate = startDate;
+            TaskLeaderId = taskLeaderId;
+        }
 
-        public string? TaskLeaderId { get; set; }
-        public ProjectMember TaskLeader { get; set; }
+        public string Name { get; private set; }
+        public string? Description { get; private set; }
+        public string ProjectId { get; private set; }
+        public string? TaskAssigneeMemberId { get; private set; }
+        public string? TaskAssigneeMemberEmail { get; private set; }
+        public string? TaskAssigneeMemberPhotoUrl { get; private set; }
+        public Priority Priority { get; private set; }
+        public State State { get; private set; }
+        public DateTime DueDate { get; private set; }
+        public DateTime StartDate { get; private set; }
+
+        public string? TaskLeaderId { get; private set; }
+        public ProjectMember TaskLeader { get; private set; }
 
         public void UpdateTask(string name, string? description, string? taskAssigneeMemberId, string? taskAssigneeMemberEmail, string? taskAssigneeMemberPhotoUrl, Priority priority, State state, DateTime dueDate, DateTime startDate, string? taskLeaderId)
         {

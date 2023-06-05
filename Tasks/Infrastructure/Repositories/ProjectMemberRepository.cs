@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Tasks.Domain.Common.Models;
 using Tasks.Domain.Entity;
 using Tasks.Infrastructure.DataAccess;
-using Tasks.Models;
 
 namespace Tasks.Infrastructure.Repositories
 {

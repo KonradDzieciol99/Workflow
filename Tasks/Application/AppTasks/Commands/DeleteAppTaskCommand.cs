@@ -40,7 +40,7 @@ public class DeleteAppTaskCommandHandler : IRequestHandler<DeleteAppTaskCommand>
     public async Task Handle(DeleteAppTaskCommand request, CancellationToken cancellationToken)
     {
 
-        var task = await _unitOfWork.AppTaskRepository.Get(request.Id) ?? throw new BadRequestException("Task cannot be found.");
+        var task = await _unitOfWork.AppTaskRepository.GetAsync(request.Id) ?? throw new BadRequestException("Task cannot be found.");
         
         _unitOfWork.AppTaskRepository.Remove(task);
 

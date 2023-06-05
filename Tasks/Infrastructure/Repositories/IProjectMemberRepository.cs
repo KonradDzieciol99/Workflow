@@ -1,5 +1,5 @@
-﻿using Tasks.Domain.Entity;
-using Tasks.Models;
+﻿using Tasks.Domain.Common.Models;
+using Tasks.Domain.Entity;
 
 namespace Tasks.Infrastructure.Repositories
 {

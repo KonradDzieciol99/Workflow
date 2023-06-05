@@ -3,6 +3,7 @@ using MessageBus.Events;
 using MessageBus;
 using Tasks.Infrastructure.DataAccess;
 using Tasks.Middleware;
+using Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,3 +55,5 @@ async Task ApplyMigration()
     await Task.CompletedTask;
     return;
 }
+
+public partial class Program { }

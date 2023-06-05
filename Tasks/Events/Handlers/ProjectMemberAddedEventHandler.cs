@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using MediatR;
 using MessageBus.Events;
+using Tasks.Domain.Common.Models;
 using Tasks.Domain.Entity;
 using Tasks.Infrastructure.Repositories;
-using Tasks.Models;
 
 namespace Tasks.Events.Handlers
 {
