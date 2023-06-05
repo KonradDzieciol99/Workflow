@@ -1,4 +1,6 @@
-﻿namespace Tasks.Models.Dtos;
+﻿using Tasks.Domain.Common.Models;
+
+namespace Tasks.Application.Common.Models;
 
 public class AppTaskDto
 {

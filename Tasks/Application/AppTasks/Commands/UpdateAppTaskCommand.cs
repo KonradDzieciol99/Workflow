@@ -5,10 +5,10 @@ using MessageBus;
 using Microsoft.AspNetCore.Authorization;
 using Tasks.Application.Common.Authorization;
 using Tasks.Application.Common.Authorization.Requirements;
-using Tasks.Models.Dtos;
 using Tasks.Infrastructure.Repositories;
 using Tasks.Services;
 using Tasks.Application.Common.Exceptions;
+using Tasks.Application.Common.Models;
 
 namespace Tasks.Application.AppTasks.Commands;
 
@@ -41,7 +41,7 @@ public class UpdateAppTaskCommandHandler : IRequestHandler<UpdateAppTaskCommand,
     public async Task<AppTaskDto> Handle(UpdateAppTaskCommand request, CancellationToken cancellationToken)
     {
 
-        var task = await _unitOfWork.AppTaskRepository.Get(request.AppTaskDto.Id) ?? throw new BadRequestException("Task cannot be found.");
+        var task = await _unitOfWork.AppTaskRepository.GetAsync(request.AppTaskDto.Id) ?? throw new BadRequestException("Task cannot be found.");
 
         task.UpdateTask(request.AppTaskDto.Name,
                         request.AppTaskDto.Description,

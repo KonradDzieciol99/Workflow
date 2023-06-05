@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using MessageBus.Events;
 using Tasks.Application.AppTasks.Commands;
+using Tasks.Application.Common.Models;
 using Tasks.Domain.Entity;
-using Tasks.Models.Dtos;
 
 namespace Tasks.Common
 {

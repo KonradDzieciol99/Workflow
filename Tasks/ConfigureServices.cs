@@ -14,7 +14,7 @@ using MessageBus.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Tasks.Application.Common.Authorization.Handlers;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace Tasks;
 
 public static class ConfigureServices
 {
@@ -32,7 +32,8 @@ public static class ConfigureServices
             opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         })
-        .AddJwtBearer(opt => {
+        .AddJwtBearer(opt =>
+        {
             opt.RequireHttpsMetadata = false;
             opt.SaveToken = true;
             opt.Authority = "https://localhost:7122/";
