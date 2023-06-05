@@ -2,12 +2,12 @@
 using System.Linq;
 using System.Linq.Expressions;
 using Projects.Infrastructure.DataAccess;
-using Projects.Infrastructure.Common;
 using Projects.Domain.Common.Models;
 using Projects.Domain.AggregatesModel.ProjectAggregate;
 using Projects.Application.Common.Interfaces;
 using Projects.Application.Common.Models;
 using Projects.Application.Projects.Queries;
+using Projects.Infrastructure.Common.Extensions;
 
 namespace Projects.Infrastructure.Repositories
 {

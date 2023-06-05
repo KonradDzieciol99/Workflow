@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Projects.Infrastructure.Common
+namespace Projects.Infrastructure.Common.Extensions
 {
     public static class QueryableExtensions
     {
