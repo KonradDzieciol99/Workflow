@@ -38,7 +38,7 @@ namespace Tasks.Domain.Entity
         public string? TaskLeaderId { get; private set; }
         public ProjectMember TaskLeader { get; private set; }
 
-        public void UpdateTask(string name, string? description, string? taskAssigneeMemberId, string? taskAssigneeMemberEmail, string? taskAssigneeMemberPhotoUrl, Priority priority, State state, DateTime dueDate, DateTime startDate, string? taskLeaderId)
+        public void UpdateTask(string? name, string? description, string? taskAssigneeMemberId, string? taskAssigneeMemberEmail, string? taskAssigneeMemberPhotoUrl, Priority? priority, State? state, DateTime? dueDate, DateTime? startDate, string? taskLeaderId)
         {
             if (name == Name
                 && description == Description
@@ -59,10 +59,10 @@ namespace Tasks.Domain.Entity
             TaskAssigneeMemberId = taskAssigneeMemberId;
             TaskAssigneeMemberEmail = taskAssigneeMemberEmail;
             TaskAssigneeMemberPhotoUrl = taskAssigneeMemberPhotoUrl;
-            Priority = priority;
-            State = state;
-            DueDate = dueDate;
-            StartDate = startDate;
+            Priority = priority ?? Priority;
+            State = state ?? State;
+            DueDate = dueDate ?? DueDate;
+            StartDate = startDate ?? StartDate;
             TaskLeaderId = taskLeaderId;
             //!!!WAZNE sprawdzić czy wszystkie bedą modified i czy będzie odpowiednie zapytanie do bazy danych
         }
