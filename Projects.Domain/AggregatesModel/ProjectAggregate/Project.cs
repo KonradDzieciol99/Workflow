@@ -1,7 +1,6 @@
-﻿using MediatR;
+﻿using Projects.Domain.Common.Exceptions;
 using Projects.Domain.Common.Models;
 using Projects.Domain.DomainEvents;
-using Projects.Domain.Exceptions;
 
 namespace Projects.Domain.AggregatesModel.ProjectAggregate
 {
