@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Respawn;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,16 +32,34 @@ public class Base
 {
     public readonly WebApplicationFactory<Program> _factory;
     public HttpClient _client;
+    public readonly Respawner _checkpoint;
+    public IConfiguration _configuration;
 
     public Base()
     {
         this._factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
             {
-                builder.ConfigureServices(services =>
+
+                builder.ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    var integrationConfig = new ConfigurationBuilder()
+                    .AddJsonFile("appsettings.json")
+                    .AddEnvironmentVariables()
+                    .Build();
+
+                    config.AddConfiguration(integrationConfig);
+                });
+
+                builder.ConfigureServices((context,services) =>
                 {
                     var dbContextOptions = services.SingleOrDefault(service => service.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
                     services.Remove(dbContextOptions);
-                    services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("testDb"));
+
+                    var dbConnString = context.Configuration.GetConnectionString("TestDb") ?? throw new ArgumentNullException("dbConnString");
+                    services.AddDbContext<ApplicationDbContext>(options =>
+                        options.UseSqlServer(dbConnString,
+                            builder =>builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+
                     services.AddAuthentication(opt =>
                     {
                         opt.DefaultAuthenticateScheme = TestAuthHandler.AuthenticationScheme;
@@ -47,10 +67,15 @@ public class Base
                     }).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme, options => {});
 
                 });
-
             });
 
         this._client = _factory.CreateClient();
+        this._configuration = _factory.Services.GetRequiredService<IConfiguration>() ?? throw new ArgumentNullException(nameof(IConfiguration)); ;
+
+        this._checkpoint = Respawner.CreateAsync(_configuration.GetConnectionString("TestDb")!, new RespawnerOptions
+        {
+            TablesToIgnore = new Respawn.Graph.Table[] { "__EFMigrationsHistory" }
+        }).GetAwaiter().GetResult();
     }
 }
 
