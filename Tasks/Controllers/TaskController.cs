@@ -43,16 +43,16 @@ public class TaskController : ControllerBase
 
         var result = await _mediator.Send(command);
 
-        return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
+        return CreatedAtAction(nameof(Get), new { id = result.Id, projectId = result.Id }, result);
     }
 
     [HttpPut("{id}")]
     public async Task<ActionResult<AppTaskDto>> Put([FromRoute] string projectId, [FromRoute] string id, [FromBody] UpdateAppTaskCommand command)
     {
-        if (projectId != command.AppTaskDto.ProjectId || id != command.AppTaskDto.Id)
+        if (projectId != command.ProjectId || id != command.Id)
             return BadRequest();
 
-        return await _mediator.Send(new GetAppTaskQuery(id, projectId));
+        return await _mediator.Send(command);
     }
 
     [HttpDelete("{id}")]

@@ -10,6 +10,7 @@ using Tasks.Application.Common.Models;
 using Tasks.Domain.Entity;
 using Tasks.Infrastructure.Repositories;
 using Tasks.Services;
+using Tasks.Domain.Exceptions;
 
 namespace Tasks.Application.AppTasks.Queries;
 
@@ -38,6 +39,10 @@ public class GetAppTaskQueryHandler : IRequestHandler<GetAppTaskQuery, AppTaskDt
     public async Task<AppTaskDto> Handle(GetAppTaskQuery request, CancellationToken cancellationToken)
     {
         var appTask = await _unitOfWork.AppTaskRepository.GetAsync(request.Id);
+
+        if (appTask == null)
+            throw new TaskDomainException("Such a task does not exist");
+        
 
         return _mapper.Map<AppTaskDto>(appTask);
     }

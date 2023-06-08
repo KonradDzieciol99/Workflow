@@ -2,10 +2,10 @@
 {
     public class AppTaskDtosWithTotalCount
     {
-        public AppTaskDtosWithTotalCount(int count, List<AppTaskDto> AppTaskDtoList)
+        public AppTaskDtosWithTotalCount(int count, List<AppTaskDto> result)
         {
             Count = count;
-            Result = AppTaskDtoList ?? throw new ArgumentNullException(nameof(AppTaskDtoList));
+            Result = result ?? throw new ArgumentNullException(nameof(result));
         }
 
         public int Count { get; set; }

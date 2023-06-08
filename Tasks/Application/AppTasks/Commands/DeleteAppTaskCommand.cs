@@ -44,13 +44,12 @@ public class DeleteAppTaskCommandHandler : IRequestHandler<DeleteAppTaskCommand>
         
         _unitOfWork.AppTaskRepository.Remove(task);
 
-        if (await _unitOfWork.Complete())
-        {
-            await _azureServiceBusSender.PublishMessage(new TaskDeletedEvent(task.Id));
+        if (!await _unitOfWork.Complete())
+            throw new InvalidOperationException();
 
-            return;
-        }
+        await _azureServiceBusSender.PublishMessage(new TaskDeletedEvent(task.Id));
 
-        throw new BadRequestException("task could not be deleted.");
+        return;
+
     }
 }

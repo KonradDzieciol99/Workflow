@@ -9,16 +9,31 @@ using Tasks.Infrastructure.Repositories;
 using Tasks.Services;
 using Tasks.Application.Common.Exceptions;
 using Tasks.Application.Common.Models;
+using Tasks.Domain.Common.Models;
 
 namespace Tasks.Application.AppTasks.Commands;
 
-public record UpdateAppTaskCommand(AppTaskDto AppTaskDto) : IAuthorizationRequest<AppTaskDto>
+public record UpdateAppTaskCommand(string Id,
+                                   string? Name,
+                                   string? Description,
+                                   string ProjectId,
+                                   string? TaskAssigneeMemberId,
+                                   string? TaskAssigneeMemberEmail,
+                                   string? TaskAssigneeMemberPhotoUrl,
+                                   Priority? Priority,
+                                   State? State,
+                                   DateTime? DueDate,
+                                   DateTime? StartDate,
+                                   string? TaskLeaderId) : IAuthorizationRequest<AppTaskDto>
 {
+
+
+
     public List<IAuthorizationRequirement> GetAuthorizationRequirement()
     {
         var listOfRequirements = new List<IAuthorizationRequirement>()
         {
-            new ProjectMembershipRequirement(AppTaskDto.ProjectId),
+            new ProjectMembershipRequirement(ProjectId),
         };
         return listOfRequirements;
     }
@@ -41,18 +56,18 @@ public class UpdateAppTaskCommandHandler : IRequestHandler<UpdateAppTaskCommand,
     public async Task<AppTaskDto> Handle(UpdateAppTaskCommand request, CancellationToken cancellationToken)
     {
 
-        var task = await _unitOfWork.AppTaskRepository.GetAsync(request.AppTaskDto.Id) ?? throw new BadRequestException("Task cannot be found.");
+        var task = await _unitOfWork.AppTaskRepository.GetAsync(request.Id) ?? throw new BadRequestException("Task cannot be found.");
 
-        task.UpdateTask(request.AppTaskDto.Name,
-                        request.AppTaskDto.Description,
-                        request.AppTaskDto.TaskAssigneeMemberId,
-                        request.AppTaskDto.TaskAssigneeMemberEmail,
-                        request.AppTaskDto.TaskAssigneeMemberPhotoUrl,
-                        request.AppTaskDto.Priority,
-                        request.AppTaskDto.State,
-                        request.AppTaskDto.DueDate,
-                        request.AppTaskDto.StartDate,
-                        request.AppTaskDto.TaskLeaderId);
+        task.UpdateTask(request.Name,
+                        request.Description,
+                        request.TaskAssigneeMemberId,
+                        request.TaskAssigneeMemberEmail,
+                        request.TaskAssigneeMemberPhotoUrl,
+                        request.Priority,
+                        request.State,
+                        request.DueDate,
+                        request.StartDate,
+                        request.TaskLeaderId);
 
         if (!await _unitOfWork.Complete())
             throw new InvalidOperationException();
