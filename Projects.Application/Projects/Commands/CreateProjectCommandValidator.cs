@@ -1,11 +1,5 @@
 ﻿using FluentValidation;
-using Projects.Application.Projects.Queries;
-using Projects.Application.Validators;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Projects.Application.Common.Models.Validators;
 
 namespace Projects.Application.Projects.Commands;
 

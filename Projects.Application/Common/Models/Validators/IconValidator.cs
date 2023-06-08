@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using Projects.Application.Common.Models;
 
-namespace Projects.Application.Validators
+namespace Projects.Application.Common.Models.Validators
 {
     public class IconValidator : AbstractValidator<Icon>
     {
