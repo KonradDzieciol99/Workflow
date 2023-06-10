@@ -29,9 +29,10 @@ namespace IdentityServer.Events
                 //var registerEmailBusMessage = new RegisterEmailBusMessage() { Email = localUserRegisterSuccessEvent.LocalUserEmail, Token = localUserRegisterSuccessEvent.LocalUserActivateToken };
                 var registerEmailBusMessage = new NewUserRegistrationEvent()
                 {
-                    EventRecipient = new SimpleUser() { UserEmail = localUserRegisterSuccessEvent.LocalUserEmail, UserId = localUserRegisterSuccessEvent.IdentityUserId },
-                    Email = localUserRegisterSuccessEvent.LocalUserEmail,
-                    Token = localUserRegisterSuccessEvent.LocalUserActivateToken
+                    //EventRecipient = new SimpleUser() { UserEmail = localUserRegisterSuccessEvent.LocalUserEmail, UserId = localUserRegisterSuccessEvent.IdentityUserId },
+                    UserEmail = localUserRegisterSuccessEvent.LocalUserEmail,
+                    Token = localUserRegisterSuccessEvent.LocalUserActivateToken,
+                    UserId = localUserRegisterSuccessEvent.IdentityUserId
                 };
                 await _messageBus.PublishMessage(registerEmailBusMessage);
 
@@ -50,12 +51,12 @@ namespace IdentityServer.Events
         }
     }
 }
-//var friendInvitationAcceptedEvent = new InviteUserToFriendsEvent()
+//var friendInvitationAcceptedEvent = new FriendInvitationAddedEvent()
 //{
 
 //    EventRecipient = new SimpleUser() { UserEmail = friendInvitation.InvitedUserEmail, UserId = friendInvitation.InvitedUserId },
 //    EventSender = new SimpleUser() { UserEmail = userEmail, UserId = userId },
-//    EventType = "InviteUserToFriendsEvent",
+//    EventType = "FriendInvitationAddedEvent",
 //    FriendInvitationDto = _mapper.Map<FriendInvitationDtoGlobal>(friendInvitation),
 //    UserWhoInvited = new SimpleUser() { UserEmail = userEmail, UserId = userId },
 //    InvitedUser = new SimpleUser() { UserEmail = friendInvitation.InvitedUserEmail, UserId = friendInvitation.InvitedUserId },

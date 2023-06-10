@@ -8,6 +8,7 @@ using Tasks.Application.Common.Authorization.Requirements;
 using Tasks.Infrastructure.Repositories;
 using Tasks.Services;
 using Tasks.Application.Common.Exceptions;
+using Tasks.Domain.Exceptions;
 
 namespace Tasks.Application.AppTasks.Commands;
 
@@ -40,7 +41,7 @@ public class DeleteAppTaskCommandHandler : IRequestHandler<DeleteAppTaskCommand>
     public async Task Handle(DeleteAppTaskCommand request, CancellationToken cancellationToken)
     {
 
-        var task = await _unitOfWork.AppTaskRepository.GetAsync(request.Id) ?? throw new BadRequestException("Task cannot be found.");
+        var task = await _unitOfWork.AppTaskRepository.GetAsync(request.Id) ?? throw new TaskDomainException(string.Empty, new BadRequestException("Task cannot be found.")) ;
         
         _unitOfWork.AppTaskRepository.Remove(task);
 

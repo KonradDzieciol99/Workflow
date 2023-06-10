@@ -33,11 +33,11 @@ namespace MessageBus
 
             await sender.SendMessageAsync(finalMessage);
 
-            if (finalMessage is IUserPersistentNotification)
-            {
+            //if (finalMessage is IUserPersistentNotification)
+            //{
 
-                await sender.SendMessageAsync(finalMessage);
-            }
+            //    await sender.SendMessageAsync(finalMessage);
+            //}
 
             await client.DisposeAsync();
         }

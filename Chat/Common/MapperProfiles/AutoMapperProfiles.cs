@@ -19,11 +19,8 @@ namespace Chat.Common.MapperProfiles
             CreateMap<FriendInvitationDto, FriendInvitation>();
             CreateMap<FriendInvitation, FriendInvitationDto>();
 
-            CreateMap<Message, SendMessageToSignalREvent>();
-            CreateMap<SendMessageToSignalREvent, Message>();
-
-            CreateMap<FriendInvitationDtoGlobal, FriendInvitation>();
-            CreateMap<FriendInvitation, FriendInvitationDtoGlobal>();
+            CreateMap<Message, ChatMessageAddedEvent>();
+            CreateMap<ChatMessageAddedEvent, Message>();
         }
     }
 }

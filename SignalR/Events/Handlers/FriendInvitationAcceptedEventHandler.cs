@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using MessageBus;
 using MessageBus.Events;
+using MessageBus.Models;
 using Microsoft.AspNetCore.SignalR;
 using SignalR.Models;
 using StackExchange.Redis;
@@ -23,20 +24,17 @@ namespace SignalR.Events.Handlers
         public async Task Handle(FriendInvitationAcceptedEvent request, CancellationToken cancellationToken)
         {
 
-            await _messagesHubContext.Clients.User(request.UserWhoseInvitationAccepted.UserId).SendAsync("FriendInvitationAccepted", request.FriendInvitationDto);
-            //tutaj też ten drugi user
-            await _messagesHubContext.Clients.User(request.EventSender.UserId).SendAsync("FriendInvitationAccepted", request.FriendInvitationDto);
+            await _messagesHubContext.Clients.User(request.InvitationSendingUserId).SendAsync("FriendInvitationAccepted", request);
+            await _messagesHubContext.Clients.User(request.InvitationAcceptingUserId).SendAsync("FriendInvitationAccepted", request);
 
-            var isOnline = await _redisDb.KeyExistsAsync($"presence-{request.UserWhoAcceptedInvitation.UserEmail}");
+            var isOnline = await _redisDb.KeyExistsAsync($"presence-{request.InvitationSendingUserEmail}");
             if (isOnline)
-            {
-                await _messagesHubContext.Clients.User(request.UserWhoseInvitationAccepted.UserId).SendAsync("UserIsOnline", request.UserWhoAcceptedInvitation);
-            }
-            isOnline = await _redisDb.KeyExistsAsync($"presence-{request.EventRecipient.UserEmail}");
+                await _messagesHubContext.Clients.User(request.InvitationAcceptingUserEmail).SendAsync("UserIsOnline", new { UserId = request.InvitationSendingUserId, UserEmail = request.InvitationSendingUserEmail, PhotoUrl= request.InvitationSendingUserPhotoUrl });
+            
+            isOnline = await _redisDb.KeyExistsAsync($"presence-{request.InvitationAcceptingUserEmail}");
             if (isOnline)
-            {
-                await _messagesHubContext.Clients.User(request.EventSender.UserId).SendAsync("UserIsOnline", request.EventRecipient);
-            }
+                await _messagesHubContext.Clients.User(request.InvitationSendingUserId).SendAsync("UserIsOnline", new { UserId = request.InvitationAcceptingUserId, UserEmail = request.InvitationAcceptingUserEmail, PhotoUrl = request.InvitationAcceptingUserPhotoUrl });
+
             return;
         }
     }

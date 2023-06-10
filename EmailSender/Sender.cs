@@ -19,13 +19,13 @@ namespace EmailSender
         {
 
             ///////////////////WebUtility.UrlEncode!!!!!!!!!!
-            var url = $"{_verifyEmailUrl}?token={WebUtility.UrlEncode(registerEmailBusMessage.Token)}&email={registerEmailBusMessage.Email}";
+            var url = $"{_verifyEmailUrl}?token={WebUtility.UrlEncode(registerEmailBusMessage.Token)}&email={registerEmailBusMessage.UserEmail}";
 
             var verifyEmailModel = new VerifyEmail() { Url = url };
 
             var currentLocation = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location);
 
-            var email = _fluentEmail.To(registerEmailBusMessage.Email)
+            var email = _fluentEmail.To(registerEmailBusMessage.UserEmail)
                                     .Tag("TEST")
                                     .Subject("Workflow Email verification")
                                     .UsingTemplateFromFile($@"{currentLocation}/Views/Emails/VerifyEmail.cshtml", verifyEmailModel);

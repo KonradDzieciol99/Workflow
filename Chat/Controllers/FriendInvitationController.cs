@@ -9,13 +9,9 @@ using MessageBus.Events;
 using MessageBus.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Azure.Amqp.Framing;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Chat.Controllers
 {
@@ -95,16 +91,20 @@ namespace Chat.Controllers
 
             if (await _unitOfWork.Complete())
             {
-                var friendInvitationAcceptedEvent = new InviteUserToFriendsEvent()
-                {
-                    ObjectId = new FriendInvitationId(){ InviterUserId=friendInvitation.InviterUserId, InvitedUserId=friendInvitation.InvitedUserId },
-                    EventRecipient = new SimpleUser() { UserEmail = friendInvitation.InvitedUserEmail, UserId = friendInvitation.InvitedUserId },
-                    EventSender = new SimpleUser() { UserEmail = userEmail, UserId = userId },
-                    EventType = "InviteUserToFriendsEvent",
-                    FriendInvitationDto = _mapper.Map<FriendInvitationDtoGlobal>(friendInvitation),
-                    UserWhoInvited = new SimpleUser() { UserEmail = userEmail, UserId = userId },
-                    InvitedUser = new SimpleUser() { UserEmail = friendInvitation.InvitedUserEmail, UserId = friendInvitation.InvitedUserId },
-                };
+                var friendInvitationAcceptedEvent = new FriendInvitationAddedEvent(friendInvitation.InviterUserId,
+                    friendInvitation.InviterUserEmail,
+                    friendInvitation.InviterPhotoUrl,
+                    friendInvitation.InvitedUserId,
+                    friendInvitation.InvitedUserEmail,
+                    friendInvitation.InvitedPhotoUrl);
+                //{
+                //    EventRecipient = new SimpleUser() { UserEmail = friendInvitation.InvitedUserEmail, UserId = friendInvitation.InvitedUserId },
+                //    EventSender = new SimpleUser() { UserEmail = userEmail, UserId = userId },
+                //    EventType = "FriendInvitationAddedEvent",
+                //    FriendInvitationDto = _mapper.Map<FriendInvitationDtoGlobal>(friendInvitation),
+                //    UserWhoInvited = new SimpleUser() { UserEmail = userEmail, UserId = userId },
+                //    InvitedUser = new SimpleUser() { UserEmail = friendInvitation.InvitedUserEmail, UserId = friendInvitation.InvitedUserId },
+                //};
                 await _messageBus.PublishMessage(friendInvitationAcceptedEvent);
 
                 return Ok();
@@ -212,20 +212,14 @@ namespace Chat.Controllers
 
             if (await _unitOfWork.Complete())
             {
-                var friendInvitationAcceptedEvent = new RemoveUserFromFriendsEvent()
-                {
-                    ObjectId = new FriendInvitationId() { InviterUserId = friendInvitation.InviterUserId, InvitedUserId = friendInvitation.InvitedUserId },
-                    EventRecipient = new SimpleUser() { 
-                        UserEmail = friendInvitation.InvitedUserEmail == userEmail ? friendInvitation.InviterUserEmail : friendInvitation.InvitedUserEmail,
-                        UserId = friendInvitation.InvitedUserId == userId ? friendInvitation.InviterUserId : friendInvitation.InvitedUserId,
-                    },
-                    EventSender = new SimpleUser() { UserEmail = userEmail, UserId = userId },
-                    //FriendInvitationDto = _mapper.Map<FriendInvitationDtoGlobal>(friendInvitation),
-                    //UserWhoInvited = new SimpleUser() { UserEmail = userEmail, UserId = userId },
-                    //InvitedUser = new SimpleUser() { UserEmail = friendInvitation.InvitedUserEmail, UserId = friendInvitation.InvitedUserId },
-                };
-                await _messageBus.PublishMessage(friendInvitationAcceptedEvent);
+                var friendInvitationAcceptedEvent = new FriendInvitationRemovedEvent(friendInvitation.InviterUserId,
+                                                                                   friendInvitation.InviterUserEmail,
+                                                                                   friendInvitation.InviterPhotoUrl,
+                                                                                   friendInvitation.InvitedUserId,
+                                                                                   friendInvitation.InvitedUserEmail,
+                                                                                   friendInvitation.InvitedPhotoUrl);
 
+                await _messageBus.PublishMessage(friendInvitationAcceptedEvent);
 
                 return Ok();
             }
@@ -252,20 +246,14 @@ namespace Chat.Controllers
 
             if (await _unitOfWork.Complete())
             {
-                //
-                //var users = friendsInvitationDtos.Select(x => x.InviterUserId == userId ? new SimpleUser() { UserId = x.InvitedUserId, UserEmail = x.InvitedUserEmail } : new SimpleUser() { UserId = x.InviterUserId, UserEmail = x.InviterUserEmail });
-                var friendInvitationAcceptedEvent = new FriendInvitationAcceptedEvent()
-                {
-                    ObjectId = new FriendInvitationId() { InviterUserId = friendInvitation.InviterUserId, InvitedUserId = friendInvitation.InvitedUserId },
-                    EventType = "FriendInvitationAcceptedEvent",
-                    EventRecipient = new SimpleUser() { UserEmail = friendInvitation.InviterUserEmail, UserId = friendInvitation.InviterUserId },
-                    EventSender = new SimpleUser() { UserEmail = userEmail, UserId = userId },
-                    FriendInvitationDto = _mapper.Map<FriendInvitationDtoGlobal>(friendInvitation),
-                    UserWhoAcceptedInvitation = new SimpleUser() { UserEmail = userEmail, UserId = userId },
-                    UserWhoseInvitationAccepted = new SimpleUser() { UserEmail = friendInvitation.InviterUserEmail, UserId = friendInvitation.InviterUserId },
-                };
-                await _messageBus.PublishMessage(friendInvitationAcceptedEvent);
-                //
+                var @event = new FriendInvitationAcceptedEvent(friendInvitation.InviterUserId,
+                    friendInvitation.InviterUserEmail,
+                    friendInvitation.InviterPhotoUrl,
+                    friendInvitation.InvitedUserId,
+                    friendInvitation.InvitedUserEmail,
+                    friendInvitation.InvitedPhotoUrl);
+
+                await _messageBus.PublishMessage(@event);
                 return Ok();
             };
 

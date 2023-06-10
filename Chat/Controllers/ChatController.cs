@@ -84,10 +84,10 @@ namespace Chat.Controllers
                 //OrderStatusChangedToAwaitingValidationIntegrationEvent
                 //var newUserRegisterCreateUser = new NewUserRegisterCreateUser() { Email = localUserRegisterSuccessEvent.LocalUserEmail, Id = localUserRegisterSuccessEvent.IdentityUserId };
 
-                var sendMessageToSignalREvent = _mapper.Map<SendMessageToSignalREvent>(message);
-                sendMessageToSignalREvent.ObjectId = message.Id;
-                sendMessageToSignalREvent.EventSender = new SimpleUser() { UserEmail = senderEmail, UserId = senderId };
-                sendMessageToSignalREvent.EventRecipient = new SimpleUser() { UserEmail = message.RecipientEmail, UserId = message.RecipientId};
+                var sendMessageToSignalREvent = _mapper.Map<ChatMessageAddedEvent>(message);
+                //sendMessageToSignalREvent.ObjectId = message.Id;
+                //sendMessageToSignalREvent.EventSender = new SimpleUser() { UserEmail = senderEmail, UserId = senderId };
+                //sendMessageToSignalREvent.EventRecipient = new SimpleUser() { UserEmail = message.RecipientEmail, UserId = message.RecipientId};
                 await _messageBus.PublishMessage(sendMessageToSignalREvent);
                 return Ok();
             }

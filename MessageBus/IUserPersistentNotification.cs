@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace MessageBus
 {
-    public interface IUserPersistentNotification
-    {
-        public bool? IsAccepted { get; set; }
-    }
+    //public interface IUserPersistentNotification
+    //{
+    //    public bool? IsAccepted { get; set; }
+    //}
 }
