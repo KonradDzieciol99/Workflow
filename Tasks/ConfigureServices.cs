@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Tasks.Application.Common.Authorization.Handlers;
 using Tasks.Application.Behaviours;
 
-namespace Tasks;
+namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ConfigureServices
 {

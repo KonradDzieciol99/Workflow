@@ -6,7 +6,7 @@ using StackExchange.Redis;
 
 namespace SignalR.Events.Handlers
 {
-    public class SendMessageToSignalREventHandler : IRequestHandler<SendMessageToSignalREvent>
+    public class SendMessageToSignalREventHandler : IRequestHandler<ChatMessageAddedEvent>
     {
         private readonly IDatabase _redisDb;
         private readonly IAzureServiceBusSender _azureServiceBusSender;
@@ -25,7 +25,7 @@ namespace SignalR.Events.Handlers
             this._chatHubContext = chatHubContext;
             this._presenceHubContext = presenceHubContext;
         }
-        public async Task Handle(SendMessageToSignalREvent request, CancellationToken cancellationToken)
+        public async Task Handle(ChatMessageAddedEvent request, CancellationToken cancellationToken)
         {
 
             var groupName = GetGroupName(request.SenderEmail, request.RecipientEmail);

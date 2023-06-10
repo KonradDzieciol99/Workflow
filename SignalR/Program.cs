@@ -95,16 +95,16 @@ builder.Services.AddAzureServiceBusSubscriber(opt =>
     //        {configuration.GetValue<string>("NewOnlineMessagesUserWithFriendsQueue"),typeof(NewOnlineMessagesUserWithFriendsEvent)},
     //        {configuration.GetValue<string>("NewOfflineUserWithFriendsQueue"),typeof(NewOfflineUserWithFriendsEvent)},
     //    //{configuration.GetValue<string>("FriendInvitationAcceptedQueue"),typeof(FriendInvitationAcceptedEvent)},
-    //    //{configuration.GetValue<string>("InviteUserToFriendsQueue"),typeof(InviteUserToFriendsEvent)},
+    //    //{configuration.GetValue<string>("InviteUserToFriendsQueue"),typeof(FriendInvitationAddedEvent)},
     //        {"notification-queue", typeof(NotificationEvent)}
     //    };
     //opt.TopicNameAndEventTypePair = new Dictionary<string, Type>()
     //{
     //    //{configuration.GetValue<string>("FriendInvitationAcceptedQueue"),typeof(FriendInvitationAcceptedEvent)},
     //    {configuration.GetValue<string>("FriendInvitationAcceptedTopic"),typeof(FriendInvitationAcceptedEvent)},
-    //    //{configuration.GetValue<string>("NewOfflineUserWithFriendsQueue"),typeof(InviteUserToFriendsEvent)},
-    //    {"invite-user-to-friends-topic",typeof(InviteUserToFriendsEvent)},
-    //    //{configuration.GetValue<string>("NewOfflineUserTopic"),typeof(InviteUserToFriendsEvent)},
+    //    //{configuration.GetValue<string>("NewOfflineUserWithFriendsQueue"),typeof(FriendInvitationAddedEvent)},
+    //    {"invite-user-to-friends-topic",typeof(FriendInvitationAddedEvent)},
+    //    //{configuration.GetValue<string>("NewOfflineUserTopic"),typeof(FriendInvitationAddedEvent)},
     //};
     //opt.TopicNameWithSubscriptionName = new Dictionary<string, string>()
     //{
@@ -127,13 +127,13 @@ var eventBus = app.Services.GetRequiredService<AzureServiceBusSubscriber>();// n
 
 var subscribeTasks = new List<Task>
 {
-    eventBus.Subscribe<SendMessageToSignalREvent>(),
+    eventBus.Subscribe<ChatMessageAddedEvent>(),
     eventBus.Subscribe<NewOnlineUserWithFriendsEvent>(),
     eventBus.Subscribe<NewOnlineMessagesUserWithFriendsEvent>(),
     eventBus.Subscribe<NewOfflineUserWithFriendsEvent>(),
     eventBus.Subscribe<FriendInvitationAcceptedEvent>(),
-    eventBus.Subscribe<InviteUserToFriendsEvent>(),
-    eventBus.Subscribe<NotificationEvent>(),
+    eventBus.Subscribe<FriendInvitationAddedEvent>(),
+    eventBus.Subscribe<NotificationAddedEvent>(),
 };
 
 await Task.WhenAll(subscribeTasks);

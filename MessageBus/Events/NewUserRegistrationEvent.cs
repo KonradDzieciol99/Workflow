@@ -1,10 +1,9 @@
-﻿using MediatR;
-
-namespace MessageBus.Events
+﻿namespace MessageBus.Events
 {
-    public class NewUserRegistrationEvent : IntegrationEvent, IRequest
+    public class NewUserRegistrationEvent : IntegrationEvent
     {
-        public string Email { get; set; }
+        public string UserEmail { get; set; }
         public string Token { get; set; }
+        public string UserId { get; set; }
     }
 }
