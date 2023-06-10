@@ -10,9 +10,13 @@
 
   <ItemGroup>
     <Compile Remove="Enums\**" />
+    <Compile Remove="Models\**" />
     <Content Remove="Enums\**" />
+    <Content Remove="Models\**" />
     <EmbeddedResource Remove="Enums\**" />
+    <EmbeddedResource Remove="Models\**" />
     <None Remove="Enums\**" />
+    <None Remove="Models\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,7 +40,6 @@
 
   <ItemGroup>
     <Folder Include="Application\Common\Models\" />
-    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

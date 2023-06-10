@@ -21,7 +21,7 @@ namespace Notification.Application.IntegrationEvents.Handlers
             var AppNotifications = new List<AppNotification>();
 
             var notificationForRemovedFriend = new AppNotification(request.FriendToRemoveUserId,
-                request.ObjectId,
+                //request.ObjectId,
                 "RemovedFromFriend",
                 request.MessageCreated,
                 $"User {request.ActionInitiatorUserEmail} removed you from friends",
@@ -30,7 +30,7 @@ namespace Notification.Application.IntegrationEvents.Handlers
                 request.ActionInitiatorUserPhotoUrl);
 
             var notificationForActionInitiatorUser = new AppNotification(request.ActionInitiatorUserId,
-                request.ObjectId,
+                //request.ObjectId,
                 "YouDeletedFriend",
                 request.MessageCreated,
                 $"You have removed {request.FriendToRemoveUserEmail} from friends",
@@ -49,7 +49,7 @@ namespace Notification.Application.IntegrationEvents.Handlers
 
             var notificationEventForRemovedFriend = new NotificationAddedEvent(notificationForRemovedFriend.Id,
                                                                            notificationForRemovedFriend.UserId,
-                                                                           notificationForRemovedFriend.ObjectId,
+                                                                           //notificationForRemovedFriend.ObjectId,
                                                                            notificationForRemovedFriend.NotificationType,
                                                                            notificationForRemovedFriend.CreationDate,
                                                                            notificationForRemovedFriend.Displayed,
@@ -60,7 +60,7 @@ namespace Notification.Application.IntegrationEvents.Handlers
 
             var notificationEventForActionInitiatorUser = new NotificationAddedEvent(notificationForActionInitiatorUser.Id,
                                                                         notificationForActionInitiatorUser.UserId,
-                                                                        notificationForActionInitiatorUser.ObjectId,
+                                                                        //notificationForActionInitiatorUser.ObjectId,
                                                                         notificationForActionInitiatorUser.NotificationType,
                                                                         notificationForActionInitiatorUser.CreationDate,
                                                                         notificationForActionInitiatorUser.Displayed,

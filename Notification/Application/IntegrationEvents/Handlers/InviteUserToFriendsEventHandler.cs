@@ -24,7 +24,7 @@ public class InviteUserToFriendsEventHandler : IRequestHandler<FriendInvitationA
         var AppNotifications = new List<AppNotification>();
 
         var notificationForInvitationSendingUser = new AppNotification(request.InvitationSendingUserId,
-                                                           request.ObjectId,
+                                                           //request.ObjectId,
                                                            "FriendRequestSent",
                                                            request.MessageCreated,
                                                            $"You sent a friend request to {request.InvitedUserEmail}",
@@ -33,7 +33,7 @@ public class InviteUserToFriendsEventHandler : IRequestHandler<FriendInvitationA
                                                            request.InvitedUserPhotoUrl);
 
         var notificationForInvitedUser = new AppNotification(request.InvitedUserId,
-                                                           request.ObjectId,
+                                                           //request.ObjectId,
                                                            "FriendRequestReceived",
                                                            request.MessageCreated,
                                                            $"You have received a friend request from {request.InvitationSendingUserEmail}",
@@ -52,7 +52,7 @@ public class InviteUserToFriendsEventHandler : IRequestHandler<FriendInvitationA
 
         var notificationEventForInvitationSendingUser = new NotificationAddedEvent(notificationForInvitationSendingUser.Id,
                                                                   notificationForInvitationSendingUser.UserId,
-                                                                  notificationForInvitationSendingUser.ObjectId,
+                                                                  //notificationForInvitationSendingUser.ObjectId,
                                                                   notificationForInvitationSendingUser.NotificationType,
                                                                   notificationForInvitationSendingUser.CreationDate,
                                                                   notificationForInvitationSendingUser.Displayed,
@@ -64,7 +64,7 @@ public class InviteUserToFriendsEventHandler : IRequestHandler<FriendInvitationA
 
         var notificationEventForInvitedUser = new NotificationAddedEvent(notificationForInvitedUser.Id,
                                                                notificationForInvitedUser.UserId,
-                                                               notificationForInvitedUser.ObjectId,
+                                                               //notificationForInvitedUser.ObjectId,
                                                                notificationForInvitedUser.NotificationType,
                                                                notificationForInvitedUser.CreationDate,
                                                                notificationForInvitedUser.Displayed,

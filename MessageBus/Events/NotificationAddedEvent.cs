@@ -9,11 +9,11 @@ namespace MessageBus.Events
 {
     public class NotificationAddedEvent : IntegrationEvent
     {
-        public NotificationAddedEvent(string id, string userId, object? objectId, string notificationType, DateTime creationDate, bool displayed, string description, string? notificationPartnerUserId, string? notificationPartnerUserEmail, string? notificationPartnerUserPhotoUrl)
+        public NotificationAddedEvent(string id, string userId, /*object? objectId,*/ string notificationType, DateTime creationDate, bool displayed, string description, string? notificationPartnerUserId, string? notificationPartnerUserEmail, string? notificationPartnerUserPhotoUrl)
         {
             Id = id ?? throw new ArgumentNullException(nameof(id));
             UserId = userId ?? throw new ArgumentNullException(nameof(userId));
-            ObjectId = objectId;
+            //ObjectId = objectId;
             NotificationType = notificationType ?? throw new ArgumentNullException(nameof(notificationType));
             CreationDate = creationDate;
             Displayed = displayed;
@@ -25,7 +25,7 @@ namespace MessageBus.Events
 
         public string Id { get; private set; }
         public string UserId { get; private set; }
-        public object? ObjectId { get; private set; }
+        //public object? ObjectId { get; private set; }
 
         public string NotificationType { get; private set; }
         public DateTime CreationDate { get; private set; }

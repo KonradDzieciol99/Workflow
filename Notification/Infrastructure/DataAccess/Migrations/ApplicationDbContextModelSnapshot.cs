@@ -8,7 +8,7 @@ using Notification.Infrastructure.DataAccess;
 
 #nullable disable
 
-namespace Tasks.DataAccess.Migrations
+namespace Notification.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -22,70 +22,32 @@ namespace Tasks.DataAccess.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Tasks.Domain.Entity.AppTask", b =>
+            modelBuilder.Entity("Notification.Domain.Entity.AppNotification", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("DueDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Priority")
-                        .HasColumnType("int");
+                    b.Property<bool>("Displayed")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("ProjectId")
-                        .IsRequired()
+                    b.Property<string>("NotificationPartnerEmail")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("State")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TaskAssigneeMemberEmail")
+                    b.Property<string>("NotificationPartnerId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TaskAssigneeMemberId")
+                    b.Property<string>("NotificationPartnerPhotoUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TaskAssigneeMemberPhotoUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TaskLeaderId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TaskLeaderId");
-
-                    b.ToTable("AppTasks");
-                });
-
-            modelBuilder.Entity("Tasks.Domain.Entity.ProjectMember", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("PhotoUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProjectId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserEmail")
+                    b.Property<string>("NotificationType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -95,22 +57,7 @@ namespace Tasks.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProjectMembers");
-                });
-
-            modelBuilder.Entity("Tasks.Domain.Entity.AppTask", b =>
-                {
-                    b.HasOne("Tasks.Domain.Entity.ProjectMember", "TaskLeader")
-                        .WithMany("ConductedTasks")
-                        .HasForeignKey("TaskLeaderId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("TaskLeader");
-                });
-
-            modelBuilder.Entity("Tasks.Domain.Entity.ProjectMember", b =>
-                {
-                    b.Navigation("ConductedTasks");
+                    b.ToTable("AppNotification");
                 });
 #pragma warning restore 612, 618
         }

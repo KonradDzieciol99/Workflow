@@ -12,10 +12,10 @@ public class AppNotification : BaseEntity
 {
     private AppNotification() { }
 
-    public AppNotification(string userId, object? objectId, string notificationType, DateTime creationDate, string description, string? notificationPartnerId, string? notificationPartnerEmail, string? notificationPartnerPhotoUrl, bool displayed = false)
+    public AppNotification(string userId, /*object? objectId,*/ string notificationType, DateTime creationDate, string description, string? notificationPartnerId, string? notificationPartnerEmail, string? notificationPartnerPhotoUrl, bool displayed = false)
     {
         UserId = userId ?? throw new ArgumentNullException(nameof(userId));
-        ObjectId = objectId;
+        //ObjectId = objectId;
         NotificationType = notificationType ?? throw new ArgumentNullException(nameof(notificationType));
         CreationDate = creationDate;
         Description = description ?? throw new ArgumentNullException(nameof(description));
@@ -26,7 +26,7 @@ public class AppNotification : BaseEntity
     }
 
     public string UserId { get; private set; }
-    public object? ObjectId { get; private set; }
+    //public object? ObjectId { get; private set; }
     public string NotificationType { get; private set; }
     public DateTime CreationDate { get; private set; }
     public bool Displayed { get; private set; }
