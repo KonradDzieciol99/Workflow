@@ -19,7 +19,7 @@ namespace Notification.Application.IntegrationEvents.Handlers
         public async Task Handle(NewUserRegistrationEvent request, CancellationToken cancellationToken)
         {
 
-            var notification = new AppNotification(request.Id,
+            var notification = new AppNotification(/*request.Id,*/
                                                    request.UserId,
                                                    "WelcomeNotification",
                                                    request.MessageCreated,
@@ -35,7 +35,7 @@ namespace Notification.Application.IntegrationEvents.Handlers
 
             var @event= new NotificationAddedEvent(notification.Id,
                                                    notification.UserId,
-                                                   notification.ObjectId,
+                                                   //notification.ObjectId,
                                                    notification.NotificationType,
                                                    notification.CreationDate,
                                                    notification.Displayed,

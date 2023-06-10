@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Notification.Infrastructure.DataAccess;
 using MediatR;
 using Notification.Application.Common.Behaviours;
+using Notification.Infrastructure.Repositories;
+using Notification.Services;
 
 namespace Notification;
 
@@ -77,6 +79,9 @@ public static class ConfigureServices
         {
             opt.UseSqlServer(configuration.GetConnectionString("DbContextConnString"));
         });
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddHttpContextAccessor();
 
         return services;
     }

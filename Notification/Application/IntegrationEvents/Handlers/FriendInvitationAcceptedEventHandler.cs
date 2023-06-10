@@ -25,7 +25,7 @@ namespace Notification.Application.IntegrationEvents.Handlers
             var AppNotifications = new List<AppNotification>();
 
             var notificationForInvitationSendingUser = new AppNotification(request.InvitationSendingUserId,
-                                                               request.ObjectId,
+                                                               //request.ObjectId,
                                                                "NewFriendAdded",
                                                                request.MessageCreated,
                                                                $"You and {request.InvitationAcceptingUserEmail} are friends now!",
@@ -34,7 +34,7 @@ namespace Notification.Application.IntegrationEvents.Handlers
                                                                request.InvitationAcceptingUserPhotoUrl);
 
             var notificationForInvitationAcceptingUser = new AppNotification(request.InvitationAcceptingUserId,
-                                                               request.ObjectId,
+                                                               //request.ObjectId,
                                                                "NewFriendAdded",
                                                                request.MessageCreated,
                                                                $"You and {request.InvitationSendingUserEmail} are friends now!",
@@ -53,7 +53,7 @@ namespace Notification.Application.IntegrationEvents.Handlers
 
             var notificationEventForRecipient = new NotificationAddedEvent(notificationForInvitationSendingUser.Id,
                                                                       notificationForInvitationSendingUser.UserId,
-                                                                      notificationForInvitationSendingUser.ObjectId,
+                                                                      //notificationForInvitationSendingUser.ObjectId,
                                                                       notificationForInvitationSendingUser.NotificationType,
                                                                       notificationForInvitationSendingUser.CreationDate,
                                                                       notificationForInvitationSendingUser.Displayed,
@@ -65,7 +65,7 @@ namespace Notification.Application.IntegrationEvents.Handlers
 
             var notificationEventForSender = new NotificationAddedEvent(notificationForInvitationAcceptingUser.Id,
                                                                    notificationForInvitationAcceptingUser.UserId,
-                                                                   notificationForInvitationAcceptingUser.ObjectId,
+                                                                   //notificationForInvitationAcceptingUser.ObjectId,
                                                                    notificationForInvitationAcceptingUser.NotificationType,
                                                                    notificationForInvitationAcceptingUser.CreationDate,
                                                                    notificationForInvitationAcceptingUser.Displayed,

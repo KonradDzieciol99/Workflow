@@ -9,10 +9,10 @@ using Notification.Infrastructure.DataAccess;
 
 #nullable disable
 
-namespace Tasks.DataAccess.Migrations
+namespace Notification.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230419144850_init")]
+    [Migration("20230610142929_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -25,48 +25,42 @@ namespace Tasks.DataAccess.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Tasks.Entity.AppTask", b =>
+            modelBuilder.Entity("Notification.Domain.Entity.AppNotification", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DueDate")
-                        .HasColumnType("datetime2");
+                    b.Property<bool>("Displayed")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("NotificationPartnerEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NotificationPartnerId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NotificationPartnerPhotoUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NotificationType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Priority")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ProjectId")
+                    b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("State")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TaskAssigneeMemberEmail")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TaskAssigneeMemberId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TaskAssigneeMemberPhotoUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("AppTasks");
+                    b.ToTable("AppNotification");
                 });
 #pragma warning restore 612, 618
         }
