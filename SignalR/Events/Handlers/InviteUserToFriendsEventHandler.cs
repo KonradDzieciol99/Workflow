@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace SignalR.Events.Handlers
 {
-    public class InviteUserToFriendsEventHandler : IRequestHandler<FriendInvitationAddedEvent>
+    public class InviteUserToFriendsEventHandler : IRequestHandler<FriendRequestAddedEvent>
     {
         private readonly IHubContext<MessagesHub> _messagesHubContext;
         private readonly IHubContext<PresenceHub> _presenceHubContext;
@@ -14,7 +14,7 @@ namespace SignalR.Events.Handlers
             this._messagesHubContext = messagesHubContext;
             this._presenceHubContext = presenceHubContext;
         }
-        public async Task Handle(FriendInvitationAddedEvent request, CancellationToken cancellationToken)
+        public async Task Handle(FriendRequestAddedEvent request, CancellationToken cancellationToken)
         {
             //await _presenceHubContext.Clients.User(request.InvitedUser.UserId).SendAsync("NewInvitationToFriendsReceived", new { inviterEmail = request.UserWhoInvited.UserEmail });
             await _messagesHubContext.Clients.User(request.InvitedUserId).SendAsync("NewInvitationToFriendsReceived", request);

@@ -9,7 +9,7 @@ using System.Text.Json;
 
 namespace Notification.Application.IntegrationEvents.Handlers
 {
-    public class FriendInvitationAcceptedEventHandler : IRequestHandler<FriendInvitationAcceptedEvent>
+    public class FriendInvitationAcceptedEventHandler : IRequestHandler<FriendRequestAcceptedEvent>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAzureServiceBusSender _azureServiceBusSender;
@@ -19,7 +19,7 @@ namespace Notification.Application.IntegrationEvents.Handlers
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _azureServiceBusSender = azureServiceBusSender ?? throw new ArgumentNullException(nameof(azureServiceBusSender)); ;
         }
-        public async Task Handle(FriendInvitationAcceptedEvent request, CancellationToken cancellationToken)
+        public async Task Handle(FriendRequestAcceptedEvent request, CancellationToken cancellationToken)
         {
 
             var AppNotifications = new List<AppNotification>();

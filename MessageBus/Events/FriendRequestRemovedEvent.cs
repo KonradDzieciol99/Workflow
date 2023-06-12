@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace MessageBus.Events
 {
-    public class FriendInvitationRemovedEvent : IntegrationEvent
+    public class FriendRequestRemovedEvent : IntegrationEvent
     {
-        public FriendInvitationRemovedEvent(string actionInitiatorUserId, string actionInitiatorUserEmail, string? actionInitiatorUserPhotoUrl, string friendToRemoveUserId, string friendToRemoveUserEmail, string? friendToRemoveUserPhotoUrl)
+        public FriendRequestRemovedEvent(string actionInitiatorUserId, string actionInitiatorUserEmail, string? actionInitiatorUserPhotoUrl, string friendToRemoveUserId, string friendToRemoveUserEmail, string? friendToRemoveUserPhotoUrl)
         {
             ActionInitiatorUserId = actionInitiatorUserId ?? throw new ArgumentNullException(nameof(actionInitiatorUserId));
             ActionInitiatorUserEmail = actionInitiatorUserEmail ?? throw new ArgumentNullException(nameof(actionInitiatorUserEmail));

@@ -2,9 +2,9 @@
 
 namespace MessageBus.Events
 {
-    public class FriendInvitationAddedEvent : IntegrationEvent//, IUserPersistentNotification
+    public class FriendRequestAddedEvent : IntegrationEvent//, IUserPersistentNotification
     {
-        public FriendInvitationAddedEvent(string invitationSendingUserId, string invitationSendingUserEmail, string? invitationSendingUserPhotoUrl, string invitedUserId, string invitedUserEmail, string? invitedUserPhotoUrl)
+        public FriendRequestAddedEvent(string invitationSendingUserId, string invitationSendingUserEmail, string? invitationSendingUserPhotoUrl, string invitedUserId, string invitedUserEmail, string? invitedUserPhotoUrl)
         {
             InvitationSendingUserId = invitationSendingUserId ?? throw new ArgumentNullException(nameof(invitationSendingUserId));
             InvitationSendingUserEmail = invitationSendingUserEmail ?? throw new ArgumentNullException(nameof(invitationSendingUserEmail));

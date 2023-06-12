@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace MessageBus.Events
 {
-    public class FriendInvitationAcceptedEvent : IntegrationEvent
+    public class FriendRequestAcceptedEvent : IntegrationEvent
     {
-        public FriendInvitationAcceptedEvent(string invitationSendingUserId, string invitationSendingUserEmail, string? invitationSendingUserPhotoUrl, string invitationAcceptingUserId, string invitationAcceptingUserEmail, string? invitationAcceptingUserPhotoUrl)
+        public FriendRequestAcceptedEvent(string invitationSendingUserId, string invitationSendingUserEmail, string? invitationSendingUserPhotoUrl, string invitationAcceptingUserId, string invitationAcceptingUserEmail, string? invitationAcceptingUserPhotoUrl)
         {
             InvitationSendingUserId = invitationSendingUserId ?? throw new ArgumentNullException(nameof(invitationSendingUserId));
             InvitationSendingUserEmail = invitationSendingUserEmail ?? throw new ArgumentNullException(nameof(invitationSendingUserEmail));

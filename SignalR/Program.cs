@@ -131,8 +131,8 @@ var subscribeTasks = new List<Task>
     eventBus.Subscribe<NewOnlineUserWithFriendsEvent>(),
     eventBus.Subscribe<NewOnlineMessagesUserWithFriendsEvent>(),
     eventBus.Subscribe<NewOfflineUserWithFriendsEvent>(),
-    eventBus.Subscribe<FriendInvitationAcceptedEvent>(),
-    eventBus.Subscribe<FriendInvitationAddedEvent>(),
+    eventBus.Subscribe<FriendRequestAcceptedEvent>(),
+    eventBus.Subscribe<FriendRequestAddedEvent>(),
     eventBus.Subscribe<NotificationAddedEvent>(),
 };
 

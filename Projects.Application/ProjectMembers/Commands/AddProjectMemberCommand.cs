@@ -29,7 +29,7 @@ public record AddProjectMemberCommand(string UserId,
         var listOfRequirements = new List<IAuthorizationRequirement>()
         {
             new ProjectMembershipRequirement(ProjectId),
-            new ProjectManagementRequirement(ProjectId)
+            new ProjectManagementRequirement(ProjectId) // TODO zmienić na Domenowy serwis albo logikę domenową 
         };
         return listOfRequirements;
     }
