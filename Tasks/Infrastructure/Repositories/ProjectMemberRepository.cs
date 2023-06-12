@@ -34,6 +34,16 @@ namespace Tasks.Infrastructure.Repositories
             return await applicationDbContext.ProjectMembers.Where(x => x.ProjectId == projectId)
                                                             .ExecuteDeleteAsync();
         }
+        public async Task<ProjectMember?> GetAsync(string Id)
+        {
+            return await applicationDbContext.ProjectMembers.SingleOrDefaultAsync(x => x.Id == Id);
+        }
+        public async Task<ProjectMember?> GetAsync(string userId, string projectId)
+        {
+            return await applicationDbContext.ProjectMembers.SingleOrDefaultAsync(x => x.UserId == userId && x.ProjectId == projectId);
+        }
+
+        
 
     }
 }
