@@ -53,7 +53,7 @@ public static class ConfigureServices
 
         services.AddAzureServiceBusSubscriber(opt =>
         {
-            opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString");
+            opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString") ?? throw new ArgumentNullException("ServiceBusConnectionString"); ;
             opt.SubscriptionName = "notification";
             //opt.QueueNameAndEventTypePair = new Dictionary<string, Type>()
             //    {

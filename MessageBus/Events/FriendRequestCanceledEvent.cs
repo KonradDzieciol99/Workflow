@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace MessageBus.Events;
 
-public class FriendInvitationDeclinedEvent : IntegrationEvent
+public class FriendRequestCanceledEvent: IntegrationEvent
 {
-    public FriendInvitationDeclinedEvent(string invitationSendingUserId, string invitationSendingUserEmail, string? invitationSendingUserPhotoUrl, string declinedInvitationUserId, string declinedInvitationUserEmail, string? declinedInvitationUserPhotoUrl)
+    public FriendRequestCanceledEvent(string invitationSendingUserId, string invitationSendingUserEmail, string? invitationSendingUserPhotoUrl, string declinedInvitationUserId, string declinedInvitationUserEmail, string? declinedInvitationUserPhotoUrl)
     {
         InvitationSendingUserId = invitationSendingUserId ?? throw new ArgumentNullException(nameof(invitationSendingUserId));
         InvitationSendingUserEmail = invitationSendingUserEmail ?? throw new ArgumentNullException(nameof(invitationSendingUserEmail));

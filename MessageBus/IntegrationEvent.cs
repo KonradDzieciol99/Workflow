@@ -12,8 +12,16 @@ namespace MessageBus
 {
     public class IntegrationEvent : IRequest
     {
-        //[BsonId]
-        //[BsonRepresentation(BsonType.ObjectId)]
+        public IntegrationEvent()
+        {
+            
+        }
+
+        public IntegrationEvent(string? id)
+        {
+            Id = id;
+        }
+
         public string? Id { get; set; }
         public DateTime MessageCreated { get; set; }
         //public SimpleUser? EventRecipient { get; set; }

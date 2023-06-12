@@ -9,7 +9,7 @@ using System.Text.Json;
 
 namespace SignalR.Events.Handlers
 {
-    public class FriendInvitationAcceptedEventHandler : IRequestHandler<FriendInvitationAcceptedEvent>
+    public class FriendInvitationAcceptedEventHandler : IRequestHandler<FriendRequestAcceptedEvent>
     {
 
         private readonly IHubContext<MessagesHub> _messagesHubContext;
@@ -21,7 +21,7 @@ namespace SignalR.Events.Handlers
             this._messagesHubContext = messagesHubContext;
             this._redisDb = connectionMultiplexer.GetDatabase();
         }
-        public async Task Handle(FriendInvitationAcceptedEvent request, CancellationToken cancellationToken)
+        public async Task Handle(FriendRequestAcceptedEvent request, CancellationToken cancellationToken)
         {
 
             await _messagesHubContext.Clients.User(request.InvitationSendingUserId).SendAsync("FriendInvitationAccepted", request);

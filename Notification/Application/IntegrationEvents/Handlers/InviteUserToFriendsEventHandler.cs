@@ -8,7 +8,7 @@ using MongoDB.Bson;
 
 namespace Notification.Application.IntegrationEvents.Handlers;
 
-public class InviteUserToFriendsEventHandler : IRequestHandler<FriendInvitationAddedEvent>
+public class InviteUserToFriendsEventHandler : IRequestHandler<FriendRequestAddedEvent>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAzureServiceBusSender _azureServiceBusSender;
@@ -18,7 +18,7 @@ public class InviteUserToFriendsEventHandler : IRequestHandler<FriendInvitationA
         this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         this._azureServiceBusSender = azureServiceBusSender ?? throw new ArgumentNullException(nameof(azureServiceBusSender)); ;
     }
-    public async Task Handle(FriendInvitationAddedEvent request, CancellationToken cancellationToken)
+    public async Task Handle(FriendRequestAddedEvent request, CancellationToken cancellationToken)
     {
 
         var AppNotifications = new List<AppNotification>();

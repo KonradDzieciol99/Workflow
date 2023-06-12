@@ -17,9 +17,9 @@ var eventBus = app.Services.GetRequiredService<AzureServiceBusSubscriber>();// n
 var subscribeTasks = new List<Task>
 {
     eventBus.Subscribe<NewUserRegistrationEvent>(),
-    eventBus.Subscribe<FriendInvitationAddedEvent>(),
-    eventBus.Subscribe<FriendInvitationAcceptedEvent>(),
-    eventBus.Subscribe<FriendInvitationRemovedEvent>(),
+    eventBus.Subscribe<FriendRequestAddedEvent>(),
+    eventBus.Subscribe<FriendRequestAcceptedEvent>(),
+    eventBus.Subscribe<FriendRequestRemovedEvent>(),
 };
 
 await Task.WhenAll(subscribeTasks);

@@ -6,7 +6,7 @@ using Notification.Infrastructure.Repositories;
 
 namespace Notification.Application.IntegrationEvents.Handlers
 {
-    public class RemoveUserFromFriendsEventHandler : IRequestHandler<FriendInvitationRemovedEvent>
+    public class RemoveUserFromFriendsEventHandler : IRequestHandler<FriendRequestRemovedEvent>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAzureServiceBusSender _azureServiceBusSender;
@@ -16,7 +16,7 @@ namespace Notification.Application.IntegrationEvents.Handlers
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _azureServiceBusSender = azureServiceBusSender ?? throw new ArgumentNullException(nameof(azureServiceBusSender)); ;
         }
-        public async Task Handle(FriendInvitationRemovedEvent request, CancellationToken cancellationToken)
+        public async Task Handle(FriendRequestRemovedEvent request, CancellationToken cancellationToken)
         {
             var AppNotifications = new List<AppNotification>();
 
