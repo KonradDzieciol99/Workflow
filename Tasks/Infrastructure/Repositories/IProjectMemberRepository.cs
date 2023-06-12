@@ -9,5 +9,7 @@ namespace Tasks.Infrastructure.Repositories
         Task<int> RemoveAsync(string projectMemberId);
         Task<int> UpdateAsync(string projectMemberId, ProjectMemberType projectMemberType);
         Task<int> RemoveAllProjectMembersAsync(string projectId);
+        Task<ProjectMember?> GetAsync(string Id);
+        Task<ProjectMember?> GetAsync(string userId, string projectId);
     }
 }

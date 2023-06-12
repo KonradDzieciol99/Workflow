@@ -13,6 +13,7 @@ using MessageBus.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Tasks.Application.Common.Authorization.Handlers;
 using Tasks.Application.Behaviours;
+using Tasks.Domain.Services;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -86,6 +87,8 @@ public static class ConfigureServices
 
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddHttpContextAccessor();
+
+        services.AddTransient<IAppTaskService, AppTaskService>();
 
         return services;
     }

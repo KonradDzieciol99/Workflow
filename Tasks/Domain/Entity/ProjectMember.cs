@@ -20,7 +20,7 @@ public class ProjectMember
     public string UserId { get; private set; }
     public string UserEmail { get; private set; }
     public string? PhotoUrl { get; private set; }
-    public ProjectMemberType Type { get; private set; } = ProjectMemberType.Member;
+    public ProjectMemberType Type { get; private set; }
     public string ProjectId { get; private set; }
     public ICollection<AppTask> ConductedTasks { get; private set; }
 }
