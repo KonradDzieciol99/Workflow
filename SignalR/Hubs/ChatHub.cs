@@ -5,7 +5,7 @@ using SignalR.Models;
 using StackExchange.Redis;
 using System.Security.Claims;
 
-namespace SignalR
+namespace SignalR.Hubs
 {
     [Authorize]
     public class ChatHub : Hub
