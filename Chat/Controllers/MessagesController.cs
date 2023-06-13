@@ -1,6 +1,7 @@
 ﻿using Chat.Application.Common.Models;
 using Chat.Application.FriendRequests.Commands;
 using Chat.Application.Messages.Commands;
+using Chat.Application.Messages.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,9 +26,9 @@ namespace Chat.Controllers
              return NoContent();
         }
         [HttpGet]
-        public async Task<ActionResult<List<MessageDto>>> Get([FromBody] CreateFriendRequestCommand command)
+        public async Task<ActionResult<List<MessageDto>>> Get([FromQuery]string RecipientEmail)
         {
-            return await _mediator.Send(command);
+            return await _mediator.Send(new GetMessageThreadQuery(RecipientEmail));
         }
     }
 }
