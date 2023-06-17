@@ -1,0 +1,69 @@
+version: '3.4'
+
+services:
+  sql_server:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sql_server
+    ports:
+    - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Testpassword1!"
+  redis:
+    image: redis:latest
+    container_name: redis_cache
+    ports:
+      - "6379:6379"
+  identityduende:
+    image: ${DOCKER_REGISTRY-}identityduende
+    build:
+      context: .
+      dockerfile: IdentityDuende/Dockerfile
+    depends_on:
+    - sql_server
+  projects:
+    image: ${DOCKER_REGISTRY-}projects
+    build:
+      context: .
+      dockerfile: Projects/Dockerfile
+    depends_on:
+    - sql_server
+  chat:
+    image: ${DOCKER_REGISTRY-}chat
+    build:
+      context: .
+      dockerfile: Chat/Dockerfile
+    depends_on:
+    - sql_server
+  emailsender:
+    image: ${DOCKER_REGISTRY-}emailsender
+    build:
+      context: .
+      dockerfile: EmailSender/Dockerfile
+  notification:
+    image: ${DOCKER_REGISTRY-}notification
+    build:
+      context: .
+      dockerfile: Notification/Dockerfile
+    depends_on:
+    - sql_server
+  photos:
+    image: ${DOCKER_REGISTRY-}photos
+    build:
+      context: .
+      dockerfile: Photos/Dockerfile
+  signalr:
+    image: ${DOCKER_REGISTRY-}signalr
+    build:
+      context: .
+      dockerfile: SignalR/Dockerfile
+    depends_on:
+    - redis
+  tasks:
+    image: ${DOCKER_REGISTRY-}tasks
+    build:
+      context: .
+      dockerfile: Tasks/Dockerfile
+    depends_on:
+    - sql_server
+

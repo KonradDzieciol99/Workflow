@@ -1,0 +1,19 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "identityduende": "StartDebugging",
+        "notification": "StartDebugging",
+        "photos": "StartDebugging",
+        "projects": "StartDebugging",
+        "tasks": "StartDebugging",
+        "signalr": "StartDebugging",
+        "emailsender": "StartDebugging",
+        "chat": "StartDebugging",
+        "api.aggregator": "StartDebugging"
+      }
+    }
+  }
+}

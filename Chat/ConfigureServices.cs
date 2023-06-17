@@ -43,7 +43,15 @@ public static class ConfigureServices
                 ValidateAudience = false,
             };
         });
-        services.AddAuthorization();
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("ApiScope", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireClaim("scope", "chat");
+            });
+        });
 
         services.AddDbContext<ApplicationDbContext>(opt =>
         {
