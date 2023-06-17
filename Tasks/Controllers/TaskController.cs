@@ -7,7 +7,7 @@ using Tasks.Application.Common.Models;
 
 namespace Tasks.Controllers;
 
-[Authorize]
+[Authorize(Policy = "ApiScope")]
 [Route("api/projects/{projectId}/[controller]")]
 [ApiController]
 public class TaskController : ControllerBase

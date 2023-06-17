@@ -9,7 +9,7 @@ namespace Chat.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Policy = "ApiScope")]
     public class FriendRequestsController : ControllerBase
     {
         private readonly IMediator _mediator;

@@ -24,13 +24,11 @@ var subscribeTasks = new List<Task>
 
 await Task.WhenAll(subscribeTasks);
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
     await ApplyMigration();
-
 }
 
 app.UseHttpsRedirection();

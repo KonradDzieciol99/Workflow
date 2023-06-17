@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace SignalR.Hubs
 {
-    [Authorize]
+    [Authorize(Policy = "ApiScope")]
     public class ChatHub : Hub
     {
         private readonly IConnectionMultiplexer _connectionMultiplexer;

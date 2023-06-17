@@ -1,19 +1,15 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Projects.Application.Common.Models;
 using Projects.Application.Common.Models.Dto;
 using Projects.Application.ProjectMembers.Commands;
 using Projects.Application.Projects.Commands;
 using Projects.Application.Projects.Queries;
-using Projects.Domain.AggregatesModel.ProjectAggregate;
-using System.Net.Http;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Projects.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = "ApiScope")]
     [Route("api/[controller]")]
     [ApiController]
     public class ProjectsController : ControllerBase

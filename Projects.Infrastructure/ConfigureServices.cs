@@ -62,12 +62,13 @@ public static class ConfigureServices
                 ValidateAudience = false,
             };
         });
+
         services.AddAuthorization(options =>
         {
             options.AddPolicy("ApiScope", policy =>
             {
                 policy.RequireAuthenticatedUser();
-                policy.RequireClaim("scope", "basket");
+                policy.RequireClaim("scope", "project");
             });
         });
 

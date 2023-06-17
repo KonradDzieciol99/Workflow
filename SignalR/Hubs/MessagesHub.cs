@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using StackExchange.Redis;
 using System.Security.Claims;
 
 namespace SignalR.Hubs;
 
+[Authorize(Policy = "ApiScope")]
 public class MessagesHub : Hub
 {
     private readonly IConnectionMultiplexer _connectionMultiplexer;

@@ -90,7 +90,14 @@ public static class ConfigureServices
             };
         });
 
-        services.AddAuthorization();
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("ApiScope", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireClaim("scope", "signalR");
+            });
+        });
 
 
         return services;
