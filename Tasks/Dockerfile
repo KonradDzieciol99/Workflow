@@ -8,6 +8,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY ["Tasks/Tasks.csproj", "Tasks/"]
+COPY ["MessageBus/MessageBus.csproj", "MessageBus/"]
 RUN dotnet restore "Tasks/Tasks.csproj"
 COPY . .
 WORKDIR "/src/Tasks"

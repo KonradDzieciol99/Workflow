@@ -8,6 +8,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY ["Notification/Notification.csproj", "Notification/"]
+COPY ["MessageBus/MessageBus.csproj", "MessageBus/"]
 RUN dotnet restore "Notification/Notification.csproj"
 COPY . .
 WORKDIR "/src/Notification"

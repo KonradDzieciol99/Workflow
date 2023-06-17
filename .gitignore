@@ -364,3 +364,8 @@ MigrationBackup/
 FodyWeavers.xsd
 /Email/appsettings.json
 /Email/appsettings.Development.json
+/Identity/Identity.csproj
+/IdentityServer/IdentityServer.csproj
+/IdentityServer/IdentityServer.csproj
+/WebApplication1/Dockerfile
+/WebApplication1/WebApplication1.csproj

@@ -11,15 +11,16 @@ using MessageBus.Events;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Projects.Infrastructure;
+namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ConfigureServices
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
+
         services.AddDbContext<ApplicationDbContext>(opt =>
         {
-            opt.UseSqlServer(configuration.GetConnectionString("DbContextConnString"));
+            opt.UseSqlServer(configuration.GetConnectionString("DbContextConnString") ?? throw new ArgumentNullException("DbContextConnString")) ;
         });
         services.AddScoped<IIntegrationEventService, IntegrationEventService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -46,7 +47,6 @@ public static class ConfigureServices
             });
         });
 
-        services.AddAuthorization();
 
         services.AddAuthentication(opt =>
         {
@@ -62,6 +62,15 @@ public static class ConfigureServices
                 ValidateAudience = false,
             };
         });
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("ApiScope", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireClaim("scope", "basket");
+            });
+        });
+
 
         //builder.Services.AddAuthorization(options =>
         //{

@@ -1,6 +1,5 @@
 using Duende.IdentityServer;
 using Duende.IdentityServer.Services;
-using IdentityModel;
 using IdentityServer.Events;
 using IdentityServer.Persistence;
 using IdentityServer.Services;
@@ -8,17 +7,12 @@ using MessageBus.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Security.Claims;
 using Polly;
 using Polly.Extensions.Http;
 using IdentityServer.Repositories;
 using IdentityServer.Entities;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using MediatR;
-using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +22,8 @@ var configuration = builder.Configuration;
 builder.Services.AddControllers();
 builder.Services.AddRazorPages();
 
+
+var sdfsdf = configuration.GetConnectionString("DbContextConnString");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     //options.UseSqlServer(connectionString, sqlOptions => sqlOptions.MigrationsAssembly(migrationsAssembly));
@@ -161,7 +157,7 @@ builder.Services.AddLocalApiAuthentication();
 
 builder.Services.AddScoped<IEventSink, IdentityEvents>();
 
-builder.Services.AddScoped<ApplicationDbContextInitialiser>();
+builder.Services.AddScoped<SeedData>();
 
 //builder.Services.AddSingleton<IMessageBus, AzureServiceBusMessageBus>();
 builder.Services.AddAzureServiceBusSender(opt =>
@@ -226,7 +222,7 @@ if (app.Environment.IsDevelopment())
 {
     using (var scope = app.Services.CreateScope())
     {
-        var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+        var initialiser = scope.ServiceProvider.GetRequiredService<SeedData>();
         await initialiser.InitialiseAsync();
         await initialiser.SeedAsync();
     }

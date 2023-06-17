@@ -55,6 +55,8 @@ namespace Photos
 
             app.UseHttpsRedirection();
 
+            app.UseRouting();
+
             app.UseCors(CORSallowAny);
 
             app.UseAuthorization();
