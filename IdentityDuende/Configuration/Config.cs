@@ -25,6 +25,18 @@ public static class Config
             new ApiScope("signalR", "SignalR Service"),
             new ApiScope("tasks", "Tasks Service"),
         };
+    public static IEnumerable<ApiResource> ApiResource =>
+         new List<ApiResource>
+         {
+             new ApiResource(IdentityServerConstants.LocalApi.ScopeName){ Scopes = { IdentityServerConstants.LocalApi.ScopeName }},
+             new ApiResource("chat", "Chat Service"){ Scopes = { "chat" }},
+             new ApiResource("notification", "Notification Service"){ Scopes = { "notification" }},
+             new ApiResource("photos", "photos Service") { Scopes = { "photos" } },
+             new ApiResource("project", "Project Service") { Scopes = { "project" } },
+             new ApiResource("signalR", "SignalR Service") { Scopes = { "signalR" } }  ,
+             new ApiResource("tasks", "Tasks Service") { Scopes = { "tasks" } },
+         };
+    
 
     public static IEnumerable<Client> Clients =>
         new Client[]

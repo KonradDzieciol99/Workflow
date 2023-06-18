@@ -65,30 +65,40 @@ public static class ConfigureServices
             opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         })
         .AddJwtBearer(opt =>
-        {
-            opt.RequireHttpsMetadata = false;
-            opt.SaveToken = true;
-            opt.Authority = "https://localhost:7122/";
-            opt.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateAudience = false,
-            };
-            opt.Events = new JwtBearerEvents
-            {
-                OnMessageReceived = context =>
-                {
-                    var accessToken = context.Request.Query["access_token"];
+         {
+             var internalIdentityUrl = configuration.GetValue<string>("urls:internal:IdentityHttp") ?? throw new ArgumentNullException("urls:internal:IdentityHttp");
+             var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:IdentityHttp") ?? throw new ArgumentNullException("urls:external:IdentityHttp");
+             var externalIdentityUrlhttps = configuration.GetValue<string>("urls:external:IdentityHttps") ?? throw new ArgumentNullException("urls:external:IdentityHttps");
 
-                    var path = context.HttpContext.Request.Path;
-                    if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hub"))
-                    {
-                        context.Token = accessToken;
-                    }
+             opt.RequireHttpsMetadata = false;
+             opt.SaveToken = true;
+             opt.Authority = internalIdentityUrl;
+             opt.Audience = "signalR";
 
-                    return Task.CompletedTask;
-                }
-            };
-        });
+             opt.TokenValidationParameters = new TokenValidationParameters
+             {
+                 ValidateIssuer = true,
+                 ValidateAudience = true,
+                 ValidateLifetime = true,
+                 ValidateIssuerSigningKey = true,
+                 ValidIssuers = new[] { externalIdentityUrlhttp, externalIdentityUrlhttps },
+             };
+             opt.Events = new JwtBearerEvents
+             {
+                 OnMessageReceived = context =>
+                 {
+                     var accessToken = context.Request.Query["access_token"];
+
+                     var path = context.HttpContext.Request.Path;
+                     if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hub"))
+                     {
+                         context.Token = accessToken;
+                     }
+
+                     return Task.CompletedTask;
+                 }
+             };
+         });
 
         services.AddAuthorization(options =>
         {

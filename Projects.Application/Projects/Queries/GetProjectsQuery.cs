@@ -2,18 +2,9 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Projects.Application.Common.Authorization;
-using Projects.Application.Common.Authorization.Requirements;
-using Projects.Application.Common.Exceptions;
 using Projects.Application.Common.Interfaces;
 using Projects.Application.Common.Models;
 using Projects.Application.Common.Models.Dto;
-using Projects.Application.ProjectMembers.Commands;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Projects.Application.Projects.Queries;
 
