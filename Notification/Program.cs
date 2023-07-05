@@ -12,7 +12,7 @@ builder.Services.AddWebAPIServices(builder.Configuration);
 
 var app = builder.Build();
 
-var eventBus = app.Services.GetRequiredService<AzureServiceBusSubscriber>();// nie potrzeba tworzyæ scope bo to singletone
+var eventBus = app.Services.GetRequiredService<AzureServiceBusSubscriber>();
 
 var subscribeTasks = new List<Task>
 {
@@ -24,13 +24,11 @@ var subscribeTasks = new List<Task>
 
 await Task.WhenAll(subscribeTasks);
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
     await ApplyMigration();
-
 }
 
 app.UseHttpsRedirection();

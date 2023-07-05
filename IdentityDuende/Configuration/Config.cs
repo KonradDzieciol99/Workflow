@@ -25,6 +25,18 @@ public static class Config
             new ApiScope("signalR", "SignalR Service"),
             new ApiScope("tasks", "Tasks Service"),
         };
+    public static IEnumerable<ApiResource> ApiResource =>
+         new List<ApiResource>
+         {
+             new ApiResource(IdentityServerConstants.LocalApi.ScopeName){ Scopes = { IdentityServerConstants.LocalApi.ScopeName }},
+             new ApiResource("chat", "Chat Service"){ Scopes = { "chat" }},
+             new ApiResource("notification", "Notification Service"){ Scopes = { "notification" }},
+             new ApiResource("photos", "photos Service") { Scopes = { "photos" } },
+             new ApiResource("project", "Project Service") { Scopes = { "project" } },
+             new ApiResource("signalR", "SignalR Service") { Scopes = { "signalR" } }  ,
+             new ApiResource("tasks", "Tasks Service") { Scopes = { "tasks" } },
+         };
+    
 
     public static IEnumerable<Client> Clients =>
         new Client[]
@@ -41,6 +53,10 @@ public static class Config
                 PostLogoutRedirectUris = { "https://localhost:4200" },
                 AllowedCorsOrigins = { "https://localhost:4200" },
                 AllowOfflineAccess = true,
+                UpdateAccessTokenClaimsOnRefresh = true,
+                CoordinateLifetimeWithUserSession = true,
+                RefreshTokenUsage = TokenUsage.OneTimeOnly,
+                AlwaysIncludeUserClaimsInIdToken = true,
                 ////UpdateAccessTokenClaimsOnRefresh = true, TO AAKURAt ciekawe
                 //AlwaysIncludeUserClaimsInIdToken = true, dotyczy Id Tokena
                 //AlwaysSendClientClaims= true, dotyczy Id Tokena
@@ -59,7 +75,7 @@ public static class Config
                 },
                 RequireConsent = false,
                 AllowRememberConsent = true,
-                AccessTokenLifetime = 6000,
+                AccessTokenLifetime = 900,
             },
         };
 }

@@ -13,100 +13,80 @@ using FluentValidation;
 using System.Reflection;
 using Photos.Common;
 
-namespace Photos
+namespace Photos;
+
+public class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
+        var builder = WebApplication.CreateBuilder(args);
+
+        builder.Services.AddWebAPIServices(builder.Configuration);
+
+        var app = builder.Build();
+
+        if (app.Environment.IsDevelopment())
         {
-            var builder = WebApplication.CreateBuilder(args);
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
 
-            builder.Services.AddAuthorization();
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+        app.UseHttpsRedirection();
 
-            builder.Services.AddScoped(opt =>
+        app.UseRouting();
+
+        app.UseCors("allowAny");
+
+        app.UseAuthentication();
+
+        app.UseAuthorization();
+
+        var group = app.MapGroup("/api")
+                       .RequireAuthorization("ApiScope")
+                       .WithOpenApi();
+
+        group.MapPost("/api/uploadIcon", async ([AsParameters] IconUploadRequest IconUploadRequest) =>
+        {
+
+            var blobPhotosContainerClient = IconUploadRequest.blobServiceClient.GetBlobContainerClient(builder.Configuration.GetValue<string>("AzureBlobStorage:BlobContainerProjectsIcons"));
+            var blobClient = blobPhotosContainerClient.GetBlobClient(IconUploadRequest.Name);
+            var blobUploadOptions = new BlobUploadOptions
             {
-                return new BlobServiceClient(builder.Configuration.GetConnectionString("AzureStorage"));
-            });
+                HttpHeaders = new BlobHttpHeaders
+                {
+                    ContentType = "image/jpeg",
+                    ContentDisposition = "inline"
+                },
+            };
 
-            builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+            var result = await blobClient.UploadAsync(IconUploadRequest.File.OpenReadStream(), blobUploadOptions);
 
-            var CORSallowAny = "allowAny";
-            builder.Services.AddCors(opt =>
+            return Results.Ok();
+        })
+        .AddEndpointFilter<ValidatorFilter<IconUploadRequest>>();
+
+        group.MapGet("/api/getProjectsIcons", async ([FromServices] BlobServiceClient blobServiceClient) =>
+        {
+            var blobPhotosContainerClient = blobServiceClient.GetBlobContainerClient(builder.Configuration.GetValue<string>("AzureBlobStorage:BlobContainerProjectsIcons"));
+
+            List<Icon> files = new List<Icon>();
+
+            await foreach (BlobItem file in blobPhotosContainerClient.GetBlobsAsync())
             {
-                opt.AddPolicy(name: CORSallowAny,
-                          policy =>
-                          {
-                              policy.WithOrigins("https://localhost:4200", "https://127.0.0.1:5500")
-                                .AllowAnyHeader()
-                                .AllowAnyMethod()
-                                .AllowCredentials();
-                          });
-            });
+                string uri = blobPhotosContainerClient.Uri.ToString();
+                var name = file.Name;
+                var fullUri = $"{uri}/{name}";
 
-            var app = builder.Build();
-
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                files.Add(new Icon
+                {
+                    Url = fullUri,
+                    Name = name,
+                });
             }
 
-            app.UseHttpsRedirection();
+            return Results.Ok(files);
+        });
 
-            app.UseRouting();
-
-            app.UseCors(CORSallowAny);
-
-            app.UseAuthorization();
-
-            app.MapPost("/api/uploadIcon", async ([AsParameters] IconUploadRequest IconUploadRequest) =>
-            {
-
-                var blobPhotosContainerClient = IconUploadRequest.blobServiceClient.GetBlobContainerClient(builder.Configuration.GetValue<string>("AzureBlobStorage:BlobContainerProjectsIcons"));
-                var blobClient = blobPhotosContainerClient.GetBlobClient(IconUploadRequest.Name);
-                var blobUploadOptions = new BlobUploadOptions
-                {
-                    HttpHeaders = new BlobHttpHeaders
-                    {
-                        ContentType = "image/jpeg",
-                        ContentDisposition = "inline"
-                    },
-                };
-
-                var result = await blobClient.UploadAsync(IconUploadRequest.File.OpenReadStream(), blobUploadOptions);
-
-                return Results.Ok();
-            })
-            .WithOpenApi()
-            //.RequireAuthorization()
-            .AddEndpointFilter<ValidatorFilter<IconUploadRequest>>();
-
-            app.MapGet("/api/getProjectsIcons", async ([FromServices] BlobServiceClient blobServiceClient) =>
-            {
-                var blobPhotosContainerClient = blobServiceClient.GetBlobContainerClient(builder.Configuration.GetValue<string>("AzureBlobStorage:BlobContainerProjectsIcons"));
-
-                List<Icon> files = new List<Icon>();
-
-                await foreach (BlobItem file in blobPhotosContainerClient.GetBlobsAsync())
-                {
-                    string uri = blobPhotosContainerClient.Uri.ToString();
-                    var name = file.Name;
-                    var fullUri = $"{uri}/{name}";
-
-                    files.Add(new Icon
-                    {
-                        Url = fullUri,
-                        Name = name,
-                    });
-                }
-
-                return Results.Ok(files);
-            })
-            .WithOpenApi();
-
-            app.Run();
-        }
+        app.Run();
     }
 }

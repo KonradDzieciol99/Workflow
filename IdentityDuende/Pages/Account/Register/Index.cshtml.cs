@@ -1,118 +1,125 @@
 using Duende.IdentityServer.Services;
+using Duende.IdentityServer.Stores;
 using IdentityDuende.Entities;
 using IdentityDuende.Events;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace IdentityServer.Pages.Account.Register
+namespace IdentityDuende.Pages.Account.Register;
+
+[SecurityHeaders]
+[AllowAnonymous]
+public class IndexModel : PageModel
 {
-    [AllowAnonymous]
-    public class IndexModel : PageModel
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly IEventService _events;
+    private readonly IIdentityServerInteractionService _interaction;
+    private readonly IAuthenticationSchemeProvider _schemeProvider;
+    private readonly IIdentityProviderStore _identityProviderStore;
+
+    public RegisterViewModel RegisterViewModel { get; set; }
+
+    public IndexModel(
+        UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            RoleManager<IdentityRole> roleInManager,
+            IEventService events,
+            IIdentityServerInteractionService interaction,
+            IAuthenticationSchemeProvider schemeProvider,
+            IIdentityProviderStore identityProviderStore
+          )
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IEventService _events;
+        _roleManager = roleInManager;
+        this._events = events;
+        this._interaction = interaction;
+        this._schemeProvider = schemeProvider;
+        this._identityProviderStore = identityProviderStore;
+        _userManager = userManager;
+        _signInManager = signInManager;
+    }
 
-        public IndexModel(
-            UserManager<ApplicationUser> userManager,
-                SignInManager<ApplicationUser> signInManager,
-                RoleManager<IdentityRole> roleInManager,
-                IEventService events
-              )
+
+    [BindProperty]
+    public RegisterInputModel Input { get; set; }
+
+
+    public async Task<IActionResult> OnGet(string returnUrl)
+    {
+        if (string.IsNullOrWhiteSpace(returnUrl))
+            return NotFound();
+
+        await BuildModelAsync(returnUrl);
+        return Page();
+    }
+
+    public async Task<IActionResult> OnPost()
+    {
+        if (ModelState.IsValid)
         {
-            _roleManager = roleInManager;
-            this._events = events;
-            _userManager = userManager;
-            _signInManager = signInManager;
-        }
-
-
-        [BindProperty]
-        public RegisterViewModel Input { get; set; }
-
-
-        public async Task<IActionResult> OnGet()
-        {
-            //string returnUrl
-            //List<string> roles = new()
-            //{
-            //    SD.Admin,
-            //    SD.Customer
-            //};
-            //ViewData["roles_message"] = roles;
-            //Input = new RegisterViewModel
-            //{
-            //    ReturnUrl = returnUrl
-            //};
-            return Page();
-        }
-
-        public async Task<IActionResult> OnPost()
-        {
-            //string returnUrl
-            if (ModelState.IsValid)
+            var user = new ApplicationUser()
             {
-                var user = new ApplicationUser()
-                {
-                    UserName = Input.Email,
-                    Email = Input.Email,
-                };
-                var result = await _userManager.CreateAsync(user, Input.Password);
-                
-                if (result.Succeeded)
-                {
-                    //if (!_roleManager.RoleExistsAsync(Input.RoleName).GetAwaiter().GetResult())
-                    //{
-                    //    var userRole = new IdentityRole
-                    //    {
-                    //        Name = Input.RoleName,
-                    //        NormalizedName = Input.RoleName,
+                UserName = Input.Email,
+                Email = Input.Email,
+            };
 
-                    //    };
-                    //    await _roleManager.CreateAsync(userRole);
-                    //}
-                    //await _userManager.AddToRoleAsync(user, Input.RoleName);
+            var result = await _userManager.CreateAsync(user, Input.Password);
 
+            if (result.Succeeded)
+            {
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
+                await _events.RaiseAsync(new LocalUserRegisterSuccessEvent(user.Email, token, user.Id));
 
-                    //var identityUser = await _userManager.FindByEmailAsync(user.Email);
-                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-
-                    await _events.RaiseAsync(new LocalUserRegisterSuccessEvent(user.Email,token,user.Id));
-
-                    return RedirectToPage("/EmailConfirmationInfo/Index", new { user.Email });
-
-                    //var loginresult = await _signInManager.PasswordSignInAsync(
-                    //    Input.Email, Input.Password, false, lockoutOnFailure: true);
-
-                    //if (loginresult.Succeeded)
-                    //{
-                        //return RedirectToPage("/EmailConfirmation/Index", new { user.Email });
-                        //if (Url.IsLocalUrl(Input.ReturnUrl))
-                        //{
-                        //    return Redirect(Input.ReturnUrl);
-                        //}
-                        //else if (string.IsNullOrEmpty(Input.ReturnUrl))
-                        //{
-                        //    return Redirect("~/");
-                        //}
-                        //else
-                        //{
-                        //    throw new Exception("invalid return URL");
-                        //}
-                    //}
-                }
-                
-                foreach (var item in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, item.Description);
-                }
-                
+                return RedirectToPage("/EmailConfirmationInfo/Index", new { email = user.Email, returnUrl = Input.ReturnUrl });
             }
-            return Page();
+
+            foreach (var item in result.Errors)
+            {
+                if (item.Code== "DuplicateUserName" )
+                    continue;
+                
+                ModelState.AddModelError(string.Empty, item.Description);
+            }
+
         }
+        await BuildModelAsync(Input.ReturnUrl);
+        return Page();
+    }
+
+    private async Task BuildModelAsync(string returnUrl)
+    {
+        Input = new RegisterInputModel
+        {
+            ReturnUrl = returnUrl
+        };
+
+        var schemes = await _schemeProvider.GetAllSchemesAsync();
+
+        var providers = schemes
+            .Where(x => x.DisplayName != null)
+            .Select(x => new RegisterViewModel.ExternalProvider
+            {
+                DisplayName = x.DisplayName ?? x.Name,
+                AuthenticationScheme = x.Name
+            }).ToList();
+
+        var dyanmicSchemes = (await _identityProviderStore.GetAllSchemeNamesAsync())
+            .Where(x => x.Enabled)
+            .Select(x => new RegisterViewModel.ExternalProvider
+            {
+                AuthenticationScheme = x.Scheme,
+                DisplayName = x.DisplayName
+            });
+        providers.AddRange(dyanmicSchemes);
+
+        RegisterViewModel = new RegisterViewModel
+        {
+            ExternalProviders = providers.ToArray(),
+        };
     }
 }

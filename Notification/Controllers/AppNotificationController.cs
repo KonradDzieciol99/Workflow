@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Notification.Application.AppNotifications.Commands;
 using Notification.Application.AppNotifications.Queries;
@@ -8,6 +9,7 @@ namespace Notification.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "ApiScope")]
     public class AppNotificationController : ControllerBase
     {
         private readonly IMediator _mediator;

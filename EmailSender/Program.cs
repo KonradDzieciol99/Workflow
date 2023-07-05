@@ -1,4 +1,4 @@
-using IdentityDuende;
+using EmailSender;
 using MessageBus;
 using MessageBus.Events;
 
@@ -8,13 +8,21 @@ builder.Services.AddWebAPIServices(builder.Configuration);
 
 var app = builder.Build();
 
-var eventBus = app.Services.GetRequiredService<AzureServiceBusSubscriber>();
+await AddSubscriptions(app);
 
-await eventBus.Subscribe<NewUserRegistrationEvent>();
+if (app.Environment.IsDevelopment()){ }
 
-if (app.Environment.IsDevelopment()){}
-
-app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
 app.Run();
+
+async Task AddSubscriptions(WebApplication app)
+{
+    var eventBus = app.Services.GetRequiredService<AzureServiceBusSubscriber>();
+
+    var subscribeTasks = new List<Task>
+    {
+        eventBus.Subscribe<NewUserRegistrationEvent>(),
+        eventBus.Subscribe<UserResentVerificationEmailIntegrationEvent>(),
+    };
+
+    await Task.WhenAll(subscribeTasks);
+}

@@ -12,7 +12,7 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
     await ApplyMigration();
 }
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseIdentityServer();

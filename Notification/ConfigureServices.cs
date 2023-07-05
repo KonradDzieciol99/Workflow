@@ -25,14 +25,27 @@ public static class ConfigureServices
         })
         .AddJwtBearer(opt =>
         {
+            var internalIdentityUrl = configuration.GetValue<string>("urls:internal:IdentityHttp") ?? throw new ArgumentNullException("urls:internal:IdentityHttp");
+            var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:IdentityHttp") ?? throw new ArgumentNullException("urls:external:IdentityHttp");
+            var externalIdentityUrlhttps = configuration.GetValue<string>("urls:external:IdentityHttps") ?? throw new ArgumentNullException("urls:external:IdentityHttps");
+
             opt.RequireHttpsMetadata = false;
             opt.SaveToken = true;
-            opt.Authority = "https://localhost:7122/";
+            opt.Authority = internalIdentityUrl;
+            opt.Audience = "notification";
+
             opt.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidateAudience = false,
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuers = new[] { externalIdentityUrlhttp, externalIdentityUrlhttps },
+                ClockSkew = TimeSpan.Zero
+
             };
         });
+
         services.AddCors(opt =>
         {
             opt.AddPolicy("allowAny", policy =>
@@ -82,6 +95,15 @@ public static class ConfigureServices
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddHttpContextAccessor();
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("ApiScope", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireClaim("scope", "notification");
+            });
+        });
 
         return services;
     }

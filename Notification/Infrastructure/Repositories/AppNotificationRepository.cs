@@ -12,6 +12,7 @@ namespace Notification.Infrastructure.Repositories
 
         public AppNotificationRepository(ApplicationDbContext applicationDbContext) : base(applicationDbContext)
         {
+            _applicationDbContext = applicationDbContext ?? throw new ArgumentNullException(nameof(applicationDbContext));
         }
 
         public Task<bool> CheckIfUserIsAOwnerOfAppNotification(string appNotificationId)

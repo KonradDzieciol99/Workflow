@@ -65,32 +65,51 @@ public static class ConfigureServices
             opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         })
         .AddJwtBearer(opt =>
+         {
+             var internalIdentityUrl = configuration.GetValue<string>("urls:internal:IdentityHttp") ?? throw new ArgumentNullException("urls:internal:IdentityHttp");
+             var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:IdentityHttp") ?? throw new ArgumentNullException("urls:external:IdentityHttp");
+             var externalIdentityUrlhttps = configuration.GetValue<string>("urls:external:IdentityHttps") ?? throw new ArgumentNullException("urls:external:IdentityHttps");
+
+             opt.RequireHttpsMetadata = false;
+             opt.SaveToken = true;
+             opt.Authority = internalIdentityUrl;
+             opt.Audience = "signalR";
+
+             opt.TokenValidationParameters = new TokenValidationParameters
+             {
+                 ValidateIssuer = true,
+                 ValidateAudience = true,
+                 ValidateLifetime = true,
+                 ValidateIssuerSigningKey = true,
+                 ValidIssuers = new[] { externalIdentityUrlhttp, externalIdentityUrlhttps },
+                 ClockSkew = TimeSpan.Zero
+
+             };
+             opt.Events = new JwtBearerEvents
+             {
+                 OnMessageReceived = context =>
+                 {
+                     var accessToken = context.Request.Query["access_token"];
+
+                     var path = context.HttpContext.Request.Path;
+                     if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hub"))
+                     {
+                         context.Token = accessToken;
+                     }
+
+                     return Task.CompletedTask;
+                 }
+             };
+         });
+
+        services.AddAuthorization(options =>
         {
-            opt.RequireHttpsMetadata = false;
-            opt.SaveToken = true;
-            opt.Authority = "https://localhost:7122/";
-            opt.TokenValidationParameters = new TokenValidationParameters
+            options.AddPolicy("ApiScope", policy =>
             {
-                ValidateAudience = false,
-            };
-            opt.Events = new JwtBearerEvents
-            {
-                OnMessageReceived = context =>
-                {
-                    var accessToken = context.Request.Query["access_token"];
-
-                    var path = context.HttpContext.Request.Path;
-                    if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hub"))
-                    {
-                        context.Token = accessToken;
-                    }
-
-                    return Task.CompletedTask;
-                }
-            };
+                policy.RequireAuthenticatedUser();
+                policy.RequireClaim("scope", "signalR");
+            });
         });
-
-        services.AddAuthorization();
 
 
         return services;

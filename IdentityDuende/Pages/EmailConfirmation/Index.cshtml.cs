@@ -4,42 +4,41 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace IdentityServer.Pages.EmailConfirmation
+namespace IdentityDuende.Pages.EmailConfirmation
 {
+    [SecurityHeaders]
     [AllowAnonymous]
     public class IndexModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
-
         public IndexModel(UserManager<ApplicationUser> userManager)
         {
             this._userManager = userManager;
         }
+        public ViewModel View { get; set; } 
 
-        //[FromQuery(Name = "email")]
-        //public string FooBar { get; set; }
         public async Task<IActionResult> OnGet(string token,string email)
         {
-            var data = Request.Query["foo-bar"];
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(email);
                 if (user is not null)
                 {
                     if (user.EmailConfirmed)
-                    {
-                        return Redirect("https://localhost:4200");
-                    }
+                        return RedirectToPage("/EmailConfirmationInfo", new { email = user.Email, returnUrl= View.ReturnUrl});
+                    
 
                     var resoult =await _userManager.ConfirmEmailAsync(user, token);
                     if (resoult.Succeeded)
                     {
+                        View = new ViewModel(success: true);
+
                         return Page();
                     }
                 }
             }
 
-            return Redirect("https://localhost:4200");
+            return NotFound();
         }
     }
 }

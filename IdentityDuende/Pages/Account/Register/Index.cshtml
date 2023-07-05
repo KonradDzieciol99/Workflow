@@ -1,109 +1,112 @@
 ﻿@page
-@model IdentityServer.Pages.Account.Register.IndexModel
+@model IdentityDuende.Pages.Account.Register.IndexModel
 @{
 }
 
 
+<div class="d-flex flex-column h-100 bg-dark bg-gradient overflow-auto" >
+    <div class="m-auto text-center card px-5 py-4  rounded-3 shadow-lg border border-primary" style="width:380px;">
+        <div class="card-body p-0">
+            <form method="post" class="needs-validation form-sign-up" novalidate required>
 
-<div>
-    <partial name="_ValidationSummary" />
-    <div class="row">
-        <div class="col-sm-12 col-lg-6 offset-lg-3">
-            <div class="card">
-                <div class="card-header">
-                    <h2>Register</h2>
-                </div>
-                <div class="card-body">
-@*                    <form asp-route="Register">
-                        <input type="hidden" asp-for="Input.ReturnUrl" />
-                        <div class="form-group">
-                            <label asp-for="Input.Email"></label>
-                            <input class="form-control" placeholder="email" asp-for="Input.Email" autofocus>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="Input.Password"></label>
-                            <input type="password" class="form-control" placeholder="password"
-                                   asp-for="Input.Password" autofocus>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="Input.RepeatPassword"></label>
-                            <input class="form-control" placeholder="name" asp-for="Input.RepeatPassword" autofocus>
-                        </div>
+                <input type="hidden" asp-for="Input.ReturnUrl"/>
 
-                        <div class="form-group">
-                            <label asp-for="Input.RoleName"></label>
-                            <select asp-for="Input.RoleName" class="form-control"
-                                    asp-items="@(new SelectList(role_list))"></select>
+                <h1 class="h3 mb-4 fw-semibold">Sign up</h1>
+
+                <partial name="_ValidationSummary" class="mb-3"/>
+
+                <div class="input-wraper">
+                    <div class="row align-items-center">
+                        <i class="bi bi-envelope-at me-2 d-none d-sm-block col-1" style="font-size: 1.5rem;"></i>
+                        <div class="col">
+                            <div class="form-floating flex-grow-1">
+                                <input placeholder="Email" class="form-control test1" asp-for="Input.Email">
+                                <label asp-for="Input.Email"></label>
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary" name="button" value="register">Register</button>
-                    </form>
-                    *@
+                    </div>
+                    <div class="d-flex justify-content-center offset-sm-1">
+                        <span style="font-size:0.9rem; " class="text-danger field-validation-valid ms-sm-2" asp-validation-for="Input.Email"></span>
+                   </div>
                 </div>
-                <div class="card-footer">
-                    <a asp-page="../Login/Index">Login</a>
+
+                <div class="input-wraper">
+                    <div class="row align-items-center">
+                        <i class="bi bi-key me-2 d-none d-sm-block col-1" style="font-size: 1.5rem;"></i>
+                        <div class="col">
+                            <div class="form-floating flex-grow-1">
+                                <input placeholder="Password" class="form-control" asp-for="Input.Password" required maxlength="30" minlength="6" autocomplete="off">
+                                <label asp-for="Input.Password"></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center offset-sm-1">
+                        <span style="font-size:0.9rem; " class="text-danger field-validation-valid ms-sm-2" asp-validation-for="Input.Password"></span>
+                    </div>
                 </div>
-            </div>
+
+                <div class="input-wraper">
+                    <div class="row align-items-center">
+                        <i class="bi bi-shield-lock me-2 d-none d-sm-block col-1" style="font-size: 1.5rem;"></i>
+                        <div class="col">
+                            <div class="form-floating">
+                                <input placeholder="Repeat Password" class="form-control" asp-for="Input.RepeatPassword" required maxlength="30" minlength="6" autocomplete="off">
+                                <label asp-for="Input.RepeatPassword"></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center offset-sm-1">
+                        <span style="font-size:0.9rem; " class="text-danger field-validation-valid ms-sm-2" asp-validation-for="Input.RepeatPassword"></span>
+                    </div>
+                </div>
+
+
+                <button class="btn btn-primary mt-3 w-100 bg-primary bg-gradient" name="Input.Button" value="login">Sign up</button>
+
+                <div class="mt-1 mb-3  text-muted fw-normal fw-bolder" style="font-size: 0.8rem;">
+                    <span>Already have an account?</span>
+                    <a asp-page="../Login/Index" asp-route-returnUrl="Input.ReturnUrl"> Sign in now!</a>
+                </div>
+        
+            </form>
         </div>
+        @if (Model.RegisterViewModel.VisibleExternalProviders.Any())
+        {
+            <div class="card-footer px-0 pt-4 p d-flex flex-column gap-1 bg-transparent">
+                @foreach (var provider in Model.RegisterViewModel.VisibleExternalProviders)
+                {
+                    @if (provider.AuthenticationScheme == "Google")
+                    {
+                        <a class="btn btn-google d-flex align-items-center"
+                               style="height:41px; padding-left:12px; padding-right:12px;"
+                               asp-page="/ExternalLogin/Challenge"
+                               asp-route-scheme="@provider.AuthenticationScheme"
+                               asp-route-returnUrl="Input.ReturnUrl">
+
+                            <img src="~/images/google-logo.svg" />
+                            <span class="mx-auto">Sign up With Google</span>
+                        </a>
+                    }
+                    @if (provider.AuthenticationScheme == "AzureOpenId")
+                    {
+                        <a class="btn btn-microsoft d-flex align-items-center"
+                                style="height:41px; padding-left:12px; padding-right:12px;"
+                               asp-page="/ExternalLogin/Challenge"
+                               asp-route-scheme="@provider.AuthenticationScheme"
+                                asp-route-returnUrl="Input.ReturnUrl">
+
+                            <img src="~/images/ms-logo.svg"/>
+                            <span class="mx-auto">Sign up With Microsoft</span>
+                        </a>
+                    }
+                }
+            </div>
+        }
     </div>
+
 </div>
 
-<div class="h-100 d-flex">
-    <form id="registerForm" class="text-center form needs-validation " asp-page="/Account/Register/Index" style="width:330px; margin: auto; ">
-
-        <h1 class="h3 mb-3 fw-normal">Please sign up</h1>
-        <div>
-            <div class="form-floating">
-                <input type="email" class="form-control" placeholder="Email" asp-for="Input.Email" required>
-                <label asp-for="Input.Email"></label>
-                <div class="invalid-feedback my-2">
-                    <span asp-validation-for="Input.Email"></span>
-                </div>
-            </div>
-            <div class="form-floating">
-                <input type="password" class="form-control" placeholder="Password" asp-for="Input.Password" autocomplete="off" required>
-                <label asp-for="Input.Password"></label>
-                <div class="invalid-feedback my-2">
-                    <span asp-validation-for="Input.Password"></span>
-                </div>
-            </div>
-@*            <div class="form-floating">
-                <input type="password" class="form-control" placeholder="Password" asp-for="Input.RepeatPassword" autocomplete="off" required>
-                <label asp-for="Input.RepeatPassword">Repeat Password</label>
-                <div class="invalid-feedback mt-0">
-                    <span asp-validation-for="Input.RepeatPassword"></span>
-                </div>
-                <span asp-validation-for="Input.RepeatPassword"></span>
-            </div>*@
-        </div>
-        <button class="w-100 btn btn-lg btn-primary mt-3" name="Input.Button" value="login">Sign up</button>
-        <p class="mt-2 mb-3 text-muted">
-            &copy;
-            <a href="https://www.linkedin.com/in/konrad-dzięcioł-235a8523a" class="link-primary"><i class="fa-brands fa-linkedin"></i></a>
-        </p>
-    </form>
-</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        (function () {
-            'use strict'
-
-            // Fetch all the forms we want to apply custom Bootstrap validation styles to
-            var forms = document.querySelectorAll('.needs-validation')
-
-            // Loop over them and prevent submission
-            Array.prototype.slice.call(forms)
-                .forEach(function (form) {
-                    form.addEventListener('submit', function (event) {
-                        if (!form.checkValidity()) {
-                            event.preventDefault()
-                            event.stopPropagation()
-                        }
-
-                        form.classList.add('was-validated')
-                    }, false)
-                })
-        })()
-    </script>
 }

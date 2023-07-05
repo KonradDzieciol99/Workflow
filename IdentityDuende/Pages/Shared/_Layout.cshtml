@@ -8,20 +8,25 @@
     <title>Duende IdentityServer</title>
     
     <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
-    <link rel="shortcut icon" type="image/x-icon" href="~/favicon.ico" />
     
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/lib/bootstrap4-glyphicons/css/bootstrap-glyphicons.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/IdentityDuende.styles.css" />
+    <link href="~/lib/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet" />
+
+
 </head>
 <body>
-    <partial name="_Nav" />
-   
-    <div class="container body-container">
-        @RenderBody()
-    </div>
 
-    <script src="~/lib/jquery/dist/jquery.slim.min.js"></script>
+    @if (Context.Request.Path != "/Account/register" && Context.Request.Path != "/Account/login" && Context.Request.Path != "/EmailConfirmationInfo" && Context.Request.Path != "/EmailConfirmation")
+    {
+        <partial name="_Nav" />
+    }
+  
+    @RenderBody()
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
     @RenderSection("scripts", required: false)

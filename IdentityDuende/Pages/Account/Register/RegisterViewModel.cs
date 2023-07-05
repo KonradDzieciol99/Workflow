@@ -1,21 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿
+namespace IdentityDuende.Pages.Account.Register;
 
-namespace IdentityServer.Pages.Account.Register
+public class RegisterViewModel
 {
-    public class RegisterViewModel
+    public IEnumerable<ExternalProvider> ExternalProviders { get; set; } = Enumerable.Empty<ExternalProvider>();
+    public IEnumerable<ExternalProvider> VisibleExternalProviders => ExternalProviders.Where(x => !string.IsNullOrWhiteSpace(x.DisplayName));
+    public string? ExternalLoginScheme => ExternalProviders?.SingleOrDefault()?.AuthenticationScheme;
+    public class ExternalProvider
     {
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
-        [Required]
-        public string Password { get; set; }
-
-        //[Required]
-        //[Compare("Email", ErrorMessage = "The Email and Confirm Email fields do not match.")]
-        //[NotEq("Email", ErrorMessage = "The password and confirmation password do not match.")]
-        //[Compare(nameof(Email), ErrorMessage = "Passwords don't match.")]
-        //public string RepeatPassword { get; set; }
-        //public string ReturnUrl { get; set; }
-        //public string RoleName { get; set; }
+        public string DisplayName { get; set; }
+        public string AuthenticationScheme { get; set; }
     }
 }
