@@ -1,28 +1,40 @@
 ﻿@page
-@model IdentityServer.Pages.EmailConfirmationInfo.IndexModel
-@{
-    //Layout = null;
-}
+@model IdentityDuende.Pages.EmailConfirmationInfo.IndexModel
 
-<!DOCTYPE html>
+<div class="h-100 d-flex flex-column overflow-auto">
+    <div class="row m-auto" style=" max-width:750px; min-width:380px;">
+        <div class="d-none d-md-block col-md-5 test m-auto">
+            <img src="/images/Workflow_theme.png"
+                 class="img-fluid border border-primary" style="border-radius:30% 70% 70% 30% / 30% 30% 70% 70%;" />
+        </div>
+        <div class="col-12 col-md-7 p-4  bg-white bg-gradient border border-primary text-center " style="border-radius: 2rem 2rem 2rem 2rem">
+            @if (@Model.View.IsEmailConfirmed)
+            {
+                <div class="alert d-flex flex-column alert-success h-100" role="alert">
+                    <h3 class="m-auto">Your account is already active</h3>
+                    <a asp-page="/Account/Login/index"
+                       asp-route-returnUrl="@Model.View.ReturnUrl" 
+                       class="link-primary fw-bolder">Go to login page.
+                   </a>
 
-<html>
-<head>
-    <title></title>
-</head>
-<body>
-    <div class="h-100 container text-center">
-        <img src="https://res.cloudinary.com/ddmmg4wb2/image/upload/v1673385489/workflow-management_ssnvgy.jpg" width="300" height="250" class="rounded mx-auto d-block" alt="...">
-
-        <p class="mt-4 h3">Please check your inbox to log in!</p>
-
-        <p class="mt-4 h5">To complete your registration, please click on the verification link in the email.</p>
-        <p class="mt-4 h5">Email has been sent to the address:</p>
-        <p>@Model.UserEmail</p>
-        <hr>
-        <form asp-page="/Account/Login/Index">
-            <p><a class="link-primary" type="submit" name="button" value="register">Resend the verification email</a></p>
-        </form>
+                </div>      
+            }
+            else if(@Model.View.VerificationEmailResent)
+            {
+                <div class="alert d-flex flex-column alert-success h-100" role="alert">
+                    <h3 class="m-auto">Verification email has been sent</h3>
+                </div>
+            }
+            else{
+                <p class="h3">Please check your inbox to log in!</p>
+                <p class="mt-4 h5 text-muted ">To complete your registration, please click on the verification link in the email.</p>
+                <p class="mt-4 h5 text-muted ">Email has been sent to the address:</p>
+                <p clas="text-muted ">@Model.View.Email</p>
+                <hr>
+                <form asp-page="../EmailConfirmationInfo" method="post">
+                    <button type="submit" class="btn btn-outline-primary" name="button" value="register">Resend the verification email</button>
+                </form>
+            }
+        </div>
     </div>
-</body>
-</html>
+</div>

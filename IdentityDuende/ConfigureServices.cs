@@ -12,6 +12,8 @@ using System.Security.Claims;
 using IdentityDuende.Infrastructure.Repositories;
 using IdentityDuende.Services;
 using IdentityDuende.Configuration;
+using Duende.IdentityServer.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IdentityDuende;
 
@@ -21,11 +23,25 @@ public static class ConfigureServices
     {
         services.AddControllers();
 
-        services.AddRazorPages();
+        services.AddRazorPages()
+            .AddViewOptions(options =>
+            {
+                options.HtmlHelperOptions.ClientValidationEnabled = true;
+                options.HtmlHelperOptions.Html5DateRenderingMode = Html5DateRenderingMode.Rfc3339;
+
+            });
 
         services.AddDbContext<ApplicationDbContext>(opt =>
+        
         {
-            opt.UseSqlServer(configuration.GetConnectionString("DbContextConnString") ?? throw new ArgumentNullException("DbContextConnString"));
+            string connString;
+            var isDockerEnvironment = Environment.GetEnvironmentVariable("DOCKER_ENVIRONMENT");
+            if (isDockerEnvironment is null || isDockerEnvironment == "true")
+                connString = configuration.GetConnectionString("DbContextConnString") ?? throw new ArgumentNullException("DbContextConnString");
+            else
+                connString = configuration.GetConnectionString("NonDockerDbContextConnString") ?? throw new ArgumentNullException("NonDockerDbContextConnString");
+
+            opt.UseSqlServer(connString);
         });
 
         services.AddIdentity<ApplicationUser, IdentityRole>(opt =>

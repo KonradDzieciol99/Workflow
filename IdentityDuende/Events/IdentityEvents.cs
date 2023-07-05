@@ -45,6 +45,13 @@ namespace IdentityDuende.Events
                 //var newUserRegisterCreateUser = new NewUserRegisterCreateUser() { Email = externalUserRegisterSuccessEvent.ExternalUserEmail, Id = externalUserRegisterSuccessEvent.IdentityUserId };
                 //await _messageBus.PublishMessage(newUserRegisterCreateUser, "new-user-register-create-user");
             }
+
+            if(evt is UserResentVerificationEmailEvent @event)
+            {
+                var integrationEvent = new UserResentVerificationEmailIntegrationEvent(@event.User.Email!, @event.VerificationToken, @event.User.Id);
+                await _azureServiceBusSender.PublishMessage(integrationEvent);
+            }
+
             return;
         }
     }

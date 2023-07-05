@@ -73,8 +73,10 @@ public class Callback : PageModel
             // simply auto-provisions new external user
             user = await AutoProvisionUserAsync(provider, providerUserId, externalUser.Claims);
         }
+        else
+            await UpdateUserPictureUrlIfNewClaimPictureExists(user, externalUser.Claims);
+        
 
-        await UpdateUserPictureUrlIfNewClaimPictureExists(user, externalUser.Claims);
 
         // this allows us to collect any additional claims or properties
         // for the specific protocols used and store them in the local auth cookie.

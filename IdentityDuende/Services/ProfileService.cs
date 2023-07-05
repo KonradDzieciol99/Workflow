@@ -28,6 +28,9 @@ namespace IdentityDuende.Services
 
             var claims = GetClaimsFromUser(user);
 
+            var test = context.Caller;
+
+
             context.IssuedClaims = claims;
         }
 

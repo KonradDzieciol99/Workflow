@@ -53,6 +53,10 @@ public static class Config
                 PostLogoutRedirectUris = { "https://localhost:4200" },
                 AllowedCorsOrigins = { "https://localhost:4200" },
                 AllowOfflineAccess = true,
+                UpdateAccessTokenClaimsOnRefresh = true,
+                CoordinateLifetimeWithUserSession = true,
+                RefreshTokenUsage = TokenUsage.OneTimeOnly,
+                AlwaysIncludeUserClaimsInIdToken = true,
                 ////UpdateAccessTokenClaimsOnRefresh = true, TO AAKURAt ciekawe
                 //AlwaysIncludeUserClaimsInIdToken = true, dotyczy Id Tokena
                 //AlwaysSendClientClaims= true, dotyczy Id Tokena
@@ -71,7 +75,7 @@ public static class Config
                 },
                 RequireConsent = false,
                 AllowRememberConsent = true,
-                AccessTokenLifetime = 6000,
+                AccessTokenLifetime = 900,
             },
         };
 }

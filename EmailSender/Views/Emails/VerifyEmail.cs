@@ -1,7 +1,6 @@
-﻿namespace EmailSender.Views.Emails
+﻿namespace EmailSender.Views.Emails;
+
+public class VerifyEmail
 {
-    public class VerifyEmail
-    {
-        public string Url { get; set; }
-    }
+    public string Url { get; set; }
 }

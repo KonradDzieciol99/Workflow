@@ -12,7 +12,7 @@ builder.Services.AddWebAPIServices(builder.Configuration);
 
 var app = builder.Build();
 
-var eventBus = app.Services.GetRequiredService<AzureServiceBusSubscriber>();// nie potrzeba tworzyæ scope bo to singletone
+var eventBus = app.Services.GetRequiredService<AzureServiceBusSubscriber>();
 
 var subscribeTasks = new List<Task>
 {

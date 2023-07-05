@@ -51,6 +51,7 @@ public static class ConfigureServices
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
                 ValidIssuers = new[] { externalIdentityUrlhttp, externalIdentityUrlhttps },
+                ClockSkew = TimeSpan.Zero
             };
         });
         services.AddAuthorization(options =>

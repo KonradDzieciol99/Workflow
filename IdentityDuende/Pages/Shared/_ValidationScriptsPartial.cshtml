@@ -1,2 +1,35 @@
 ﻿<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+<script>
+    var settings = {
+        validClass: "is-valid",
+        errorClass: "is-invalid"
+    };
+    $.validator.setDefaults(settings);
+    $.validator.unobtrusive.options = settings;
+</script>
+
+<script>
+    (function () {
+        'use strict'
+
+        // Fetch all the inputs we want to apply custom Bootstrap validation styles to
+        var inputs = document.querySelectorAll('.needs-validation .form-control')
+
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(inputs)
+            .forEach(function (input) {
+                input.addEventListener('input', function (event) {
+                    // If the input field is not valid
+                    if (!input.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+
+                    // Add 'was-validated' to this specific input field
+                    input.classList.add('was-validated')
+                }, false)
+            })
+    })()
+</script>

@@ -1,9 +1,9 @@
-﻿using EmailSender;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using MessageBus.Extensions;
+using EmailSender.Sender;
 
-namespace IdentityDuende;
+namespace EmailSender;
 
 public static class ConfigureServices
 {
@@ -12,7 +12,7 @@ public static class ConfigureServices
 
         services.AddFluentEmail(configuration["EmailConfiguration:From"] ?? throw new ArgumentNullException("EmailConfiguration:From"))
                 .AddRazorRenderer()
-                .AddSendGridSender(configuration["SendGrid_Key"] ?? throw new ArgumentNullException("SendGrid_Key"));
+                .AddSendGridSender(configuration["SendGrid:Key"] ?? throw new ArgumentNullException("SendGrid:Key"));
         services.AddMediatR(opt =>
         {
             opt.RegisterServicesFromAssembly(typeof(Program).Assembly);
@@ -26,15 +26,15 @@ public static class ConfigureServices
         //    return new EmailSenderS(fluentEmailFactory, verifyEmailUrl, from);
         //});
 
-        services.AddScoped<ISender, Sender>();
+        services.AddScoped<ISender, Sender.Sender>();
         services.AddAzureServiceBusSubscriber(opt =>
         {
-            opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString");
+            opt.ServiceBusConnectionString = configuration.GetConnectionString("ServiceBus") ?? throw new ArgumentNullException("ServiceBus");
             opt.SubscriptionName = "email-sender";
         });
         services.AddAzureServiceBusSender(opt =>
         {
-            opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString");
+            opt.ServiceBusConnectionString = configuration.GetConnectionString("ServiceBus") ?? throw new ArgumentNullException("ServiceBus");
         });
         return services;
     }

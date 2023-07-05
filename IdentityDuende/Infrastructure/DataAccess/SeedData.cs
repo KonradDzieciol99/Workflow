@@ -51,14 +51,14 @@ namespace IdentityDuende.Infrastructure.DataAccess
 
         public async Task TrySeedAsync()
         {
-            var alice = await _userManager.FindByNameAsync("alice");
+            var alice = await _userManager.FindByEmailAsync("AliceSmith@email.com");
             if (alice is not null )
                 _logger.LogDebug("alice already exists");
             else
             {
                 alice = new ApplicationUser
                 {
-                    UserName = "alice",
+                    UserName = "AliceSmith@email.com",
                     Email = "AliceSmith@email.com",
                     EmailConfirmed = true,
                     PictureUrl= "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png"
@@ -73,14 +73,14 @@ namespace IdentityDuende.Infrastructure.DataAccess
             }
 
 
-            var bob = await _userManager.FindByNameAsync("bob");
+            var bob = await _userManager.FindByEmailAsync("BobSmith@email.com");
             if (bob is not null)
                 _logger.LogDebug("bob already exists");
             else
             { 
                 bob = new ApplicationUser
                 {
-                    UserName = "bob",
+                    UserName = "BobSmith@email.com",
                     Email = "BobSmith@email.com",
                     EmailConfirmed = true,
                     PictureUrl= "https://1workflowstorage.blob.core.windows.net/photos/bobPhoto.png"
