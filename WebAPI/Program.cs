@@ -40,7 +40,7 @@ if (app.Environment.IsDevelopment())
 }
 
 //app.UseMiddleware<ExceptionMiddleware>();
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseCors(CORSallowAny);
 app.UseAuthentication();
 app.UseAuthorization();

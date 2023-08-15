@@ -5,6 +5,7 @@ using MessageBus.Events;
 using MessageBus.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
@@ -22,15 +23,20 @@ namespace MessageBus
     {
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IMediator _mediator;
+        private readonly ILogger<AzureServiceBusSubscriber> _logger;
         private readonly AzureServiceBusSubscriberOptions _options;
         private readonly string _topicName = "workflow_event_bus";
         private readonly string _subscriptionName;
         private readonly ConcurrentDictionary<string, Type> _events;
 
-        public AzureServiceBusSubscriber(IServiceScopeFactory serviceScopeFactory, IMediator mediator, IOptions<AzureServiceBusSubscriberOptions> options)
+        public AzureServiceBusSubscriber(IServiceScopeFactory serviceScopeFactory,
+                                         IMediator mediator,
+                                         IOptions<AzureServiceBusSubscriberOptions> options,
+                                         ILogger<AzureServiceBusSubscriber>  logger)
         {
             this._serviceScopeFactory = serviceScopeFactory;
             this._mediator = mediator;
+            this._logger = logger;
             this._options = options.Value;
             _options.Validate();
             //_topicName = topicName;
@@ -76,42 +82,67 @@ namespace MessageBus
         }
         private Task ErrorHandler(ProcessErrorEventArgs args)
         {
-            Console.WriteLine(args.Exception.ToString());
+
+            var ex = args.Exception;
+            var context = args.ErrorSource;
+
+            _logger.LogError(ex, "ERROR handling message: {ExceptionMessage} - Context: {@ExceptionContext}", ex.Message, context);
+
             return Task.CompletedTask;
         }
 
         private async Task EventHandlerAsync(ProcessMessageEventArgs args)
         {
-            var message = args.Message;
-            var body = Encoding.UTF8.GetString(message.Body);
-            //var label = args.Message.ApplicationProperties["Label"] as string;
-            //if (label == null)
-            //{
-            //    throw new ArgumentNullException($"Label is empty: {args}");
-            //}
-
-            //var type = topicOrQueueNameWithTypeEvent[label];
-            
-            var type = _events[message.Subject];
-            if (type == null)
+            try
             {
-                throw new ArgumentNullException("You did not subscribe to this event");
+                var message = args.Message;
+                var body = Encoding.UTF8.GetString(message.Body);
+                //var label = args.Message.ApplicationProperties["Label"] as string;
+                //if (label == null)
+                //{
+                //    throw new ArgumentNullException($"Label is empty: {args}");
+                //}
+
+                //var type = topicOrQueueNameWithTypeEvent[label];
+
+                var type = _events[message.Subject];
+                if (type == null)
+                {
+                    throw new ArgumentNullException("You did not subscribe to this event");
+                }
+
+                //throw new ArgumentNullException("test");
+                //var type = _options.QueueNameAndEventTypePair[label];
+
+                MethodInfo sendAsyncMethod = this.GetType().GetMethod(nameof(SendAsync), BindingFlags.NonPublic | BindingFlags.Instance) ?? throw new ArgumentNullException("Something went wrong.");
+
+                await (Task)sendAsyncMethod.MakeGenericMethod(type).Invoke(this, new object[] { body });
+
+                await args.CompleteMessageAsync(args.Message);
+
             }
-            //var type = _options.QueueNameAndEventTypePair[label];
+            catch (Exception)
+            {
 
-            MethodInfo sendAsyncMethod = this.GetType().GetMethod(nameof(SendAsync), BindingFlags.NonPublic | BindingFlags.Instance) ?? throw new ArgumentNullException("Something went wrong.");
-
-            sendAsyncMethod.MakeGenericMethod(type).Invoke(this, new object[] { body });
-
-            await args.CompleteMessageAsync(args.Message);
+                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+                    await args.CompleteMessageAsync(args.Message);
+                else
+                    throw;
+            }
 
             return;
         }
         private async Task SendAsync<T>(string eventJSON)
         {
-            var @event = JsonSerializer.Deserialize<T>(eventJSON);
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+            
+            var @event = JsonSerializer.Deserialize<T>(eventJSON, options);
 
-            if (@event is null) { throw new ArgumentNullException($"Message is empty{@event}"); }
+             if (@event is null)
+                throw new ArgumentNullException($"Message is empty{@event}");
 
             using (var scope = _serviceScopeFactory.CreateScope())
             {

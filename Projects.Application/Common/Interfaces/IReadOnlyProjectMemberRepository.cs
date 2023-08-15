@@ -14,6 +14,7 @@ namespace Projects.Application.Common.Interfaces
         Task<ProjectMember?> GetProjectMemberAsync(string projectId, string userId);
         Task<bool> CheckIfUserIsALeaderAsync(string projectId, string userId);
         Task<ProjectMember?> GetAsync(string projectMemberId);
+        Task<List<MemberStatusDto>> GetMembersStatusesAsync(string projectId, List<string> usersIds);
 
     }
 }

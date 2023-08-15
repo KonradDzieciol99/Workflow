@@ -1,12 +1,11 @@
 ﻿using System.Security.Claims;
 
-namespace Chat.Services
+namespace Chat.Services;
+
+public interface ICurrentUserService
 {
-    public interface ICurrentUserService
-    {
-        ClaimsPrincipal User { get; }
-        string UserEmail { get; }
-        string UserId { get; }
-        string? UserPhoto { get; }
-    }
+    public ClaimsPrincipal GetUser();
+    public string GetUserId();
+    public string GetUserEmail();
+    public string? GetUserPhoto();
 }

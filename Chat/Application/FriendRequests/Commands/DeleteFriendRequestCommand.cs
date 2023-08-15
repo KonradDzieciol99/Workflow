@@ -32,7 +32,7 @@ public class DeleteFriendRequestCommandHandler : IRequestHandler<DeleteFriendReq
     }
     public async Task Handle(DeleteFriendRequestCommand request, CancellationToken cancellationToken)
     {
-        var friendRequest = await _unitOfWork.FriendRequestRepository.GetAsync(_currentUserService.UserId, request.TargetUserId);
+        var friendRequest = await _unitOfWork.FriendRequestRepository.GetAsync(_currentUserService.GetUserId(), request.TargetUserId);
 
         _unitOfWork.FriendRequestRepository.Remove(friendRequest);
 
@@ -41,7 +41,7 @@ public class DeleteFriendRequestCommandHandler : IRequestHandler<DeleteFriendReq
 
         // Domain logic
         
-        if (friendRequest.InviterUserId == _currentUserService.UserId && friendRequest.Confirmed == false)
+        if (friendRequest.InviterUserId == _currentUserService.GetUserId() && friendRequest.Confirmed == false)
         {
             var friendRequestCanceledEvent = new FriendRequestCanceledEvent(friendRequest.InviterUserId,
                                                                     friendRequest.InviterUserEmail,
@@ -51,7 +51,7 @@ public class DeleteFriendRequestCommandHandler : IRequestHandler<DeleteFriendReq
                                                                     friendRequest.InvitedPhotoUrl);
             await _azureServiceBusSender.PublishMessage(friendRequestCanceledEvent);
             return;
-        }else if(friendRequest.InvitedUserId == _currentUserService.UserId && friendRequest.Confirmed == false)
+        }else if(friendRequest.InvitedUserId == _currentUserService.GetUserId() && friendRequest.Confirmed == false)
         {
             var friendRequestDeclinedEvent = new FriendRequestDeclinedEvent(friendRequest.InviterUserId,
                                                         friendRequest.InviterUserEmail,

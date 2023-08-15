@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace MessageBus
+namespace MessageBus;
+
+public interface IMessageBus
 {
-    public interface IMessageBus
-    {
-        Task PublishMessage<T>(T message, string queueOrTopicName);
-    }
+    Task PublishMessage<T>(T message, string queueOrTopicName);
 }

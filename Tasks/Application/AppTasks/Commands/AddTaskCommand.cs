@@ -18,12 +18,13 @@ public record AddTaskCommand(string Name,
                              string? Description,
                              string ProjectId,
                              string? TaskAssigneeMemberId,
-                             string? TaskAssigneeMemberEmail,
-                             string? TaskAssigneeMemberPhotoUrl,
+                             //string? TaskAssigneeMemberEmail,
+                             //string? TaskAssigneeMemberPhotoUrl,
                              Priority Priority,
                              State State,
                              DateTime DueDate,
-                             DateTime StartDate) : IAuthorizationRequest<AppTaskDto>
+                             DateTime StartDate,
+                             string TaskLeaderId) : IAuthorizationRequest<AppTaskDto>
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement()
     {
@@ -51,7 +52,15 @@ public class AddTaskCommandHandler : IRequestHandler<AddTaskCommand, AppTaskDto>
     }
     public async Task<AppTaskDto> Handle(AddTaskCommand request, CancellationToken cancellationToken)
     {
-        var appTask = _mapper.Map<AppTask>(request);
+        var appTask = new AppTask(request.Name,
+                                  request.Description,
+                                  request.ProjectId,
+                                  request.TaskAssigneeMemberId,
+                                  request.Priority,
+                                  request.State,
+                                  request.DueDate,
+                                  request.StartDate,
+                                  request.TaskLeaderId);
 
         _unitOfWork.AppTaskRepository.Add(appTask);
 
@@ -62,8 +71,8 @@ public class AddTaskCommandHandler : IRequestHandler<AddTaskCommand, AppTaskDto>
                                appTask.Description,
                                appTask.ProjectId,
                                appTask.TaskAssigneeMemberId,
-                               appTask.TaskAssigneeMemberEmail,
-                               appTask.TaskAssigneeMemberPhotoUrl,
+                               //appTask.TaskAssigneeMemberEmail,
+                               //appTask.TaskAssigneeMemberPhotoUrl,
                                (int)appTask.Priority,
                                (int)appTask.State, appTask.DueDate, appTask.StartDate, appTask.TaskLeaderId);
 

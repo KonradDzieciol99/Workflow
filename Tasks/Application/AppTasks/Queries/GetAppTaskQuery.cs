@@ -10,7 +10,7 @@ using Tasks.Application.Common.Models;
 using Tasks.Domain.Entity;
 using Tasks.Infrastructure.Repositories;
 using Tasks.Services;
-using Tasks.Domain.Exceptions;
+using Tasks.Domain.Common.Exceptions;
 
 namespace Tasks.Application.AppTasks.Queries;
 

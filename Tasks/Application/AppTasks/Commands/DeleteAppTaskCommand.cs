@@ -8,8 +8,8 @@ using Tasks.Application.Common.Authorization.Requirements;
 using Tasks.Infrastructure.Repositories;
 using Tasks.Services;
 using Tasks.Application.Common.Exceptions;
-using Tasks.Domain.Exceptions;
 using Tasks.Domain.Services;
+using Tasks.Domain.Common.Exceptions;
 
 namespace Tasks.Application.AppTasks.Commands;
 
@@ -47,7 +47,7 @@ public class DeleteAppTaskCommandHandler : IRequestHandler<DeleteAppTaskCommand>
 
         var task = await _unitOfWork.AppTaskRepository.GetAsync(request.Id) ?? throw new TaskDomainException(string.Empty, new BadRequestException("Task cannot be found.")) ;
        
-        var projectMember = await _unitOfWork.ProjectMemberRepository.GetAsync(_currentUserService.UserId, request.ProjectId) ?? throw new TaskDomainException(string.Empty, new BadRequestException("Project Member cannot be found."));
+        var projectMember = await _unitOfWork.ProjectMemberRepository.GetAsync(_currentUserService.GetUserId(), request.ProjectId) ?? throw new TaskDomainException(string.Empty, new BadRequestException("Project Member cannot be found."));
         //TODO asnotrqacking... readonly repo
 
         _appTaskService.RemoveAppTask(task, projectMember);

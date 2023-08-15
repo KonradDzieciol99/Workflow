@@ -4,27 +4,35 @@ using MessageBus.Events;
 using Tasks.Domain.Common.Models;
 using Tasks.Infrastructure.Repositories;
 
-namespace Tasks.Events.Handlers
+namespace Tasks.Application.IntegrationEvents.Handlers;
+
+public class ProjectMemberUpdatedEventHandler : IRequestHandler<ProjectMemberUpdatedEvent>
 {
-    public class ProjectMemberUpdatedEventHandler : IRequestHandler<ProjectMemberUpdatedEvent>
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
+
+    public ProjectMemberUpdatedEventHandler(IUnitOfWork unitOfWork, IMapper mapper)
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+        _unitOfWork = unitOfWork;
+        _mapper = mapper;
+    }
+    public async Task Handle(ProjectMemberUpdatedEvent request, CancellationToken cancellationToken)
+    {
+        var result = await _unitOfWork.ProjectMemberRepository.ExecuteUpdateAsync(request.ProjectMemberId,
+                                                                           (ProjectMemberType)request.Type
+                                                                           ,(InvitationStatus)request.InvitationStatus);
 
-        public ProjectMemberUpdatedEventHandler(IUnitOfWork unitOfWork, IMapper mapper)
+        //if (!await _unitOfWork.Complete())
+        //    throw new InvalidOperationException("An error occurred while updating a project member.");
+        if (result > 0)
         {
-            this._unitOfWork = unitOfWork;
-            this._mapper = mapper;
-        }
-        public async Task Handle(ProjectMemberUpdatedEvent request, CancellationToken cancellationToken)
-        {
-            var result = await _unitOfWork.ProjectMemberRepository.UpdateAsync(request.projectMemberId, (ProjectMemberType)request.Type);
-
-            if (!await _unitOfWork.Complete())
-                throw new InvalidOperationException("An error occurred while updating a project member.");
-
             await Task.CompletedTask;
             return;
         }
+
+        throw new InvalidOperationException("An error occurred while removing a project member.");
+
+        //await Task.CompletedTask;
+        //return;
     }
 }

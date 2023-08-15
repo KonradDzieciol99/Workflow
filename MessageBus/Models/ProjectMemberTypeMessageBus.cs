@@ -1,6 +1,6 @@
-﻿public enum ProjectMemberTypeMessageBus
-{
-    Leader,
-    Admin,
-    Member,
-}
+﻿//public enum ProjectMemberTypeMessageBus
+//{
+//    Leader,
+//    Admin,
+//    Member,
+//}

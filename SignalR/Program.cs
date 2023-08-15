@@ -2,6 +2,7 @@ using MessageBus.Events;
 using MessageBus;
 using SignalR;
 using SignalR.Hubs;
+using SignalR.IntegrationEvents;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,24 +10,11 @@ builder.Services.AddWebAPIServices(builder.Configuration);
 
 var app = builder.Build();
 
-var eventBus = app.Services.GetRequiredService<AzureServiceBusSubscriber>();
-
-var subscribeTasks = new List<Task>
-{
-    eventBus.Subscribe<ChatMessageAddedEvent>(),
-    eventBus.Subscribe<NewOnlineUserWithFriendsEvent>(),
-    eventBus.Subscribe<NewOnlineMessagesUserWithFriendsEvent>(),
-    eventBus.Subscribe<NewOfflineUserWithFriendsEvent>(),
-    eventBus.Subscribe<FriendRequestAcceptedEvent>(),
-    eventBus.Subscribe<FriendRequestAddedEvent>(),
-    eventBus.Subscribe<NotificationAddedEvent>(),
-};
-
-await Task.WhenAll(subscribeTasks);
+await AddSubscriptions(app);
 
 if (app.Environment.IsDevelopment()){}
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseCors("allowAny");
 
@@ -40,5 +28,27 @@ app.MapHub<PresenceHub>("/hub/Presence");
 
 app.MapHub<MessagesHub>("/hub/Messages");
 
-await app.RunAsync();
+app.Run();
 
+
+async Task AddSubscriptions(WebApplication app)
+{
+    var eventBus = app.Services.GetRequiredService<AzureServiceBusSubscriber>();
+
+    var subscribeTasks = new List<Task>
+    {
+        eventBus.Subscribe<ChatMessageAddedEvent>(),
+        eventBus.Subscribe<UserOnlineFriendsAndUnMesUserEmailsEvent>(),
+        eventBus.Subscribe<NewOnlineMessagesUserWithFriendsEvent>(),
+        eventBus.Subscribe<UserOfflineWithFriendsEvent>(),
+        eventBus.Subscribe<FriendRequestAcceptedEvent>(),
+        eventBus.Subscribe<FriendRequestAddedEvent>(),
+        eventBus.Subscribe<NotificationAddedEvent>(),
+        eventBus.Subscribe<UserOnlineNotifcationsAndUnreadEvent>(),
+        //eventBus.Subscribe<UserOnlineFriendsAndUnMesUserEmailsEvent>(),
+        eventBus.Subscribe<FriendRequestRemovedEvent>(),
+        eventBus.Subscribe<UserConnectedToChatResponseEvent>(),
+    };
+
+    await Task.WhenAll(subscribeTasks);
+}

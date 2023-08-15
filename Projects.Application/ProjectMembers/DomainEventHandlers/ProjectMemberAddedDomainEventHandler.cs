@@ -23,8 +23,10 @@ public class ProjectMemberAddedDomainEventHandler : INotificationHandler<Project
     public Task Handle(ProjectMemberAddedDomainEvent notification, CancellationToken cancellationToken)
     {
         var @event = new ProjectMemberAddedEvent(notification.Member.Id, notification.Member.UserId,
-                                    notification.Member.UserEmail, notification.Member.PhotoUrl,
-                                     notification.Member.ProjectId,(int)notification.Member.Type);
+                                    notification.Member.UserEmail, notification.Member.PhotoUrl, (int)notification.Member.Type,
+                                     notification.Member.ProjectId,(int)notification.Member.InvitationStatus,
+                                     notification.Member.MotherProject.Name, notification.Member.MotherProject.IconUrl
+                                     );
 
         _integrationEventService.AddIntegrationEvent(@event);
 

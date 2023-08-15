@@ -28,5 +28,9 @@ public class Message : BaseEntity
     {
        this.DateRead = DateTime.UtcNow;
     }
+    public void MarkMessageAsRead(DateTime date)
+    {
+        this.DateRead = date;
+    }
 
 }

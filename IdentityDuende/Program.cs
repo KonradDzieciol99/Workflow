@@ -10,8 +10,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
+    app.UseSwagger();
+    app.UseSwaggerUI();
     await ApplyMigration();
 }
+
 //app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
@@ -19,6 +22,7 @@ app.UseIdentityServer();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorPages().RequireAuthorization();
+app.MapControllers();
 app.Run();
 
 async Task ApplyMigration()

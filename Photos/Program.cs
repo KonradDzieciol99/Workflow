@@ -31,7 +31,7 @@ public class Program
             app.UseSwaggerUI();
         }
 
-        app.UseHttpsRedirection();
+        //app.UseHttpsRedirection();
 
         app.UseRouting();
 
@@ -45,7 +45,7 @@ public class Program
                        .RequireAuthorization("ApiScope")
                        .WithOpenApi();
 
-        group.MapPost("/api/uploadIcon", async ([AsParameters] IconUploadRequest IconUploadRequest) =>
+        group.MapPost("/uploadIcon", async ([AsParameters] IconUploadRequest IconUploadRequest) =>
         {
 
             var blobPhotosContainerClient = IconUploadRequest.blobServiceClient.GetBlobContainerClient(builder.Configuration.GetValue<string>("AzureBlobStorage:BlobContainerProjectsIcons"));
@@ -65,7 +65,7 @@ public class Program
         })
         .AddEndpointFilter<ValidatorFilter<IconUploadRequest>>();
 
-        group.MapGet("/api/getProjectsIcons", async ([FromServices] BlobServiceClient blobServiceClient) =>
+        group.MapGet("/getProjectsIcons", async ([FromServices] BlobServiceClient blobServiceClient) =>
         {
             var blobPhotosContainerClient = blobServiceClient.GetBlobContainerClient(builder.Configuration.GetValue<string>("AzureBlobStorage:BlobContainerProjectsIcons"));
 

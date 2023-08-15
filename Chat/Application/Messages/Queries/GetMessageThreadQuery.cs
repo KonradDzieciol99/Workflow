@@ -6,14 +6,15 @@ using Chat.Infrastructure.Repositories;
 using Chat.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Chat.Application.Messages.Queries;
 
-public record GetMessageThreadQuery(string RecipientEmail) : IAuthorizationRequest<List<MessageDto>>
+public record GetMessageThreadQuery(string RecipientEmail,string RecipientId,int Skip,int Take) : IAuthorizationRequest<List<MessageDto>>
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement()
     {
-        return new List<IAuthorizationRequirement>() { new ShareFriendRequestRequirement(RecipientEmail) };
+        return new List<IAuthorizationRequirement>() { new ShareFriendRequestRequirement(RecipientId) };
     }
 }
 public class GetMessageThreadQueryHandler : IRequestHandler<GetMessageThreadQuery, List<MessageDto>>
@@ -30,10 +31,10 @@ public class GetMessageThreadQueryHandler : IRequestHandler<GetMessageThreadQuer
     }
     public async Task<List<MessageDto>> Handle(GetMessageThreadQuery request, CancellationToken cancellationToken)
     {
-        var messages = await _unitOfWork.MessagesRepository.GetMessageThreadAsync(_currentUserService.UserEmail, request.RecipientEmail);
+        var messages = await _unitOfWork.MessagesRepository.GetMessageThreadAsync(_currentUserService.GetUserEmail(), request.RecipientEmail,request.Skip,request.Take);
 
         var unreadMessages = messages.Where(m => m.DateRead == null
-            && m.RecipientEmail == _currentUserService.UserEmail).ToList();
+            && m.RecipientEmail == _currentUserService.GetUserEmail()).ToList();
 
         if (unreadMessages.Any())
             foreach (var message in unreadMessages)

@@ -16,6 +16,5 @@ public class GetAppTasksQueryValidator : AbstractValidator<GetAppTasksQuery>
         RuleFor(x => x.GroupBy);
         RuleFor(x => x.IsDescending);
         RuleFor(x => x.Search);
-        
     }
 }

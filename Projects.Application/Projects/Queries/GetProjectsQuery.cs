@@ -27,7 +27,7 @@ public class GetProjectsQueryHandler : IRequestHandler<GetProjectsQuery, Project
 
     public async Task<ProjectsWithTotalCount> Handle(GetProjectsQuery request, CancellationToken cancellationToken)
     {
-        var result = await _unitOfWork.ReadOnlyProjectMemberRepository.Get(_currentUserService.UserId, request);
+        var result = await _unitOfWork.ReadOnlyProjectMemberRepository.Get(_currentUserService.GetUserId(), request);
         
         var projectsWithTotalCount = new ProjectsWithTotalCount(result.TotalCount, _mapper.Map<List<ProjectDto>>(result.Projects));
 

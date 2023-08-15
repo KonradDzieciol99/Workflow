@@ -15,7 +15,7 @@ namespace API.Aggregator.Services
         {
             return await this.SendAsync<AppTaskDto>(new ApiRequest()
             {
-                ApiType = ApiType.POST,
+                HttpMethod = HttpMethod.Post,
                 Url = _tasksServiceUrl,
                 AccessToken = token,
                 Data = createAppTask

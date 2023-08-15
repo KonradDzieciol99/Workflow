@@ -22,6 +22,9 @@ namespace Tasks.Common
             CreateMap<ProjectMember, ProjectMemberAddedEvent>();
             CreateMap<ProjectMemberAddedEvent, ProjectMember>();
 
+            CreateMap<ProjectMember, ProjectMemberDto>();
+            CreateMap<ProjectMemberDto, ProjectMember>();
+
         }
     }
 }

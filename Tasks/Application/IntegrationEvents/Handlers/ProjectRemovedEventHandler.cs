@@ -3,7 +3,7 @@ using MediatR;
 using MessageBus.Events;
 using Tasks.Infrastructure.Repositories;
 
-namespace Tasks.Events.Handlers
+namespace Tasks.Application.IntegrationEvents.Handlers
 {
     public class ProjectRemovedEventHandler : IRequestHandler<ProjectRemovedEvent>
     {
@@ -11,13 +11,13 @@ namespace Tasks.Events.Handlers
 
         public ProjectRemovedEventHandler(IUnitOfWork unitOfWork)
         {
-            this._unitOfWork = unitOfWork;
+            _unitOfWork = unitOfWork;
         }
         public async Task Handle(ProjectRemovedEvent request, CancellationToken cancellationToken)
         {
             var result = await _unitOfWork.ProjectMemberRepository.RemoveAllProjectMembersAsync(request.ProjectId);
 
-            if(result > 0)
+            if (result > 0)
             {
                 await Task.CompletedTask;
                 return;

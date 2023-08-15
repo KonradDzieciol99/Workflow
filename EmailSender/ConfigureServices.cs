@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using MessageBus.Extensions;
+﻿using MessageBus.Extensions;
 using EmailSender.Sender;
 
-namespace EmailSender;
+namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ConfigureServices
 {
@@ -26,7 +24,7 @@ public static class ConfigureServices
         //    return new EmailSenderS(fluentEmailFactory, verifyEmailUrl, from);
         //});
 
-        services.AddScoped<ISender, Sender.Sender>();
+        services.AddScoped<ISender, Sender>();
         services.AddAzureServiceBusSubscriber(opt =>
         {
             opt.ServiceBusConnectionString = configuration.GetConnectionString("ServiceBus") ?? throw new ArgumentNullException("ServiceBus");

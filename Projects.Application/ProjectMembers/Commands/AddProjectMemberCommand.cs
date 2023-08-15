@@ -15,6 +15,7 @@ using Projects.Application.Common.Authorization.Requirements;
 using Projects.Application.Common.Models.Dto;
 using Projects.Domain.AggregatesModel.ProjectAggregate;
 using Projects.Application.Common.Interfaces;
+using Projects.Domain.Common.Enums;
 
 namespace Projects.Application.ProjectMembers.Commands;
 
@@ -46,13 +47,13 @@ public class AddProjectMemberCommandHandler : IRequestHandler<AddProjectMemberCo
     {
         var project = await _unitOfWork.ProjectRepository.GetOneAsync(request.ProjectId);
 
-        var newMember = new ProjectMember(request.UserId, request.UserEmail, request.PhotoUrl, request.Type/*, request.ProjectId*/);
+        var newMember = new ProjectMember(request.UserId, request.UserEmail, request.PhotoUrl, request.Type, InvitationStatus.Invited/*, request.ProjectId*/);
 
         project.AddProjectMember(newMember);
 
         await _unitOfWork.Complete();
 
-        var projectMemberDto = new ProjectMemberDto(newMember.Id, newMember.UserId, newMember.UserEmail, newMember.Type, newMember.ProjectId);
+        var projectMemberDto = new ProjectMemberDto(newMember.Id, newMember.UserId, newMember.UserEmail, newMember.Type, newMember.InvitationStatus, newMember.ProjectId);
 
         return projectMemberDto;
     }

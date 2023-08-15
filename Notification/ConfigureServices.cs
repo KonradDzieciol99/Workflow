@@ -7,8 +7,10 @@ using MediatR;
 using Notification.Application.Common.Behaviours;
 using Notification.Infrastructure.Repositories;
 using Notification.Services;
+using Microsoft.AspNetCore.Authorization;
+using Notification.Application.Common.Authorization.Handlers;
 
-namespace Notification;
+namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ConfigureServices
 {
@@ -104,6 +106,9 @@ public static class ConfigureServices
                 policy.RequireClaim("scope", "notification");
             });
         });
+
+        services.AddScoped<IAuthorizationHandler, ProjectMembershipRequirementHandler>();
+
 
         return services;
     }

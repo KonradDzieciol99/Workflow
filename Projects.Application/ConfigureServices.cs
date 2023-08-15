@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Projects.Application.Common.Authorization.Handlers;
 using Projects.Application.Common.Mappings;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace Projects.Application;
 
 public static class ConfigureServices
 {
