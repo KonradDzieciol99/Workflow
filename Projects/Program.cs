@@ -85,7 +85,7 @@ if (app.Environment.IsDevelopment())
     await ApplyMigration();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseCors("allowAny");
 

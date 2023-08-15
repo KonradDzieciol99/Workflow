@@ -24,6 +24,7 @@ public static class Config
             new ApiScope("project", "Project Service"),
             new ApiScope("signalR", "SignalR Service"),
             new ApiScope("tasks", "Tasks Service"),
+            new ApiScope("aggregator", "Aggregator Service"),
         };
     public static IEnumerable<ApiResource> ApiResource =>
          new List<ApiResource>
@@ -35,6 +36,7 @@ public static class Config
              new ApiResource("project", "Project Service") { Scopes = { "project" } },
              new ApiResource("signalR", "SignalR Service") { Scopes = { "signalR" } }  ,
              new ApiResource("tasks", "Tasks Service") { Scopes = { "tasks" } },
+             new ApiResource("aggregator", "Aggregator Service") { Scopes = { "aggregator" } },
          };
     
 
@@ -71,7 +73,8 @@ public static class Config
                     "photos",
                     "project",
                     "signalR",
-                    "tasks"
+                    "tasks",
+                    "aggregator"
                 },
                 RequireConsent = false,
                 AllowRememberConsent = true,

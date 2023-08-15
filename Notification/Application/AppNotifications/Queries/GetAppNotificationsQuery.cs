@@ -23,7 +23,7 @@ public class GetAppNotificationsQueryHandler : IRequestHandler<GetAppNotificatio
     }
     public async Task<List<Domain.Entity.AppNotification>> Handle(GetAppNotificationsQuery request, CancellationToken cancellationToken)
     {
-        var result = await _unitOfWork.AppNotificationRepository.GetAsync(_currentUserService.UserId, request);
+        var result = await _unitOfWork.AppNotificationRepository.GetAsync(_currentUserService.GetUserId(), request);
 
         return result.AppNotifications;
     }

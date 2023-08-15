@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 
-namespace Photos;
+namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ConfigureServices
 {

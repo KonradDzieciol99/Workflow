@@ -10,7 +10,7 @@ namespace MessageBus.Events
 {
     public class NewOnlineMessagesUserEvent : IntegrationEvent, IRequest
     {
-        public SimpleUser NewOnlineUser { get; set; }
-        public IEnumerable<SimpleUser> NewOnlineUserChatFriends { get; set; }
+        public UserDto NewOnlineUser { get; set; }
+        public IEnumerable<UserDto> NewOnlineUserChatFriends { get; set; }
     }
 }

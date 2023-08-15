@@ -14,7 +14,8 @@ namespace Projects.Infrastructure.Repositories
         }
         public async Task<Project?> GetOneAsync(string projectId)
         {
-            return await _applicationDbContext.Projects.Include(x => x.ProjectMembers).SingleOrDefaultAsync(x => x.Id == projectId);
+            return await _applicationDbContext.Projects.Include(x => x.ProjectMembers)
+                                                       .SingleOrDefaultAsync(x => x.Id == projectId);
         }
         public async Task<int> ExecuteDeleteAsync(string id)
         {

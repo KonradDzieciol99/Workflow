@@ -47,9 +47,8 @@ namespace Notification.Migrations
                     b.Property<string>("NotificationPartnerPhotoUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NotificationType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("NotificationType")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .IsRequired()

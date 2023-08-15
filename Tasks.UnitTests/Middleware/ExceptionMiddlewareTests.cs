@@ -1,21 +1,14 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using Tasks.Application.Common.Exceptions;
-using Tasks.Domain.Exceptions;
 using Tasks.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using FluentValidation.Results;
+using Tasks.Domain.Common.Exceptions;
 
 namespace Tasks.UnitTests.Middleware;
 

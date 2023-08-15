@@ -26,12 +26,12 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
 
         if (authRequirementsList.Any())
         {
-            if (_currentUserService.User == null)
+            if (_currentUserService.GetUser() == null)
                 throw new UnauthorizedAccessException();
 
             foreach (var requirement in authRequirementsList)
             {
-                var result = await _authorizationService.AuthorizeAsync(_currentUserService.User, null, requirement);
+                var result = await _authorizationService.AuthorizeAsync(_currentUserService.GetUser(), null, requirement);
 
                 if (!result.Succeeded)
                     throw new ChatDomainException("You do not have access to this resource", new ForbiddenAccessException());

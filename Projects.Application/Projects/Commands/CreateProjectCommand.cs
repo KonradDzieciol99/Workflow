@@ -18,6 +18,7 @@ using Microsoft.Azure.Amqp.Encoding;
 using Azure.Core;
 using Projects.Application.Common.Interfaces;
 using Microsoft.Azure.Amqp.Framing;
+using Projects.Domain.Common.Enums;
 
 namespace Projects.Application.Projects.Commands;
 
@@ -47,7 +48,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
     {
         var project = new Project(request.Name,request.Icon.Url){};
 
-        var member = new ProjectMember(_currentUserService.UserId, _currentUserService.UserEmail,_currentUserService.UserPhoto, ProjectMemberType.Leader);
+        var member = new ProjectMember(_currentUserService.GetUserId(), _currentUserService.GetUserEmail(),_currentUserService.GetUserPhoto(), ProjectMemberType.Leader, InvitationStatus.Accepted);
 
         project.AddProjectMember(member);
 

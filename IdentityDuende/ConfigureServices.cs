@@ -14,14 +14,18 @@ using IdentityDuende.Services;
 using IdentityDuende.Configuration;
 using Duende.IdentityServer.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
-namespace IdentityDuende;
+namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ConfigureServices
 {
     public static IServiceCollection AddWebAPIServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddControllers();
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen();
 
         services.AddRazorPages()
             .AddViewOptions(options =>
@@ -64,6 +68,7 @@ public static class ConfigureServices
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
                 options.EmitStaticAudienceClaim = true;
+
             })
             .AddInMemoryIdentityResources(Config.IdentityResources)
             .AddInMemoryApiScopes(Config.ApiScopes)
@@ -71,7 +76,7 @@ public static class ConfigureServices
             .AddInMemoryClients(Config.Clients)
             .AddAspNetIdentity<ApplicationUser>();
 
-        services.AddLocalApiAuthentication();
+        //services.AddLocalApiAuthentication();
 
         services.AddScoped<IEventSink, IdentityEvents>();
         services.AddScoped<SeedData>();
@@ -124,6 +129,27 @@ public static class ConfigureServices
             options.Scope.Add("email");
             options.Scope.Add("openid");
             options.ResponseType = OpenIdConnectResponseType.Code;
+        })
+        .AddJwtBearer(opt =>
+        {
+            var internalIdentityUrl = configuration.GetValue<string>("urls:internal:IdentityHttp") ?? throw new ArgumentNullException("urls:internal:IdentityHttp");
+            var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:IdentityHttp") ?? throw new ArgumentNullException("urls:external:IdentityHttp");
+            var externalIdentityUrlhttps = configuration.GetValue<string>("urls:external:IdentityHttps") ?? throw new ArgumentNullException("urls:external:IdentityHttps");
+
+            opt.RequireHttpsMetadata = false;
+            opt.SaveToken = true;
+            opt.Authority = internalIdentityUrl;
+            opt.Audience = IdentityServerConstants.LocalApi.ScopeName;
+
+            opt.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuers = new[] { externalIdentityUrlhttp, externalIdentityUrlhttps },
+                ClockSkew = TimeSpan.Zero
+            };
         });
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();

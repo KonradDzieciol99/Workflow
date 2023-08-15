@@ -23,22 +23,35 @@ public class MessagesRepository : IMessagesRepository
     {
         _dbContext.Messages.Remove(entity);
     }
-    public async Task<Message?> GetAsync(string sourceUserId, string targetUserId)
+    //public async Task<Message?> GetAsync(string sourceUserId, string targetUserId)
+    //{
+    //    return await _dbContext.Messages.FindAsync(sourceUserId, targetUserId);
+    //}
+    public async Task<Message?> GetAsync(string messageId)
     {
-        return await _dbContext.Messages.FindAsync(sourceUserId, targetUserId);
+        return await _dbContext.Messages.FindAsync(messageId);
     }
-    public async Task<List<Message>> GetMessageThreadAsync(string sourceUserEmail, string targetUserEmail)
+    public async Task<List<Message>> GetMessageThreadAsync(string sourceUserEmail, string targetUserEmail, int skip, int take)
+    {
+        return await _dbContext.Messages.OrderByDescending(m => m.MessageSent)
+                                        .Where(
+                                            m => m.RecipientEmail == sourceUserEmail && m.RecipientDeleted == false &&
+                                            m.SenderEmail == targetUserEmail ||
+                                            m.RecipientEmail == targetUserEmail && m.SenderDeleted == false &&
+                                            m.SenderEmail == sourceUserEmail
+                                        )
+                                        .Skip(skip)
+                                        .Take(take)
+                                        .ToListAsync();
+    }
+    public async Task<List<string>> GetUnreadMessagesUserEmails(string recipientId)
     {
         return await _dbContext.Messages
-            .Where(
-                m => m.RecipientEmail == sourceUserEmail && m.RecipientDeleted == false &&
-                m.SenderEmail == targetUserEmail ||
-                m.RecipientEmail == targetUserEmail && m.SenderDeleted == false &&
-                m.SenderEmail == sourceUserEmail
-            )
-            .OrderBy(m => m.MessageSent)
+            .Where(m => m.RecipientId == recipientId && m.DateRead == null)//&& !m.RecipientDeleted
+            .Select(m=>m.SenderEmail)
             .ToListAsync();
     }
+
     //public async Task<IEnumerable<Message>> GetMessageThreadAsync(string currentUserEmail, string recipientUserEmail)
     //{
     //    var query = applicationDbContext.Messages

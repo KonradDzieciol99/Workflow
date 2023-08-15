@@ -66,4 +66,9 @@ services:
       dockerfile: Tasks/Dockerfile
     depends_on:
     - sql_server
+  api.aggregator:
+    image: ${DOCKER_REGISTRY-}apiaggregator
+    build:
+      context: .
+      dockerfile: API.Aggregator/Dockerfile
 

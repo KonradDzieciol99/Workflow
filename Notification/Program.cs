@@ -16,10 +16,14 @@ var eventBus = app.Services.GetRequiredService<AzureServiceBusSubscriber>();
 
 var subscribeTasks = new List<Task>
 {
-    eventBus.Subscribe<NewUserRegistrationEvent>(),
+    eventBus.Subscribe<RegistrationEvent>(),
     eventBus.Subscribe<FriendRequestAddedEvent>(),
     eventBus.Subscribe<FriendRequestAcceptedEvent>(),
     eventBus.Subscribe<FriendRequestRemovedEvent>(),
+    eventBus.Subscribe<UserOnlineEvent>(),
+    eventBus.Subscribe<ProjectMemberAddedEvent>(),
+    eventBus.Subscribe<ProjectMemberAcceptInvitationEvent>(),
+    eventBus.Subscribe<ProjectMemberDeclineInvitationEvent>(),
 };
 
 await Task.WhenAll(subscribeTasks);
@@ -31,7 +35,7 @@ if (app.Environment.IsDevelopment())
     await ApplyMigration();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseCors("allowAny");
 app.UseAuthentication();
 app.UseAuthorization();

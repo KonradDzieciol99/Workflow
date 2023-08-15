@@ -75,7 +75,7 @@ public class Callback : PageModel
         }
         else
             await UpdateUserPictureUrlIfNewClaimPictureExists(user, externalUser.Claims);
-        
+
 
 
         // this allows us to collect any additional claims or properties
@@ -117,7 +117,7 @@ public class Callback : PageModel
 
         var email = claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Email)?.Value ??
             claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value ??
-            throw new ArgumentNullException(JwtClaimTypes.Email+" Or "+ ClaimTypes.Email+ "cannot be empty");
+            throw new ArgumentNullException(JwtClaimTypes.Email + " Or " + ClaimTypes.Email + "cannot be empty");
 
         var user = new ApplicationUser
         {

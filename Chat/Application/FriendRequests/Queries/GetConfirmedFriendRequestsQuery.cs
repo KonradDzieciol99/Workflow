@@ -29,7 +29,7 @@ public class GetConfirmedFriendRequestsQueryHandler : IRequestHandler<GetConfirm
     }
     public async Task<List<FriendRequestDto>> Handle(GetConfirmedFriendRequestsQuery request, CancellationToken cancellationToken)
     {
-        var friendRequests = await _unitOfWork.FriendRequestRepository.GetConfirmedAsync(_currentUserService.UserId);
+        var friendRequests = await _unitOfWork.FriendRequestRepository.GetConfirmedAsync(_currentUserService.GetUserId());
 
         return _mapper.Map<List<FriendRequestDto>>(friendRequests);
 

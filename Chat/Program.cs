@@ -1,6 +1,8 @@
-using Chat;
 using Chat.Infrastructure.DataAccess;
+using MessageBus.Events;
+using MessageBus;
 using Microsoft.EntityFrameworkCore;
+using Chat;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +10,8 @@ builder.Services.AddWebAPIServices(builder.Configuration);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+await AddSubscriptions(app);
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -16,7 +19,7 @@ if (app.Environment.IsDevelopment())
     await ApplyMigration();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseCors("allowAny");
 
@@ -45,4 +48,19 @@ async Task ApplyMigration()
         }
     }
     return;
+}
+
+async Task AddSubscriptions(WebApplication app)
+{
+    var eventBus = app.Services.GetRequiredService<AzureServiceBusSubscriber>();
+
+    var subscribeTasks = new List<Task>
+    {
+        eventBus.Subscribe<UserOnlineEvent>(),
+        eventBus.Subscribe<UserOfflineEvent>(),
+        eventBus.Subscribe<UserConnectedToChatEvent>(),
+        eventBus.Subscribe<MarkChatMessageAsReadEvent>(),
+    };
+
+    await Task.WhenAll(subscribeTasks);
 }

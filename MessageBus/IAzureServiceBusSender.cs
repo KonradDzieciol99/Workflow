@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MessageBus
+namespace MessageBus;
+
+public interface IAzureServiceBusSender
 {
-    public interface IAzureServiceBusSender
-    {
-        Task PublishMessage(IntegrationEvent message);
-    }
+    Task PublishMessage(IntegrationEvent message);
 }

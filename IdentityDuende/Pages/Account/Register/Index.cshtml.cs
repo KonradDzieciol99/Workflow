@@ -73,7 +73,7 @@ public class IndexModel : PageModel
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-                await _events.RaiseAsync(new LocalUserRegisterSuccessEvent(user.Email, token, user.Id));
+                await _events.RaiseAsync(new LocalUserRegisterSuccessEvent(user.Email, token, user.Id,null));
 
                 return RedirectToPage("/EmailConfirmationInfo/Index", new { email = user.Email, returnUrl = Input.ReturnUrl });
             }

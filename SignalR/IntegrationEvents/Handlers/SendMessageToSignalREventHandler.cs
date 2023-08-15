@@ -37,8 +37,8 @@ public class SendMessageToSignalREventHandler : IRequestHandler<ChatMessageAdded
             request.DateRead = DateTime.UtcNow;
             var markChatMessageAsReadEvent = new MarkChatMessageAsReadEvent()
             {
-                DateRead = (DateTime)request.DateRead,
-                ObjectId = request.ObjectId,
+                ChatMessageDateRead = (DateTime)request.DateRead,
+                ChatMessageId = request.Id!,
             };
             await _azureServiceBusSender.PublishMessage(markChatMessageAsReadEvent);
         }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using Tasks.Application.Common.Exceptions;
-using Tasks.Domain.Exceptions;
+using Tasks.Domain.Common.Exceptions;
 
 namespace Tasks.Middleware;
 

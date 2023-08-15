@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
 using MediatR;
-using Tasks.Domain.Exceptions;
+using Tasks.Domain.Common.Exceptions;
 
-namespace Tasks.Application.Behaviours;
+namespace Tasks.Application.Common.Behaviours;
 
 public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
      where TRequest : notnull
@@ -30,7 +30,7 @@ public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TReque
                 .ToList();
 
             if (failures.Any())
-                throw new TaskDomainException($"Validation Errors for type {typeof(TRequest).Name}", new Tasks.Application.Common.Exceptions.ValidationException(failures));
+                throw new TaskDomainException($"Validation Errors for type {typeof(TRequest).Name}", new Exceptions.ValidationException(failures));
         }
         return await next();
     }

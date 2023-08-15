@@ -37,7 +37,7 @@ public class PresenceHub : Hub
         await _redisDb.SetAddAsync($"presence-{email}", Context.ConnectionId);
 
         //var onlineUsers = friendsInvitationDtos.Select(x => x.InviterUserId == userId ? new User() { UserId = x.InvitedUserId, UserEmail = x.InvitedUserEmail } : new User() { UserId = x.InviterUserId, UserEmail = x.InviterUserEmail });
-        var newOnlineUserEvent = new NewOnlineUserEvent() { NewOnlineUser = new SimpleUser() { UserEmail = email, UserId = id } };
+        var newOnlineUserEvent = new UserOnlineEvent(new UserDto(id, email,null));
         await _messageBus.PublishMessage(newOnlineUserEvent);
 
 
@@ -68,7 +68,7 @@ public class PresenceHub : Hub
         {
             await _redisDb.KeyDeleteAsync($"presence-{email}");
 
-            var newOnlineUserEvent = new NewOfflineUserEvent() { User = new SimpleUser() { UserEmail = email, UserId = id } };
+            var newOnlineUserEvent = new UserOfflineEvent() { User = new UserDto(default, default, null) { Email = email, Id = id } };
             await _messageBus.PublishMessage(newOnlineUserEvent);
 
             //string[] InvitedUsersConnectionIds = await GetInvitedUsers();

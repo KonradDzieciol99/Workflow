@@ -33,17 +33,20 @@ namespace Tasks.Infrastructure.DataAccess
                    .HasForeignKey(x => x.TaskLeaderId)
                    .OnDelete(DeleteBehavior.Restrict)
                    .IsRequired(false);///tu może być błąd !!!
+
+                opt.HasOne(x => x.TaskAssignee)
+                   .WithMany(x => x.AssignedTasks)
+                   .HasForeignKey(x => x.TaskAssigneeMemberId)
+                   .OnDelete(DeleteBehavior.Restrict)
+                   .IsRequired(false);///tu może być błąd !!!
             });
 
             builder.Entity<ProjectMember>(opt =>
             {
-
-
                 opt.HasKey(x => x.Id);
 
                 opt.Property(x => x.Id).ValueGeneratedNever();
             });
-
         }
     }
 

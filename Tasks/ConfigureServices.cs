@@ -12,10 +12,10 @@ using Tasks.Services;
 using MessageBus.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Tasks.Application.Common.Authorization.Handlers;
-using Tasks.Application.Behaviours;
 using Tasks.Domain.Services;
+using Tasks.Application.Common.Behaviours;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace Tasks;
 
 public static class ConfigureServices
 {

@@ -31,9 +31,9 @@ public class AcceptFriendRequestCommandHandler : IRequestHandler<AcceptFriendReq
     }
     public async Task Handle(AcceptFriendRequestCommand request, CancellationToken cancellationToken)
     {
-        var friendRequest = await _unitOfWork.FriendRequestRepository.GetAsync(_currentUserService.UserId, request.TargetUserId);
+        var friendRequest = await _unitOfWork.FriendRequestRepository.GetAsync(_currentUserService.GetUserId(), request.TargetUserId);
 
-        friendRequest.AcceptRequest(_currentUserService.UserId);
+        friendRequest.AcceptRequest(_currentUserService.GetUserId());
 
         if (!await _unitOfWork.Complete())
             throw new InvalidOperationException();

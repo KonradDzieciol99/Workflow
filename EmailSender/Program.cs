@@ -20,7 +20,7 @@ async Task AddSubscriptions(WebApplication app)
 
     var subscribeTasks = new List<Task>
     {
-        eventBus.Subscribe<NewUserRegistrationEvent>(),
+        eventBus.Subscribe<RegistrationEvent>(),
         eventBus.Subscribe<UserResentVerificationEmailIntegrationEvent>(),
     };
 

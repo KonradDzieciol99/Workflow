@@ -17,7 +17,7 @@ namespace Notification.Application.Common.Authorization.Handlers
             var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new ArgumentNullException(nameof(ClaimTypes.NameIdentifier));
             var AppNotificationId = requirement.AppNotificationId ?? throw new ArgumentNullException(nameof(context.Resource));
 
-            var result = await _unitOfWork.AppNotificationRepository.CheckIfUserIsAOwnerOfAppNotification(AppNotificationId);
+            var result = await _unitOfWork.AppNotificationRepository.CheckIfUserIsAOwnerOfAppNotification(AppNotificationId, userId);
 
             if (result)
                 context.Succeed(requirement);

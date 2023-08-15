@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Tasks.Domain.Common.Exceptions;
 using Tasks.Domain.Common.Models;
 using Tasks.Domain.Entity;
-using Tasks.Domain.Exceptions;
 using Tasks.Infrastructure.Repositories;
 
 namespace Tasks.Domain.Services;

@@ -1,4 +1,5 @@
-﻿using Projects.Domain.AggregatesModel.ProjectAggregate;
+﻿using Projects.Application.Common.Models;
+using Projects.Domain.AggregatesModel.ProjectAggregate;
 
 namespace Projects.Application.Common.Interfaces;
 

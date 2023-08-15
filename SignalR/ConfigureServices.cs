@@ -1,12 +1,10 @@
 ﻿using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
 using MessageBus.Extensions;
 
 namespace SignalR;
-
 public static class ConfigureServices
 {
     public static IServiceCollection AddWebAPIServices(this IServiceCollection services, IConfiguration configuration)

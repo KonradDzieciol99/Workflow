@@ -5,17 +5,17 @@ using Tasks.Domain.Common.Models;
 using Tasks.Domain.Entity;
 using Tasks.Infrastructure.Repositories;
 
-namespace Tasks.Events.Handlers
+namespace Tasks.Application.IntegrationEvents.Handlers
 {
     public class ProjectMemberAddedEventHandler : IRequestHandler<ProjectMemberAddedEvent>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public ProjectMemberAddedEventHandler(IUnitOfWork unitOfWork,IMapper mapper)
+        public ProjectMemberAddedEventHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            this._unitOfWork = unitOfWork;
-            this._mapper = mapper;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
         public async Task Handle(ProjectMemberAddedEvent request, CancellationToken cancellationToken)
         {
@@ -25,6 +25,7 @@ namespace Tasks.Events.Handlers
                                                   request.UserEmail,
                                                   request.PhotoUrl,
                                                   (ProjectMemberType)request.Type,
+                                                  (InvitationStatus)request.InvitationStatus,
                                                   request.ProjectId);
 
             _unitOfWork.ProjectMemberRepository.Add(projectMember);
@@ -33,7 +34,7 @@ namespace Tasks.Events.Handlers
                 throw new InvalidOperationException("An error occurred while adding a project member.");
 
             await Task.CompletedTask;
-            return;      
+            return;
         }
     }
 }

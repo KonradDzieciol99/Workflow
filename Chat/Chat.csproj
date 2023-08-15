@@ -26,11 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Application\IntegrationEvents\Handlers\" />
-    <Folder Include="Infrastructure\DataAccess\Migrations\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\MessageBus\MessageBus.csproj" />
   </ItemGroup>
 

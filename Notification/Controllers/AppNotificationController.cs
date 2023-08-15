@@ -26,7 +26,7 @@ namespace Notification.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> MarkAsSeen([FromRoute] string id)
         {
-            await _mediator.Send(new DeleteAppNotificationCommand(id));
+            await _mediator.Send(new MarkAsSeenAppNotificationCommand(id));
 
             return NoContent();
         }

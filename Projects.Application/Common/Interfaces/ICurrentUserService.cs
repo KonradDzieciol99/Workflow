@@ -4,8 +4,8 @@ namespace Projects.Application.Common.Interfaces;
 
 public interface ICurrentUserService
 {
-    string UserId { get; }
-    string UserEmail { get; }
-    string? UserPhoto { get; }
-    ClaimsPrincipal User { get; }
+    public ClaimsPrincipal GetUser();
+    public string GetUserId();
+    public string GetUserEmail();
+    public string? GetUserPhoto();
 }

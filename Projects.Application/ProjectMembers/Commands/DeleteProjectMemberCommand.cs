@@ -18,7 +18,7 @@ using Projects.Application.Common.Interfaces;
 
 namespace Projects.Application.ProjectMembers.Commands;
 
-public record DeleteProjectMemberCommand(string UserId,string ProjectId) : IAuthorizationRequest
+public record DeleteProjectMemberCommand(string memberId,string ProjectId) : IAuthorizationRequest
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement()
     {
@@ -43,7 +43,7 @@ public class DeleteProjectMemberCommandHandler : IRequestHandler<DeleteProjectMe
     {
         var project = await _unitOfWork.ProjectRepository.GetOneAsync(request.ProjectId);
 
-        project.RemoveProjectMember(request.UserId);
+        project.RemoveProjectMember(request.memberId);
 
         await _unitOfWork.Complete();
     }

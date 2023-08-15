@@ -25,13 +25,11 @@ namespace IdentityDuende.Events
             {
                 var localUserRegisterSuccessEvent = (LocalUserRegisterSuccessEvent)evt;
                 //var registerEmailBusMessage = new RegisterEmailBusMessage() { Email = localUserRegisterSuccessEvent.LocalUserEmail, Token = localUserRegisterSuccessEvent.LocalUserActivateToken };
-                var registerEmailBusMessage = new NewUserRegistrationEvent()
-                {
-                    //EventRecipient = new SimpleUser() { UserEmail = localUserRegisterSuccessEvent.LocalUserEmail, UserId = localUserRegisterSuccessEvent.IdentityUserId },
-                    UserEmail = localUserRegisterSuccessEvent.LocalUserEmail,
-                    Token = localUserRegisterSuccessEvent.LocalUserActivateToken,
-                    UserId = localUserRegisterSuccessEvent.IdentityUserId
-                };
+                var registerEmailBusMessage = new RegistrationEvent(localUserRegisterSuccessEvent.LocalUserEmail,
+                                                                    localUserRegisterSuccessEvent.LocalUserActivateToken,
+                                                                    localUserRegisterSuccessEvent.IdentityUserId,
+                                                                    null);
+
                 await _azureServiceBusSender.PublishMessage(registerEmailBusMessage);
 
 

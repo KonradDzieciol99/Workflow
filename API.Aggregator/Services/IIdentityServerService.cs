@@ -1,7 +1,9 @@
-﻿namespace API.Aggregator.Services
+﻿using API.Aggregator.Models;
+
+namespace API.Aggregator.Services;
+
+public interface IIdentityServerService
 {
-    public interface IIdentityServerService
-    {
-        Task<T> CheckIfUserExistsAsync<T>(string email, string token);
-    }
+    Task<UserDto?> CheckIfUserExistsAsync(string email, string token);
+    Task<List<UserDto>> SearchAsync(string email, string token);
 }

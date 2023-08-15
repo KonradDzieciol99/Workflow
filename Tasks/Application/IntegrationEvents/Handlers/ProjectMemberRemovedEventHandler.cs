@@ -3,7 +3,7 @@ using MediatR;
 using MessageBus.Events;
 using Tasks.Infrastructure.Repositories;
 
-namespace Tasks.Events.Handlers
+namespace Tasks.Application.IntegrationEvents.Handlers
 {
     public class ProjectMemberRemovedEventHandler : IRequestHandler<ProjectMemberRemovedEvent>
     {
@@ -12,14 +12,14 @@ namespace Tasks.Events.Handlers
 
         public ProjectMemberRemovedEventHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            this._unitOfWork = unitOfWork;
-            this._mapper = mapper;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
         public async Task Handle(ProjectMemberRemovedEvent request, CancellationToken cancellationToken)
         {
-            var result = await _unitOfWork.ProjectMemberRepository.RemoveAsync(request.ProjectMemberId);
+            var result = await _unitOfWork.ProjectMemberRepository.ExecuteRemoveAsync(request.ProjectMemberId);
 
-            if(result > 0)
+            if (result > 0)
             {
                 await Task.CompletedTask;
                 return;

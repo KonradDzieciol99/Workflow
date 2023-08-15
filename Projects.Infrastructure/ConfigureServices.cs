@@ -20,10 +20,25 @@ public static class ConfigureServices
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
 
+
         services.AddDbContext<ApplicationDbContext>(opt =>
         {
-            opt.UseSqlServer(configuration.GetConnectionString("DbContextConnString") ?? throw new ArgumentNullException("DbContextConnString")) ;
+            string connString;
+            var isDockerEnvironment = Environment.GetEnvironmentVariable("DOCKER_ENVIRONMENT");
+            if (isDockerEnvironment is null || isDockerEnvironment == "true")
+                connString = configuration.GetConnectionString("DbContextConnString") ?? throw new ArgumentNullException("DbContextConnString");
+            else
+                connString = configuration.GetConnectionString("NonDockerDbContextConnString") ?? throw new ArgumentNullException("NonDockerDbContextConnString");
+
+            opt.UseSqlServer(connString);
         });
+
+        //services.AddDbContext<ApplicationDbContext>(opt =>
+        //{
+        //    opt.UseSqlServer(configuration.GetConnectionString("DbContextConnString") ?? throw new ArgumentNullException("DbContextConnString")) ;
+        //});
+
+
         services.AddScoped<IIntegrationEventService, IntegrationEventService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddAzureServiceBusSender(opt =>

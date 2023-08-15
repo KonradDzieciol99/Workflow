@@ -4,6 +4,7 @@ using MessageBus;
 using Tasks.Infrastructure.DataAccess;
 using Tasks.Middleware;
 using Tasks;
+using Tasks.Application.IntegrationEvents.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,8 @@ var subscribeTasks = new List<Task>
     eventBus.Subscribe<ProjectMemberUpdatedEvent>(),
     eventBus.Subscribe<ProjectMemberRemovedEvent>(),
     eventBus.Subscribe<ProjectRemovedEvent>(),
+    eventBus.Subscribe<ProjectMemberAcceptInvitationEvent>(),
+    eventBus.Subscribe<ProjectMemberDeclineInvitationEvent>(),
 };
 await Task.WhenAll(subscribeTasks);
 
@@ -28,7 +31,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     await ApplyMigration();
 }
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseCors("allowAny");
 app.UseAuthentication();
 app.UseAuthorization();

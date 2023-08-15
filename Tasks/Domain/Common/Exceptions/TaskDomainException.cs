@@ -1,6 +1,6 @@
-﻿namespace Tasks.Domain.Exceptions;
+﻿namespace Tasks.Domain.Common.Exceptions;
 
-public class TaskDomainException: Exception
+public class TaskDomainException : Exception
 {
     public TaskDomainException()
     { }

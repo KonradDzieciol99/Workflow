@@ -6,7 +6,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using MessageBus.Extensions;
 using Microsoft.AspNetCore.Authorization;
-using Chat.Application.Common.Authorization.Requirements;
 using Chat.Infrastructure.DataAccess;
 using Chat.Infrastructure.Repositories;
 using Chat.Application.Common.Mappings;
@@ -15,7 +14,6 @@ using Chat.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Chat.Application.Common.Authorization.Handlers;
 using Chat.Domain.Services;
-using Microsoft.Extensions.Options;
 
 namespace Chat;
 
@@ -67,7 +65,14 @@ public static class ConfigureServices
 
         services.AddDbContext<ApplicationDbContext>(opt =>
         {
-            opt.UseSqlServer(configuration.GetConnectionString("DbContextConnString"));
+            string connString;
+            var isDockerEnvironment = Environment.GetEnvironmentVariable("DOCKER_ENVIRONMENT");
+            if (isDockerEnvironment is null || isDockerEnvironment == "true")
+                connString = configuration.GetConnectionString("DbContextConnString") ?? throw new ArgumentNullException("DbContextConnString");
+            else
+                connString = configuration.GetConnectionString("NonDockerDbContextConnString") ?? throw new ArgumentNullException("NonDockerDbContextConnString");
+
+            opt.UseSqlServer(connString);
         });
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);

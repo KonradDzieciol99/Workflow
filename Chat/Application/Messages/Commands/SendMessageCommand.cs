@@ -35,10 +35,10 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand>
     }
     public async Task Handle(SendMessageCommand request, CancellationToken cancellationToken)
     {
-        var friendRequest = await _unitOfWork.FriendRequestRepository.GetAsync(_currentUserService.UserId, request.RecipientUserId);
+        var friendRequest = await _unitOfWork.FriendRequestRepository.GetAsync(_currentUserService.GetUserId(), request.RecipientUserId);
 
-        var message = new Message(_currentUserService.UserId,
-                                  _currentUserService.UserEmail,
+        var message = new Message(_currentUserService.GetUserId(),
+                                  _currentUserService.GetUserEmail(),
                                   request.RecipientUserId,
                                   request.RecipientEmail,
                                   request.Content);

@@ -29,7 +29,7 @@ public class GetAppTasksQueryHandler : IRequestHandler<GetAppTasksQuery, AppTask
     }
     public async Task<AppTaskDtosWithTotalCount> Handle(GetAppTasksQuery request, CancellationToken cancellationToken)
     {
-        var result = await _unitOfWork.AppTaskRepository.GetAsync(_currentUserService.UserId, request);
+        var result = await _unitOfWork.AppTaskRepository.GetAsync(_currentUserService.GetUserId(), request);
 
         var appTasksWithTotalCount = new AppTaskDtosWithTotalCount(result.totalCount, _mapper.Map<List<AppTaskDto>>(result.appTasks));
 

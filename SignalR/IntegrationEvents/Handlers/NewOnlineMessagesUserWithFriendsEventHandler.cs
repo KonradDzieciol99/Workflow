@@ -23,11 +23,11 @@ public class NewOnlineMessagesUserWithFriendsEventHandler : IRequestHandler<NewO
         List<Task<bool>> listOfOnlineUsers = new();
         foreach (var item in request.NewOnlineUserChatFriends)
         {
-            listOfOnlineUsers.Add(_redisDb.KeyExistsAsync($"presence-{item.UserEmail}"));// było UserId
+            listOfOnlineUsers.Add(_redisDb.KeyExistsAsync($"presence-{item.Email}"));// było UserId
         }
         var resoult = await Task.WhenAll(listOfOnlineUsers);
 
-        List<SimpleUser> onlineUsers = new();
+        List<UserDto> onlineUsers = new();
         for (int i = 0; i < request.NewOnlineUserChatFriends.Count(); i++)
         {
             if (resoult[i])
@@ -35,7 +35,7 @@ public class NewOnlineMessagesUserWithFriendsEventHandler : IRequestHandler<NewO
                 onlineUsers.Add(request.NewOnlineUserChatFriends.ElementAt(i));
             }
         }
-        await _messagesHubContext.Clients.User(request.NewOnlineUser.UserId).SendAsync("GetOnlineUsers", onlineUsers);
+        await _messagesHubContext.Clients.User(request.NewOnlineUser.Id).SendAsync("GetOnlineUsers", onlineUsers);
         return;
     }
 }

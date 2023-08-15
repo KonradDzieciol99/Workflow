@@ -28,9 +28,9 @@ public class CreateFriendRequestCommandHandler : IRequestHandler<CreateFriendReq
     }
     public async Task<FriendRequestDto> Handle(CreateFriendRequestCommand request, CancellationToken cancellationToken)
     {
-        var friendRequest = new FriendRequest(_currentUserService.UserId,
-                          _currentUserService.UserEmail,
-                          _currentUserService.UserPhoto,
+        var friendRequest = new FriendRequest(_currentUserService.GetUserId(),
+                          _currentUserService.GetUserEmail(),
+                          _currentUserService.GetUserPhoto(),
                           request.Id,
                           request.Email,
                           request.PhotoUrl);

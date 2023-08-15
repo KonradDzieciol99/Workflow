@@ -27,6 +27,8 @@ namespace HttpMessage
                 HttpRequestMessage message = new HttpRequestMessage();
                 message.Headers.Add("Accept", "application/json");
                 message.RequestUri = new Uri(apiRequest.Url);
+                message.Method=apiRequest.HttpMethod;
+                message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiRequest.AccessToken);
                 _client.DefaultRequestHeaders.Clear();
                 if (apiRequest.Data != null)
                 {
@@ -39,23 +41,7 @@ namespace HttpMessage
                     _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiRequest.AccessToken);
                 }
 
-                HttpResponseMessage apiResponse = null;
-                switch (apiRequest.ApiType)
-                {
-                    case ApiType.POST:
-                        message.Method = HttpMethod.Post;
-                        break;
-                    case ApiType.PUT:
-                        message.Method = HttpMethod.Put;
-                        break;
-                    case ApiType.DELETE:
-                        message.Method = HttpMethod.Delete;
-                        break;
-                    default:
-                        message.Method = HttpMethod.Get;
-                        break;
-                }
-                apiResponse = await _client.SendAsync(message);
+                HttpResponseMessage apiResponse = await _client.SendAsync(message);
 
 
                 if (!apiResponse.IsSuccessStatusCode)      
