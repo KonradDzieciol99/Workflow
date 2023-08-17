@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8640FB86-EFA1-4C60-9C1F-B6ABECEA26C9}"
+	ProjectSection(SolutionItems) = preProject
+		compose.yaml = compose.yaml
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{22D10ABD-F979-4A96-A6E8-3447244A3DF2}"
 EndProject
@@ -81,6 +84,13 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityDuende", "IdentityDuende\IdentityDuende.csproj", "{D9D84000-F6F9-48DF-BFCF-B33993FAEA97}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{36582199-4347-45E4-90C7-8AC065AA0D12}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Proxy", "Proxy", "{71DB4892-48C7-40C5-80C6-C9F6EF624C16}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Envoy", "Envoy", "{5B01DE65-B52B-4283-AA21-4076E6C55864}"
+	ProjectSection(SolutionItems) = preProject
+		envoy.yaml = envoy.yaml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -215,6 +225,8 @@ Global
 		{4D82401E-859D-4D6C-B342-D8B92C633CEE} = {6E0F2DE1-8C27-4A89-995D-BE47CF4EBFC5}
 		{C60C5C73-0773-4693-944C-D1CDF4CF4886} = {8B65199C-6595-4494-8304-4D9F0B51FEB6}
 		{D9D84000-F6F9-48DF-BFCF-B33993FAEA97} = {543242A3-AF15-470D-8432-F130CDFE943A}
+		{71DB4892-48C7-40C5-80C6-C9F6EF624C16} = {8640FB86-EFA1-4C60-9C1F-B6ABECEA26C9}
+		{5B01DE65-B52B-4283-AA21-4076E6C55864} = {71DB4892-48C7-40C5-80C6-C9F6EF624C16}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {835CBD37-3795-4BFA-9CE2-C83C6D42CA55}
