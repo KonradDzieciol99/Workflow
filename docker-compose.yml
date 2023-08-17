@@ -71,4 +71,12 @@ services:
     build:
       context: .
       dockerfile: API.Aggregator/Dockerfile
-
+  #envoy:
+  #  image: envoyproxy/envoy:v1.24-latest
+  #  container_name: envoy_proxy
+  #  ports:
+  #    - "5080:5080"
+  #  volumes:
+  #    - ./Proxy/Envoy:/etc/envoy
+  envoy:
+    image: envoyproxy/envoy:v1.27-latest

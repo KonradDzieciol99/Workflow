@@ -8,7 +8,7 @@ services:
       - ASPNETCORE_URLS=https://+:443;http://+:80
     ports:
       - "5000:80"
-      - "5001:443"
+      #- "5001:443"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -100,3 +100,9 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+  envoy:
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml
+    ports:
+    - "5080:5080"
+    - "5081:5081"
