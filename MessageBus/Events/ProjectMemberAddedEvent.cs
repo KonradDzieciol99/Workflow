@@ -8,7 +8,7 @@ namespace MessageBus.Events
 {
     public class ProjectMemberAddedEvent : IntegrationEvent
     {
-        public ProjectMemberAddedEvent(string projectMemberId, string userId, string userEmail, string? photoUrl, int type, string projectId, int invitationStatus, string projectName, string projectIconUrl)
+        public ProjectMemberAddedEvent(string projectMemberId, string userId, string userEmail, string? photoUrl, int type, string projectId, int invitationStatus, string projectName, string projectIconUrl,bool isNewProjectCreator)
         {
             ProjectMemberId = projectMemberId ?? throw new ArgumentNullException(nameof(projectMemberId));
             UserId = userId ?? throw new ArgumentNullException(nameof(userId));
@@ -19,6 +19,7 @@ namespace MessageBus.Events
             InvitationStatus = invitationStatus;
             ProjectName = projectName ?? throw new ArgumentNullException(nameof(projectName));
             this.projectIconUrl = projectIconUrl ?? throw new ArgumentNullException(nameof(projectIconUrl));
+            this.IsNewProjectCreator = isNewProjectCreator;
         }
 
         //public ProjectMemberAddedEvent(string projectMemberId, string userId, string userEmail, string? photoUrl, string projectId,int invitationStatus, int type = 2)
@@ -41,5 +42,6 @@ namespace MessageBus.Events
         public int InvitationStatus { get; set; }
         public string ProjectName { get; set; }
         public string projectIconUrl { get; set; }
+        public bool IsNewProjectCreator { get; set; }
     }
 }

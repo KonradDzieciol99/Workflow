@@ -29,9 +29,9 @@ public class FriendRequestsController : ControllerBase
     }
 
     [HttpGet("GetConfirmedFriendRequests")]
-    public async Task<ActionResult<List<FriendRequestDto>>> GetConfirmedFriendRequests()
+    public async Task<ActionResult<List<FriendRequestDto>>> GetConfirmedFriendRequests([FromQuery] GetConfirmedFriendRequestsQuery query)
     {
-        return await _mediator.Send(new GetConfirmedFriendRequestsQuery());
+        return await _mediator.Send(query);
     }
 
     [HttpGet("GetReceivedFriendRequests")]

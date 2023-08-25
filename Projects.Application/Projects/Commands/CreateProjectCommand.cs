@@ -26,12 +26,6 @@ public record CreateProjectCommand(string Name, Icon Icon) : IAuthorizationReque
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new List<IAuthorizationRequirement> { };
 }
-//public class CreateProjectCommand : IAuthorizationRequest<ProjectDto>
-//{
-//    public string Name { get; set; }
-//    public Icon Icon { get; set; }
-//    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new List<IAuthorizationRequirement> { };
-//}
 public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand, ProjectDto>
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -46,11 +40,10 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
     }
     public async Task<ProjectDto> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
-        var project = new Project(request.Name,request.Icon.Url){};
 
-        var member = new ProjectMember(_currentUserService.GetUserId(), _currentUserService.GetUserEmail(),_currentUserService.GetUserPhoto(), ProjectMemberType.Leader, InvitationStatus.Accepted);
+        var member = new ProjectMember(_currentUserService.GetUserId(), _currentUserService.GetUserEmail(), _currentUserService.GetUserPhoto(), ProjectMemberType.Leader, InvitationStatus.Accepted);
 
-        project.AddProjectMember(member);
+        var project = new Project(request.Name,request.Icon.Url, member);
 
         _unitOfWork.ProjectRepository.Add(project);
 

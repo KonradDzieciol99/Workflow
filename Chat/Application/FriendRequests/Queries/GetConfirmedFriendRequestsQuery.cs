@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace Chat.Application.FriendRequests.Queries;
 
-public record GetConfirmedFriendRequestsQuery : IAuthorizationRequest<List<FriendRequestDto>>
+public record GetConfirmedFriendRequestsQuery(int Skip, int Take, string? Search) : IAuthorizationRequest<List<FriendRequestDto>>
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new List<IAuthorizationRequirement>();
 }
@@ -29,7 +29,7 @@ public class GetConfirmedFriendRequestsQueryHandler : IRequestHandler<GetConfirm
     }
     public async Task<List<FriendRequestDto>> Handle(GetConfirmedFriendRequestsQuery request, CancellationToken cancellationToken)
     {
-        var friendRequests = await _unitOfWork.FriendRequestRepository.GetConfirmedAsync(_currentUserService.GetUserId());
+        var friendRequests = await _unitOfWork.FriendRequestRepository.GetConfirmedAsync(_currentUserService.GetUserId(), request);
 
         return _mapper.Map<List<FriendRequestDto>>(friendRequests);
 

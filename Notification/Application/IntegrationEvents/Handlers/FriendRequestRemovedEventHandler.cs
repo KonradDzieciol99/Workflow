@@ -67,7 +67,8 @@ namespace Notification.Application.IntegrationEvents.Handlers
                                                                            notificationForRemovedFriend.Description,
                                                                            notificationForRemovedFriend.NotificationPartnerId,
                                                                            notificationForRemovedFriend.NotificationPartnerEmail,
-                                                                           notificationForRemovedFriend.NotificationPartnerPhotoUrl);
+                                                                           notificationForRemovedFriend.NotificationPartnerPhotoUrl,
+                                                                           oldNotifications.Select(x=>x.Id).ToList());
 
             var notificationEventForActionInitiatorUser = new NotificationAddedEvent(notificationForActionInitiatorUser.Id,
                                                                         notificationForActionInitiatorUser.UserId,
@@ -78,7 +79,8 @@ namespace Notification.Application.IntegrationEvents.Handlers
                                                                         notificationForActionInitiatorUser.Description,
                                                                         notificationForActionInitiatorUser.NotificationPartnerId,
                                                                         notificationForActionInitiatorUser.NotificationPartnerEmail,
-                                                                        notificationForActionInitiatorUser.NotificationPartnerPhotoUrl);
+                                                                        notificationForActionInitiatorUser.NotificationPartnerPhotoUrl,
+                                                                        oldNotifications.Select(x => x.Id).ToList());
 
             await _azureServiceBusSender.PublishMessage(notificationEventForRemovedFriend);
             await _azureServiceBusSender.PublishMessage(notificationEventForActionInitiatorUser);

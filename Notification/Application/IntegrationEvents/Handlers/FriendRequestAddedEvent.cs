@@ -57,7 +57,8 @@ public class FriendRequestAddedEvent : IRequestHandler<MessageBus.Events.FriendR
                                                                   notificationForInvitationSendingUser.Description,
                                                                   notificationForInvitationSendingUser.NotificationPartnerId,
                                                                   notificationForInvitationSendingUser.NotificationPartnerEmail,
-                                                                  notificationForInvitationSendingUser.NotificationPartnerPhotoUrl
+                                                                  notificationForInvitationSendingUser.NotificationPartnerPhotoUrl,
+                                                                  null
                                                                   );
 
         var notificationEventForInvitedUser = new NotificationAddedEvent(notificationForInvitedUser.Id,
@@ -68,7 +69,8 @@ public class FriendRequestAddedEvent : IRequestHandler<MessageBus.Events.FriendR
                                                                notificationForInvitedUser.Description,
                                                                notificationForInvitedUser.NotificationPartnerId,
                                                                notificationForInvitedUser.NotificationPartnerEmail,
-                                                               notificationForInvitedUser.NotificationPartnerPhotoUrl);
+                                                               notificationForInvitedUser.NotificationPartnerPhotoUrl,
+                                                               null);
 
         await _azureServiceBusSender.PublishMessage(notificationEventForInvitationSendingUser);
         await _azureServiceBusSender.PublishMessage(notificationEventForInvitedUser);

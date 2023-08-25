@@ -1,4 +1,5 @@
 ﻿using Chat.Application.Common.Models;
+using Chat.Application.FriendRequests.Queries;
 using Chat.Domain.Entity;
 using Chat.Infrastructure.DataAccess;
 using MessageBus.Models;
@@ -51,6 +52,20 @@ public class FriendRequestRepository : IFriendRequestRepository
         return await _dbContext.FriendRequests.Where(x => x.InvitedUserId == userId && x.Confirmed == false)
                                               .ToListAsync();
     }
+    public async Task<List<FriendRequest>> GetConfirmedAsync(string UserId,GetConfirmedFriendRequestsQuery @params)
+    {
+
+
+        var query = _dbContext.FriendRequests.Where(x => (x.InviterUserId == UserId || x.InvitedUserId == UserId) && x.Confirmed == true);
+
+        if (!string.IsNullOrWhiteSpace(@params.Search))
+            query = query.Where(x=> x.InviterUserId != UserId ? x.InviterUserEmail.StartsWith(@params.Search) : x.InvitedUserEmail.StartsWith(@params.Search));
+
+        return await query.Skip(@params.Skip)
+                          .Take(@params.Take)
+                          .ToListAsync();
+
+    }
     public async Task<List<FriendRequest>> GetConfirmedAsync(string UserId)
     {
         return await _dbContext.FriendRequests
@@ -88,6 +103,8 @@ public class FriendRequestRepository : IFriendRequestRepository
                  )
                  .ToList();
     }
+
+
 
     //public async Task<List<UserDto>> GetConfirmedUsersAsync(string UserId)
     //{

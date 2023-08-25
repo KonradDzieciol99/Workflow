@@ -37,7 +37,7 @@ namespace MessageBus.Events
         //public string? NotificationPartnerUserEmail { get; set; }
         //public string? NotificationPartnerUserPhotoUrl { get; set; }
 
-        public NotificationAddedEvent(string id, string userId, int notificationType, DateTime creationDate, bool displayed, string description, string? notificationPartnerId, string? notificationPartnerEmail, string? notificationPartnerPhotoUrl)
+        public NotificationAddedEvent(string id, string userId, int notificationType, DateTime creationDate, bool displayed, string description, string? notificationPartnerId, string? notificationPartnerEmail, string? notificationPartnerPhotoUrl, List<string>? oldNotificationsIds)
         {
             Id = id ?? throw new ArgumentNullException(nameof(id));
             UserId = userId ?? throw new ArgumentNullException(nameof(userId));
@@ -48,6 +48,7 @@ namespace MessageBus.Events
             NotificationPartnerId = notificationPartnerId;
             NotificationPartnerEmail = notificationPartnerEmail;
             NotificationPartnerPhotoUrl = notificationPartnerPhotoUrl;
+            OldNotificationsIds = oldNotificationsIds;
         }
 
         public string Id { get; set; }
@@ -59,5 +60,6 @@ namespace MessageBus.Events
         public string? NotificationPartnerId { get; set; }
         public string? NotificationPartnerEmail { get; set; }
         public string? NotificationPartnerPhotoUrl { get; set; }
+        public List<string>? OldNotificationsIds { get; set; }
     }
 }

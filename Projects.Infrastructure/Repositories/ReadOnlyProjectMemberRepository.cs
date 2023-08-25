@@ -87,7 +87,7 @@ public class ReadOnlyProjectMemberRepository : IReadOnlyProjectMemberRepository
     }
     public async Task<List<MemberStatusDto>> GetMembersStatusesAsync(string projectId, List<string> usersIds)
     {
-        var memberStatuses = await ProjectMembersQuery.Where(x => x.ProjectId == projectId && usersIds.Contains(x.Id) )
+        var memberStatuses = await ProjectMembersQuery.Where(x => x.ProjectId == projectId && usersIds.Contains(x.UserId) )
                                         .Select(m=> new MemberStatusDto
                                         {
                                             UserId = m.UserId,

@@ -68,7 +68,8 @@ namespace Notification.Application.IntegrationEvents.Handlers
                                                                       notificationForInvitationSendingUser.Description,
                                                                       notificationForInvitationSendingUser.NotificationPartnerId,
                                                                       notificationForInvitationSendingUser.NotificationPartnerEmail,
-                                                                      notificationForInvitationSendingUser.NotificationPartnerPhotoUrl
+                                                                      notificationForInvitationSendingUser.NotificationPartnerPhotoUrl,
+                                                                      oldNotifications.Select(x => x.Id).ToList()
                                                                       );
 
             var notificationEventForSender = new NotificationAddedEvent(notificationForInvitationAcceptingUser.Id,
@@ -79,7 +80,8 @@ namespace Notification.Application.IntegrationEvents.Handlers
                                                                    notificationForInvitationAcceptingUser.Description,
                                                                    notificationForInvitationAcceptingUser.NotificationPartnerId,
                                                                    notificationForInvitationAcceptingUser.NotificationPartnerEmail,
-                                                                   notificationForInvitationAcceptingUser.NotificationPartnerPhotoUrl);
+                                                                   notificationForInvitationAcceptingUser.NotificationPartnerPhotoUrl,
+                                                                   oldNotifications.Select(x => x.Id).ToList());
 
             await _azureServiceBusSender.PublishMessage(notificationEventForRecipient);
             await _azureServiceBusSender.PublishMessage(notificationEventForSender);

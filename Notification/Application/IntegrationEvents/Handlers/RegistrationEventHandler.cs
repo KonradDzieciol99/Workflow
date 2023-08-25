@@ -41,7 +41,8 @@ namespace Notification.Application.IntegrationEvents.Handlers
                                                    notification.Description,
                                                    notification.NotificationPartnerId,
                                                    notification.NotificationPartnerEmail,
-                                                   notification.NotificationPartnerPhotoUrl);
+                                                   notification.NotificationPartnerPhotoUrl,
+                                                   null);
 
             await _azureServiceBusSender.PublishMessage(@event);
 

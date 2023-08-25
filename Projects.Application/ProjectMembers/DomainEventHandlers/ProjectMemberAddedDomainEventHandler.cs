@@ -25,7 +25,8 @@ public class ProjectMemberAddedDomainEventHandler : INotificationHandler<Project
         var @event = new ProjectMemberAddedEvent(notification.Member.Id, notification.Member.UserId,
                                     notification.Member.UserEmail, notification.Member.PhotoUrl, (int)notification.Member.Type,
                                      notification.Member.ProjectId,(int)notification.Member.InvitationStatus,
-                                     notification.Member.MotherProject.Name, notification.Member.MotherProject.IconUrl
+                                     notification.Member.MotherProject.Name, notification.Member.MotherProject.IconUrl,
+                                     notification.IsNewProjectCreator
                                      );
 
         _integrationEventService.AddIntegrationEvent(@event);

@@ -7,12 +7,14 @@ namespace Projects.Domain.AggregatesModel.ProjectAggregate;
 public class Project : BaseEntity
 {
     private Project(){ }
-    public Project(string name, string iconUrl)
+    public Project(string name, string iconUrl, ProjectMember creator)
     {
         Id = Guid.NewGuid().ToString();
         Name = name;
         IconUrl = iconUrl;
-        ProjectMembers = new List<ProjectMember>();
+        ProjectMembers = new List<ProjectMember>() { creator };
+
+        this.AddDomainEvent(new ProjectMemberAddedDomainEvent(creator,true));
     }
 
     public string Id { get; private set; }
@@ -24,7 +26,7 @@ public class Project : BaseEntity
     {
         ProjectMembers.Add(newMember);
 
-        this.AddDomainEvent(new ProjectMemberAddedDomainEvent(newMember));
+        this.AddDomainEvent(new ProjectMemberAddedDomainEvent(newMember,false));
     }
     public void RemoveProjectMember(string id)
     {
