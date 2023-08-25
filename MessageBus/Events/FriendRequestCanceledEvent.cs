@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MessageBus.Events;
 
-public class FriendRequestCanceledEvent: IntegrationEvent
+public class FriendRequestCanceledEvent : IntegrationEvent
 {
     public FriendRequestCanceledEvent(string invitationSendingUserId, string invitationSendingUserEmail, string? invitationSendingUserPhotoUrl, string declinedInvitationUserId, string declinedInvitationUserEmail, string? declinedInvitationUserPhotoUrl)
     {

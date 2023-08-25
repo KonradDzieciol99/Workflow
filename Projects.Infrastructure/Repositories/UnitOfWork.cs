@@ -1,14 +1,11 @@
 ﻿
 
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Projects.Application.Common.Interfaces;
 using Projects.Domain.AggregatesModel.ProjectAggregate;
 using Projects.Infrastructure.Common.Extensions;
 using Projects.Infrastructure.DataAccess;
-using System.Threading;
-using System.Transactions;
 
 namespace Projects.Infrastructure.Repositories
 {
@@ -79,7 +76,7 @@ namespace Projects.Infrastructure.Repositories
         //}
         private IDbContextTransaction _currentTransaction;
 
-       // public bool HasActiveTransaction => _currentTransaction != null;
+        // public bool HasActiveTransaction => _currentTransaction != null;
         public bool HasActiveTransaction()
         {
             return _currentTransaction != null;

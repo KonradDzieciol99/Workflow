@@ -4,7 +4,7 @@ public class FriendInvitationDto
 {
     public FriendInvitationDto()
     {
-        
+
     }
 
     public FriendInvitationDto(string inviterUserId, string inviterUserEmail, string? inviterPhotoUrl, string invitedUserId, string invitedUserEmail, string? invitedPhotoUrl, bool confirmed)

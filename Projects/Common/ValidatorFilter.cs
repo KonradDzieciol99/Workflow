@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using Microsoft.AspNetCore.Components.Forms;
 
 namespace Projects.Common
 {
@@ -25,7 +24,7 @@ namespace Projects.Common
 
             if (!validationResult.IsValid)
             {
-                return Results.BadRequest(validationResult.Errors.Select(x=>x.ErrorMessage));
+                return Results.BadRequest(validationResult.Errors.Select(x => x.ErrorMessage));
             }
 
             var resoult = await next(context);

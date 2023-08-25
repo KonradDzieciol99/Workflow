@@ -48,7 +48,7 @@ public class MessagesRepository : IMessagesRepository
     {
         return await _dbContext.Messages
             .Where(m => m.RecipientId == recipientId && m.DateRead == null)//&& !m.RecipientDeleted
-            .Select(m=>m.SenderEmail)
+            .Select(m => m.SenderEmail)
             .ToListAsync();
     }
 

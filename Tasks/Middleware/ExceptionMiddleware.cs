@@ -11,7 +11,7 @@ public class ExceptionMiddleware
     private readonly ILogger<ExceptionMiddleware> _logger;
     private readonly IWebHostEnvironment _env;
 
-    public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger,IWebHostEnvironment env)
+    public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IWebHostEnvironment env)
     {
         this._next = next;
         this._logger = logger;
@@ -36,11 +36,11 @@ public class ExceptionMiddleware
 
         var type = exception.GetType();
 
-        _logger.LogError(exception,null);
+        _logger.LogError(exception, null);
 
         if (exception is TaskDomainException taskDomainException)
         {
-  
+
             var problemDetails = new ValidationProblemDetails()
             {
                 Instance = context.Request.Path,
@@ -60,7 +60,7 @@ public class ExceptionMiddleware
                 else if (taskDomainException.InnerException is Application.Common.Exceptions.ValidationException internalEx)
                 {
                     foreach (var item in internalEx.Errors)
-                        problemDetails.Errors.Add(item.Key, item.Value);        
+                        problemDetails.Errors.Add(item.Key, item.Value);
                 }
             }
 
@@ -70,10 +70,10 @@ public class ExceptionMiddleware
         else
         {
             var message = "An error occur.Try it again.";
-                
+
             if (_env.IsDevelopment())
                 message = exception.Message;
-            
+
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             await context.Response.WriteAsJsonAsync(message);
         }

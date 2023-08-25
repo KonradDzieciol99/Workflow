@@ -2,4 +2,4 @@
 
 namespace Chat.Application.Common.Authorization.Requirements;
 
-public record ShareFriendRequestRequirement(string TargetUserId) : IAuthorizationRequirement {}
+public record ShareFriendRequestRequirement(string TargetUserId) : IAuthorizationRequirement { }

@@ -31,7 +31,7 @@ public class TaskController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<AppTaskDto>> Get([FromRoute] string projectId, [FromRoute] string id)
     {
-        return await _mediator.Send(new GetAppTaskQuery(id,projectId));
+        return await _mediator.Send(new GetAppTaskQuery(id, projectId));
     }
 
     [HttpPost]
@@ -59,7 +59,7 @@ public class TaskController : ControllerBase
     public async Task<ActionResult> Delete([FromRoute] string projectId, [FromRoute] string id)
     {
 
-        await _mediator.Send(new DeleteAppTaskCommand(id,projectId));
+        await _mediator.Send(new DeleteAppTaskCommand(id, projectId));
 
         return NoContent();
     }

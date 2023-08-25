@@ -2,11 +2,9 @@
 using MessageBus;
 using MessageBus.Events;
 //using MessageBus.Models;
-using MongoDB.Bson;
 using Notification.Domain.Common.Enums;
 using Notification.Domain.Entity;
 using Notification.Infrastructure.Repositories;
-using System.Text.Json;
 
 namespace Notification.Application.IntegrationEvents.Handlers
 {
@@ -28,7 +26,7 @@ namespace Notification.Application.IntegrationEvents.Handlers
             var oldNotifications = await _unitOfWork.AppNotificationRepository.GetByNotificationPartnersIdsAsync(
                                     request.InvitationSendingUserId,
                                     request.InvitationAcceptingUserId,
-                                    new List<NotificationType>() 
+                                    new List<NotificationType>()
                                     { NotificationType.FriendRequestReceived,
                                       NotificationType.FriendRequestSent
                                     });

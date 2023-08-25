@@ -25,7 +25,7 @@ namespace Notification.Application.IntegrationEvents.Handlers
                         request.ActionInitiatorUserId,
                         request.FriendToRemoveUserId,
                         new List<NotificationType>()
-                        { 
+                        {
                           NotificationType.FriendRequestAccepted,
                           //NotificationType.FriendRequestSent
                         });
@@ -68,7 +68,7 @@ namespace Notification.Application.IntegrationEvents.Handlers
                                                                            notificationForRemovedFriend.NotificationPartnerId,
                                                                            notificationForRemovedFriend.NotificationPartnerEmail,
                                                                            notificationForRemovedFriend.NotificationPartnerPhotoUrl,
-                                                                           oldNotifications.Select(x=>x.Id).ToList());
+                                                                           oldNotifications.Select(x => x.Id).ToList());
 
             var notificationEventForActionInitiatorUser = new NotificationAddedEvent(notificationForActionInitiatorUser.Id,
                                                                         notificationForActionInitiatorUser.UserId,

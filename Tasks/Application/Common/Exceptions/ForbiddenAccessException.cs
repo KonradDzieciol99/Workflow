@@ -1,6 +1,4 @@
-﻿using System.Security;
-
-namespace Tasks.Application.Common.Exceptions;
+﻿namespace Tasks.Application.Common.Exceptions;
 
 public class ForbiddenAccessException : Exception
 {

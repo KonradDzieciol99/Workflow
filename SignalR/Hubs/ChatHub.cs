@@ -1,9 +1,7 @@
 ﻿using MessageBus;
 using MessageBus.Events;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
-using SignalR.Models;
 using StackExchange.Redis;
 using System.Security.Claims;
 

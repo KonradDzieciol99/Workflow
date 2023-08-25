@@ -1,13 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Projects.Application.Common.Interfaces;
-using Projects.Application.Common.Models;
 using Projects.Domain.AggregatesModel.ProjectAggregate;
 using Projects.Infrastructure.DataAccess;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Projects.Infrastructure.Repositories
 {

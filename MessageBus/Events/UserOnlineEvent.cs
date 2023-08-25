@@ -1,5 +1,4 @@
-﻿using MediatR;
-using MessageBus.Models;
+﻿using MessageBus.Models;
 using System;
 
 namespace MessageBus.Events;

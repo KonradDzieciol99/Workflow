@@ -1,17 +1,12 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
-using Projects.Application.Common.Interfaces;
-using Projects.Infrastructure.Services;
-using Projects.Infrastructure.Repositories;
-using Projects.Infrastructure.DataAccess;
-using Microsoft.EntityFrameworkCore;
-using MessageBus.Extensions;
-using MessageBus;
-using MessageBus.Events;
+﻿using MessageBus.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using static System.Net.WebRequestMethods;
-using Microsoft.Extensions.Options;
+using Projects.Application.Common.Interfaces;
+using Projects.Infrastructure.DataAccess;
+using Projects.Infrastructure.Repositories;
+using Projects.Infrastructure.Services;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -87,7 +82,7 @@ public static class ConfigureServices
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuers = new [] { externalIdentityUrlhttp, externalIdentityUrlhttps },
+                ValidIssuers = new[] { externalIdentityUrlhttp, externalIdentityUrlhttps },
                 ClockSkew = TimeSpan.Zero
             };
         });

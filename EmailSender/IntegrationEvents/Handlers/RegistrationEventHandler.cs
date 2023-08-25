@@ -13,7 +13,7 @@ public class RegistrationEventHandler : IRequestHandler<RegistrationEvent>
     }
     public async Task Handle(RegistrationEvent request, CancellationToken cancellationToken)
     {
-        await _emailSender.CreateConfirmEmailMessage(request.Email,request.Token, request.UserId);
+        await _emailSender.CreateConfirmEmailMessage(request.Email, request.Token, request.UserId);
 
         return;
     }

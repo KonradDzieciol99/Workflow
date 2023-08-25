@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace Tasks.Application.Common.Behaviours;
 

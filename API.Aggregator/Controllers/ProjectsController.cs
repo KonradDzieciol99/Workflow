@@ -2,9 +2,7 @@
 using API.Aggregator.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace API.Aggregator.Controllers
 {
@@ -31,13 +29,14 @@ namespace API.Aggregator.Controllers
             if (usersFound is null)
                 return NotFound("User not found");
 
-            var result = await _projectsService.AddMember(projectId, token, new { 
-                                                                UserId = usersFound.Id,
-                                                                UserEmail = usersFound.Email,
-                                                                PhotoUrl= usersFound.PhotoUrl,
-                                                                Type= ProjectMemberType.Member,
-                                                                ProjectId= projectId
-                                                                });
+            var result = await _projectsService.AddMember(projectId, token, new
+            {
+                UserId = usersFound.Id,
+                UserEmail = usersFound.Email,
+                PhotoUrl = usersFound.PhotoUrl,
+                Type = ProjectMemberType.Member,
+                ProjectId = projectId
+            });
 
             return result;
         }

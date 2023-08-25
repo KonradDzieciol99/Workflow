@@ -33,7 +33,7 @@ namespace Notification.Application.IntegrationEvents.Handlers
             if (!await _unitOfWork.Complete())
                 throw new InvalidOperationException();
 
-            var @event= new NotificationAddedEvent(notification.Id,
+            var @event = new NotificationAddedEvent(notification.Id,
                                                    notification.UserId,
                                                    (int)notification.NotificationType,
                                                    notification.CreationDate,

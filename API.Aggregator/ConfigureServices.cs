@@ -1,6 +1,6 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using API.Aggregator.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using API.Aggregator.Services;
+using Microsoft.IdentityModel.Tokens;
 
 namespace API.Aggregator;
 

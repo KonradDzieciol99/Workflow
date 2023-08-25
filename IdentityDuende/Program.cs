@@ -1,4 +1,3 @@
-using IdentityDuende;
 using IdentityDuende.Infrastructure.DataAccess;
 
 var builder = WebApplication.CreateBuilder(args);

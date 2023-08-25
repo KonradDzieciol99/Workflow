@@ -1,5 +1,4 @@
 ﻿using MediatR.Pipeline;
-using Microsoft.Extensions.Logging;
 using Tasks.Application.Common.Authorization;
 using Tasks.Services;
 

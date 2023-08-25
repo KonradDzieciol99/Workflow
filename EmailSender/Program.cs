@@ -1,4 +1,3 @@
-using EmailSender;
 using MessageBus;
 using MessageBus.Events;
 
@@ -10,7 +9,7 @@ var app = builder.Build();
 
 await AddSubscriptions(app);
 
-if (app.Environment.IsDevelopment()){ }
+if (app.Environment.IsDevelopment()) { }
 
 app.Run();
 

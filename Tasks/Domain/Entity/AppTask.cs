@@ -5,7 +5,7 @@ namespace Tasks.Domain.Entity
 {
     public class AppTask : BaseEntity
     {
-        private AppTask(){}
+        private AppTask() { }
         public AppTask(string name, string? description, string projectId, string? taskAssigneeMemberId,/* string? taskAssigneeMemberEmail, string? taskAssigneeMemberPhotoUrl,*/ Priority priority, State state, DateTime dueDate, DateTime startDate, string? taskLeaderId)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));

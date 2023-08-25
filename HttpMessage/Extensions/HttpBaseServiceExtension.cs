@@ -1,9 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace HttpMessage.Extensions
+﻿namespace HttpMessage.Extensions
 {
     //public static class HttpBaseServiceExtension
     //{

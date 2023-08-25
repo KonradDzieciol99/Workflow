@@ -1,5 +1,5 @@
-using MessageBus.Events;
 using MessageBus;
+using MessageBus.Events;
 using SignalR;
 using SignalR.Hubs;
 using SignalR.IntegrationEvents;
@@ -12,7 +12,7 @@ var app = builder.Build();
 
 await AddSubscriptions(app);
 
-if (app.Environment.IsDevelopment()){}
+if (app.Environment.IsDevelopment()) { }
 
 //app.UseHttpsRedirection();
 

@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Notification.Application.Common.Authorization;
 using Notification.Application.Common.Authorization.Requirements;
-using Notification.Infrastructure.Repositories;
-using Notification.Domain.Common.Exceptions;
 using Notification.Application.Common.Exceptions;
+using Notification.Domain.Common.Exceptions;
+using Notification.Infrastructure.Repositories;
 
 namespace Notification.Application.AppNotifications.Commands;
 

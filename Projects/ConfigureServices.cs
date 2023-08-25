@@ -1,6 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
-using Projects.Application.Common.Interfaces;
+﻿using Projects.Application.Common.Interfaces;
 using Projects.Services;
 
 namespace Microsoft.Extensions.DependencyInjection;

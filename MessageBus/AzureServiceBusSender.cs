@@ -1,17 +1,14 @@
 ﻿using Azure.Messaging.ServiceBus;
-using MessageBus.Events;
 using MessageBus.Models;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace MessageBus
 {
-    public class AzureServiceBusSender: IAzureServiceBusSender
+    public class AzureServiceBusSender : IAzureServiceBusSender
     {
         private readonly AzureServiceBusSenderOptions _options;
         private readonly string _topicName = "workflow_event_bus";

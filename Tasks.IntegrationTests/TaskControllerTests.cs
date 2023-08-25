@@ -1,24 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using Tasks.Application.AppTasks.Commands;
-using Tasks.Application.AppTasks.Queries;
 using Tasks.Application.Common.Models;
 using Tasks.Domain.Common.Models;
 using Tasks.Domain.Entity;
 using Tasks.Infrastructure.DataAccess;
-using Tasks.Infrastructure.Repositories;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Tasks.IntegrationTests;
 
@@ -49,7 +40,7 @@ public class TaskControllerTests
         {
             var _dbContext = scope.ServiceProvider.GetService<ApplicationDbContext>() ?? throw new ArgumentNullException(nameof(ApplicationDbContext));
 
-           if (projectMembers is not null)
+            if (projectMembers is not null)
                 _dbContext.ProjectMembers.AddRange(projectMembers);
 
             if (appTasks is not null)
@@ -97,7 +88,7 @@ public class TaskControllerTests
         //assert
         var responseString = await response.Content.ReadAsStringAsync();
 
-        var options = new JsonSerializerOptions(){ PropertyNameCaseInsensitive = true };
+        var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
         var returnedTask = JsonSerializer.Deserialize<AppTaskDto>(responseString, options);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -236,7 +227,7 @@ public class TaskControllerTests
         SetHeaders(result.projectMembers[0].UserId, result.projectMembers[0].UserEmail);
 
         //var command = new AddTaskCommand("AdedTask", null, result.projectMembers[0].ProjectId, null, null, null, Priority.High, State.Done, new DateTime(2023, 6, 4), new DateTime(2023, 6, 5));
-        var command = new AddTaskCommand("AdedTask", null, result.projectMembers[0].ProjectId, null, Priority.High, State.Done, new DateTime(2023, 6, 4), new DateTime(2023, 6, 5),"1");
+        var command = new AddTaskCommand("AdedTask", null, result.projectMembers[0].ProjectId, null, Priority.High, State.Done, new DateTime(2023, 6, 4), new DateTime(2023, 6, 5), "1");
 
         var content = new StringContent(JsonSerializer.Serialize(command), UTF8Encoding.UTF8, "application/json");
         //act

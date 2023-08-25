@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Notification.Application.Common.Exceptions
+﻿namespace Notification.Application.Common.Exceptions
 {
     public class UnauthorizedException : Exception
     {

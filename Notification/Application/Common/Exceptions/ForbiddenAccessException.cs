@@ -1,6 +1,4 @@
-﻿using System.Security;
-
-namespace Notification.Application.Common.Exceptions;
+﻿namespace Notification.Application.Common.Exceptions;
 
 public class ForbiddenAccessException : Exception
 {

@@ -1,14 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Linq.Expressions;
-using Projects.Infrastructure.DataAccess;
-using Projects.Domain.Common.Models;
-using Projects.Domain.AggregatesModel.ProjectAggregate;
 using Projects.Application.Common.Interfaces;
 using Projects.Application.Common.Models;
 using Projects.Application.Projects.Queries;
-using Projects.Infrastructure.Common.Extensions;
+using Projects.Domain.AggregatesModel.ProjectAggregate;
 using Projects.Domain.Common.Enums;
+using Projects.Infrastructure.Common.Extensions;
+using Projects.Infrastructure.DataAccess;
 
 namespace Projects.Infrastructure.Repositories;
 
@@ -44,7 +41,7 @@ public class ReadOnlyProjectMemberRepository : IReadOnlyProjectMemberRepository
 
         query = query.Include(pm => pm.MotherProject)
                      .ThenInclude(p => p.ProjectMembers)
-                     .Where(p=>p.InvitationStatus==InvitationStatus.Accepted);
+                     .Where(p => p.InvitationStatus == InvitationStatus.Accepted);
 
         if (string.IsNullOrWhiteSpace(appParams.OrderBy) == false && appParams.IsDescending.HasValue)
         {
@@ -87,13 +84,13 @@ public class ReadOnlyProjectMemberRepository : IReadOnlyProjectMemberRepository
     }
     public async Task<List<MemberStatusDto>> GetMembersStatusesAsync(string projectId, List<string> usersIds)
     {
-        var memberStatuses = await ProjectMembersQuery.Where(x => x.ProjectId == projectId && usersIds.Contains(x.UserId) )
-                                        .Select(m=> new MemberStatusDto
+        var memberStatuses = await ProjectMembersQuery.Where(x => x.ProjectId == projectId && usersIds.Contains(x.UserId))
+                                        .Select(m => new MemberStatusDto
                                         {
                                             UserId = m.UserId,
                                             Status = m.InvitationStatus == InvitationStatus.Invited ? MemberStatusType.Invited : MemberStatusType.Member,
                                         }).ToListAsync();
-        
+
         return usersIds.Select(
                          id => memberStatuses.FirstOrDefault(s => s.UserId == id)
                          ?? new MemberStatusDto { UserId = id, Status = MemberStatusType.Uninvited }

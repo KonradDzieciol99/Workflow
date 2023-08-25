@@ -8,9 +8,9 @@ namespace Projects.Infrastructure.Repositories
     {
         private readonly ApplicationDbContext _applicationDbContext;
 
-        public ProjectRepository(ApplicationDbContext applicationDbContext) 
+        public ProjectRepository(ApplicationDbContext applicationDbContext)
         {
-            _applicationDbContext = applicationDbContext  ?? throw new ArgumentNullException(nameof(_applicationDbContext));
+            _applicationDbContext = applicationDbContext ?? throw new ArgumentNullException(nameof(_applicationDbContext));
         }
         public async Task<Project?> GetOneAsync(string projectId)
         {

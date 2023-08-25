@@ -1,10 +1,9 @@
-using Microsoft.EntityFrameworkCore;
-using MessageBus.Events;
 using MessageBus;
+using MessageBus.Events;
+using Microsoft.EntityFrameworkCore;
+using Tasks;
 using Tasks.Infrastructure.DataAccess;
 using Tasks.Middleware;
-using Tasks;
-using Tasks.Application.IntegrationEvents.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 

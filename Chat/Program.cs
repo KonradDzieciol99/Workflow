@@ -1,8 +1,8 @@
-using Chat.Infrastructure.DataAccess;
-using MessageBus.Events;
-using MessageBus;
-using Microsoft.EntityFrameworkCore;
 using Chat;
+using Chat.Infrastructure.DataAccess;
+using MessageBus;
+using MessageBus.Events;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 

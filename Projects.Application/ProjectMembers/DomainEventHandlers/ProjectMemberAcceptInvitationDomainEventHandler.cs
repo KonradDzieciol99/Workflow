@@ -2,11 +2,6 @@
 using MessageBus.Events;
 using Projects.Application.Common.Interfaces;
 using Projects.Domain.DomainEvents;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Projects.Application.ProjectMembers.DomainEventHandlers;
 

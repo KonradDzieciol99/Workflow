@@ -1,15 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tasks.Domain.Common.Models;
-using Tasks.Domain.Entity;
-using Tasks.Infrastructure.DataAccess;
-
-namespace Tasks.IntegrationTests.AppTasks.Commands;
+﻿namespace Tasks.IntegrationTests.AppTasks.Commands;
 
 //public class AddTaskCommandTests //: Base
 //{

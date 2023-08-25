@@ -73,16 +73,16 @@ public class IndexModel : PageModel
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-                await _events.RaiseAsync(new LocalUserRegisterSuccessEvent(user.Email, token, user.Id,null));
+                await _events.RaiseAsync(new LocalUserRegisterSuccessEvent(user.Email, token, user.Id, null));
 
                 return RedirectToPage("/EmailConfirmationInfo/Index", new { email = user.Email, returnUrl = Input.ReturnUrl });
             }
 
             foreach (var item in result.Errors)
             {
-                if (item.Code== "DuplicateUserName" )
+                if (item.Code == "DuplicateUserName")
                     continue;
-                
+
                 ModelState.AddModelError(string.Empty, item.Description);
             }
 

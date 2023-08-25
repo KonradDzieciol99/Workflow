@@ -1,18 +1,17 @@
 ﻿using Chat.Application.Common.Authorization;
 using Chat.Application.Common.Authorization.Requirements;
-using Chat.Application.FriendRequests.Commands;
-using MediatR;
-using MessageBus.Events;
-using MessageBus;
-using Microsoft.AspNetCore.Authorization;
+using Chat.Domain.Entity;
+using Chat.Domain.Services;
 using Chat.Infrastructure.Repositories;
 using Chat.Services;
-using Chat.Domain.Services;
-using Chat.Domain.Entity;
+using MediatR;
+using MessageBus;
+using MessageBus.Events;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Chat.Application.Messages.Commands;
 
-public record SendMessageCommand(string RecipientUserId, string RecipientEmail,string Content) : IAuthorizationRequest
+public record SendMessageCommand(string RecipientUserId, string RecipientEmail, string Content) : IAuthorizationRequest
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement()
     {
@@ -44,7 +43,7 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand>
                                   request.Content);
 
         _messageService.AddMessage(message, friendRequest);
-        
+
         if (!await _unitOfWork.Complete())
             throw new InvalidOperationException();
 

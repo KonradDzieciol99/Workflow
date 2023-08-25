@@ -1,12 +1,9 @@
 ﻿using Chat.Application.Common.Models;
-using Chat.Application.FriendRequests.Commands;
 using Chat.Application.Messages.Commands;
 using Chat.Application.Messages.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading;
 
 namespace Chat.Controllers;
 
@@ -24,14 +21,14 @@ public class MessagesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] SendMessageCommand command)
     {
-         await _mediator.Send(command);
+        await _mediator.Send(command);
 
-         return NoContent();
+        return NoContent();
     }
     [HttpGet]
-    public async Task<ActionResult<List<MessageDto>>> Get([FromQuery]string RecipientId, [FromQuery]string RecipientEmail, [FromQuery] int Skip, [FromQuery] int Take)
+    public async Task<ActionResult<List<MessageDto>>> Get([FromQuery] string RecipientId, [FromQuery] string RecipientEmail, [FromQuery] int Skip, [FromQuery] int Take)
     {
-        return await _mediator.Send(new GetMessageThreadQuery(RecipientEmail, RecipientId, Skip,Take));
+        return await _mediator.Send(new GetMessageThreadQuery(RecipientEmail, RecipientId, Skip, Take));
     }
 
 

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MessageBus.Events
 {
@@ -18,12 +14,12 @@ namespace MessageBus.Events
             FriendToRemoveUserPhotoUrl = friendToRemoveUserPhotoUrl;
         }
 
-        public string  ActionInitiatorUserId { get; set; }
-        public string  ActionInitiatorUserEmail { get; set; }
+        public string ActionInitiatorUserId { get; set; }
+        public string ActionInitiatorUserEmail { get; set; }
         public string? ActionInitiatorUserPhotoUrl { get; set; }
 
-        public string  FriendToRemoveUserId { get; set; }
-        public string  FriendToRemoveUserEmail { get; set; }
+        public string FriendToRemoveUserId { get; set; }
+        public string FriendToRemoveUserEmail { get; set; }
         public string? FriendToRemoveUserPhotoUrl { get; set; }
     }
 }

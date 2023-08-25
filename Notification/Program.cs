@@ -1,9 +1,8 @@
-using MessageBus.Events;
 using MessageBus;
-using Notification;
-using Notification.Middleware;
-using Notification.Infrastructure.DataAccess;
+using MessageBus.Events;
 using Microsoft.EntityFrameworkCore;
+using Notification.Infrastructure.DataAccess;
+using Notification.Middleware;
 
 
 var builder = WebApplication.CreateBuilder(args);

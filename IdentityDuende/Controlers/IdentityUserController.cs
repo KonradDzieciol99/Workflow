@@ -1,9 +1,6 @@
-﻿using Duende.IdentityServer;
-using IdentityDuende.Entities;
+﻿using IdentityDuende.Entities;
 using IdentityDuende.Infrastructure.Repositories;
-using IdentityModel;
 using MessageBus.Models;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -24,7 +21,7 @@ namespace IdentityDuende.Controlers
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public IdentityUserController(/*IChatServiceHttpRequest chatServiceHttpRequest,*/ IUnitOfWork unitOfWork,UserManager<ApplicationUser> userManager)
+        public IdentityUserController(/*IChatServiceHttpRequest chatServiceHttpRequest,*/ IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
         {
             //_chatServiceHttpRequest = chatServiceHttpRequest;
             _unitOfWork = unitOfWork;
@@ -34,8 +31,8 @@ namespace IdentityDuende.Controlers
         public async Task<ActionResult<List<UserDto>>> Search([FromRoute] string email)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); //typy claimow są inne bo nie pobieramy ich przez 
-                                                                     //standardowy AddJwtBearer od microsoft tylko przez 
-                                                                     //jakiś rodzaj od IdentytyServer AddLocalApiAuthentication
+                                                                         //standardowy AddJwtBearer od microsoft tylko przez 
+                                                                         //jakiś rodzaj od IdentytyServer AddLocalApiAuthentication
             var userEmail = User.FindFirstValue(ClaimTypes.Email);
 
             //foreach (var claim in User.Claims)
@@ -89,14 +86,14 @@ namespace IdentityDuende.Controlers
         //public async Task<ActionResult<bool?>> CheckIfUserExists(string email)
         //{
         //    var user = await _userManager.FindByEmailAsync(email);
-            
+
         //    if (user is null)
         //        return Ok(false);
-            
+
         //    return Ok(true);
         //}
 
-        [HttpGet("CheckIfUserExists/{email}")] 
+        [HttpGet("CheckIfUserExists/{email}")]
         public async Task<ActionResult<UserDto?>> CheckIfUserExists(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);

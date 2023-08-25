@@ -6,11 +6,10 @@ using Chat.Infrastructure.Repositories;
 using Chat.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Chat.Application.Messages.Queries;
 
-public record GetMessageThreadQuery(string RecipientEmail,string RecipientId,int Skip,int Take) : IAuthorizationRequest<List<MessageDto>>
+public record GetMessageThreadQuery(string RecipientEmail, string RecipientId, int Skip, int Take) : IAuthorizationRequest<List<MessageDto>>
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement()
     {
@@ -23,7 +22,7 @@ public class GetMessageThreadQueryHandler : IRequestHandler<GetMessageThreadQuer
     private readonly ICurrentUserService _currentUserService;
     private readonly IMapper _mapper;
 
-    public GetMessageThreadQueryHandler(IUnitOfWork unitOfWork,ICurrentUserService currentUserService,IMapper mapper)
+    public GetMessageThreadQueryHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IMapper mapper)
     {
         this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
@@ -31,7 +30,7 @@ public class GetMessageThreadQueryHandler : IRequestHandler<GetMessageThreadQuer
     }
     public async Task<List<MessageDto>> Handle(GetMessageThreadQuery request, CancellationToken cancellationToken)
     {
-        var messages = await _unitOfWork.MessagesRepository.GetMessageThreadAsync(_currentUserService.GetUserEmail(), request.RecipientEmail,request.Skip,request.Take);
+        var messages = await _unitOfWork.MessagesRepository.GetMessageThreadAsync(_currentUserService.GetUserEmail(), request.RecipientEmail, request.Skip, request.Take);
 
         var unreadMessages = messages.Where(m => m.DateRead == null
             && m.RecipientEmail == _currentUserService.GetUserEmail()).ToList();
@@ -39,7 +38,7 @@ public class GetMessageThreadQueryHandler : IRequestHandler<GetMessageThreadQuer
         if (unreadMessages.Any())
             foreach (var message in unreadMessages)
                 message.MarkMessageAsRead();
-            
+
         if (_unitOfWork.HasChanges())
             await _unitOfWork.Complete();
 

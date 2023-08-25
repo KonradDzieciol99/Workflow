@@ -1,6 +1,5 @@
 ﻿using API.Aggregator.Models;
 using HttpMessage;
-using System.Text;
 
 namespace API.Aggregator.Services
 {

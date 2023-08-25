@@ -1,12 +1,4 @@
-﻿using Microsoft.Azure.Amqp.Framing;
-using Microsoft.VisualBasic;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tasks.Domain.Common.Exceptions;
+﻿using Tasks.Domain.Common.Exceptions;
 using Tasks.Domain.Common.Models;
 using Tasks.Domain.Entity;
 
@@ -37,7 +29,7 @@ public class AppTaskTests
         //var newTaskAssigneeMemberEmail = "New assignee email";
         //var newTaskAssigneeMemberPhotoUrl = "New assignee photo URL";
         var newPriority = Priority.High;
-        var newState = State.Done; 
+        var newState = State.Done;
         var newDueDate = new DateTime(1900, 12, 1);
         var newStartDate = new DateTime(1900, 12, 1).AddDays(1);
         var newTaskLeaderId = "New task leader id";
@@ -58,5 +50,5 @@ public class AppTaskTests
 
     private AppTask GetFakeAppTask()
         => new AppTask("test", null, "A", null, /*null, null,*/ Priority.Low, State.ToDo, new DateTime(1900, 12, 1), new DateTime(1899, 12, 1), null);
-    
+
 }

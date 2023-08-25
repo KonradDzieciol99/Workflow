@@ -10,7 +10,7 @@ public class AutoMapperProfiles : Profile
     {
         CreateMap<FriendRequest, FriendRequestDto>();
         CreateMap<FriendRequestDto, FriendRequest>();
-        
+
         CreateMap<Message, MessageDto>();
         CreateMap<MessageDto, Message>();
     }

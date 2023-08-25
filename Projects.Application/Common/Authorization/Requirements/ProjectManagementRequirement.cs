@@ -2,7 +2,7 @@
 
 namespace Projects.Application.Common.Authorization.Requirements
 {
-    public class ProjectManagementRequirement : IAuthorizationRequirement 
+    public class ProjectManagementRequirement : IAuthorizationRequirement
     {
         public ProjectManagementRequirement(string projectId)
         {

@@ -1,15 +1,15 @@
 ﻿using AutoMapper;
 using MediatR;
-using MessageBus.Events;
 using MessageBus;
+using MessageBus.Events;
 using Microsoft.AspNetCore.Authorization;
 using Tasks.Application.Common.Authorization;
 using Tasks.Application.Common.Authorization.Requirements;
-using Tasks.Infrastructure.Repositories;
-using Tasks.Services;
 using Tasks.Application.Common.Exceptions;
 using Tasks.Application.Common.Models;
 using Tasks.Domain.Common.Models;
+using Tasks.Infrastructure.Repositories;
+using Tasks.Services;
 
 namespace Tasks.Application.AppTasks.Commands;
 
@@ -39,7 +39,7 @@ public record UpdateAppTaskCommand(string Id,
     }
 }
 
-public class UpdateAppTaskCommandHandler : IRequestHandler<UpdateAppTaskCommand,AppTaskDto>
+public class UpdateAppTaskCommandHandler : IRequestHandler<UpdateAppTaskCommand, AppTaskDto>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUserService;

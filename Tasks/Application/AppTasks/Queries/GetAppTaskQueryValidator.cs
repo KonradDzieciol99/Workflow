@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using Tasks.Application.AppTasks.Commands;
 
 namespace Tasks.Application.AppTasks.Queries;
 

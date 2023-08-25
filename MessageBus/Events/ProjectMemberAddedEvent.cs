@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MessageBus.Events
 {
     public class ProjectMemberAddedEvent : IntegrationEvent
     {
-        public ProjectMemberAddedEvent(string projectMemberId, string userId, string userEmail, string? photoUrl, int type, string projectId, int invitationStatus, string projectName, string projectIconUrl,bool isNewProjectCreator)
+        public ProjectMemberAddedEvent(string projectMemberId, string userId, string userEmail, string? photoUrl, int type, string projectId, int invitationStatus, string projectName, string projectIconUrl, bool isNewProjectCreator)
         {
             ProjectMemberId = projectMemberId ?? throw new ArgumentNullException(nameof(projectMemberId));
             UserId = userId ?? throw new ArgumentNullException(nameof(userId));

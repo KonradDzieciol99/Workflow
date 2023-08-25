@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Chat.Application.Common.Models;
 using Chat.Infrastructure.Repositories;
-using Chat.Services;
 using MediatR;
 using MessageBus;
 using MessageBus.Events;
@@ -24,7 +23,7 @@ public class UserConnectedToChatEventHandler : IRequestHandler<UserConnectedToCh
     }
     public async Task Handle(UserConnectedToChatEvent request, CancellationToken cancellationToken)
     {
-        var messages = await _unitOfWork.MessagesRepository.GetMessageThreadAsync(request.ConnectedUser.Email, request.RecipientEmail,0,15);
+        var messages = await _unitOfWork.MessagesRepository.GetMessageThreadAsync(request.ConnectedUser.Email, request.RecipientEmail, 0, 15);
 
         var unreadMessages = messages.Where(m => m.DateRead == null && m.RecipientEmail == request.ConnectedUser.Email).ToList();
 

@@ -11,7 +11,7 @@ public interface IFriendRequestRepository
     Task<List<FriendRequest>> GetReceivedFriendRequestsAsync(string userId);
     Task<FriendRequest?> GetAsync(string sourceUserId, string targetUserId);
     void Remove(FriendRequest entity);
-    Task<List<FriendRequest>> GetConfirmedAsync(string UserId,GetConfirmedFriendRequestsQuery @params);
+    Task<List<FriendRequest>> GetConfirmedAsync(string UserId, GetConfirmedFriendRequestsQuery @params);
     Task<List<FriendRequest>> GetConfirmedAsync(string UserId);
     Task<bool> CheckIfTheyShareFriendRequest(string userId, string targetUserId);
     Task<List<FriendStatusDto>> CheckUsersToUserStatusAsync(string userId, List<string> userIds);

@@ -1,19 +1,19 @@
 ﻿
 using FluentValidation;
 using MediatR;
+using MessageBus.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
+using Tasks.Application.Common.Authorization.Handlers;
+using Tasks.Application.Common.Behaviours;
 using Tasks.Common;
+using Tasks.Domain.Services;
 using Tasks.Infrastructure.DataAccess;
 using Tasks.Infrastructure.Repositories;
 using Tasks.Services;
-using MessageBus.Extensions;
-using Microsoft.AspNetCore.Authorization;
-using Tasks.Application.Common.Authorization.Handlers;
-using Tasks.Domain.Services;
-using Tasks.Application.Common.Behaviours;
 
 namespace Tasks;
 

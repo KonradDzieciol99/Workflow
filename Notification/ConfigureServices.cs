@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+﻿using MediatR;
 using MessageBus.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Notification.Infrastructure.DataAccess;
-using MediatR;
+using Microsoft.IdentityModel.Tokens;
+using Notification.Application.Common.Authorization.Handlers;
 using Notification.Application.Common.Behaviours;
+using Notification.Infrastructure.DataAccess;
 using Notification.Infrastructure.Repositories;
 using Notification.Services;
-using Microsoft.AspNetCore.Authorization;
-using Notification.Application.Common.Authorization.Handlers;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -88,7 +88,7 @@ public static class ConfigureServices
         });
         services.AddAzureServiceBusSender(opt =>
         {
-            opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString")  ?? throw new ArgumentNullException("ServiceBusConnectionString");
+            opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString") ?? throw new ArgumentNullException("ServiceBusConnectionString");
         });
         services.AddDbContext<ApplicationDbContext>(opt =>
         {

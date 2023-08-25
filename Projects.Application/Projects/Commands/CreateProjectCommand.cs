@@ -1,23 +1,11 @@
 ﻿using AutoMapper;
 using MediatR;
-using MessageBus.Events;
-using MessageBus;
 using Microsoft.AspNetCore.Authorization;
 using Projects.Application.Common.Authorization;
+using Projects.Application.Common.Interfaces;
 using Projects.Application.Common.Models;
 using Projects.Application.Common.Models.Dto;
-using Projects.Application.ProjectMembers.Commands;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 using Projects.Domain.AggregatesModel.ProjectAggregate;
-using Microsoft.Azure.Amqp.Encoding;
-using Azure.Core;
-using Projects.Application.Common.Interfaces;
-using Microsoft.Azure.Amqp.Framing;
 using Projects.Domain.Common.Enums;
 
 namespace Projects.Application.Projects.Commands;
@@ -32,7 +20,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
     private readonly ICurrentUserService _currentUserService;
     private readonly IMapper _mapper;
 
-    public CreateProjectCommandHandler(IUnitOfWork unitOfWork,ICurrentUserService currentUserService,IMapper mapper)
+    public CreateProjectCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IMapper mapper)
     {
         this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(_unitOfWork));
         this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(_currentUserService));
@@ -43,7 +31,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
 
         var member = new ProjectMember(_currentUserService.GetUserId(), _currentUserService.GetUserEmail(), _currentUserService.GetUserPhoto(), ProjectMemberType.Leader, InvitationStatus.Accepted);
 
-        var project = new Project(request.Name,request.Icon.Url, member);
+        var project = new Project(request.Name, request.Icon.Url, member);
 
         _unitOfWork.ProjectRepository.Add(project);
 

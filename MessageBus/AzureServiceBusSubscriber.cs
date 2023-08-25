@@ -1,7 +1,6 @@
 ﻿using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 using MediatR;
-using MessageBus.Events;
 using MessageBus.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -9,8 +8,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -32,7 +29,7 @@ namespace MessageBus
         public AzureServiceBusSubscriber(IServiceScopeFactory serviceScopeFactory,
                                          IMediator mediator,
                                          IOptions<AzureServiceBusSubscriberOptions> options,
-                                         ILogger<AzureServiceBusSubscriber>  logger)
+                                         ILogger<AzureServiceBusSubscriber> logger)
         {
             this._serviceScopeFactory = serviceScopeFactory;
             this._mediator = mediator;
@@ -42,7 +39,7 @@ namespace MessageBus
             //_topicName = topicName;
             _subscriptionName = _options.SubscriptionName;
             _events = new ConcurrentDictionary<string, Type>();
-           RemoveAllRulesAsync().GetAwaiter().GetResult();
+            RemoveAllRulesAsync().GetAwaiter().GetResult();
             // string topicName, string subscriptionName
 
         }
@@ -138,10 +135,10 @@ namespace MessageBus
             {
                 WriteIndented = true
             };
-            
+
             var @event = JsonSerializer.Deserialize<T>(eventJSON, options);
 
-             if (@event is null)
+            if (@event is null)
                 throw new ArgumentNullException($"Message is empty{@event}");
 
             using (var scope = _serviceScopeFactory.CreateScope())
@@ -154,8 +151,8 @@ namespace MessageBus
 
         //public async Task Subscribe<T, TH>()
         public async Task Subscribe<T>()
-            //where T : IntegrationEvent
-            //where TH : IIntegrationEventHandler<T>
+        //where T : IntegrationEvent
+        //where TH : IIntegrationEventHandler<T>
         {
 
             var _administrationClient = new ServiceBusAdministrationClient(_options.ServiceBusConnectionString);
@@ -165,24 +162,24 @@ namespace MessageBus
             //var containsKey = _subsManager.HasSubscriptionsForEvent<T>();
             //if (!containsKey)
             //{
-                try
+            try
+            {
+                await _administrationClient.CreateRuleAsync(_topicName, _subscriptionName, new CreateRuleOptions
                 {
-                    await _administrationClient.CreateRuleAsync(_topicName, _subscriptionName, new CreateRuleOptions
-                    {
-                        Filter = new CorrelationRuleFilter() { Subject = eventName },
-                        Name = eventName
-                    });
-                    _events.TryAdd(eventName, typeof(T));
-                }
-                catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.MessagingEntityAlreadyExists)
-                {
-                    //_logger.LogWarning("The messaging entity {eventName} already exists.", eventName);
-                }
-                catch (Exception ex)
-                {
-                    //_logger.LogWarning("The messaging entity {eventName} already exists.", eventName);
-                    throw;
-                }   
+                    Filter = new CorrelationRuleFilter() { Subject = eventName },
+                    Name = eventName
+                });
+                _events.TryAdd(eventName, typeof(T));
+            }
+            catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.MessagingEntityAlreadyExists)
+            {
+                //_logger.LogWarning("The messaging entity {eventName} already exists.", eventName);
+            }
+            catch (Exception)
+            {
+                //_logger.LogWarning("The messaging entity {eventName} already exists.", eventName);
+                throw;
+            }
             //}
 
             //_logger.LogInformation("Subscribing to event {EventName} with {EventHandler}", eventName, typeof(TH).Name);
@@ -216,7 +213,7 @@ namespace MessageBus
 
             try
             {
-                 var rules =  _administrationClient.GetRulesAsync(_topicName, _subscriptionName);
+                var rules = _administrationClient.GetRulesAsync(_topicName, _subscriptionName);
 
                 await foreach (var rule in rules)
                 {
@@ -228,7 +225,7 @@ namespace MessageBus
             //    Console.WriteLine(ex.Message);
             //    //_logger.LogWarning("The messaging entity {eventName} already exists.", eventName);
             //} to jest chyba wogole źle
-            catch (Exception ex) 
+            catch (Exception)
             {
                 throw;
                 //_logger.LogWarning("The messaging entity {DefaultRuleName} Could not be found.", RuleProperties.DefaultRuleName);

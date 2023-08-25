@@ -1,5 +1,5 @@
-﻿using MessageBus.Extensions;
-using EmailSender.Sender;
+﻿using EmailSender.Sender;
+using MessageBus.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

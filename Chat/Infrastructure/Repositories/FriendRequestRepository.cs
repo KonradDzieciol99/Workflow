@@ -2,9 +2,7 @@
 using Chat.Application.FriendRequests.Queries;
 using Chat.Domain.Entity;
 using Chat.Infrastructure.DataAccess;
-using MessageBus.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace Chat.Infrastructure.Repositories;
 
@@ -32,11 +30,11 @@ public class FriendRequestRepository : IFriendRequestRepository
     {
         //return await _dbContext.FriendRequests.FindAsync(sourceUserId, targetUserId);
         return await _dbContext.FriendRequests.SingleOrDefaultAsync(x => (x.InviterUserId == sourceUserId && x.InvitedUserId == targetUserId) ||
-                                                                         (x.InviterUserId == targetUserId && x.InvitedUserId == sourceUserId) 
+                                                                         (x.InviterUserId == targetUserId && x.InvitedUserId == sourceUserId)
                                                                          );
 
-                    //.FirstOrDefaultAsync(x => (x.InviterUserId == userId && x.InvitedUserId == recipientId)
-                    //|| (x.InviterUserId == recipientId && x.InvitedUserId == userId));
+        //.FirstOrDefaultAsync(x => (x.InviterUserId == userId && x.InvitedUserId == recipientId)
+        //|| (x.InviterUserId == recipientId && x.InvitedUserId == userId));
     }
 
     //public async Task<List<FriendRequest>> GetAsync(string userId) //old
@@ -52,14 +50,14 @@ public class FriendRequestRepository : IFriendRequestRepository
         return await _dbContext.FriendRequests.Where(x => x.InvitedUserId == userId && x.Confirmed == false)
                                               .ToListAsync();
     }
-    public async Task<List<FriendRequest>> GetConfirmedAsync(string UserId,GetConfirmedFriendRequestsQuery @params)
+    public async Task<List<FriendRequest>> GetConfirmedAsync(string UserId, GetConfirmedFriendRequestsQuery @params)
     {
 
 
         var query = _dbContext.FriendRequests.Where(x => (x.InviterUserId == UserId || x.InvitedUserId == UserId) && x.Confirmed == true);
 
         if (!string.IsNullOrWhiteSpace(@params.Search))
-            query = query.Where(x=> x.InviterUserId != UserId ? x.InviterUserEmail.StartsWith(@params.Search) : x.InvitedUserEmail.StartsWith(@params.Search));
+            query = query.Where(x => x.InviterUserId != UserId ? x.InviterUserEmail.StartsWith(@params.Search) : x.InvitedUserEmail.StartsWith(@params.Search));
 
         return await query.Skip(@params.Skip)
                           .Take(@params.Take)
@@ -72,19 +70,19 @@ public class FriendRequestRepository : IFriendRequestRepository
                             .Where(x => (x.InviterUserId == UserId || x.InvitedUserId == UserId) && x.Confirmed == true)
                             .ToListAsync();
     }
-    public async Task<bool> CheckIfTheyShareFriendRequest(string userId,string targetUserId)
+    public async Task<bool> CheckIfTheyShareFriendRequest(string userId, string targetUserId)
     {
         return await _dbContext.FriendRequests
-                            .AnyAsync(x => (x.InviterUserId == userId && x.InvitedUserId == targetUserId) 
+                            .AnyAsync(x => (x.InviterUserId == userId && x.InvitedUserId == targetUserId)
                             || (x.InviterUserId == targetUserId && x.InvitedUserId == userId));
     }
-    public async Task<List<FriendStatusDto>> CheckUsersToUserStatusAsync(string userId,  List<string> userIds)
+    public async Task<List<FriendStatusDto>> CheckUsersToUserStatusAsync(string userId, List<string> userIds)
     {
         var userStatuses = await _dbContext.FriendRequests
             .Where(r =>
                 (r.InviterUserId == userId && userIds.Contains(r.InvitedUserId)) ||
                 (r.InvitedUserId == userId && userIds.Contains(r.InviterUserId))
-                //(r.InviterUserId != userId && userIds.Contains(r.InviterUserId) && r.InvitedUserId == userId)
+            //(r.InviterUserId != userId && userIds.Contains(r.InviterUserId) && r.InvitedUserId == userId)
             )
             .Select(r => new FriendStatusDto
             {

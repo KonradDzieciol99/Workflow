@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Projects.Application.Common.Exceptions
+﻿namespace Projects.Application.Common.Exceptions
 {
     public class UnauthorizedException : Exception
     {
@@ -12,9 +6,9 @@ namespace Projects.Application.Common.Exceptions
         {
 
         }
-        public UnauthorizedException():base()
+        public UnauthorizedException() : base()
         {
-            
+
         }
     }
 }

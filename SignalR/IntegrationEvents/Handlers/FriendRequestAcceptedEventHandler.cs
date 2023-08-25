@@ -1,12 +1,9 @@
 ﻿using MediatR;
-using MessageBus;
 using MessageBus.Events;
-using MessageBus.Models;
 using Microsoft.AspNetCore.SignalR;
 using SignalR.Hubs;
 using SignalR.Models;
 using StackExchange.Redis;
-using System.Text.Json;
 
 namespace SignalR.IntegrationEvents.Handlers;
 
@@ -28,14 +25,14 @@ public class FriendRequestAcceptedEventHandler : IRequestHandler<FriendRequestAc
     {
 
         var friendInvitationDto = new FriendInvitationDto(request.InvitationSendingUserId, request.InvitationSendingUserEmail, request.InvitationSendingUserPhotoUrl, request.InvitationAcceptingUserId, request.InvitationAcceptingUserEmail, request.InvitationAcceptingUserPhotoUrl, true);
-        
+
         await _messagesHubContext.Clients.User(request.InvitationSendingUserId).SendAsync("FriendInvitationAccepted", friendInvitationDto);
 
         await _messagesHubContext.Clients.User(request.InvitationAcceptingUserId).SendAsync("FriendInvitationAccepted", friendInvitationDto);
 
         var isOnline = await _redisDb.KeyExistsAsync($"presence-{request.InvitationSendingUserEmail}");
         if (isOnline)
-           // await _messagesHubContext.Clients.User(request.InvitationAcceptingUserId).SendAsync("UserIsOnline", new UserDto(request.InvitationSendingUserId, request.InvitationSendingUserEmail, request.InvitationSendingUserPhotoUrl) );
+            // await _messagesHubContext.Clients.User(request.InvitationAcceptingUserId).SendAsync("UserIsOnline", new UserDto(request.InvitationSendingUserId, request.InvitationSendingUserEmail, request.InvitationSendingUserPhotoUrl) );
             await _presenceHubContext.Clients.User(request.InvitationAcceptingUserId).SendAsync("UserIsOnline", request.InvitationSendingUserEmail);
 
         isOnline = await _redisDb.KeyExistsAsync($"presence-{request.InvitationAcceptingUserEmail}");

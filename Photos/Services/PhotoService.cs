@@ -1,6 +1,5 @@
-﻿namespace Photos.Services
+﻿namespace Photos.Services;
+
+public class PhotoService
 {
-    public class PhotoService
-    {
-    }
 }

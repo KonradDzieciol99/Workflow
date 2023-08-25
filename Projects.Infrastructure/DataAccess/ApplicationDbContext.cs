@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Projects.Domain.AggregatesModel.ProjectAggregate;
-using System.Diagnostics;
-using System.Reflection.Emit;
 
 namespace Projects.Infrastructure.DataAccess
 {
@@ -36,7 +34,7 @@ namespace Projects.Infrastructure.DataAccess
 
             builder.Entity<ProjectMember>(opt =>
             {
-                opt.HasKey(x => new { x.UserId,x.ProjectId });
+                opt.HasKey(x => new { x.UserId, x.ProjectId });
 
                 opt.Property(x => x.Id).ValueGeneratedOnAdd();
             });

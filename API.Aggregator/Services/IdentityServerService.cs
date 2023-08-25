@@ -8,7 +8,7 @@ public class IdentityServerService : BaseHttpService, IIdentityServerService
 {
     private readonly string _identityUrl;
 
-    public IdentityServerService(HttpClient client,IConfiguration configuration) : base(client)
+    public IdentityServerService(HttpClient client, IConfiguration configuration) : base(client)
     {
         _identityUrl = configuration.GetValue<string>("urls:internal:IdentityHttp") ?? throw new ArgumentNullException(_identityUrl);
     }

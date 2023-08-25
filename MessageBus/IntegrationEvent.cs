@@ -1,7 +1,4 @@
 ﻿using MediatR;
-using MessageBus.Models;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
 using System;
 
 namespace MessageBus;
@@ -10,15 +7,9 @@ public class IntegrationEvent : IRequest
 {
     public IntegrationEvent()
     {
-        
+
     }
 
-    public IntegrationEvent(string? id)
-    {
-        Id = id;
-    }
-
-    public string? Id { get; set; }
     public DateTime MessageCreated { get; set; }
     //public SimpleUser? EventRecipient { get; set; }
     //public string? NotificationPartnerUserId { get; set; }

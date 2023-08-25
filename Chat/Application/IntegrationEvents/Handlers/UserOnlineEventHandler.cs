@@ -1,5 +1,4 @@
-﻿using Chat.Domain.Entity;
-using Chat.Infrastructure.Repositories;
+﻿using Chat.Infrastructure.Repositories;
 using MediatR;
 using MessageBus;
 using MessageBus.Events;
@@ -12,7 +11,7 @@ public class UserOnlineEventHandler : IRequestHandler<UserOnlineEvent>
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAzureServiceBusSender _azureServiceBusSender;
 
-    public UserOnlineEventHandler(IUnitOfWork unitOfWork,IAzureServiceBusSender _azureServiceBusSender)
+    public UserOnlineEventHandler(IUnitOfWork unitOfWork, IAzureServiceBusSender _azureServiceBusSender)
     {
         this._unitOfWork = unitOfWork;
         this._azureServiceBusSender = _azureServiceBusSender;

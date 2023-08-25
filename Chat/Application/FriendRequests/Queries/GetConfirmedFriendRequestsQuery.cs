@@ -1,13 +1,10 @@
-﻿using Chat.Application.Common.Authorization;
+﻿using AutoMapper;
+using Chat.Application.Common.Authorization;
 using Chat.Application.Common.Models;
-using MediatR;
-using MessageBus.Events;
-using MessageBus;
-using Microsoft.AspNetCore.Authorization;
 using Chat.Infrastructure.Repositories;
 using Chat.Services;
-using AutoMapper;
-using System.Collections.Generic;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Chat.Application.FriendRequests.Queries;
 
@@ -21,7 +18,7 @@ public class GetConfirmedFriendRequestsQueryHandler : IRequestHandler<GetConfirm
     private readonly ICurrentUserService _currentUserService;
     private readonly IMapper _mapper;
 
-    public GetConfirmedFriendRequestsQueryHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService,IMapper mapper)
+    public GetConfirmedFriendRequestsQueryHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IMapper mapper)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));

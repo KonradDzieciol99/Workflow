@@ -18,7 +18,7 @@ public class UserOnlineNotifcationsAndUnreadEventHandler : IRequestHandler<UserO
     public async Task Handle(UserOnlineNotifcationsAndUnreadEvent request, CancellationToken cancellationToken)
     {
 
-        await _presenceHubContext.Clients.User(request.OnlineUser.Id).SendAsync("ReceiveNotifications", new PagedAppNotifications(request.AppNotifications, request.TotalCount ));
+        await _presenceHubContext.Clients.User(request.OnlineUser.Id).SendAsync("ReceiveNotifications", new PagedAppNotifications(request.AppNotifications, request.TotalCount));
         await _presenceHubContext.Clients.User(request.OnlineUser.Id).SendAsync("ReceiveUnreadNotifications", request.UnreadIds);
 
         return;

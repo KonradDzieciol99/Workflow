@@ -1,11 +1,9 @@
-﻿using Notification.Infrastructure.DataAccess;
-using Notification.Domain.Entity;
-using Microsoft.EntityFrameworkCore;
-using Notification.Infrastructure.Common.Extensions;
+﻿using Microsoft.EntityFrameworkCore;
 using Notification.Application.AppNotifications.Queries;
-using Microsoft.Azure.Amqp.Framing;
-using System.Linq.Expressions;
 using Notification.Domain.Common.Enums;
+using Notification.Domain.Entity;
+using Notification.Infrastructure.Common.Extensions;
+using Notification.Infrastructure.DataAccess;
 
 namespace Notification.Infrastructure.Repositories;
 
@@ -18,9 +16,9 @@ public class AppNotificationRepository : Repository<AppNotification>, IAppNotifi
         _applicationDbContext = applicationDbContext ?? throw new ArgumentNullException(nameof(applicationDbContext));
     }
 
-    public async Task<bool> CheckIfUserIsAOwnerOfAppNotification(string appNotificationId,string userId)
+    public async Task<bool> CheckIfUserIsAOwnerOfAppNotification(string appNotificationId, string userId)
     {
-        return await _applicationDbContext.AppNotification.AnyAsync(x=> x.Id == appNotificationId && x.UserId == userId);
+        return await _applicationDbContext.AppNotification.AnyAsync(x => x.Id == appNotificationId && x.UserId == userId);
 
     }
     public async Task<AppNotification?> GetAsync(string Id)

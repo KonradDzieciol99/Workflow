@@ -1,14 +1,10 @@
-﻿using AutoMapper;
-using Azure.Core;
-using Azure.Core.Extensions;
-using MessageBus;
+﻿using MessageBus;
 using MessageBus.Events;
 using MessageBus.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using StackExchange.Redis;
 using System.Security.Claims;
-using System.Text.Json;
 
 namespace SignalR.Hubs;
 
@@ -37,7 +33,7 @@ public class PresenceHub : Hub
         await _redisDb.SetAddAsync($"presence-{email}", Context.ConnectionId);
 
         //var onlineUsers = friendsInvitationDtos.Select(x => x.InviterUserId == userId ? new User() { UserId = x.InvitedUserId, UserEmail = x.InvitedUserEmail } : new User() { UserId = x.InviterUserId, UserEmail = x.InviterUserEmail });
-        var newOnlineUserEvent = new UserOnlineEvent(new UserDto(id, email,null));
+        var newOnlineUserEvent = new UserOnlineEvent(new UserDto(id, email, null));
         await _messageBus.PublishMessage(newOnlineUserEvent);
 
 

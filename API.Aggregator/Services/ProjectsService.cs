@@ -1,9 +1,6 @@
 ﻿using API.Aggregator.Models;
 using HttpMessage;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using System.Text;
-using System.Web;
 
 namespace API.Aggregator.Services;
 
@@ -15,7 +12,7 @@ public class ProjectsService : BaseHttpService, IProjectsService
         this._projectServiceUrl = configuration.GetValue<string>("urls:internal:projectsHttp") ?? throw new ArgumentNullException(nameof(_projectServiceUrl)); ;
     }
 
-    public async Task<bool> CheckIfUserIsAMemberOfProject(string userId,string projectId, string token)
+    public async Task<bool> CheckIfUserIsAMemberOfProject(string userId, string projectId, string token)
     {
         StringBuilder sb = new StringBuilder(_projectServiceUrl);
         sb.Append($"/api/projects/CheckIfUserIsAMemberOfProject?userId={userId}&projectId={projectId}");
@@ -27,7 +24,7 @@ public class ProjectsService : BaseHttpService, IProjectsService
             AccessToken = token
         });
     }
-    public async Task<List<MemberStatusDto>> GetMembersStatuses(List<string> Ids,string projectId, string token)
+    public async Task<List<MemberStatusDto>> GetMembersStatuses(List<string> Ids, string projectId, string token)
     {
         StringBuilder sb = new StringBuilder(_projectServiceUrl);
         sb.Append($"/api/projects/{projectId}/GetMembersStatuses?usersIds={string.Join(",", Ids)}");
@@ -39,7 +36,7 @@ public class ProjectsService : BaseHttpService, IProjectsService
             AccessToken = token
         });
     }
-    public async Task<ProjectMemberDto?> AddMember(string projectId, string token,object command)
+    public async Task<ProjectMemberDto?> AddMember(string projectId, string token, object command)
     {
         StringBuilder sb = new StringBuilder(_projectServiceUrl);
         sb.Append($"/api/projects/{projectId}/projectMembers/addMember");

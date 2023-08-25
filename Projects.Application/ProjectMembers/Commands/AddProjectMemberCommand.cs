@@ -1,20 +1,10 @@
-﻿using AutoMapper;
-using MediatR;
-using MessageBus.Events;
-using MessageBus;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Projects.Application.Common.Authorization;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Projects.Application.Common.Authorization;
 using Projects.Application.Common.Authorization.Requirements;
+using Projects.Application.Common.Interfaces;
 using Projects.Application.Common.Models.Dto;
 using Projects.Domain.AggregatesModel.ProjectAggregate;
-using Projects.Application.Common.Interfaces;
 using Projects.Domain.Common.Enums;
 
 namespace Projects.Application.ProjectMembers.Commands;

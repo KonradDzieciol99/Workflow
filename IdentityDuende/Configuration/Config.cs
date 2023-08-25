@@ -1,6 +1,5 @@
 ﻿using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
-using IdentityModel;
 
 namespace IdentityDuende.Configuration;
 
@@ -38,7 +37,7 @@ public static class Config
              new ApiResource("tasks", "Tasks Service") { Scopes = { "tasks" } },
              new ApiResource("aggregator", "Aggregator Service") { Scopes = { "aggregator" } },
          };
-    
+
 
     public static IEnumerable<Client> Clients =>
         new Client[]

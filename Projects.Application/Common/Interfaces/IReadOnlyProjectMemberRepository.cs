@@ -1,7 +1,6 @@
 ﻿using Projects.Application.Common.Models;
 using Projects.Application.Projects.Queries;
 using Projects.Domain.AggregatesModel.ProjectAggregate;
-using Projects.Domain.Common.Models;
 
 namespace Projects.Application.Common.Interfaces
 {

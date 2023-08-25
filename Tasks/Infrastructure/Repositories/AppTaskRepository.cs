@@ -2,8 +2,8 @@
 using Tasks.Application.AppTasks.Queries;
 using Tasks.Domain.Common.Models;
 using Tasks.Domain.Entity;
-using Tasks.Infrastructure.DataAccess;
 using Tasks.Infrastructure.Common.Extensions;
+using Tasks.Infrastructure.DataAccess;
 
 namespace Tasks.Infrastructure.Repositories;
 

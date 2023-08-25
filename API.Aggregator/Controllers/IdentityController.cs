@@ -2,7 +2,6 @@
 using API.Aggregator.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace API.Aggregator.Controllers;
 
@@ -14,7 +13,7 @@ public class IdentityController : ControllerBase
     private readonly IChatService _chatService;
     private readonly IProjectsService _projectsService;
 
-    public IdentityController(IIdentityServerService identityServerService,IChatService chatService,IProjectsService projectsService)
+    public IdentityController(IIdentityServerService identityServerService, IChatService chatService, IProjectsService projectsService)
     {
         this._identityServerService = identityServerService ?? throw new ArgumentNullException(nameof(identityServerService));
         this._chatService = chatService ?? throw new ArgumentNullException(nameof(chatService));
@@ -43,7 +42,7 @@ public class IdentityController : ControllerBase
 
         var status = await _chatService.GetFriendsStatus(usersFound.Select(x => x.Id).ToList(), token);
 
-        var SearchedUsers = usersFound.Select((x,index) => new SearchedUserDto(x.Id, x.Email, x.PhotoUrl, status[index].Status)).ToList();
+        var SearchedUsers = usersFound.Select((x, index) => new SearchedUserDto(x.Id, x.Email, x.PhotoUrl, status[index].Status)).ToList();
 
         return SearchedUsers;
     }

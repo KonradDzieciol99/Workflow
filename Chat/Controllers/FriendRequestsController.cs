@@ -50,7 +50,7 @@ public class FriendRequestsController : ControllerBase
     public async Task<IActionResult> Delete([FromRoute] string TargetUserId)
     {
         await _mediator.Send(new DeleteFriendRequestCommand(TargetUserId));
-        
+
         return NoContent();
     }
 

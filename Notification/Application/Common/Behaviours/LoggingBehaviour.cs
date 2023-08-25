@@ -1,5 +1,4 @@
 ﻿using MediatR.Pipeline;
-using Microsoft.Extensions.Logging;
 using Notification.Application.Common.Authorization;
 using Notification.Services;
 

@@ -1,6 +1,6 @@
-﻿using System.Security.Claims;
-using Projects.Application.Common.Exceptions;
+﻿using Projects.Application.Common.Exceptions;
 using Projects.Application.Common.Interfaces;
+using System.Security.Claims;
 
 namespace Projects.Services;
 

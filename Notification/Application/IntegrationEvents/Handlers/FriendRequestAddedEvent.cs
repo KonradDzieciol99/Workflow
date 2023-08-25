@@ -1,11 +1,9 @@
-﻿using MessageBus.Events;
-using MediatR;
+﻿using MediatR;
 using MessageBus;
-using Notification.Infrastructure.Repositories;
-using Notification.Domain.Entity;
-using Azure.Core;
-using MongoDB.Bson;
+using MessageBus.Events;
 using Notification.Domain.Common.Enums;
+using Notification.Domain.Entity;
+using Notification.Infrastructure.Repositories;
 
 namespace Notification.Application.IntegrationEvents.Handlers;
 

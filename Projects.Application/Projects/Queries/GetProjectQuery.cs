@@ -6,13 +6,6 @@ using Projects.Application.Common.Authorization.Requirements;
 using Projects.Application.Common.Exceptions;
 using Projects.Application.Common.Interfaces;
 using Projects.Application.Common.Models.Dto;
-using Projects.Application.ProjectMembers.Commands;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Projects.Application.Projects.Queries;
 
@@ -27,7 +20,7 @@ public class GetProjectQueryHandler : IRequestHandler<GetProjectQuery, ProjectDt
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public GetProjectQueryHandler(IUnitOfWork unitOfWork,IMapper mapper)
+    public GetProjectQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
         this._mapper = mapper;

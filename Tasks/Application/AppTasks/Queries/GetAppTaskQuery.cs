@@ -1,20 +1,15 @@
 ﻿using AutoMapper;
 using MediatR;
-using MessageBus.Events;
-using MessageBus;
 using Microsoft.AspNetCore.Authorization;
-using Tasks.Application.AppTasks.Commands;
 using Tasks.Application.Common.Authorization;
 using Tasks.Application.Common.Authorization.Requirements;
 using Tasks.Application.Common.Models;
-using Tasks.Domain.Entity;
-using Tasks.Infrastructure.Repositories;
-using Tasks.Services;
 using Tasks.Domain.Common.Exceptions;
+using Tasks.Infrastructure.Repositories;
 
 namespace Tasks.Application.AppTasks.Queries;
 
-public record GetAppTaskQuery(string Id,string ProjectId) : IAuthorizationRequest<AppTaskDto>
+public record GetAppTaskQuery(string Id, string ProjectId) : IAuthorizationRequest<AppTaskDto>
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement()
     {
@@ -42,7 +37,7 @@ public class GetAppTaskQueryHandler : IRequestHandler<GetAppTaskQuery, AppTaskDt
 
         if (appTask == null)
             throw new TaskDomainException("Such a task does not exist");
-        
+
 
         return _mapper.Map<AppTaskDto>(appTask);
     }

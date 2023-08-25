@@ -1,12 +1,14 @@
 ﻿using Projects.Domain.Common.Enums;
 using Projects.Domain.Common.Exceptions;
 using Projects.Domain.Common.Models;
-using Projects.Domain.DomainEvents;
 
 namespace Projects.Domain.AggregatesModel.ProjectAggregate;
 
 public class ProjectMember : BaseEntity
 {
+    #pragma warning disable CS8618
+    private ProjectMember() { }
+    #pragma warning restore CS8618
     public ProjectMember(string userId, string userEmail, string? photoUrl, ProjectMemberType type, InvitationStatus invitationStatus)
     {
         Id = Guid.NewGuid().ToString();
@@ -16,8 +18,6 @@ public class ProjectMember : BaseEntity
         Type = type;
         InvitationStatus = invitationStatus;
     }
-
-    private ProjectMember() { }
 
 
     public string Id { get; set; }
@@ -29,7 +29,6 @@ public class ProjectMember : BaseEntity
     public string ProjectId { get; set; }
     public Project MotherProject { get; set; }
 
-
     internal void AcceptInvitation()
     {
         if (InvitationStatus == InvitationStatus.Accepted)
@@ -38,21 +37,3 @@ public class ProjectMember : BaseEntity
         InvitationStatus = InvitationStatus.Accepted;
     }
 }
-
-//public ProjectMember(string userId, string userEmail, string? photoUrl, ProjectMemberType type/*, string projectId*/)
-//{
-//    Id = Guid.NewGuid().ToString();
-//    UserId = userId;
-//    UserEmail = userEmail;
-//    PhotoUrl = photoUrl;
-//    Type = type;
-//}
-
-//public ProjectMember(string userId, string userEmail, string? photoUrl, ProjectMemberType type/*, string projectId*/)
-//{
-//    Id = Guid.NewGuid().ToString();
-//    UserId = userId;
-//    UserEmail = userEmail;
-//    PhotoUrl = photoUrl;
-//    Type = type;
-//}

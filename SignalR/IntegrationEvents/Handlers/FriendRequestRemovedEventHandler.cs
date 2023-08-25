@@ -2,8 +2,6 @@
 using MessageBus.Events;
 using Microsoft.AspNetCore.SignalR;
 using SignalR.Hubs;
-using SignalR.Models;
-using StackExchange.Redis;
 
 namespace SignalR.IntegrationEvents.Handlers;
 

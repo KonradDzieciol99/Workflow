@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using MessageBus.Events;
 using Tasks.Infrastructure.Repositories;
 

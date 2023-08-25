@@ -1,8 +1,8 @@
-﻿using System.Reflection;
+﻿using MessageBus.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
-using MessageBus.Extensions;
+using System.Reflection;
 
 namespace SignalR;
 public static class ConfigureServices

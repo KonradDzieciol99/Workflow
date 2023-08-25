@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Projects.Application.Common.Exceptions;
 using Projects.Domain.Common.Exceptions;
-using System;
-using System.ComponentModel.DataAnnotations;
 using System.Net;
 
 namespace Projects.Middleware;

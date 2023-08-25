@@ -27,6 +27,6 @@ public class InviteUserToFriendsEventHandler : IRequestHandler<FriendRequestAdde
                                     request.InvitedUserId,
                                     request.InvitedUserEmail,
                                     request.InvitedUserPhotoUrl,
-                                    false) );
+                                    false));
     }
 }

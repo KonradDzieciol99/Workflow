@@ -369,3 +369,7 @@ FodyWeavers.xsd
 /IdentityServer/IdentityServer.csproj
 /WebApplication1/Dockerfile
 /WebApplication1/WebApplication1.csproj
+/Application/Application.csproj
+/Domain/Domain.csproj
+/Infrastructure/Infrastructure.csproj
+/WebAPI/WebAPI.csproj

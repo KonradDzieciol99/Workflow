@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using Projects.Application.Common.Models;
 
 namespace Projects.Application.Common.Models.Validators
 {

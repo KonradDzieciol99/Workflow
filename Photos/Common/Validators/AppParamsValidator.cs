@@ -11,7 +11,7 @@ namespace Photos.Common.Validators
             RuleFor(x => x.File).NotEmpty().Must(file =>
             {
                 const long MB = 1048576;
-                const long _HALF_MB = MB/2;
+                const long _HALF_MB = MB / 2;
 
                 if (file.Length > _HALF_MB)
                     return false;

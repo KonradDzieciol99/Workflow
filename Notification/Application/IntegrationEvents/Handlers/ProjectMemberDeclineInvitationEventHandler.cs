@@ -1,9 +1,9 @@
 ﻿using MediatR;
-using MessageBus.Events;
 using MessageBus;
+using MessageBus.Events;
 using Notification.Domain.Common.Enums;
-using Notification.Infrastructure.Repositories;
 using Notification.Domain.Entity;
+using Notification.Infrastructure.Repositories;
 
 namespace Notification.Application.IntegrationEvents.Handlers;
 

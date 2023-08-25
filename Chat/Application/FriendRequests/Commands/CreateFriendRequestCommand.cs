@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Chat.Application.FriendRequests.Commands;
 
-public record CreateFriendRequestCommand(string Id,string Email,string? PhotoUrl) : IAuthorizationRequest<FriendRequestDto>
+public record CreateFriendRequestCommand(string Id, string Email, string? PhotoUrl) : IAuthorizationRequest<FriendRequestDto>
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new List<IAuthorizationRequirement>();
 }
@@ -55,6 +55,6 @@ public class CreateFriendRequestCommandHandler : IRequestHandler<CreateFriendReq
                                     friendRequest.InvitedUserId,
                                     friendRequest.InvitedUserEmail,
                                     friendRequest.InvitedPhotoUrl,
-                                    friendRequest.Confirmed); 
+                                    friendRequest.Confirmed);
     }
 }

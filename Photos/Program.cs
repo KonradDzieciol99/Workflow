@@ -2,16 +2,8 @@
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Mvc;
-using Photos.Models;
-using System.ComponentModel;
-using System.IO;
-using System.IO.Pipes;
-using System.Net.Mime;
-using static System.Net.WebRequestMethods;
-using System.Xml.Linq;
-using FluentValidation;
-using System.Reflection;
 using Photos.Common;
+using Photos.Models;
 
 namespace Photos;
 

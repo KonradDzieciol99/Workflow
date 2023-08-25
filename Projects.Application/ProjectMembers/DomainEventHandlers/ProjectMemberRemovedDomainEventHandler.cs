@@ -2,11 +2,6 @@
 using MessageBus.Events;
 using Projects.Application.Common.Interfaces;
 using Projects.Domain.DomainEvents;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Projects.Application.ProjectMembers.DomainEventHandlers
 {
@@ -20,7 +15,7 @@ namespace Projects.Application.ProjectMembers.DomainEventHandlers
         }
         public Task Handle(ProjectMemberRemovedDomainEvent notification, CancellationToken cancellationToken)
         {
-            var @event = new ProjectMemberRemovedEvent(notification.Member.Id,notification.Member.ProjectId,notification.Member.UserId);
+            var @event = new ProjectMemberRemovedEvent(notification.Member.Id, notification.Member.ProjectId, notification.Member.UserId);
 
             _integrationEventService.AddIntegrationEvent(@event);
 

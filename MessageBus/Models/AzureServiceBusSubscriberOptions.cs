@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MessageBus.Models
 {
@@ -23,7 +19,7 @@ namespace MessageBus.Models
 
             if (string.IsNullOrEmpty(SubscriptionName))
             {
-                throw new ArgumentException($"{nameof(SubscriptionName)} cannot be null or empty.");   
+                throw new ArgumentException($"{nameof(SubscriptionName)} cannot be null or empty.");
             }
         }
     }

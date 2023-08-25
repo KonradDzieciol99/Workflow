@@ -1,10 +1,6 @@
-﻿using IdentityModel;
+﻿using IdentityDuende.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-using Duende.IdentityServer.Services;
-using IdentityDuende.Entities;
-using static System.Net.WebRequestMethods;
 
 namespace IdentityDuende.Infrastructure.DataAccess
 {
@@ -52,7 +48,7 @@ namespace IdentityDuende.Infrastructure.DataAccess
         public async Task TrySeedAsync()
         {
             var alice = await _userManager.FindByEmailAsync("AliceSmith@email.com");
-            if (alice is not null )
+            if (alice is not null)
                 _logger.LogDebug("alice already exists");
             else
             {
@@ -61,7 +57,7 @@ namespace IdentityDuende.Infrastructure.DataAccess
                     UserName = "AliceSmith@email.com",
                     Email = "AliceSmith@email.com",
                     EmailConfirmed = true,
-                    PictureUrl= "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png"
+                    PictureUrl = "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png"
                 };
 
                 var result = _userManager.CreateAsync(alice, "Pass123$").Result;
@@ -77,18 +73,18 @@ namespace IdentityDuende.Infrastructure.DataAccess
             if (bob is not null)
                 _logger.LogDebug("bob already exists");
             else
-            { 
+            {
                 bob = new ApplicationUser
                 {
                     UserName = "BobSmith@email.com",
                     Email = "BobSmith@email.com",
                     EmailConfirmed = true,
-                    PictureUrl= "https://1workflowstorage.blob.core.windows.net/photos/bobPhoto.png"
+                    PictureUrl = "https://1workflowstorage.blob.core.windows.net/photos/bobPhoto.png"
                 };
                 var result = _userManager.CreateAsync(bob, "Pass123$").Result;
                 if (!result.Succeeded)
                     throw new Exception(result.Errors.First().Description);
-                
+
                 _logger.LogDebug("bob created");
             }
 

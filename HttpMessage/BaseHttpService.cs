@@ -1,13 +1,11 @@
-﻿using System.Net.Http;
+﻿using HttpMessage.Models.Exceptions;
 using System;
-using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Threading.Tasks;
 using System.Text.Json;
-using HttpMessage.Extensions;
-using System.Net;
-using HttpMessage.Models.Exceptions;
+using System.Threading.Tasks;
 
 namespace HttpMessage
 {
@@ -27,7 +25,7 @@ namespace HttpMessage
                 HttpRequestMessage message = new HttpRequestMessage();
                 message.Headers.Add("Accept", "application/json");
                 message.RequestUri = new Uri(apiRequest.Url);
-                message.Method=apiRequest.HttpMethod;
+                message.Method = apiRequest.HttpMethod;
                 message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiRequest.AccessToken);
                 _client.DefaultRequestHeaders.Clear();
                 if (apiRequest.Data != null)
@@ -44,7 +42,7 @@ namespace HttpMessage
                 HttpResponseMessage apiResponse = await _client.SendAsync(message);
 
 
-                if (!apiResponse.IsSuccessStatusCode)      
+                if (!apiResponse.IsSuccessStatusCode)
                 {
                     switch (apiResponse.StatusCode)
                     {
@@ -59,8 +57,8 @@ namespace HttpMessage
                         default:
                             throw new HttpRequestException(await apiResponse.Content.ReadAsStringAsync());
                     }
-                } 
-                
+                }
+
                 //ale jak działają te polityki longpoly?
 
                 var apiContent = await apiResponse.Content.ReadAsStringAsync();
@@ -69,11 +67,11 @@ namespace HttpMessage
                 {
                     PropertyNameCaseInsensitive = true
                 };
-                var apiResponseDto = JsonSerializer.Deserialize<T>(apiContent,options);
+                var apiResponseDto = JsonSerializer.Deserialize<T>(apiContent, options);
                 return apiResponseDto;
 
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw;
                 //var dto = new ResponseDto
