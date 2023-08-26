@@ -30,10 +30,7 @@ public static class ConfigureServices
             opt.ServiceBusConnectionString = configuration.GetConnectionString("ServiceBus") ?? throw new ArgumentNullException("ServiceBus");
             opt.SubscriptionName = "email-sender";
         });
-        services.AddAzureServiceBusSender(opt =>
-        {
-            opt.ServiceBusConnectionString = configuration.GetConnectionString("ServiceBus") ?? throw new ArgumentNullException("ServiceBus");
-        });
+        services.AddAzureServiceBusSender(opt => configuration.GetConnectionString("ServiceBus"));
         return services;
     }
 }

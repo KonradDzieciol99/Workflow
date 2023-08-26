@@ -1,9 +1,8 @@
 ﻿using Tasks.Domain.Entity;
 
-namespace Tasks.Domain.Services
+namespace Tasks.Domain.Services;
+
+public interface IAppTaskService
 {
-    public interface IAppTaskService
-    {
-        void RemoveAppTask(AppTask task, ProjectMember CurrentProjectMember);
-    }
+    void RemoveAppTask(AppTask task, ProjectMember CurrentProjectMember);
 }

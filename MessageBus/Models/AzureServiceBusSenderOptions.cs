@@ -1,7 +1,8 @@
-﻿namespace MessageBus.Models
+﻿using System;
+
+namespace MessageBus.Models;
+
+public class AzureServiceBusSenderOptions
 {
-    public class AzureServiceBusSenderOptions
-    {
-        public string ServiceBusConnectionString { get; set; }
-    }
+    public string ServiceBusConnectionString { get; set; }
 }

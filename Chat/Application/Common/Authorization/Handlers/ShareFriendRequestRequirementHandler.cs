@@ -3,27 +3,26 @@ using Chat.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
-namespace Chat.Application.Common.Authorization.Handlers
+namespace Chat.Application.Common.Authorization.Handlers;
+
+public class ShareFriendRequestRequirementHandler : AuthorizationHandler<ShareFriendRequestRequirement>
 {
-    public class ShareFriendRequestRequirementHandler : AuthorizationHandler<ShareFriendRequestRequirement>
+    private readonly IUnitOfWork _unitOfWork;
+    public ShareFriendRequestRequirementHandler(IUnitOfWork unitOfWork)
     {
-        private readonly IUnitOfWork _unitOfWork;
-        public ShareFriendRequestRequirementHandler(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
-        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ShareFriendRequestRequirement requirement)
-        {
-            var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new ArgumentNullException(nameof(ClaimTypes.NameIdentifier));
-            var targetUserId = requirement.TargetUserId ?? throw new ArgumentNullException(nameof(context.Resource));
+        _unitOfWork = unitOfWork;
+    }
+    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ShareFriendRequestRequirement requirement)
+    {
+        var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new ArgumentNullException(nameof(ClaimTypes.NameIdentifier));
+        var targetUserId = requirement.TargetUserId ?? throw new ArgumentNullException(nameof(context.Resource));
 
-            var result = await _unitOfWork.FriendRequestRepository.CheckIfTheyShareFriendRequest(userId, targetUserId);
+        var result = await _unitOfWork.FriendRequestRepository.CheckIfTheyShareFriendRequest(userId, targetUserId);
 
-            if (result)
-                context.Succeed(requirement);
+        if (result)
+            context.Succeed(requirement);
 
-            await Task.CompletedTask;
-            return;
-        }
+        await Task.CompletedTask;
+        return;
     }
 }

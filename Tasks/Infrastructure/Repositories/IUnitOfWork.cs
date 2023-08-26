@@ -1,10 +1,9 @@
-﻿namespace Tasks.Infrastructure.Repositories
+﻿namespace Tasks.Infrastructure.Repositories;
+
+public interface IUnitOfWork
 {
-    public interface IUnitOfWork
-    {
-        IProjectMemberRepository ProjectMemberRepository { get; }
-        IAppTaskRepository AppTaskRepository { get; }
-        Task<bool> Complete();
-        bool HasChanges();
-    }
+    IProjectMemberRepository ProjectMemberRepository { get; }
+    IAppTaskRepository AppTaskRepository { get; }
+    Task<bool> Complete();
+    bool HasChanges();
 }

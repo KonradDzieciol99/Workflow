@@ -6,9 +6,9 @@ namespace Projects.Domain.AggregatesModel.ProjectAggregate;
 
 public class ProjectMember : BaseEntity
 {
-    #pragma warning disable CS8618
+#pragma warning disable CS8618
     private ProjectMember() { }
-    #pragma warning restore CS8618
+#pragma warning restore CS8618
     public ProjectMember(string userId, string userEmail, string? photoUrl, ProjectMemberType type, InvitationStatus invitationStatus)
     {
         Id = Guid.NewGuid().ToString();

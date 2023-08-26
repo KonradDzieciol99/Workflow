@@ -5,38 +5,37 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace MessageBus
+namespace MessageBus;
+
+public class AzureServiceBusMessageBus : IMessageBus
 {
-    public class AzureServiceBusMessageBus : IMessageBus
+    //can be improved
+    //private string connectionString = "Endpoint=sb://workflowazureservicebus.servicebus.windows.net/;SharedAccessKeyName=AccessKey;SharedAccessKey=siRIzQcrn3bmCLkvdCklk/qFogTavWYhcMZQTtqB4j0=;EntityPath=newuserregister";
+    private string connectionString = "Endpoint=sb://workflowazureservicebus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=PLXZYECKYoA1ENmbkqz0TY4/eUaf6S7rFok7SczCaAs=";
+
+    public async Task PublishMessage<T>(T message, string queueOrTopicName)
     {
-        //can be improved
-        //private string connectionString = "Endpoint=sb://workflowazureservicebus.servicebus.windows.net/;SharedAccessKeyName=AccessKey;SharedAccessKey=siRIzQcrn3bmCLkvdCklk/qFogTavWYhcMZQTtqB4j0=;EntityPath=newuserregister";
-        private string connectionString = "Endpoint=sb://workflowazureservicebus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=PLXZYECKYoA1ENmbkqz0TY4/eUaf6S7rFok7SczCaAs=";
 
-        public async Task PublishMessage<T>(T message, string queueOrTopicName)
+        await using var client = new ServiceBusClient(connectionString);
+
+        ServiceBusSender sender = client.CreateSender(queueOrTopicName);
+
+        string jsonMessage = JsonSerializer.Serialize(message);
+        ServiceBusMessage finalMessage = new ServiceBusMessage(Encoding.UTF8.GetBytes(jsonMessage))
         {
+            CorrelationId = Guid.NewGuid().ToString()
+        };
 
-            await using var client = new ServiceBusClient(connectionString);
+        finalMessage.ApplicationProperties["Label"] = queueOrTopicName;
 
-            ServiceBusSender sender = client.CreateSender(queueOrTopicName);
+        await sender.SendMessageAsync(finalMessage);
 
-            string jsonMessage = JsonSerializer.Serialize(message);
-            ServiceBusMessage finalMessage = new ServiceBusMessage(Encoding.UTF8.GetBytes(jsonMessage))
-            {
-                CorrelationId = Guid.NewGuid().ToString()
-            };
+        //if (finalMessage is IUserPersistentNotification)
+        //{
 
-            finalMessage.ApplicationProperties["Label"] = queueOrTopicName;
+        //    await sender.SendMessageAsync(finalMessage);
+        //}
 
-            await sender.SendMessageAsync(finalMessage);
-
-            //if (finalMessage is IUserPersistentNotification)
-            //{
-
-            //    await sender.SendMessageAsync(finalMessage);
-            //}
-
-            await client.DisposeAsync();
-        }
+        await client.DisposeAsync();
     }
 }

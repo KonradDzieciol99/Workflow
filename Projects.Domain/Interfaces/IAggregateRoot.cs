@@ -1,6 +1,5 @@
-﻿namespace Projects.Domain.Interfaces
+﻿namespace Projects.Domain.Interfaces;
+
+public interface IAggregateRoot
 {
-    public interface IAggregateRoot
-    {
-    }
 }

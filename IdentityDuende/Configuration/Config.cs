@@ -52,7 +52,7 @@ public static class Config
                 RedirectUris = { "https://localhost:4200/home" },
                 FrontChannelLogoutUri = "https://localhost:4200",
                 PostLogoutRedirectUris = { "https://localhost:4200" },
-                AllowedCorsOrigins = { "https://localhost:4200" },
+                AllowedCorsOrigins = { "https://localhost:4200","http://localhost:5080" },
                 AllowOfflineAccess = true,
                 UpdateAccessTokenClaimsOnRefresh = true,
                 CoordinateLifetimeWithUserSession = true,

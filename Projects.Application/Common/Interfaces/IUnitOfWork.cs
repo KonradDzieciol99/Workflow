@@ -11,7 +11,7 @@ public interface IUnitOfWork
     Task<bool> Complete();
     bool HasChanges();
     bool HasActiveTransaction();
-    Task<IDbContextTransaction> BeginTransactionAsync();
+    Task<IDbContextTransaction?> BeginTransactionAsync();
     Task CommitTransactionAsync(IDbContextTransaction transaction);
     void RollbackTransaction();
 }

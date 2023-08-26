@@ -1,9 +1,8 @@
 ﻿using API.Aggregator.Models;
 
-namespace API.Aggregator.Services
+namespace API.Aggregator.Services;
+
+public interface ITaskService
 {
-    public interface ITaskService
-    {
-        Task<AppTaskDto> CreateTask(CreateAppTaskDto createAppTask, string token);
-    }
+    Task<AppTaskDto> CreateTask(CreateAppTaskDto createAppTask, string token);
 }

@@ -1,14 +1,13 @@
-﻿namespace Chat.Application.Common.Exceptions
+﻿namespace Chat.Application.Common.Exceptions;
+
+public class UnauthorizedException : Exception
 {
-    public class UnauthorizedException : Exception
+    public UnauthorizedException(string message) : base(message)
     {
-        public UnauthorizedException(string message) : base(message)
-        {
 
-        }
-        public UnauthorizedException() : base()
-        {
+    }
+    public UnauthorizedException() : base()
+    {
 
-        }
     }
 }

@@ -2,15 +2,10 @@
 using MessageBus.Models;
 using System.Collections.Generic;
 
-namespace MessageBus.Events
-{
-    public class NewOnlineMessagesUserWithFriendsEvent : IntegrationEvent, IRequest
-    {
-        public NewOnlineMessagesUserWithFriendsEvent()
-        {
-        }
+namespace MessageBus.Events;
 
-        public IEnumerable<UserDto> NewOnlineUserChatFriends { get; set; }
-        public UserDto NewOnlineUser { get; set; }
-    }
+public class NewOnlineMessagesUserWithFriendsEvent : IntegrationEvent, IRequest
+{
+    public IEnumerable<UserDto> NewOnlineUserChatFriends { get; set; }
+    public UserDto NewOnlineUser { get; set; }
 }

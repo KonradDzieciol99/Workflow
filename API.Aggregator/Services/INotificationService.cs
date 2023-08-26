@@ -1,7 +1,6 @@
-﻿namespace API.Aggregator.Services
+﻿namespace API.Aggregator.Services;
+
+public interface INotificationService
 {
-    public interface INotificationService
-    {
-        Task<bool> Get(string token);
-    }
+    Task<bool> Get(string token);
 }

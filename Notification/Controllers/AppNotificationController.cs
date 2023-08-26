@@ -5,37 +5,36 @@ using Notification.Application.AppNotifications.Commands;
 using Notification.Application.AppNotifications.Queries;
 using Notification.Domain.Entity;
 
-namespace Notification.Controllers
+namespace Notification.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+[Authorize(Policy = "ApiScope")]
+public class AppNotificationController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [Authorize(Policy = "ApiScope")]
-    public class AppNotificationController : ControllerBase
+    private readonly IMediator _mediator;
+
+    public AppNotificationController(IMediator mediator)
     {
-        private readonly IMediator _mediator;
+        this._mediator = mediator;
+    }
+    [HttpGet]
+    public async Task<ActionResult<List<AppNotification>>> Get([FromQuery] GetAppNotificationsQuery query)
+    {
+        return await _mediator.Send(query);
+    }
+    [HttpPut("{id}")]
+    public async Task<ActionResult> MarkAsSeen([FromRoute] string id)
+    {
+        await _mediator.Send(new MarkAsSeenAppNotificationCommand(id));
 
-        public AppNotificationController(IMediator mediator)
-        {
-            this._mediator = mediator;
-        }
-        [HttpGet]
-        public async Task<ActionResult<List<AppNotification>>> Get([FromQuery] GetAppNotificationsQuery query)
-        {
-            return await _mediator.Send(query);
-        }
-        [HttpPut("{id}")]
-        public async Task<ActionResult> MarkAsSeen([FromRoute] string id)
-        {
-            await _mediator.Send(new MarkAsSeenAppNotificationCommand(id));
+        return NoContent();
+    }
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Delete([FromRoute] string id)
+    {
+        await _mediator.Send(new DeleteAppNotificationCommand(id));
 
-            return NoContent();
-        }
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete([FromRoute] string id)
-        {
-            await _mediator.Send(new DeleteAppNotificationCommand(id));
-
-            return NoContent();
-        }
+        return NoContent();
     }
 }

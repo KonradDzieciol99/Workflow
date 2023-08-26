@@ -2,15 +2,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace MessageBus.Extensions
+namespace MessageBus.Extensions;
+
+public static class AzureServiceBusSenderExtension
 {
-    public static class AzureServiceBusSenderExtension
+    public static IServiceCollection AddAzureServiceBusSender(this IServiceCollection services, Action<AzureServiceBusSenderOptions> configure)
     {
-        public static IServiceCollection AddAzureServiceBusSender(this IServiceCollection services, Action<AzureServiceBusSenderOptions> configure)
-        {
-            services.Configure(configure);
-            services.AddSingleton<IAzureServiceBusSender, AzureServiceBusSender>();
-            return services;
-        }
+        services.Configure(configure);
+        services.AddSingleton<IAzureServiceBusSender, AzureServiceBusSender>();
+        return services;
     }
 }

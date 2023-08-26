@@ -1,12 +1,11 @@
 ﻿using FluentValidation;
 
-namespace Projects.Application.Projects.Queries
+namespace Projects.Application.Projects.Queries;
+
+public class GetProjectQueryValidator : AbstractValidator<GetProjectQuery>
 {
-    public class GetProjectQueryValidator : AbstractValidator<GetProjectQuery>
+    public GetProjectQueryValidator()
     {
-        public GetProjectQueryValidator()
-        {
-            RuleFor(x => x.ProjectId).NotEmpty();
-        }
+        RuleFor(x => x.ProjectId).NotEmpty();
     }
 }

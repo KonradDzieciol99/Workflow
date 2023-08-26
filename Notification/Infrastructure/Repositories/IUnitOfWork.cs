@@ -1,9 +1,8 @@
-﻿namespace Notification.Infrastructure.Repositories
+﻿namespace Notification.Infrastructure.Repositories;
+
+public interface IUnitOfWork
 {
-    public interface IUnitOfWork
-    {
-        IAppNotificationRepository AppNotificationRepository { get; }
-        Task<bool> Complete();
-        bool HasChanges();
-    }
+    IAppNotificationRepository AppNotificationRepository { get; }
+    Task<bool> Complete();
+    bool HasChanges();
 }

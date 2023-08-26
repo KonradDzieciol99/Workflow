@@ -1,14 +1,13 @@
-﻿namespace Tasks.Application.Common.Exceptions
+﻿namespace Tasks.Application.Common.Exceptions;
+
+public class UnauthorizedException : Exception
 {
-    public class UnauthorizedException : Exception
+    public UnauthorizedException(string message) : base(message)
     {
-        public UnauthorizedException(string message) : base(message)
-        {
 
-        }
-        public UnauthorizedException() : base()
-        {
+    }
+    public UnauthorizedException() : base()
+    {
 
-        }
     }
 }
