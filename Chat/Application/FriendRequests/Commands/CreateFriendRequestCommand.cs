@@ -1,11 +1,11 @@
 ﻿using Chat.Application.Common.Authorization;
 using Chat.Application.Common.Models;
+using Chat.Application.IntegrationEvents;
 using Chat.Domain.Entity;
 using Chat.Infrastructure.Repositories;
 using Chat.Services;
 using MediatR;
 using MessageBus;
-using MessageBus.Events;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Chat.Application.FriendRequests.Commands;

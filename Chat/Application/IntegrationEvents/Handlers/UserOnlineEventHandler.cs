@@ -1,7 +1,6 @@
 ﻿using Chat.Infrastructure.Repositories;
 using MediatR;
 using MessageBus;
-using MessageBus.Events;
 using MessageBus.Models;
 
 namespace Chat.Application.IntegrationEvents.Handlers;

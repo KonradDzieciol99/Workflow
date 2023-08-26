@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using MessageBus;
-using MessageBus.Events;
 using Notification.Application.AppNotifications.Queries;
 using Notification.Infrastructure.Repositories;
 using Notification.Services;

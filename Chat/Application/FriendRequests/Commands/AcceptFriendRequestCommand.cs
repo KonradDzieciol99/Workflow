@@ -4,7 +4,6 @@ using Chat.Infrastructure.Repositories;
 using Chat.Services;
 using MediatR;
 using MessageBus;
-using MessageBus.Events;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Chat.Application.FriendRequests.Commands;

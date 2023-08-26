@@ -1,7 +1,7 @@
 using MessageBus;
-using MessageBus.Events;
 using Microsoft.EntityFrameworkCore;
 using Tasks;
+using Tasks.Application.IntegrationEvents;
 using Tasks.Infrastructure.DataAccess;
 using Tasks.Middleware;
 

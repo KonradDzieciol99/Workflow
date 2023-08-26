@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using MessageBus.Events;
 using Tasks.Application.AppTasks.Commands;
 using Tasks.Application.Common.Models;
+using Tasks.Application.IntegrationEvents;
 using Tasks.Domain.Entity;
 
 namespace Tasks.Common;

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using MessageBus.Events;
 using Projects.Application.Common.Models.Dto;
+using Projects.Application.IntegrationEvents;
 using Projects.Domain.AggregatesModel.ProjectAggregate;
 
 namespace Projects.Application.Common.Mappings;

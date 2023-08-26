@@ -1,5 +1,5 @@
+using EmailSender.IntegrationEvents;
 using MessageBus;
-using MessageBus.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using MessageBus;
-using MessageBus.Events;
 using Microsoft.AspNetCore.SignalR;
 using SignalR.Hubs;
 using StackExchange.Redis;

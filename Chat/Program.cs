@@ -1,7 +1,7 @@
 using Chat;
+using Chat.Application.IntegrationEvents;
 using Chat.Infrastructure.DataAccess;
 using MessageBus;
-using MessageBus.Events;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

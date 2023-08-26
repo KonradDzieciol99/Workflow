@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using MessageBus.Events;
 using Projects.Application.Common.Interfaces;
+using Projects.Application.IntegrationEvents;
 using Projects.Domain.DomainEvents;
 
 namespace Projects.Application.ProjectMembers.DomainEventHandlers;

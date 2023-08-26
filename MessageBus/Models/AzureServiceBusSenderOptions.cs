@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MessageBus.Models;
+﻿namespace MessageBus.Models;
 
 public class AzureServiceBusSenderOptions
 {

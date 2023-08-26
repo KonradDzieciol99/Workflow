@@ -1,6 +1,6 @@
 using MessageBus;
-using MessageBus.Events;
 using Microsoft.EntityFrameworkCore;
+using Notification.Application.IntegrationEvents;
 using Notification.Infrastructure.DataAccess;
 using Notification.Middleware;
 

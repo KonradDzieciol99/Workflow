@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using MediatR;
-using MessageBus.Events;
 using Tasks.Domain.Common.Models;
 using Tasks.Infrastructure.Repositories;
 

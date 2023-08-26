@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using MessageBus.Events;
 
 namespace EmailSender.IntegrationEvents.Handlers;
 

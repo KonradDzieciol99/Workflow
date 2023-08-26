@@ -1,10 +1,10 @@
 ﻿using Chat.Application.Common.Authorization;
 using Chat.Application.Common.Authorization.Requirements;
+using Chat.Application.IntegrationEvents;
 using Chat.Infrastructure.Repositories;
 using Chat.Services;
 using MediatR;
 using MessageBus;
-using MessageBus.Events;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Chat.Application.FriendRequests.Commands;
@@ -68,7 +68,6 @@ public class DeleteFriendRequestCommandHandler : IRequestHandler<DeleteFriendReq
                                                                     friendRequest.InvitedUserId,
                                                                     friendRequest.InvitedUserEmail,
                                                                     friendRequest.InvitedPhotoUrl);
-        //
         await _azureServiceBusSender.PublishMessage(@event);
 
 

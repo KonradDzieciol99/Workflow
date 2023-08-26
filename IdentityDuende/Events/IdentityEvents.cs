@@ -1,8 +1,8 @@
 ﻿using Duende.IdentityServer.Events;
 using Duende.IdentityServer.Services;
 using IdentityDuende.Entities;
+using IdentityDuende.IntegrationEvents;
 using MessageBus;
-using MessageBus.Events;
 using Microsoft.AspNetCore.Identity;
 
 namespace IdentityDuende.Events;

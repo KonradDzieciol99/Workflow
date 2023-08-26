@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using MessageBus;
-using MessageBus.Events;
 using Notification.Domain.Common.Enums;
 using Notification.Domain.Entity;
 using Notification.Infrastructure.Repositories;

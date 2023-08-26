@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using MessageBus.Events;
 using Tasks.Infrastructure.Repositories;
 
 namespace Tasks.Application.IntegrationEvents.Handlers;

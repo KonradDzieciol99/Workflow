@@ -1,5 +1,4 @@
 using MessageBus;
-using MessageBus.Events;
 using SignalR;
 using SignalR.Hubs;
 using SignalR.IntegrationEvents;

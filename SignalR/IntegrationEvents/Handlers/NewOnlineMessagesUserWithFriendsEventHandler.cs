@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using MessageBus.Events;
 using MessageBus.Models;
 using Microsoft.AspNetCore.SignalR;
 using SignalR.Hubs;
