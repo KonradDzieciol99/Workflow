@@ -10,7 +10,7 @@ using Notification.Infrastructure.DataAccess;
 using Notification.Infrastructure.Repositories;
 using Notification.Services;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace Notification;
 
 public static class ConfigureServices
 {

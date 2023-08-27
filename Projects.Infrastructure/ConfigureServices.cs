@@ -2,13 +2,14 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Projects.Application.Common.Interfaces;
 using Projects.Infrastructure.DataAccess;
 using Projects.Infrastructure.Repositories;
 using Projects.Infrastructure.Services;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace Projects.Infrastructure;
 
 public static class ConfigureServices
 {

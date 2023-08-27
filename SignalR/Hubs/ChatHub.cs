@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using SignalR.IntegrationEvents;
+using SignalR.Models;
 using StackExchange.Redis;
 using System.Security.Claims;
 
@@ -44,7 +45,7 @@ public class ChatHub : Hub
 
         await Clients.Group(groupName).SendAsync("UpdatedGroup", groupMembers);
 
-        var @event = new UserConnectedToChatEvent(new MessageBus.Models.UserDto(id, UserEmail, picture), recipientEmail);
+        var @event = new UserConnectedToChatEvent(new UserDto(id, UserEmail, picture), recipientEmail);
 
         await _azureServiceBusSender.PublishMessage(@event);
 

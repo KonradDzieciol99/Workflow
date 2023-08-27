@@ -35,16 +35,16 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
-  emailsender:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
-    ports:
-      - "5006:80"
-      - "5007:443"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+  # emailsender:
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ASPNETCORE_URLS=https://+:443;http://+:80
+  #   ports:
+  #     - "5006:80"
+  #     - "5007:443"
+  #   volumes:
+  #     - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+  #     - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
   notification:
     environment:
@@ -106,3 +106,14 @@ services:
     ports:
     - "5080:5080"
     - "5081:5081"
+
+  emailemitter:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+    ports:
+      - "5006:80"
+      - "5007:443"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro

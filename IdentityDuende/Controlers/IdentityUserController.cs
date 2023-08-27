@@ -1,6 +1,6 @@
 ﻿using IdentityDuende.Entities;
 using IdentityDuende.Infrastructure.Repositories;
-using MessageBus.Models;
+using IdentityDuende.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

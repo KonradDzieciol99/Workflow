@@ -1,3 +1,4 @@
+using EmailSender;
 using EmailSender.IntegrationEvents;
 using MessageBus;
 

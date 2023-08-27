@@ -39,8 +39,4 @@
     <ProjectReference Include="..\MessageBus\MessageBus.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Application\Common\Models\" />
-  </ItemGroup>
-
 </Project>

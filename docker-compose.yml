@@ -35,11 +35,11 @@ services:
       dockerfile: Chat/Dockerfile
     depends_on:
     - sql_server
-  emailsender:
-    image: ${DOCKER_REGISTRY-}emailsender
-    build:
-      context: .
-      dockerfile: EmailSender/Dockerfile
+  # emailsender:
+  #   image: ${DOCKER_REGISTRY-}EmailEmitter
+  #   build:
+  #     context: .
+  #     dockerfile: EmailEmitter/Dockerfile
   notification:
     image: ${DOCKER_REGISTRY-}notification
     build:
@@ -71,12 +71,11 @@ services:
     build:
       context: .
       dockerfile: API.Aggregator/Dockerfile
-  #envoy:
-  #  image: envoyproxy/envoy:v1.24-latest
-  #  container_name: envoy_proxy
-  #  ports:
-  #    - "5080:5080"
-  #  volumes:
-  #    - ./Proxy/Envoy:/etc/envoy
   envoy:
     image: envoyproxy/envoy:v1.27-latest
+  emailemitter:
+    image: ${DOCKER_REGISTRY-}emailemitter
+    build:
+      context: .
+      dockerfile: EmailEmitter/Dockerfile
+

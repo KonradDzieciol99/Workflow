@@ -15,7 +15,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace IdentityDuende;
 
 public static class ConfigureServices
 {

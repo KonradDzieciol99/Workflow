@@ -1,7 +1,7 @@
 ﻿using Projects.Application.Common.Interfaces;
 using Projects.Services;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace Projects;
 
 public static class ConfigureServices
 {

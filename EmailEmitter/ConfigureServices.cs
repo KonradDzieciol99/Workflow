@@ -1,7 +1,6 @@
-﻿using EmailSender.Sender;
+﻿using EmailEmitter.Sender;
 using MessageBus.Extensions;
-
-namespace EmailSender;
+namespace EmailEmitter;
 
 public static class ConfigureServices
 {
@@ -16,15 +15,7 @@ public static class ConfigureServices
             opt.RegisterServicesFromAssembly(typeof(Program).Assembly);
         });
 
-        //builder.Services.AddSingleton<IEmailSender, EmailSenderS>(opt =>
-        //{
-        //    var verifyEmailUrl = builder.Configuration["VerifyEmailUrl"];
-        //    var from = builder.Configuration["EmailConfiguration:From"];
-        //    var fluentEmailFactory = opt.GetRequiredService<IFluentEmailFactory>();
-        //    return new EmailSenderS(fluentEmailFactory, verifyEmailUrl, from);
-        //});
-
-        services.AddScoped<ISender, Sender.Sender>();
+        services.AddScoped<ISenderSource, SenderSource>();
         services.AddAzureServiceBusSubscriber(opt =>
         {
             opt.ServiceBusConnectionString = configuration.GetConnectionString("ServiceBus") ?? throw new ArgumentNullException("ServiceBus");

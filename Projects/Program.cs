@@ -1,6 +1,8 @@
 //using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Projects;
 using Projects.Application;
+using Projects.Infrastructure;
 using Projects.Infrastructure.DataAccess;
 using Projects.Middleware;
 using Serilog;

@@ -33,26 +33,7 @@ public class AzureServiceBusSender : IAzureServiceBusSender
             Subject = message.EventType
         };
 
-        //finalMessage.ApplicationProperties["Label"] = queueOrTopicName;
-
         await sender.SendMessageAsync(finalMessage);
-
-        //if (message is IUserPersistentNotification && message is not UserPersistentNotificationEvent)
-        //{
-        //    var userPersistentNotificationEvent = new UserPersistentNotificationEvent()
-        //    {
-        //        EventType = message.EventType,
-        //        Id = message.Id,
-        //        MessageCreated = message.MessageCreated,
-        //        EventRecipient = message.EventRecipient,
-        //        EventSender = message.EventSender,
-        //        IsDisplayed = false
-        //    };
-
-        //    await client.DisposeAsync();
-
-        //    await this.PublishMessage<UserPersistentNotificationEvent>(userPersistentNotificationEvent, "notification-queue");
-        //}
 
         await client.DisposeAsync();
     }
