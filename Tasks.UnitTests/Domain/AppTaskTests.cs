@@ -49,6 +49,6 @@ public class AppTaskTests
     }
 
     private AppTask GetFakeAppTask()
-        => new AppTask("test", null, "A", null, /*null, null,*/ Priority.Low, State.ToDo, new DateTime(1900, 12, 1), new DateTime(1899, 12, 1), null);
+        => new("test", null, "A", null, /*null, null,*/ Priority.Low, State.ToDo, new DateTime(1900, 12, 1), new DateTime(1899, 12, 1), null);
 
 }

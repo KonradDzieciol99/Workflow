@@ -8,7 +8,7 @@ namespace Notification.Application.AppNotifications.Queries;
 
 public record GetAppNotificationsQuery(int Skip, int Take, string? OrderBy, bool? IsDescending, string? Filter, string? GroupBy, string? Search, string[]? SelectedColumns) : IAuthorizationRequest<List<Domain.Entity.AppNotification>>
 {
-    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new List<IAuthorizationRequirement>();
+    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new();
 }
 
 public class GetAppNotificationsQueryHandler : IRequestHandler<GetAppNotificationsQuery, List<Domain.Entity.AppNotification>>

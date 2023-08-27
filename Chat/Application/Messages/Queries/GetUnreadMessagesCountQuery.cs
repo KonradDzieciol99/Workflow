@@ -5,6 +5,6 @@ namespace Chat.Application.Messages.Queries;
 
 public class GetUnreadMessagesCountQuery : IAuthorizationRequest<int>
 {
-    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new List<IAuthorizationRequirement>();
+    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new();
 
 }

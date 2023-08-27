@@ -12,7 +12,7 @@ namespace Projects.Application.Projects.Commands;
 
 public record CreateProjectCommand(string Name, Icon Icon) : IAuthorizationRequest<ProjectDto>
 {
-    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new List<IAuthorizationRequirement> { };
+    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new() { };
 }
 public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand, ProjectDto>
 {

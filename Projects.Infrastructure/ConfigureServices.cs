@@ -29,25 +29,11 @@ public static class ConfigureServices
             opt.UseSqlServer(connString);
         });
 
-        //services.AddDbContext<ApplicationDbContext>(opt =>
-        //{
-        //    opt.UseSqlServer(configuration.GetConnectionString("DbContextConnString") ?? throw new ArgumentNullException("DbContextConnString")) ;
-        //});
-
-
         services.AddScoped<IIntegrationEventService, IntegrationEventService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddAzureServiceBusSender(opt =>
-        {
-            opt.ServiceBusConnectionString = configuration.GetConnectionString(name: "ServiceBusConnectionString") ?? throw new ArgumentNullException(nameof(opt.ServiceBusConnectionString));
-        });
 
-        services.AddAzureServiceBusSubscriber(opt =>
-        {
-            //var configuration = builder.Configuration;
-            opt.ServiceBusConnectionString = configuration.GetConnectionString(name: "ServiceBusConnectionString") ?? throw new ArgumentNullException(nameof(opt.ServiceBusConnectionString));
-            opt.SubscriptionName = "projects";
-        });
+        services.AddAzureServiceBusSender(configuration.GetSection("AzureServiceBusSender"));
+        services.AddAzureServiceBusSubscriber(configuration.GetSection("AzureServiceBusSubscriberOptions"));
 
         services.AddCors(opt =>
         {
@@ -59,7 +45,6 @@ public static class ConfigureServices
                   .AllowCredentials();
             });
         });
-
 
         services.AddAuthentication(opt =>
         {

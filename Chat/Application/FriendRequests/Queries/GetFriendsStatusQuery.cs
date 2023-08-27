@@ -9,7 +9,7 @@ namespace Chat.Application.FriendRequests.Queries;
 
 public record GetFriendsStatusQuery(List<string> UsersIds) : IAuthorizationRequest<List<FriendStatusDto>>
 {
-    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new List<IAuthorizationRequirement>();
+    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new();
 }
 public class GetFriendsStatusQueryHandler : IRequestHandler<GetFriendsStatusQuery, List<FriendStatusDto>>
 {

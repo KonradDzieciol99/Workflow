@@ -89,16 +89,9 @@ public static class ConfigureServices
                       });
         });
 
-        services.AddAzureServiceBusSubscriber(opt =>
-        {
-            opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString") ?? throw new ArgumentNullException(nameof(opt.ServiceBusConnectionString));
-            opt.SubscriptionName = "chat";
-        });
 
-        services.AddAzureServiceBusSender(opt =>
-        {
-            opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString") ?? throw new ArgumentNullException(nameof(opt.ServiceBusConnectionString));
-        });
+        services.AddAzureServiceBusSender(configuration.GetSection("AzureServiceBusSender"));
+        services.AddAzureServiceBusSubscriber(configuration.GetSection("AzureServiceBusSubscriberOptions"));
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
@@ -114,7 +107,6 @@ public static class ConfigureServices
         services.AddHttpContextAccessor();
 
         services.AddTransient<IMessageService, MessageService>();
-
 
         return services;
     }

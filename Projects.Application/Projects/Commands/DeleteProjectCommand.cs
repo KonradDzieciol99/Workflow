@@ -10,7 +10,7 @@ namespace Projects.Application.Projects.Commands;
 public record DeleteProjectCommand(string ProjectId) : IAuthorizationRequest
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement() =>
-        new List<IAuthorizationRequirement>
+        new()
         {
             new ProjectMembershipRequirement(ProjectId),
             new ProjectAuthorRequirement(ProjectId)

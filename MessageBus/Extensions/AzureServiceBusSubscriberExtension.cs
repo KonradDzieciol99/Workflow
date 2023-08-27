@@ -1,14 +1,18 @@
 ﻿using MessageBus.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 
 namespace MessageBus.Extensions;
 
 public static class AzureServiceBusSubscriberExtension
 {
-    public static IServiceCollection AddAzureServiceBusSubscriber(this IServiceCollection services, Action<AzureServiceBusSubscriberOptions> configure)
+    public static IServiceCollection AddAzureServiceBusSubscriber(this IServiceCollection services, IConfigurationSection configurationSection)
     {
-        services.Configure(configure);
+        services.AddOptions<AzureServiceBusSubscriberOptions>()
+                .Bind(configurationSection)
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
+
         services.AddSingleton<AzureServiceBusSubscriber>();
         services.AddHostedService(sp => sp.GetRequiredService<AzureServiceBusSubscriber>());
         return services;

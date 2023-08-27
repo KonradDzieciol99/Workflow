@@ -2,7 +2,7 @@ using API.Aggregator;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddWebAPIServices(builder.Configuration);
+builder.Services.AddAggregatorServices(builder.Configuration);
 
 var app = builder.Build();
 
@@ -12,7 +12,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//app.UseHttpsRedirection();
 app.UseCors("allowAny");
 app.UseAuthentication();
 app.UseAuthorization();

@@ -5,5 +5,10 @@ namespace SignalR.IntegrationEvents;
 
 public class UserOfflineEvent : IntegrationEvent
 {
-    public UserDto User { get; set; }
+    public UserOfflineEvent(UserDto user)
+    {
+        User = user ?? throw new ArgumentNullException(nameof(user));
+    }
+
+    public UserDto User { get; }
 }

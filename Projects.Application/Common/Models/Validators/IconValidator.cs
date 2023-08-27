@@ -20,10 +20,8 @@ public class IconValidator : AbstractValidator<Icon>
     }
     private bool BeAValidUrl(string url)
     {
-        Uri uriResult;
-        bool isUri = Uri.TryCreate(url, UriKind.Absolute, out uriResult);
+        bool isUri = Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult);
         return isUri && uriResult.Scheme == Uri.UriSchemeHttps && url.StartsWith("https://1workflowstorage.blob.core.windows.net/projectsicons/");
-        //todo pytać api photos
     }
 
 }

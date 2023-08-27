@@ -12,21 +12,7 @@ builder.Services.AddWebAPIServices(builder.Configuration);
 
 var app = builder.Build();
 
-var eventBus = app.Services.GetRequiredService<AzureServiceBusSubscriber>();
-
-var subscribeTasks = new List<Task>
-{
-    eventBus.Subscribe<RegistrationEvent>(),
-    eventBus.Subscribe<FriendRequestAddedEvent>(),
-    eventBus.Subscribe<FriendRequestAcceptedEvent>(),
-    eventBus.Subscribe<FriendRequestRemovedEvent>(),
-    eventBus.Subscribe<UserOnlineEvent>(),
-    eventBus.Subscribe<ProjectMemberAddedEvent>(),
-    eventBus.Subscribe<ProjectMemberAcceptInvitationEvent>(),
-    eventBus.Subscribe<ProjectMemberDeclineInvitationEvent>(),
-};
-
-await Task.WhenAll(subscribeTasks);
+await AddSubscriptions(app);
 
 if (app.Environment.IsDevelopment())
 {
@@ -35,7 +21,6 @@ if (app.Environment.IsDevelopment())
     await ApplyMigration();
 }
 
-//app.UseHttpsRedirection();
 app.UseCors("allowAny");
 app.UseAuthentication();
 app.UseAuthorization();
@@ -62,4 +47,22 @@ async Task ApplyMigration()
     }
     await Task.CompletedTask;
     return;
+}
+async Task AddSubscriptions(WebApplication app)
+{
+    var eventBus = app.Services.GetRequiredService<AzureServiceBusSubscriber>();
+
+    var subscribeTasks = new List<Task>
+    {
+        eventBus.Subscribe<RegistrationEvent>(),
+        eventBus.Subscribe<FriendRequestAddedEvent>(),
+        eventBus.Subscribe<FriendRequestAcceptedEvent>(),
+        eventBus.Subscribe<FriendRequestRemovedEvent>(),
+        eventBus.Subscribe<UserOnlineEvent>(),
+        eventBus.Subscribe<ProjectMemberAddedEvent>(),
+        eventBus.Subscribe<ProjectMemberAcceptInvitationEvent>(),
+        eventBus.Subscribe<ProjectMemberDeclineInvitationEvent>(),
+    };
+
+    await Task.WhenAll(subscribeTasks);
 }

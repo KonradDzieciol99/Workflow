@@ -1,4 +1,5 @@
-﻿using Projects.Domain.Common.Exceptions;
+﻿using Projects.Domain.Common.Enums;
+using Projects.Domain.Common.Exceptions;
 using Projects.Domain.Common.Models;
 using Projects.Domain.DomainEvents;
 

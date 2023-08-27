@@ -129,7 +129,7 @@ public class Index : PageModel
     }
 
 
-    private async Task<ViewModel> BuildViewModelAsync(string userCode, InputModel model = null)
+    private async Task<ViewModel> BuildViewModelAsync(string userCode, InputModel? model = null)
     {
         var request = await _interaction.GetAuthorizationContextAsync(userCode);
         if (request != null)

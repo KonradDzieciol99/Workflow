@@ -31,10 +31,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
             if (disposing)
             {
                 // Zwalnianie zasobów zarządzanych (implementujących interfejs IDisposable).
-                if (_applicationDbContext != null)
-                {
-                    _applicationDbContext.Dispose();
-                }
+                _applicationDbContext?.Dispose();
             }
             // Zwalnianie zasobów niezarządzanych.
             disposed = true;

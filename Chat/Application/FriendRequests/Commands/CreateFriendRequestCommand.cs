@@ -12,7 +12,7 @@ namespace Chat.Application.FriendRequests.Commands;
 
 public record CreateFriendRequestCommand(string Id, string Email, string? PhotoUrl) : IAuthorizationRequest<FriendRequestDto>
 {
-    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new List<IAuthorizationRequirement>();
+    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new();
 }
 public class CreateFriendRequestCommandHandler : IRequestHandler<CreateFriendRequestCommand, FriendRequestDto>
 {

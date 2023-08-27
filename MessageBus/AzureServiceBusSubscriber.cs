@@ -22,8 +22,6 @@ public class AzureServiceBusSubscriber : BackgroundService
     private readonly IMediator _mediator;
     private readonly ILogger<AzureServiceBusSubscriber> _logger;
     private readonly AzureServiceBusSubscriberOptions _options;
-    private readonly string _topicName = "workflow_event_bus";
-    private readonly string _subscriptionName;
     private readonly ConcurrentDictionary<string, Type> _events;
 
     public AzureServiceBusSubscriber(IServiceScopeFactory serviceScopeFactory,
@@ -35,12 +33,8 @@ public class AzureServiceBusSubscriber : BackgroundService
         this._mediator = mediator;
         this._logger = logger;
         this._options = options.Value;
-        _options.Validate();
-        //_topicName = topicName;
-        _subscriptionName = _options.SubscriptionName;
-        _events = new ConcurrentDictionary<string, Type>();
+        this._events = new ConcurrentDictionary<string, Type>();
         RemoveAllRulesAsync().GetAwaiter().GetResult();
-        // string topicName, string subscriptionName
 
     }
 
@@ -48,29 +42,7 @@ public class AzureServiceBusSubscriber : BackgroundService
     {
         var client = new ServiceBusClient(_options.ServiceBusConnectionString);
 
-        //if (_options.QueueNameAndEventTypePair is not null)
-        //{
-        //    foreach (var item in _options.QueueNameAndEventTypePair)
-        //    {
-        //var BusProcessor = client.CreateProcessor(item.Key);
-        //BusProcessor.ProcessMessageAsync += (args) => EventHandlerAsync(args, _options.QueueNameAndEventTypePair);
-        //BusProcessor.ProcessErrorAsync += ErrorHandler;
-        //await BusProcessor.StartProcessingAsync();
-        //    }
-        //}
-
-        //if (_options.TopicNameWithSubscriptionName is not null)
-        //{
-        //    foreach (var item in _options.TopicNameWithSubscriptionName)
-        //    {
-        //var BusProcessor = client.CreateProcessor(item.Key, item.Value);
-        //BusProcessor.ProcessMessageAsync += (args) => EventHandlerAsync(args, _options.TopicNameAndEventTypePair);
-        //BusProcessor.ProcessErrorAsync += ErrorHandler;
-        //await BusProcessor.StartProcessingAsync();
-        //    }
-        //}
-
-        var BusProcessor = client.CreateProcessor(_topicName, _subscriptionName);
+        var BusProcessor = client.CreateProcessor(_options.TopicName, _options.SubscriptionName);
         BusProcessor.ProcessMessageAsync += EventHandlerAsync;
         BusProcessor.ProcessErrorAsync += ErrorHandler;
         await BusProcessor.StartProcessingAsync();
@@ -94,22 +66,12 @@ public class AzureServiceBusSubscriber : BackgroundService
         {
             var message = args.Message;
             var body = Encoding.UTF8.GetString(message.Body);
-            //var label = args.Message.ApplicationProperties["Label"] as string;
-            //if (label == null)
-            //{
-            //    throw new ArgumentNullException($"Label is empty: {args}");
-            //}
-
-            //var type = topicOrQueueNameWithTypeEvent[label];
 
             var type = _events[message.Subject];
             if (type == null)
             {
                 throw new ArgumentNullException("You did not subscribe to this event");
             }
-
-            //throw new ArgumentNullException("test");
-            //var type = _options.QueueNameAndEventTypePair[label];
 
             MethodInfo sendAsyncMethod = this.GetType().GetMethod(nameof(SendAsync), BindingFlags.NonPublic | BindingFlags.Instance) ?? throw new ArgumentNullException("Something went wrong.");
 
@@ -141,30 +103,22 @@ public class AzureServiceBusSubscriber : BackgroundService
         if (@event is null)
             throw new ArgumentNullException($"Message is empty{@event}");
 
-        using (var scope = _serviceScopeFactory.CreateScope())
-        {
-            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-            var response = await mediator.Send(@event);
-        }
+        using var scope = _serviceScopeFactory.CreateScope();
+        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+        var response = await mediator.Send(@event);
         return;
     }
 
-    //public async Task Subscribe<T, TH>()
-    public async Task Subscribe<T>()
-    //where T : IntegrationEvent
-    //where TH : IIntegrationEventHandler<T>
+    public async Task Subscribe<T>() where T : IntegrationEvent
     {
 
         var _administrationClient = new ServiceBusAdministrationClient(_options.ServiceBusConnectionString);
 
         var eventName = typeof(T).Name;
 
-        //var containsKey = _subsManager.HasSubscriptionsForEvent<T>();
-        //if (!containsKey)
-        //{
         try
         {
-            await _administrationClient.CreateRuleAsync(_topicName, _subscriptionName, new CreateRuleOptions
+            await _administrationClient.CreateRuleAsync(_options.TopicName, _options.SubscriptionName, new CreateRuleOptions
             {
                 Filter = new CorrelationRuleFilter() { Subject = eventName },
                 Name = eventName
@@ -190,34 +144,18 @@ public class AzureServiceBusSubscriber : BackgroundService
 
         return;
     }
-    //private async Task RemoveDefaultRule()
-    //{
-    //    var _administrationClient = new ServiceBusAdministrationClient(_options.ServiceBusConnectionString);
 
-    //    try
-    //    {
-    //        await _administrationClient.DeleteRuleAsync(_topicName, _subscriptionName, RuleProperties.DefaultRuleName);
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        throw;
-    //    }
-
-    //        await Task.CompletedTask;
-
-    //    return;
-    //}
     private async Task RemoveAllRulesAsync()
     {
         var _administrationClient = new ServiceBusAdministrationClient(_options.ServiceBusConnectionString);
 
         try
         {
-            var rules = _administrationClient.GetRulesAsync(_topicName, _subscriptionName);
+            var rules = _administrationClient.GetRulesAsync(_options.TopicName, _options.SubscriptionName);
 
             await foreach (var rule in rules)
             {
-                await _administrationClient.DeleteRuleAsync(_topicName, _subscriptionName, rule.Name);
+                await _administrationClient.DeleteRuleAsync(_options.TopicName, _options.SubscriptionName, rule.Name);
             }
         }
         //catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.MessageNotFound || ex.Reason == ServiceBusFailureReason.MessagingEntityNotFound)

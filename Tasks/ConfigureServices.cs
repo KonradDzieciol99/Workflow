@@ -82,16 +82,9 @@ public static class ConfigureServices
                       });
         });
 
-        services.AddAzureServiceBusSubscriber(opt =>
-        {
-            opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString") ?? throw new ArgumentNullException(nameof(opt.ServiceBusConnectionString));
-            opt.SubscriptionName = "tasks";
-        });
+        services.AddAzureServiceBusSubscriber(configuration.GetSection("AzureServiceBusSubscriberOptions"));
 
-        services.AddAzureServiceBusSender(opt =>
-        {
-            opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString") ?? throw new ArgumentNullException(nameof(opt.ServiceBusConnectionString));
-        });
+        services.AddAzureServiceBusSender(configuration.GetSection("AzureServiceBusSender"));
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 

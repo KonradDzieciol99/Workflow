@@ -16,12 +16,8 @@ public static class ConfigureServices
         });
 
         services.AddScoped<ISenderSource, SenderSource>();
-        services.AddAzureServiceBusSubscriber(opt =>
-        {
-            opt.ServiceBusConnectionString = configuration.GetConnectionString("ServiceBus") ?? throw new ArgumentNullException("ServiceBus");
-            opt.SubscriptionName = "email-sender";
-        });
-        services.AddAzureServiceBusSender(opt => configuration.GetConnectionString("ServiceBus"));
+        services.AddAzureServiceBusSubscriber(configuration.GetSection("AzureServiceBusSubscriberOptions"));
+        services.AddAzureServiceBusSender(configuration.GetSection("AzureServiceBusSender"));
         return services;
     }
 }

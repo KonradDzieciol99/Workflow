@@ -1,6 +1,11 @@
-﻿namespace MessageBus.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MessageBus.Models;
 
 public class AzureServiceBusSenderOptions
 {
-    public string ServiceBusConnectionString { get; set; }
+    [Required]
+    public required string ServiceBusConnectionString { get; set; }
+    [Required]
+    public required string TopicName { get; set; }
 }

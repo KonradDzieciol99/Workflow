@@ -1,9 +1,7 @@
 ﻿using Duende.IdentityServer.Events;
 using Duende.IdentityServer.Services;
-using IdentityDuende.Entities;
 using IdentityDuende.IntegrationEvents;
 using MessageBus;
-using Microsoft.AspNetCore.Identity;
 
 namespace IdentityDuende.Events;
 
@@ -11,37 +9,21 @@ public class IdentityEvents : IEventSink
 {
     private readonly IAzureServiceBusSender _azureServiceBusSender;
 
-    //private readonly IMessageBus _messageBus;
-    private readonly UserManager<ApplicationUser> _userManager;
-
-    public IdentityEvents(/*IMessageBus messageBus,*/IAzureServiceBusSender messageBus, UserManager<ApplicationUser> userManager)
+    public IdentityEvents(IAzureServiceBusSender messageBus)
     {
         _azureServiceBusSender = messageBus;
-        _userManager = userManager;
     }
     public async Task PersistAsync(Event evt)
     {
         if (evt.Name == "Local User Register")
         {
             var localUserRegisterSuccessEvent = (LocalUserRegisterSuccessEvent)evt;
-            //var registerEmailBusMessage = new RegisterEmailBusMessage() { Email = localUserRegisterSuccessEvent.LocalUserEmail, Token = localUserRegisterSuccessEvent.LocalUserActivateToken };
             var registerEmailBusMessage = new RegistrationEvent(localUserRegisterSuccessEvent.LocalUserEmail,
                                                                 localUserRegisterSuccessEvent.LocalUserActivateToken,
                                                                 localUserRegisterSuccessEvent.IdentityUserId,
                                                                 null);
 
             await _azureServiceBusSender.PublishMessage(registerEmailBusMessage);
-
-
-            //var newUserRegisterCreateUser = new NewUserRegisterCreateUser() { Email = localUserRegisterSuccessEvent.LocalUserEmail, Id = localUserRegisterSuccessEvent.IdentityUserId };
-            //await _messageBus.PublishMessage(newUserRegisterCreateUser, "new-user-register-create-user");
-        }
-        if (evt.Name == "External User Register")
-        {
-            var externalUserRegisterSuccessEvent = (ExternalUserRegisterSuccessEvent)evt;
-            //TODO welcome Email
-            //var newUserRegisterCreateUser = new NewUserRegisterCreateUser() { Email = externalUserRegisterSuccessEvent.ExternalUserEmail, Id = externalUserRegisterSuccessEvent.IdentityUserId };
-            //await _messageBus.PublishMessage(newUserRegisterCreateUser, "new-user-register-create-user");
         }
 
         if (evt is UserResentVerificationEmailEvent @event)

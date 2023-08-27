@@ -10,7 +10,7 @@ namespace Chat.Application.FriendRequests.Queries;
 
 public record GetConfirmedFriendRequestsQuery(int Skip, int Take, string? Search) : IAuthorizationRequest<List<FriendRequestDto>>
 {
-    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new List<IAuthorizationRequirement>();
+    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new();
 }
 public class GetConfirmedFriendRequestsQueryHandler : IRequestHandler<GetConfirmedFriendRequestsQuery, List<FriendRequestDto>>
 {

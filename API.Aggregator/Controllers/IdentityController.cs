@@ -1,12 +1,15 @@
 ﻿using API.Aggregator.Models;
 using API.Aggregator.Services;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Aggregator.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Policy = "ApiScope")]
+
 public class IdentityController : ControllerBase
 {
     private readonly IIdentityServerService _identityServerService;
@@ -20,18 +23,9 @@ public class IdentityController : ControllerBase
         this._projectsService = projectsService ?? throw new ArgumentNullException(nameof(projectsService)); ;
     }
 
-    //public TasksController(ITaskService taskService, IProjectsService projectsService, IConfiguration configuration)
-    //{
-    //    this._taskService = taskService ?? throw new ArgumentNullException(nameof(_taskService));
-    //    this._projectsService = projectsService ?? throw new ArgumentNullException(nameof(_projectsService));
-    //    this._projectServiceUrl = configuration.GetValue<string>("ServicesUrl:Projects") ?? throw new ArgumentNullException(nameof(_projectServiceUrl));
-    //}
-
     [HttpGet("search/{email}")]
     public async Task<List<SearchedUserDto>> GetAsync([FromRoute] string email)
     {
-
-        //var token = HttpContext.Request.Headers.FirstOrDefault(x => x.Key == "Authorization").Value;
 
         var token = await HttpContext.GetTokenAsync("access_token");
 

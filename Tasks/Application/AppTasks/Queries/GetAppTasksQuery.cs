@@ -11,8 +11,7 @@ namespace Tasks.Application.AppTasks.Queries;
 
 public record GetAppTasksQuery(string ProjectId, int Skip, int Take, string? OrderBy, bool? IsDescending, string? Filter, string? GroupBy, string? Search, string[]? SelectedColumns) : IAuthorizationRequest<AppTaskDtosWithTotalCount>
 {
-    public List<IAuthorizationRequirement> GetAuthorizationRequirement() =>
-        new List<IAuthorizationRequirement> { new ProjectMembershipRequirement(ProjectId) };
+    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new() { new ProjectMembershipRequirement(ProjectId) };
 }
 
 public class GetAppTasksQueryHandler : IRequestHandler<GetAppTasksQuery, AppTaskDtosWithTotalCount>
@@ -29,9 +28,9 @@ public class GetAppTasksQueryHandler : IRequestHandler<GetAppTasksQuery, AppTask
     }
     public async Task<AppTaskDtosWithTotalCount> Handle(GetAppTasksQuery request, CancellationToken cancellationToken)
     {
-        var result = await _unitOfWork.AppTaskRepository.GetAsync(_currentUserService.GetUserId(), request);
+        var (appTasks, totalCount) = await _unitOfWork.AppTaskRepository.GetAsync(_currentUserService.GetUserId(), request);
 
-        var appTasksWithTotalCount = new AppTaskDtosWithTotalCount(result.totalCount, _mapper.Map<List<AppTaskDto>>(result.appTasks));
+        var appTasksWithTotalCount = new AppTaskDtosWithTotalCount(totalCount, _mapper.Map<List<AppTaskDto>>(appTasks));
 
         return appTasksWithTotalCount;
     }

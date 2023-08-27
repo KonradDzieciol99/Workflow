@@ -15,7 +15,6 @@ if (app.Environment.IsDevelopment())
     await ApplyMigration();
 }
 
-//app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseIdentityServer();
@@ -27,11 +26,9 @@ app.Run();
 
 async Task ApplyMigration()
 {
-    using (var scope = app.Services.CreateScope())
-    {
-        var initialiser = scope.ServiceProvider.GetRequiredService<SeedData>();
-        await initialiser.InitialiseAsync();
-        await initialiser.SeedAsync();
-    }
+    using var scope = app.Services.CreateScope();
+    var initialiser = scope.ServiceProvider.GetRequiredService<SeedData>();
+    await initialiser.InitialiseAsync();
+    await initialiser.SeedAsync();
     return;
 }

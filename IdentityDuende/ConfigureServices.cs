@@ -79,10 +79,7 @@ public static class ConfigureServices
         services.AddScoped<IEventSink, IdentityEvents>();
         services.AddScoped<SeedData>();
 
-        services.AddAzureServiceBusSender(opt =>
-        {
-            opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString") ?? throw new ArgumentNullException("ServiceBusConnectionString");
-        });
+        services.AddAzureServiceBusSender(configuration.GetSection("AzureServiceBusSender"));
 
         services.AddAuthentication()
         .AddOpenIdConnect("AzureOpenId", "Azure Active Directory OpenId", options =>

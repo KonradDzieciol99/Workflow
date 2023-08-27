@@ -22,16 +22,9 @@ public static class ConfigureServices
                       });
         });
 
-        services.AddAzureServiceBusSubscriber(opt =>
-        {
-            opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString") ?? throw new ArgumentNullException(nameof(opt.ServiceBusConnectionString));
-            opt.SubscriptionName = "signalr";
-        });
+        services.AddAzureServiceBusSubscriber(configuration.GetSection("AzureServiceBusSubscriberOptions"));
 
-        services.AddAzureServiceBusSender(opt =>
-        {
-            opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString") ?? throw new ArgumentNullException(nameof(opt.ServiceBusConnectionString));
-        });
+        services.AddAzureServiceBusSender(configuration.GetSection("AzureServiceBusSender"));
 
         services.AddMediatR(opt =>
         {

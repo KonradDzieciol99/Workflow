@@ -15,7 +15,7 @@ public class IdentityServerService : BaseHttpService, IIdentityServerService
 
     public async Task<UserDto?> CheckIfUserExistsAsync(string email, string token)
     {
-        StringBuilder sb = new StringBuilder(_identityUrl);
+        var sb = new StringBuilder(_identityUrl);
         sb.Append($"/api/IdentityUser/CheckIfUserExists/{email}");
 
         return await this.SendAsync<UserDto?>(new ApiRequest()
@@ -27,7 +27,7 @@ public class IdentityServerService : BaseHttpService, IIdentityServerService
     }
     public async Task<List<UserDto>> SearchAsync(string email, string token)
     {
-        StringBuilder sb = new StringBuilder(_identityUrl);
+        var sb = new StringBuilder(_identityUrl);
         sb.Append($"/api/IdentityUser/search/{email}");
 
         return await this.SendAsync<List<UserDto>>(new ApiRequest()

@@ -14,7 +14,7 @@ using Tasks.Services;
 namespace Tasks.Application.AppTasks.Commands;
 
 public record UpdateAppTaskCommand(string Id,
-                                   string? Name,
+                                   string Name,
                                    string? Description,
                                    string ProjectId,
                                    string? TaskAssigneeMemberId,

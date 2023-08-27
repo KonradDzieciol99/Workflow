@@ -10,7 +10,7 @@ namespace Projects.Application.Projects.Queries;
 
 public record GetProjectsQuery(int Skip, int Take, string? OrderBy, bool? IsDescending, string? Filter, string? GroupBy, string? Search, string[]? SelectedColumns) : IAuthorizationRequest<ProjectsWithTotalCount>
 {
-    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new List<IAuthorizationRequirement>();
+    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new();
 }
 public class GetProjectsQueryHandler : IRequestHandler<GetProjectsQuery, ProjectsWithTotalCount>
 {

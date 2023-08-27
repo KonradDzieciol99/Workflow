@@ -8,7 +8,7 @@ namespace Projects.Application.ProjectMembers.Commands;
 
 public record DeclineProjectInvitationCommand(string ProjectId) : IAuthorizationRequest
 {
-    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new List<IAuthorizationRequirement>()
+    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new()
     {
         new ProjectMembershipRequirement(ProjectId),
     };

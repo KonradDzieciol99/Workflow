@@ -14,13 +14,11 @@ public class PresenceHub : Hub
     private readonly IConnectionMultiplexer _connectionMultiplexer;
     private readonly IAzureServiceBusSender _messageBus;
 
-    //private readonly IMapper _mapper;
     private readonly IDatabase _redisDb;
     public PresenceHub(IConnectionMultiplexer connectionMultiplexer, IAzureServiceBusSender messageBus)
     {
         _connectionMultiplexer = connectionMultiplexer;
         _messageBus = messageBus;
-        //_mapper = mapper;
         _redisDb = _connectionMultiplexer.GetDatabase();
     }
 
@@ -64,7 +62,7 @@ public class PresenceHub : Hub
         {
             await _redisDb.KeyDeleteAsync($"presence-{email}");
 
-            var newOnlineUserEvent = new UserOfflineEvent() { User = new UserDto(default, default, null) { Email = email, Id = id } };
+            var newOnlineUserEvent = new UserOfflineEvent(new UserDto(id, email, null));
             await _messageBus.PublishMessage(newOnlineUserEvent);
 
             //string[] InvitedUsersConnectionIds = await GetInvitedUsers();
@@ -75,32 +73,32 @@ public class PresenceHub : Hub
 
         await base.OnDisconnectedAsync(exception);
     }
-    private async Task<IEnumerable<string>?> GetOnlineUsersEmails()
-    {
-        //string userId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new HubException("User cannot be identified");
-        //var SenderEmail = Context.User.FindFirstValue(ClaimTypes.Email) ?? throw new HubException("User cannot be identified");
+    //private async Task<IEnumerable<string>?> GetOnlineUsersEmails()
+    //{
+    //    //string userId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new HubException("User cannot be identified");
+    //    //var SenderEmail = Context.User.FindFirstValue(ClaimTypes.Email) ?? throw new HubException("User cannot be identified");
 
-        //var friends = await _unitOfWork.FriendInvitationRepository.GetAllFriends(userId);
-        //var friendsEmails = friends.Select(x => x.InviterUserEmail == SenderEmail ? x.InvitedUserEmail : x.InviterUserEmail);
+    //    //var friends = await _unitOfWork.FriendInvitationRepository.GetAllFriends(userId);
+    //    //var friendsEmails = friends.Select(x => x.InviterUserEmail == SenderEmail ? x.InvitedUserEmail : x.InviterUserEmail);
 
-        //RedisKey[] redisKeys = friendsEmails.Select(x => $"presence-{x}").Cast<RedisKey>().ToArray();
+    //    //RedisKey[] redisKeys = friendsEmails.Select(x => $"presence-{x}").Cast<RedisKey>().ToArray();
 
-        //RedisKey[] redisKeys = friendsEmails.Cast<RedisKey>().ToArray();
-        //var existingTable = await _redisDb.KeyExistsAsync(redisKeys);
+    //    //RedisKey[] redisKeys = friendsEmails.Cast<RedisKey>().ToArray();
+    //    //var existingTable = await _redisDb.KeyExistsAsync(redisKeys);
 
-        //await _redisDb.exist
+    //    //await _redisDb.exist
 
-        //RedisKey[] keys = { "key1", "key2", "key3" };
+    //    //RedisKey[] keys = { "key1", "key2", "key3" };
 
-        //bool[] exists = _redisDb.KeyExists(keys);
-        //var existArray = await KeyExists(redisKeys);
+    //    //bool[] exists = _redisDb.KeyExists(keys);
+    //    //var existArray = await KeyExists(redisKeys);
 
-        //Dictionary<string, bool[]> dict = friendsEmails.Select((x, i) => new { key = x, value = existArray[i] }).GroupBy(x => x.key, y => y.value).ToDictionary(x => x.Key, y => y.ToArray());
+    //    //Dictionary<string, bool[]> dict = friendsEmails.Select((x, i) => new { key = x, value = existArray[i] }).GroupBy(x => x.key, y => y.value).ToDictionary(x => x.Key, y => y.ToArray());
 
 
-        //return friendsEmails;
-        throw new HubException("asdasd");
-    }
+    //    //return friendsEmails;
+    //    throw new HubException("asdasd");
+    //}
     private async Task<bool[]> KeyExists(RedisKey[] keys)
     {
         var tasks = keys.Select(key => _redisDb.KeyExistsAsync(key));
@@ -109,22 +107,20 @@ public class PresenceHub : Hub
         return results;
     }
 
-    private async Task<IEnumerable<string>?> GetFriendsIds()
-    {
-        //string userId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new HubException("User cannot be identified");
-        //var SenderEmail = Context.User.FindFirstValue(ClaimTypes.Email) ?? throw new HubException("User cannot be identified");
+    //private async Task<IEnumerable<string>?> GetFriendsIds()
+    //{
+    //    //string userId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new HubException("User cannot be identified");
+    //    //var SenderEmail = Context.User.FindFirstValue(ClaimTypes.Email) ?? throw new HubException("User cannot be identified");
 
-        //var friends = await _unitOfWork.FriendInvitationRepository.GetAllFriends(userId);
-        //var friendIds = friends.Select(x => x.InviterUserEmail == SenderEmail ? x.InvitedUserId : x.InviterUserId);
+    //    //var friends = await _unitOfWork.FriendInvitationRepository.GetAllFriends(userId);
+    //    //var friendIds = friends.Select(x => x.InviterUserEmail == SenderEmail ? x.InvitedUserId : x.InviterUserId);
 
-        //return friendIds;
-        throw new HubException("asdasd");
-    }
+    //    //return friendIds;
+    //    throw new HubException("asdasd");
+    //}
 
-    public async Task SentFriendInvitationNotification(string Id)
-    {
-        var httpContext = Context.GetHttpContext() ?? throw new ArgumentNullException("httpContext error");
-
-
-    }
+    //public async Task SentFriendInvitationNotification(string Id)
+    //{
+    //    var httpContext = Context.GetHttpContext() ?? throw new ArgumentNullException("httpContext error");
+    //}
 }

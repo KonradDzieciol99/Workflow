@@ -23,14 +23,9 @@ public class Program
             app.UseSwaggerUI();
         }
 
-        //app.UseHttpsRedirection();
-
         app.UseRouting();
-
         app.UseCors("allowAny");
-
         app.UseAuthentication();
-
         app.UseAuthorization();
 
         var group = app.MapGroup("/api")
@@ -61,7 +56,7 @@ public class Program
         {
             var blobPhotosContainerClient = blobServiceClient.GetBlobContainerClient(builder.Configuration.GetValue<string>("AzureBlobStorage:BlobContainerProjectsIcons"));
 
-            List<Icon> files = new List<Icon>();
+            var files = new List<Icon>();
 
             await foreach (BlobItem file in blobPhotosContainerClient.GetBlobsAsync())
             {
