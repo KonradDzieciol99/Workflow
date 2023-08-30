@@ -1,4 +1,5 @@
-﻿using FluentValidation.Results;
+﻿using Azure;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -42,9 +43,13 @@ public class ExceptionMiddlewareTests
         var stream = reader.ReadToEnd();
 
         var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-        var response = JsonSerializer.Deserialize<ProblemDetails>(stream, options);
+        ProblemDetails response;
 
-        Assert.Equal((int)HttpStatusCode.Forbidden, context.Response.StatusCode);
+        response = JsonSerializer.Deserialize<ProblemDetails>(stream, options);
+
+        Assert.Equal(StatusCodes.Status403Forbidden, context.Response.StatusCode);
+        Assert.Equal(StatusCodes.Status403Forbidden, response.Status);
+        Assert.Equal(nameof(ForbiddenAccessException), response.Type);
         Assert.NotNull(response);
     }
     [Fact]

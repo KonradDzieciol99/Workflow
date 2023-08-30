@@ -6,7 +6,7 @@ namespace Tasks.Domain.Entity;
 public class AppTask : BaseEntity
 {
     private AppTask() { }
-    public AppTask(string name, string? description, string projectId, string? taskAssigneeMemberId,/* string? taskAssigneeMemberEmail, string? taskAssigneeMemberPhotoUrl,*/ Priority priority, State state, DateTime dueDate, DateTime startDate, string? taskLeaderId)
+    public AppTask(string name, string? description, string projectId, string? taskAssigneeMemberId, Priority priority, State state, DateTime dueDate, DateTime startDate, string? taskLeaderId)
     {
         Name = name ?? throw new ArgumentNullException(nameof(name));
         Description = description;
@@ -31,7 +31,7 @@ public class AppTask : BaseEntity
     public string? TaskLeaderId { get; private set; }
     public ProjectMember TaskLeader { get; private set; }
 
-    public void UpdateTask(string name, string? description, string? taskAssigneeMemberId/*, string? taskAssigneeMemberEmail, string? taskAssigneeMemberPhotoUrl*/, Priority? priority, State? state, DateTime? dueDate, DateTime? startDate, string? taskLeaderId)
+    public void UpdateTask(string name, string? description, string? taskAssigneeMemberId, Priority? priority, State? state, DateTime? dueDate, DateTime? startDate, string? taskLeaderId)
     {
         if (name == Name
             && description == Description

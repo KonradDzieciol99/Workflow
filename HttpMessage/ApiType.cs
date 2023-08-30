@@ -1,10 +1,9 @@
-﻿namespace HttpMessage
+﻿namespace HttpMessage;
+
+public enum ApiType
 {
-    public enum ApiType
-    {
-        GET,
-        POST,
-        PUT,
-        DELETE
-    }
+    GET,
+    POST,
+    PUT,
+    DELETE
 }

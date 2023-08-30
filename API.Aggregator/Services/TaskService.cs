@@ -12,12 +12,6 @@ public class TaskService : BaseHttpService, ITaskService
     }
     public async Task<AppTaskDto> CreateTask(CreateAppTaskDto createAppTask, string token)
     {
-        return await this.SendAsync<AppTaskDto>(new ApiRequest()
-        {
-            HttpMethod = HttpMethod.Post,
-            Url = _tasksServiceUrl,
-            AccessToken = token,
-            Data = createAppTask
-        });
+        return await this.SendAsync<AppTaskDto>(new ApiRequest(HttpMethod.Post, _tasksServiceUrl, createAppTask, token));
     }
 }

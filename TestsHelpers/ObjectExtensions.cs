@@ -1,0 +1,22 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+
+namespace TestsHelpers;
+public static class ObjectExtensions
+{
+    public static string ToQueryString(this object obj)
+    {
+        string json = JsonSerializer.Serialize(obj);
+        var dictionary = JsonSerializer.Deserialize<Dictionary<string, object>>(json) ?? throw new ArgumentNullException(nameof(json));
+
+        var properties = dictionary.Where(pair => pair.Value != null)
+                                   .Select(pair => $"{pair.Key}={WebUtility.UrlEncode(pair.Value.ToString())}");
+
+        return string.Join("&", properties.ToArray());
+    }
+}

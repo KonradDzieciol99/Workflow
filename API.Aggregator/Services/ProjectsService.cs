@@ -17,36 +17,20 @@ public class ProjectsService : BaseHttpService, IProjectsService
         var sb = new StringBuilder(_projectServiceUrl);
         sb.Append($"/api/projects/CheckIfUserIsAMemberOfProject?userId={userId}&projectId={projectId}");
 
-        return await this.SendAsync<bool>(new ApiRequest()
-        {
-            HttpMethod = HttpMethod.Get,
-            Url = sb.ToString(),
-            AccessToken = token
-        });
+        return await this.SendAsync<bool>(new ApiRequest(HttpMethod.Get, sb.ToString(), null, token));
     }
     public async Task<List<MemberStatusDto>> GetMembersStatuses(List<string> Ids, string projectId, string token)
     {
         var sb = new StringBuilder(_projectServiceUrl);
         sb.Append($"/api/projects/{projectId}/GetMembersStatuses?usersIds={string.Join(",", Ids)}");
 
-        return await this.SendAsync<List<MemberStatusDto>>(new ApiRequest()
-        {
-            HttpMethod = HttpMethod.Get,
-            Url = sb.ToString(),
-            AccessToken = token
-        });
+        return await this.SendAsync<List<MemberStatusDto>>(new ApiRequest(HttpMethod.Get, sb.ToString(), null, token));
     }
     public async Task<ProjectMemberDto?> AddMember(string projectId, string token, object command)
     {
         var sb = new StringBuilder(_projectServiceUrl);
         sb.Append($"/api/projects/{projectId}/projectMembers/addMember");
 
-        return await this.SendAsync<ProjectMemberDto?>(new ApiRequest()
-        {
-            HttpMethod = HttpMethod.Post,
-            Url = sb.ToString(),
-            AccessToken = token,
-            Data = command
-        });
+        return await this.SendAsync<ProjectMemberDto?>(new ApiRequest(HttpMethod.Post, sb.ToString(), command, token));
     }
 }

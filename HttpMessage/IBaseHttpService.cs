@@ -1,9 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-namespace HttpMessage
+namespace HttpMessage;
+
+public interface IBaseHttpService
 {
-    public interface IBaseHttpService
-    {
-        Task<T> SendAsync<T>(ApiRequest apiRequest);
-    }
+    Task<T> SendAsync<T>(ApiRequest apiRequest);
 }

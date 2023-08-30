@@ -18,23 +18,13 @@ public class IdentityServerService : BaseHttpService, IIdentityServerService
         var sb = new StringBuilder(_identityUrl);
         sb.Append($"/api/IdentityUser/CheckIfUserExists/{email}");
 
-        return await this.SendAsync<UserDto?>(new ApiRequest()
-        {
-            HttpMethod = HttpMethod.Get,
-            Url = sb.ToString(),
-            AccessToken = token
-        });
+        return await this.SendAsync<UserDto?>(new ApiRequest(HttpMethod.Get, sb.ToString(), null, token));
     }
     public async Task<List<UserDto>> SearchAsync(string email, string token)
     {
         var sb = new StringBuilder(_identityUrl);
         sb.Append($"/api/IdentityUser/search/{email}");
 
-        return await this.SendAsync<List<UserDto>>(new ApiRequest()
-        {
-            HttpMethod = HttpMethod.Get,
-            Url = sb.ToString(),
-            AccessToken = token
-        });
+        return await this.SendAsync<List<UserDto>>(new ApiRequest(HttpMethod.Get, sb.ToString(), null, token));
     }
 }

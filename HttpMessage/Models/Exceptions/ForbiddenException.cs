@@ -1,12 +1,11 @@
 ﻿using System;
 
-namespace HttpMessage.Models.Exceptions
-{
-    public class ForbiddenException : Exception
-    {
-        public ForbiddenException(string message) : base(message)
-        {
+namespace HttpMessage.Models.Exceptions;
 
-        }
+public class ForbiddenException : Exception
+{
+    public ForbiddenException(string message) : base(message)
+    {
+
     }
 }
