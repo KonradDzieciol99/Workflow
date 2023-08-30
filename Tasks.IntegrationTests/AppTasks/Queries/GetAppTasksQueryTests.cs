@@ -34,7 +34,7 @@ public class GetAppTasksQueryTests : IAsyncLifetime //to może zastępowac konst
 
     [Theory]
     [MemberData(nameof(GetAppTasksQueryList))]
-    public async Task Get_WithValidRouteParamsAndQueryParams_ReturnsAppTaskList(GetAppTasksQuery query)
+    public async Task GetAppTasksQuery_WithValidRouteParamsAndQueryParams_ReturnsAppTaskList(GetAppTasksQuery query)
     {
 
         var projectMembers = new List<ProjectMember>()
@@ -50,14 +50,14 @@ public class GetAppTasksQueryTests : IAsyncLifetime //to może zastępowac konst
             new AppTask("task4",null,"5",null,Priority.Low,State.ToDo,new DateTime(2023,6,7),new DateTime(2023,6,8),null),
         };
 
-        var AddedMebers = _base._factory.SeedData<Program, ApplicationDbContext, ProjectMember>(projectMembers);
-        var addedAppTasks = _base._factory.SeedData<Program, ApplicationDbContext, AppTask>(appTasks);
+        _base._factory.SeedData<Program, ApplicationDbContext, ProjectMember>(projectMembers);
+        _base._factory.SeedData<Program, ApplicationDbContext, AppTask>(appTasks);
 
-        _base._client.SetHeaders(AddedMebers[0].UserId, AddedMebers[0].UserEmail);
+        _base._client.SetHeaders(projectMembers[0].UserId, projectMembers[0].UserEmail);
 
         //act
         var queryParams = query.ToQueryString();
-        var response = await _base._client.GetAsync($"api/projects/{AddedMebers[0].ProjectId}/task?{queryParams}");
+        var response = await _base._client.GetAsync($"api/projects/{projectMembers[0].ProjectId}/task?{queryParams}");
 
         //assert
         var responseString = await response.Content.ReadAsStringAsync();
@@ -67,7 +67,7 @@ public class GetAppTasksQueryTests : IAsyncLifetime //to może zastępowac konst
     }
 
     [Fact]
-    public async Task Get_WithInvalidRouteParamsAndInvaliQueryParams_ReturnsForbidden()
+    public async Task GetAppTasksQuery_WithInvalidRouteParamsAndInvaliQueryParams_ReturnsForbidden()
     {
         //arrange
         var projectMembers = new List<ProjectMember>()

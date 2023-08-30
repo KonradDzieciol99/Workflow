@@ -13,7 +13,6 @@ public record GetAppTasksQuery(string ProjectId, int Skip, int Take, string? Ord
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new() { new ProjectMembershipRequirement(ProjectId) };
 }
-
 public class GetAppTasksQueryHandler : IRequestHandler<GetAppTasksQuery, AppTaskDtosWithTotalCount>
 {
     private readonly IUnitOfWork _unitOfWork;

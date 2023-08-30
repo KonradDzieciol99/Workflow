@@ -25,7 +25,7 @@ public class GetAppTaskQueryTests : IAsyncLifetime //to może zastępowac konstr
     }
 
     [Fact]
-    public async Task Get_WithValiRouteParams_ReturnsAppTask()
+    public async Task GetAppTaskQuery_WithValiRouteParams_ReturnsAppTask()
     {
 
         //arrange
@@ -40,13 +40,13 @@ public class GetAppTaskQueryTests : IAsyncLifetime //to może zastępowac konstr
             new AppTask("task3",null,"1",null,Priority.Low,State.ToDo,new DateTime(2023,6,7),new DateTime(2023,6,8),"1"),
         };
 
-        var AddedMebers = _base._factory.SeedData<Program, ApplicationDbContext, ProjectMember>(projectMembers);
-        var addedAppTasks = _base._factory.SeedData<Program, ApplicationDbContext, AppTask>(appTasks);
+        _base._factory.SeedData<Program, ApplicationDbContext, ProjectMember>(projectMembers);
+        _base._factory.SeedData<Program, ApplicationDbContext, AppTask>(appTasks);
 
-        _base._client.SetHeaders(AddedMebers[0].UserId, AddedMebers[0].UserEmail);
+        _base._client.SetHeaders(projectMembers[0].UserId, projectMembers[0].UserEmail);
 
         //act
-        var response = await _base._client.GetAsync($"api/projects/{AddedMebers[0].ProjectId}/task/{addedAppTasks[0].Id}");
+        var response = await _base._client.GetAsync($"api/projects/{projectMembers[0].ProjectId}/task/{appTasks[0].Id}");
 
         //assert
         var responseString = await response.Content.ReadAsStringAsync();
@@ -59,7 +59,7 @@ public class GetAppTaskQueryTests : IAsyncLifetime //to może zastępowac konstr
         Assert.Equal(appTasks[0].Name, returnedTask.Name);
     }
     [Fact]
-    public async Task Get_WithInvalidTaskIdRouteParams_ReturnsBadRequest()
+    public async Task GetAppTaskQuery_WithInvalidTaskIdRouteParams_ReturnsBadRequest()
     {
         //arrange
         var projectMembers = new List<ProjectMember>()
@@ -76,11 +76,11 @@ public class GetAppTaskQueryTests : IAsyncLifetime //to może zastępowac konstr
         var response = await _base._client.GetAsync($"api/projects/{AddedMebers[0].ProjectId}/task/{fakeAppTaskId}");
 
         //assert
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
     [Fact]
-    public async Task Get_WithInvalidProjectIdRouteParams_ReturnsForbidden()
+    public async Task GetAppTaskQuery_WithInvalidProjectIdRouteParams_ReturnsForbidden()
     {
         //arrange
         var projectMembers = new List<ProjectMember>()

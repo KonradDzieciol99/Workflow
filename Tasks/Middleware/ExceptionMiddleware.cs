@@ -28,6 +28,7 @@ public class ExceptionMiddleware
                 { typeof(TaskDomainException), HandleDomainException },
                 { typeof(UnauthorizedAccessException), HandleUnauthorizedAccessException },
                 { typeof(ForbiddenAccessException), HandleForbiddenAccessException },
+                { typeof(NotFoundException), HandleNotFoundException },
             };
     }
 
@@ -45,7 +46,6 @@ public class ExceptionMiddleware
 
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-
         if (exception is TaskDomainException taskDomainException)
         {
             Type type = taskDomainException.InnerException?.GetType() ?? typeof(TaskDomainException);
@@ -70,7 +70,8 @@ public class ExceptionMiddleware
         {
             Instance = context.Request.Path,
             Type = nameof(UnauthorizedAccessException),
-            Title = exception.Message,
+            Title = "Unauthorized",
+            Detail = exception.Message,
             Status = StatusCodes.Status401Unauthorized
         };
 
@@ -85,7 +86,8 @@ public class ExceptionMiddleware
         {
             Instance = context.Request.Path,
             Type = nameof(ForbiddenAccessException),
-            Title = exception.Message,
+            Title = "You have no rights to this resource",
+            Detail = exception.Message,
             Status = StatusCodes.Status403Forbidden
         };
 
@@ -100,7 +102,7 @@ public class ExceptionMiddleware
         {
             Instance = context.Request.Path,
             Type = nameof(Exception),
-            Title = exception.Message,
+            Detail = exception.Message,
             Status = StatusCodes.Status400BadRequest
         };
 
@@ -116,11 +118,29 @@ public class ExceptionMiddleware
         {
             Instance = context.Request.Path,
             Type = nameof(ValidationException),
-            Title = exception.Message,
+            Title = "Validation errors occurred",
+            Detail = exception.Message,
             Status = StatusCodes.Status400BadRequest
         };
 
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
+        await context.Response.WriteAsJsonAsync(message);
+        return;
+    }
+
+    private async Task HandleNotFoundException(TaskDomainException exception, HttpContext context)
+    {
+
+        var message = new ProblemDetails()
+        {
+            Instance = context.Request.Path,
+            Type = nameof(NotFoundException),
+            Title = "The specified resource was not found.",
+            Detail = exception.Message,
+            Status = StatusCodes.Status404NotFound
+        };
+
+        context.Response.StatusCode = StatusCodes.Status404NotFound;
         await context.Response.WriteAsJsonAsync(message);
         return;
     }

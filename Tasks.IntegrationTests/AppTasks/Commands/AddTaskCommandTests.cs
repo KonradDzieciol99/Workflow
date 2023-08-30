@@ -28,7 +28,7 @@ public class AddTaskCommandTests : IAsyncLifetime //to może zastępowac konstru
     }
 
     [Fact]
-    public async Task Post_WithValidRouteParamsAndValidAppTask_ReturnsAppTask()
+    public async Task AddTaskCommand_WithValidRouteParamsAndValidAppTask_ReturnsAppTask()
     {
         //arrange
         var projectMembers = new List<ProjectMember>()
@@ -36,15 +36,15 @@ public class AddTaskCommandTests : IAsyncLifetime //to może zastępowac konstru
             new ProjectMember("1", "userId1", "testUser@email.com1", null, ProjectMemberType.Leader,InvitationStatus.Accepted, "1"),
         };
 
-        var addedMebers = _base._factory.SeedData<Program, ApplicationDbContext, ProjectMember>(projectMembers);
+        _base._factory.SeedData<Program, ApplicationDbContext, ProjectMember>(projectMembers);
 
-        _base._client.SetHeaders(addedMebers[0].UserId, addedMebers[0].UserEmail);
+        _base._client.SetHeaders(projectMembers[0].UserId, projectMembers[0].UserEmail);
 
-        var command = new AddTaskCommand("AdedTask", null, addedMebers[0].ProjectId, null, Priority.High, State.Done, new DateTime(2023, 6, 4), new DateTime(2023, 6, 5), "1");
+        var command = new AddTaskCommand("AdedTask", null, projectMembers[0].ProjectId, null, Priority.High, State.Done, new DateTime(2023, 6, 4), new DateTime(2023, 6, 5), "1");
 
         var content = new StringContent(JsonSerializer.Serialize(command), UTF8Encoding.UTF8, "application/json");
         //act
-        var response = await _base._client.PostAsync($"api/projects/{addedMebers[0].ProjectId}/task", content);
+        var response = await _base._client.PostAsync($"api/projects/{projectMembers[0].ProjectId}/task", content);
 
         //assert
         var responseString = await response.Content.ReadAsStringAsync();
@@ -57,7 +57,7 @@ public class AddTaskCommandTests : IAsyncLifetime //to może zastępowac konstru
     }
 
     [Fact]
-    public async Task Post_WithValidRouteParamsAndInvalidAppTask_ReturnsAppTask()
+    public async Task AddTaskCommand_WithValidRouteParamsAndInvalidAppTask_ReturnsAppTask()
     {
         //arrange
         var projectMembers = new List<ProjectMember>()
@@ -65,15 +65,15 @@ public class AddTaskCommandTests : IAsyncLifetime //to może zastępowac konstru
             new ProjectMember("1", "userId1", "testUser@email.com1", null, ProjectMemberType.Leader,InvitationStatus.Accepted, "1"),
         };
 
-        var mebers = _base._factory.SeedData<Program, ApplicationDbContext, ProjectMember>(projectMembers);
+        _base._factory.SeedData<Program, ApplicationDbContext, ProjectMember>(projectMembers);
 
-        _base._client.SetHeaders(mebers[0].UserId, mebers[0].UserEmail);
+        _base._client.SetHeaders(projectMembers[0].UserId, projectMembers[0].UserEmail);
 
-        var command = new AddTaskCommand(null, null, mebers[0].ProjectId, null, (Priority)4, (State)94, new DateTime(2023, 6, 4), new DateTime(2023, 6, 5), "1");
+        var command = new AddTaskCommand(null, null, projectMembers[0].ProjectId, null, (Priority)4, (State)94, new DateTime(2023, 6, 4), new DateTime(2023, 6, 5), "1");
         var content = new StringContent(JsonSerializer.Serialize(command), UTF8Encoding.UTF8, "application/json");
 
         //act
-        var response = await _base._client.PostAsync($"api/projects/{mebers[0].ProjectId}/task", content);
+        var response = await _base._client.PostAsync($"api/projects/{projectMembers[0].ProjectId}/task", content);
 
         //assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);

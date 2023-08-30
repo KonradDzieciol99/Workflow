@@ -45,15 +45,13 @@ public class DeleteAppTaskCommandHandler : IRequestHandler<DeleteAppTaskCommand>
     public async Task Handle(DeleteAppTaskCommand request, CancellationToken cancellationToken)
     {
 
-        var task = await _unitOfWork.AppTaskRepository.GetAsync(request.Id) ?? throw new TaskDomainException(string.Empty, new BadRequestException("Task cannot be found."));
+        var task = await _unitOfWork.AppTaskRepository.GetAsync(request.Id) ?? throw new TaskDomainException("Task cannot be found.",new NotFoundException());
 
-        var projectMember = await _unitOfWork.ProjectMemberRepository.GetAsync(_currentUserService.GetUserId(), request.ProjectId) ?? throw new TaskDomainException(string.Empty, new BadRequestException("Project Member cannot be found."));
-        //TODO asnotrqacking... readonly repo
+        var projectMember = await _unitOfWork.ProjectMemberRepository.GetAsync(_currentUserService.GetUserId(), request.ProjectId) ?? throw new TaskDomainException("Project Member cannot be found.");
 
         _appTaskService.RemoveAppTask(task, projectMember);
 
-        if (!await _unitOfWork.Complete())
-            throw new InvalidOperationException();
+        await _unitOfWork.Complete();
 
         await _azureServiceBusSender.PublishMessage(new TaskDeletedEvent(task.Id));
 

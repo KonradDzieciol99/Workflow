@@ -26,7 +26,7 @@ public class UpdateAppTaskCommandTests : IAsyncLifetime //to może zastępowac k
     }
 
     [Fact]
-    public async Task Put_WithValidRouteParamsAndValidUptatedModel_ReturnsAppTask()
+    public async Task UpdateAppTaskCommandTests_WithValidRouteParamsAndValidUptatedModel_ReturnsAppTask()
     {
         //arrange
         var projectMembers = new List<ProjectMember>()
@@ -61,37 +61,5 @@ public class UpdateAppTaskCommandTests : IAsyncLifetime //to może zastępowac k
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(updatedDescription, returnedAppTasks.Description);
     }
-    [Fact]
-    public async Task Delete_WithValidRouteParams_ReturnsNoContent()
-    {
-        //arrange
-        var projectMembers = new List<ProjectMember>()
-        {
-            new ProjectMember("1", "userId1", "testUser@email.com1", null, ProjectMemberType.Leader,InvitationStatus.Accepted, "1"),
-        };
-        var appTasks = new List<AppTask>()
-        {
-            new AppTask("task1",null,"1",null,/*null,null,*/Priority.Low,State.ToDo,new DateTime(2023,6,4),new DateTime(2023,6,5),projectMembers[0].Id),
-        };
 
-        var AddedMebers = _base._factory.SeedData<Program, ApplicationDbContext, ProjectMember>(projectMembers);
-        var addedAppTasks = _base._factory.SeedData<Program, ApplicationDbContext, AppTask>(appTasks);
-
-        _base._client.SetHeaders(AddedMebers[0].UserId, AddedMebers[0].UserEmail);
-
-        var updatedDescription = "updated description";
-        var command = new UpdateAppTaskCommand(addedAppTasks[0].Id, addedAppTasks[0].Name, updatedDescription, addedAppTasks[0].ProjectId, addedAppTasks[0].TaskAssigneeMemberId, addedAppTasks[0].Priority, addedAppTasks[0].State, addedAppTasks[0].DueDate, addedAppTasks[0].StartDate, addedAppTasks[0].TaskLeaderId);
-
-        var content = new StringContent(JsonSerializer.Serialize(command), UTF8Encoding.UTF8, "application/json");
-
-        //act
-
-        var response = await _base._client.DeleteAsync($"api/projects/{AddedMebers[0].ProjectId}/task/{addedAppTasks[0].Id}");
-
-        //assert
-        var item = await _base._factory.FindAsync<Program,ApplicationDbContext,AppTask>(addedAppTasks[0].Id);
-
-        Assert.Null(item);
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-    }
 }

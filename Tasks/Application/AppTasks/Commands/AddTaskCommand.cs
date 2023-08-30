@@ -18,8 +18,6 @@ public record AddTaskCommand(string Name,
                              string? Description,
                              string ProjectId,
                              string? TaskAssigneeMemberId,
-                             //string? TaskAssigneeMemberEmail,
-                             //string? TaskAssigneeMemberPhotoUrl,
                              Priority Priority,
                              State State,
                              DateTime DueDate,
@@ -35,7 +33,6 @@ public record AddTaskCommand(string Name,
         return listOfRequirements;
     }
 }
-
 public class AddTaskCommandHandler : IRequestHandler<AddTaskCommand, AppTaskDto>
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -48,7 +45,7 @@ public class AddTaskCommandHandler : IRequestHandler<AddTaskCommand, AppTaskDto>
         this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(_unitOfWork));
         this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(_currentUserService));
         this._mapper = mapper ?? throw new ArgumentNullException(nameof(_mapper));
-        this._messageBus = messageBus;
+        this._messageBus = messageBus ?? throw new ArgumentNullException(nameof(messageBus));
     }
     public async Task<AppTaskDto> Handle(AddTaskCommand request, CancellationToken cancellationToken)
     {
@@ -64,23 +61,18 @@ public class AddTaskCommandHandler : IRequestHandler<AddTaskCommand, AppTaskDto>
 
         _unitOfWork.AppTaskRepository.Add(appTask);
 
-        if (await _unitOfWork.Complete())
-        {
-            var @event = new TaskAddedEvent(appTask.Id,
-                               appTask.Name,
-                               appTask.Description,
-                               appTask.ProjectId,
-                               appTask.TaskAssigneeMemberId,
-                               //appTask.TaskAssigneeMemberEmail,
-                               //appTask.TaskAssigneeMemberPhotoUrl,
-                               (int)appTask.Priority,
-                               (int)appTask.State, appTask.DueDate, appTask.StartDate, appTask.TaskLeaderId);
+        await _unitOfWork.Complete();
 
-            await _messageBus.PublishMessage(@event);
+        var @event = new TaskAddedEvent(appTask.Id,
+                           appTask.Name,
+                           appTask.Description,
+                           appTask.ProjectId,
+                           appTask.TaskAssigneeMemberId,
+                           (int)appTask.Priority,
+                           (int)appTask.State, appTask.DueDate, appTask.StartDate, appTask.TaskLeaderId);
 
-            return _mapper.Map<AppTaskDto>(appTask);
-        }
+        await _messageBus.PublishMessage(@event);
 
-        throw new BadRequestException("task could not be added.");
+        return _mapper.Map<AppTaskDto>(appTask);
     }
 }

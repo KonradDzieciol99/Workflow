@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Tasks.Application.Common.Authorization;
 using Tasks.Application.Common.Authorization.Requirements;
+using Tasks.Application.Common.Exceptions;
 using Tasks.Application.Common.Models;
 using Tasks.Domain.Common.Exceptions;
 using Tasks.Infrastructure.Repositories;
@@ -33,12 +34,7 @@ public class GetAppTaskQueryHandler : IRequestHandler<GetAppTaskQuery, AppTaskDt
     }
     public async Task<AppTaskDto> Handle(GetAppTaskQuery request, CancellationToken cancellationToken)
     {
-        var appTask = await _unitOfWork.AppTaskRepository.GetAsync(request.Id);
-
-        if (appTask == null)
-            throw new TaskDomainException("Such a task does not exist");
-
-
+        var appTask = await _unitOfWork.AppTaskRepository.GetAsync(request.Id) ?? throw new TaskDomainException("Task cannot be found.", new NotFoundException());
         return _mapper.Map<AppTaskDto>(appTask);
     }
 }
