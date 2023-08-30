@@ -1,13 +1,12 @@
 ﻿using System;
 
-namespace HttpMessage.Models.Exceptions
-{
-    public class DuplicateException : Exception
-    {
-        public DuplicateException(string message) : base(message)
-        {
+namespace HttpMessage.Models.Exceptions;
 
-        }
+public class DuplicateException : Exception
+{
+    public DuplicateException(string message) : base(message)
+    {
 
     }
+
 }

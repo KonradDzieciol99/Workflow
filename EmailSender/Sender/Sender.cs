@@ -1,6 +1,5 @@
 ﻿using EmailSender.Views.Emails;
 using FluentEmail.Core;
-using MessageBus.Events;
 using System.Net;
 
 namespace EmailSender.Sender;
@@ -38,7 +37,7 @@ public class Sender : ISender
         var resoult = await email.SendAsync();
         if (!resoult.Successful)
             throw new Exception("Can't send a Email");
-        
+
         return;
     }
 }

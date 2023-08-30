@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Azure;
+using FluentValidation.Results;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Net;
-using Tasks.Application.Common.Exceptions;
-using Tasks.Middleware;
-using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-using FluentValidation.Results;
+using Tasks.Application.Common.Exceptions;
 using Tasks.Domain.Common.Exceptions;
+using Tasks.Middleware;
 
 namespace Tasks.UnitTests.Middleware;
 
@@ -42,9 +43,13 @@ public class ExceptionMiddlewareTests
         var stream = reader.ReadToEnd();
 
         var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-        var response = JsonSerializer.Deserialize<ProblemDetails>(stream, options);
+        ProblemDetails response;
 
-        Assert.Equal((int)HttpStatusCode.Forbidden, context.Response.StatusCode);
+        response = JsonSerializer.Deserialize<ProblemDetails>(stream, options);
+
+        Assert.Equal(StatusCodes.Status403Forbidden, context.Response.StatusCode);
+        Assert.Equal(StatusCodes.Status403Forbidden, response.Status);
+        Assert.Equal(nameof(ForbiddenAccessException), response.Type);
         Assert.NotNull(response);
     }
     [Fact]
@@ -79,9 +84,9 @@ public class ExceptionMiddlewareTests
 
         var context = new DefaultHttpContext();
         context.Response.Body = new MemoryStream();
-    
+
         var failures = new List<ValidationFailure>() { new ValidationFailure("testProp", "testError") };
-    
+
         RequestDelegate next = (innerContext) =>
         {
             throw new TaskDomainException("Test message", new Tasks.Application.Common.Exceptions.ValidationException(failures));

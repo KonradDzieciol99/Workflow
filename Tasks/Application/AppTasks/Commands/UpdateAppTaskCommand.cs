@@ -1,34 +1,30 @@
 ﻿using AutoMapper;
 using MediatR;
-using MessageBus.Events;
 using MessageBus;
 using Microsoft.AspNetCore.Authorization;
 using Tasks.Application.Common.Authorization;
 using Tasks.Application.Common.Authorization.Requirements;
-using Tasks.Infrastructure.Repositories;
-using Tasks.Services;
 using Tasks.Application.Common.Exceptions;
 using Tasks.Application.Common.Models;
+using Tasks.Application.IntegrationEvents;
+using Tasks.Domain.Common.Exceptions;
 using Tasks.Domain.Common.Models;
+using Tasks.Infrastructure.Repositories;
+using Tasks.Services;
 
 namespace Tasks.Application.AppTasks.Commands;
 
 public record UpdateAppTaskCommand(string Id,
-                                   string? Name,
+                                   string Name,
                                    string? Description,
                                    string ProjectId,
                                    string? TaskAssigneeMemberId,
-                                   //string? TaskAssigneeMemberEmail,
-                                   //string? TaskAssigneeMemberPhotoUrl,
                                    Priority? Priority,
                                    State? State,
                                    DateTime? DueDate,
                                    DateTime? StartDate,
                                    string? TaskLeaderId) : IAuthorizationRequest<AppTaskDto>
 {
-
-
-
     public List<IAuthorizationRequirement> GetAuthorizationRequirement()
     {
         var listOfRequirements = new List<IAuthorizationRequirement>()
@@ -39,7 +35,7 @@ public record UpdateAppTaskCommand(string Id,
     }
 }
 
-public class UpdateAppTaskCommandHandler : IRequestHandler<UpdateAppTaskCommand,AppTaskDto>
+public class UpdateAppTaskCommandHandler : IRequestHandler<UpdateAppTaskCommand, AppTaskDto>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUserService;
@@ -55,22 +51,18 @@ public class UpdateAppTaskCommandHandler : IRequestHandler<UpdateAppTaskCommand,
     }
     public async Task<AppTaskDto> Handle(UpdateAppTaskCommand request, CancellationToken cancellationToken)
     {
-
-        var task = await _unitOfWork.AppTaskRepository.GetAsync(request.Id) ?? throw new BadRequestException("Task cannot be found.");
+        var task = await _unitOfWork.AppTaskRepository.GetAsync(request.Id) ?? throw new TaskDomainException("Task cannot be found.",new NotFoundException());
 
         task.UpdateTask(request.Name,
                         request.Description,
                         request.TaskAssigneeMemberId,
-                        //request.TaskAssigneeMemberEmail,
-                        //request.TaskAssigneeMemberPhotoUrl,
                         request.Priority,
                         request.State,
                         request.DueDate,
                         request.StartDate,
                         request.TaskLeaderId);
 
-        if (!await _unitOfWork.Complete())
-            throw new InvalidOperationException();
+        await _unitOfWork.Complete();
 
         await _azureServiceBusSender.PublishMessage(new TaskDeletedEvent(task.Id));
 

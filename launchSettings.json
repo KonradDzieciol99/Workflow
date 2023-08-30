@@ -12,7 +12,8 @@
         "signalr": "StartDebugging",
         "emailsender": "StartDebugging",
         "chat": "StartDebugging",
-        "api.aggregator": "StartDebugging"
+        "api.aggregator": "StartDebugging",
+        "emailemitter": "StartDebugging"
       }
     }
   }

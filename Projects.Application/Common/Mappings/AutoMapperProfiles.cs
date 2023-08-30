@@ -1,23 +1,22 @@
 ﻿using AutoMapper;
-using MessageBus.Events;
 using Projects.Application.Common.Models.Dto;
+using Projects.Application.IntegrationEvents;
 using Projects.Domain.AggregatesModel.ProjectAggregate;
 
-namespace Projects.Application.Common.Mappings
+namespace Projects.Application.Common.Mappings;
+
+public class AutoMapperProfiles : Profile
 {
-    public class AutoMapperProfiles : Profile
+    public AutoMapperProfiles()
     {
-        public AutoMapperProfiles()
-        {
-            CreateMap<Project, ProjectDto>();
-            CreateMap<ProjectDto, Project>();
+        CreateMap<Project, ProjectDto>();
+        CreateMap<ProjectDto, Project>();
 
-            CreateMap<ProjectMember, ProjectMemberDto>();
-            CreateMap<ProjectMemberDto, ProjectMember>();
+        CreateMap<ProjectMember, ProjectMemberDto>();
+        CreateMap<ProjectMemberDto, ProjectMember>();
 
-            CreateMap<ProjectMemberAddedEvent, ProjectMember>();
-            CreateMap<ProjectMember, ProjectMemberAddedEvent>();
+        CreateMap<ProjectMemberAddedEvent, ProjectMember>();
+        CreateMap<ProjectMember, ProjectMemberAddedEvent>();
 
-        }
     }
 }

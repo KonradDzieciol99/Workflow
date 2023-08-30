@@ -1,7 +1,7 @@
-﻿using MessageBus.Extensions;
-using EmailSender.Sender;
+﻿using EmailSender.Sender;
+using MessageBus.Extensions;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace EmailSender;
 
 public static class ConfigureServices
 {
@@ -24,16 +24,13 @@ public static class ConfigureServices
         //    return new EmailSenderS(fluentEmailFactory, verifyEmailUrl, from);
         //});
 
-        services.AddScoped<ISender, Sender>();
+        services.AddScoped<ISender, Sender.Sender>();
         services.AddAzureServiceBusSubscriber(opt =>
         {
             opt.ServiceBusConnectionString = configuration.GetConnectionString("ServiceBus") ?? throw new ArgumentNullException("ServiceBus");
             opt.SubscriptionName = "email-sender";
         });
-        services.AddAzureServiceBusSender(opt =>
-        {
-            opt.ServiceBusConnectionString = configuration.GetConnectionString("ServiceBus") ?? throw new ArgumentNullException("ServiceBus");
-        });
+        services.AddAzureServiceBusSender(opt => configuration.GetConnectionString("ServiceBus"));
         return services;
     }
 }

@@ -1,8 +1,8 @@
-﻿using System.Reflection;
+﻿using MessageBus.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
-using MessageBus.Extensions;
+using System.Reflection;
 
 namespace SignalR;
 public static class ConfigureServices
@@ -22,16 +22,9 @@ public static class ConfigureServices
                       });
         });
 
-        services.AddAzureServiceBusSubscriber(opt =>
-        {
-            opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString") ?? throw new ArgumentNullException(nameof(opt.ServiceBusConnectionString));
-            opt.SubscriptionName = "signalr";
-        });
+        services.AddAzureServiceBusSubscriber(configuration.GetSection("AzureServiceBusSubscriberOptions"));
 
-        services.AddAzureServiceBusSender(opt =>
-        {
-            opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString") ?? throw new ArgumentNullException(nameof(opt.ServiceBusConnectionString));
-        });
+        services.AddAzureServiceBusSender(configuration.GetSection("AzureServiceBusSender"));
 
         services.AddMediatR(opt =>
         {

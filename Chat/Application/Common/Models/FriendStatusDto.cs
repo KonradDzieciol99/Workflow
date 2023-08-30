@@ -3,7 +3,7 @@
 public class FriendStatusDto
 {
     public FriendStatusDto()
-    {}
+    { }
     public FriendStatusDto(string userId, FriendStatusType status)
     {
         UserId = userId ?? throw new ArgumentNullException(nameof(userId));

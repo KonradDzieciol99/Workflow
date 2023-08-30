@@ -1,5 +1,4 @@
 using Duende.IdentityServer.Events;
-using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Stores;
 using IdentityDuende.Entities;
@@ -8,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using static Duende.IdentityServer.Models.IdentityResources;
 
 namespace IdentityDuende.Pages.Account.Login;
 
@@ -47,11 +45,11 @@ public class Index : PageModel
     {
         if (string.IsNullOrWhiteSpace(returnUrl))
             return NotFound();
-        
+
 
         await BuildModelAsync(returnUrl);
         return Page();
-    
+
     }
 
     public async Task<IActionResult> OnPost()
@@ -94,12 +92,13 @@ public class Index : PageModel
                     // user might have clicked on a malicious link - should be logged
                     throw new Exception("invalid return URL");
                 }
-            } else if (result.IsNotAllowed)
+            }
+            else if (result.IsNotAllowed)
             {
                 var user = await _userManager.FindByEmailAsync(Input.Email);
 
                 if (!await _userManager.IsEmailConfirmedAsync(user!))
-                    return RedirectToPage("/EmailConfirmationInfo/Index", new { email = user!.Email, returnUrl= Input.ReturnUrl }); 
+                    return RedirectToPage("/EmailConfirmationInfo/Index", new { email = user!.Email, returnUrl = Input.ReturnUrl });
             }
 
             await _events.RaiseAsync(new UserLoginFailureEvent(Input.Email, "invalid credentials", clientId: context?.Client.ClientId));

@@ -1,4 +1,3 @@
-using Duende.IdentityServer.Events;
 using Duende.IdentityServer.Services;
 using IdentityDuende.Entities;
 using IdentityDuende.Events;
@@ -6,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using static Duende.IdentityServer.Models.IdentityResources;
 
 namespace IdentityDuende.Pages.EmailConfirmationInfo;
 
@@ -30,8 +28,8 @@ public class IndexModel : PageModel
         this._roleInManager = roleInManager;
         this._events = events;
     }
-    
-    public async Task<IActionResult> OnGet(string email,string returnUrl)
+
+    public async Task<IActionResult> OnGet(string email, string returnUrl)
     {
         if (ModelState.IsValid)
         {

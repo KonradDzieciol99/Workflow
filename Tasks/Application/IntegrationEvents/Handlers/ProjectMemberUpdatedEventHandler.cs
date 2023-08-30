@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using MediatR;
-using MessageBus.Events;
 using Tasks.Domain.Common.Models;
 using Tasks.Infrastructure.Repositories;
 
@@ -20,7 +19,7 @@ public class ProjectMemberUpdatedEventHandler : IRequestHandler<ProjectMemberUpd
     {
         var result = await _unitOfWork.ProjectMemberRepository.ExecuteUpdateAsync(request.ProjectMemberId,
                                                                            (ProjectMemberType)request.Type
-                                                                           ,(InvitationStatus)request.InvitationStatus);
+                                                                           , (InvitationStatus)request.InvitationStatus);
 
         //if (!await _unitOfWork.Complete())
         //    throw new InvalidOperationException("An error occurred while updating a project member.");

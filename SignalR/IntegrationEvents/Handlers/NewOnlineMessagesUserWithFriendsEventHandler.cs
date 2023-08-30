@@ -1,8 +1,7 @@
 ﻿using MediatR;
-using MessageBus.Events;
-using MessageBus.Models;
 using Microsoft.AspNetCore.SignalR;
 using SignalR.Hubs;
+using SignalR.Models;
 using StackExchange.Redis;
 
 namespace SignalR.IntegrationEvents.Handlers;
@@ -23,7 +22,7 @@ public class NewOnlineMessagesUserWithFriendsEventHandler : IRequestHandler<NewO
         List<Task<bool>> listOfOnlineUsers = new();
         foreach (var item in request.NewOnlineUserChatFriends)
         {
-            listOfOnlineUsers.Add(_redisDb.KeyExistsAsync($"presence-{item.Email}"));// było UserId
+            listOfOnlineUsers.Add(_redisDb.KeyExistsAsync($"presence-{item.Email}"));
         }
         var resoult = await Task.WhenAll(listOfOnlineUsers);
 

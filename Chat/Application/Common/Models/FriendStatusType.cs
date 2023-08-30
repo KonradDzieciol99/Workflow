@@ -3,7 +3,7 @@
 public enum FriendStatusType
 {
     Stranger,
-    InvitedByYou ,
+    InvitedByYou,
     InvitedYou,
     Friend
 }

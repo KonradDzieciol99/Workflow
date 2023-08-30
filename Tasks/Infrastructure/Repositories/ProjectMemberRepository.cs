@@ -25,7 +25,7 @@ public class ProjectMemberRepository : Repository<ProjectMember>, IProjectMember
     public async Task<int> ExecuteUpdateAsync(string projectMemberId, ProjectMemberType projectMemberType, InvitationStatus invitationStatus)
     {
         return await applicationDbContext.ProjectMembers.Where(x => x.Id == projectMemberId)
-                                                            .ExecuteUpdateAsync(s => 
+                                                            .ExecuteUpdateAsync(s =>
                                                             s.SetProperty(
                                                                 n => n.Type,
                                                                 projectMemberType)
@@ -46,5 +46,5 @@ public class ProjectMemberRepository : Repository<ProjectMember>, IProjectMember
     public async Task<ProjectMember?> GetAsync(string userId, string projectId)
     {
         return await applicationDbContext.ProjectMembers.SingleOrDefaultAsync(x => x.UserId == userId && x.ProjectId == projectId);
-    }   
+    }
 }

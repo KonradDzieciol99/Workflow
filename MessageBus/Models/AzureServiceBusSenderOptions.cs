@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace MessageBus.Models
+namespace MessageBus.Models;
+
+public class AzureServiceBusSenderOptions
 {
-    public class AzureServiceBusSenderOptions
-    {
-        public string ServiceBusConnectionString { get; set; }
-    }
+    [Required]
+    public required string ServiceBusConnectionString { get; set; }
+    [Required]
+    public required string TopicName { get; set; }
 }

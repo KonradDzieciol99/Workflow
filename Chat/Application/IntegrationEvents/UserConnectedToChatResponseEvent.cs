@@ -1,6 +1,5 @@
 ﻿using Chat.Application.Common.Models;
 using MessageBus;
-using MessageBus.Models;
 
 namespace Chat.Application.IntegrationEvents;
 

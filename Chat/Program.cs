@@ -1,8 +1,8 @@
+using Chat;
+using Chat.Application.IntegrationEvents;
 using Chat.Infrastructure.DataAccess;
-using MessageBus.Events;
 using MessageBus;
 using Microsoft.EntityFrameworkCore;
-using Chat;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,33 +19,25 @@ if (app.Environment.IsDevelopment())
     await ApplyMigration();
 }
 
-//app.UseHttpsRedirection();
-
 app.UseCors("allowAny");
-
 app.UseAuthentication();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
 
 async Task ApplyMigration()
 {
-    using (var scope = app.Services.CreateScope())
+    using var scope = app.Services.CreateScope();
+    var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    try
     {
-        var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        try
-        {
-            if (initialiser.Database.IsSqlServer())
-                await initialiser.Database.MigrateAsync();
-        }
-        catch (Exception ex)
-        {
-            app.Logger.LogError(ex, "An error occurred while initialising the database.");
-            throw;
-        }
+        if (initialiser.Database.IsSqlServer())
+            await initialiser.Database.MigrateAsync();
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "An error occurred while initialising the database.");
+        throw;
     }
     return;
 }

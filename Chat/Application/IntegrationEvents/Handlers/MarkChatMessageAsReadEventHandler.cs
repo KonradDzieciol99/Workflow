@@ -1,8 +1,5 @@
-﻿using AutoMapper;
+﻿using Chat.Infrastructure.Repositories;
 using MediatR;
-using MessageBus.Events;
-using MessageBus;
-using Chat.Infrastructure.Repositories;
 
 namespace Chat.Application.IntegrationEvents.Handlers;
 

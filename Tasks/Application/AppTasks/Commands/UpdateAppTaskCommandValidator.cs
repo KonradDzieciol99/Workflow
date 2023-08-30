@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Tasks.Application.AppTasks.Commands;
 
@@ -8,7 +7,7 @@ public class UpdateAppTaskCommandValidator : AbstractValidator<UpdateAppTaskComm
     public UpdateAppTaskCommandValidator()
     {
         RuleFor(x => x.Id).NotEmpty();
-        RuleFor(x => x.Name).MinimumLength(1).MaximumLength(50).Unless(s =>s.Name == null);
+        RuleFor(x => x.Name).MinimumLength(1).MaximumLength(50).Unless(s => s.Name == null);
         RuleFor(x => x.Priority).IsInEnum().Unless(s => s.Priority == null);
         RuleFor(x => x.ProjectId).NotEmpty();
         RuleFor(x => x.StartDate).NotEmpty().Unless(s => s.StartDate == null);

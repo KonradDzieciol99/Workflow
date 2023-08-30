@@ -1,4 +1,3 @@
-using MessageBus.Events;
 using MessageBus;
 using SignalR;
 using SignalR.Hubs;
@@ -12,22 +11,14 @@ var app = builder.Build();
 
 await AddSubscriptions(app);
 
-if (app.Environment.IsDevelopment()){}
-
-//app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment()) { }
 
 app.UseCors("allowAny");
-
 app.UseAuthentication();
-
 app.UseAuthorization();
-
 app.MapHub<ChatHub>("/hub/Chat");
-
 app.MapHub<PresenceHub>("/hub/Presence");
-
 app.MapHub<MessagesHub>("/hub/Messages");
-
 app.Run();
 
 
@@ -45,7 +36,6 @@ async Task AddSubscriptions(WebApplication app)
         eventBus.Subscribe<FriendRequestAddedEvent>(),
         eventBus.Subscribe<NotificationAddedEvent>(),
         eventBus.Subscribe<UserOnlineNotifcationsAndUnreadEvent>(),
-        //eventBus.Subscribe<UserOnlineFriendsAndUnMesUserEmailsEvent>(),
         eventBus.Subscribe<FriendRequestRemovedEvent>(),
         eventBus.Subscribe<UserConnectedToChatResponseEvent>(),
     };

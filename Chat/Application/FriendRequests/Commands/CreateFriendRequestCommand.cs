@@ -1,18 +1,18 @@
 ﻿using Chat.Application.Common.Authorization;
 using Chat.Application.Common.Models;
+using Chat.Application.IntegrationEvents;
 using Chat.Domain.Entity;
 using Chat.Infrastructure.Repositories;
 using Chat.Services;
 using MediatR;
 using MessageBus;
-using MessageBus.Events;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Chat.Application.FriendRequests.Commands;
 
-public record CreateFriendRequestCommand(string Id,string Email,string? PhotoUrl) : IAuthorizationRequest<FriendRequestDto>
+public record CreateFriendRequestCommand(string Id, string Email, string? PhotoUrl) : IAuthorizationRequest<FriendRequestDto>
 {
-    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new List<IAuthorizationRequirement>();
+    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new();
 }
 public class CreateFriendRequestCommandHandler : IRequestHandler<CreateFriendRequestCommand, FriendRequestDto>
 {
@@ -55,6 +55,6 @@ public class CreateFriendRequestCommandHandler : IRequestHandler<CreateFriendReq
                                     friendRequest.InvitedUserId,
                                     friendRequest.InvitedUserEmail,
                                     friendRequest.InvitedPhotoUrl,
-                                    friendRequest.Confirmed); 
+                                    friendRequest.Confirmed);
     }
 }

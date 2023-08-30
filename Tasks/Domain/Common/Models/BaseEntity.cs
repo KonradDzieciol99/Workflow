@@ -1,7 +1,6 @@
-﻿namespace Tasks.Domain.Common.Models
+﻿namespace Tasks.Domain.Common.Models;
+
+public class BaseEntity
 {
-    public class BaseEntity
-    {
-        public string Id { get; private set; }
-    }
+    public string Id { get; private set; }
 }

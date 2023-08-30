@@ -1,6 +1,4 @@
-﻿using Chat.Domain.Entity;
-
-namespace Chat.Application.Common.Models;
+﻿namespace Chat.Application.Common.Models;
 
 public class FriendRequestDtosWithTotalCount
 {

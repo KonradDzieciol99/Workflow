@@ -5,8 +5,6 @@ namespace Projects.Domain.Common.Models;
 
 public abstract class BaseEntity
 {
-    //public int Id { get; set; }
-
     private readonly List<INotification> _domainEvents = new();
 
     [NotMapped]

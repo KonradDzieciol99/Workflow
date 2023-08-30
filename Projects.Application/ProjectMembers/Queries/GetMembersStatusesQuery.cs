@@ -4,11 +4,10 @@ using Projects.Application.Common.Authorization;
 using Projects.Application.Common.Authorization.Requirements;
 using Projects.Application.Common.Interfaces;
 using Projects.Application.Common.Models;
-using Projects.Domain.AggregatesModel.ProjectAggregate;
 
 namespace Projects.Application.ProjectMembers.Queries;
 
-public record GetMembersStatusesQuery(string projectId,List<string> UsersIds) : IAuthorizationRequest<List<MemberStatusDto>>
+public record GetMembersStatusesQuery(string projectId, List<string> UsersIds) : IAuthorizationRequest<List<MemberStatusDto>>
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement()
     {

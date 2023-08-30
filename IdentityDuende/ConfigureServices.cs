@@ -1,23 +1,21 @@
-﻿using Duende.IdentityServer.Services;
-using Duende.IdentityServer;
+﻿using Duende.IdentityServer;
+using Duende.IdentityServer.Services;
+using IdentityDuende.Configuration;
 using IdentityDuende.Entities;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using IdentityDuende.Events;
 using IdentityDuende.Infrastructure.DataAccess;
-using Microsoft.EntityFrameworkCore;
-using MessageBus.Extensions;
-using System.Security.Claims;
 using IdentityDuende.Infrastructure.Repositories;
 using IdentityDuende.Services;
-using IdentityDuende.Configuration;
-using Duende.IdentityServer.Models;
+using MessageBus.Extensions;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace IdentityDuende;
 
 public static class ConfigureServices
 {
@@ -36,7 +34,7 @@ public static class ConfigureServices
             });
 
         services.AddDbContext<ApplicationDbContext>(opt =>
-        
+
         {
             string connString;
             var isDockerEnvironment = Environment.GetEnvironmentVariable("DOCKER_ENVIRONMENT");
@@ -81,10 +79,7 @@ public static class ConfigureServices
         services.AddScoped<IEventSink, IdentityEvents>();
         services.AddScoped<SeedData>();
 
-        services.AddAzureServiceBusSender(opt =>
-        {
-            opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString") ?? throw new ArgumentNullException("ServiceBusConnectionString");
-        });
+        services.AddAzureServiceBusSender(configuration.GetSection("AzureServiceBusSender"));
 
         services.AddAuthentication()
         .AddOpenIdConnect("AzureOpenId", "Azure Active Directory OpenId", options =>

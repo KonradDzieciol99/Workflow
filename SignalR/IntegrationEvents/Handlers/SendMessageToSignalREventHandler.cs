@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using MessageBus;
-using MessageBus.Events;
 using Microsoft.AspNetCore.SignalR;
 using SignalR.Hubs;
 using StackExchange.Redis;
@@ -38,7 +37,7 @@ public class SendMessageToSignalREventHandler : IRequestHandler<ChatMessageAdded
             var markChatMessageAsReadEvent = new MarkChatMessageAsReadEvent()
             {
                 ChatMessageDateRead = (DateTime)request.DateRead,
-                ChatMessageId = request.Id!,
+                ChatMessageId = request.Id,
             };
             await _azureServiceBusSender.PublishMessage(markChatMessageAsReadEvent);
         }

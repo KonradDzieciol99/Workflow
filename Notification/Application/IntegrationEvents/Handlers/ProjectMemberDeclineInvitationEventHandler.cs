@@ -1,9 +1,8 @@
 ﻿using MediatR;
-using MessageBus.Events;
 using MessageBus;
 using Notification.Domain.Common.Enums;
-using Notification.Infrastructure.Repositories;
 using Notification.Domain.Entity;
+using Notification.Infrastructure.Repositories;
 
 namespace Notification.Application.IntegrationEvents.Handlers;
 
@@ -33,7 +32,8 @@ public class ProjectMemberDeclineInvitationEventHandler : IRequestHandler<Projec
                                                $"You declined an invitation from {request.ProjectName}",
                                                request.ProjectId,
                                                request.ProjectName,
-                                               request.projectIconUrl);
+                                               request.projectIconUrl,
+                                               true);
 
         _unitOfWork.AppNotificationRepository.RemoveRange(oldNotifications);
         _unitOfWork.AppNotificationRepository.Add(notification);
@@ -41,17 +41,18 @@ public class ProjectMemberDeclineInvitationEventHandler : IRequestHandler<Projec
         if (!await _unitOfWork.Complete())
             throw new InvalidOperationException();
 
-        var @event = new NotificationAddedEvent(notification.Id,
-                                               notification.UserId,
-                                               (int)notification.NotificationType,
-                                               notification.CreationDate,
-                                               notification.Displayed,
-                                               notification.Description,
-                                               notification.NotificationPartnerId,
-                                               notification.NotificationPartnerEmail,
-                                               notification.NotificationPartnerPhotoUrl);
+        //var @event = new NotificationAddedEvent(notification.Id,
+        //                                       notification.UserId,
+        //                                       (int)notification.NotificationType,
+        //                                       notification.CreationDate,
+        //                                       notification.Displayed,
+        //                                       notification.Description,
+        //                                       notification.NotificationPartnerId,
+        //                                       notification.NotificationPartnerEmail,
+        //                                       notification.NotificationPartnerPhotoUrl,
+        //                                       oldNotifications.Select(x => x.Id).ToList());
 
-        await _azureServiceBusSender.PublishMessage(@event);
+        //await _azureServiceBusSender.PublishMessage(@event);
 
         return;
     }

@@ -1,11 +1,10 @@
 ﻿using Chat.Domain.Common.Models;
-using System.Security.Cryptography;
 
 namespace Chat.Domain.Entity;
 
 public class Message : BaseEntity
 {
-    private Message(){}
+    private Message() { }
     public Message(string senderId, string senderEmail, string recipientId, string recipientEmail, string content)
     {
         SenderId = senderId;
@@ -26,7 +25,7 @@ public class Message : BaseEntity
 
     public void MarkMessageAsRead()
     {
-       this.DateRead = DateTime.UtcNow;
+        this.DateRead = DateTime.UtcNow;
     }
     public void MarkMessageAsRead(DateTime date)
     {

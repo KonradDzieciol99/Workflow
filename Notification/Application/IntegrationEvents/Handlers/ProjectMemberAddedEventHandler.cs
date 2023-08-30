@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using MessageBus;
-using MessageBus.Events;
 using Notification.Domain.Common.Enums;
 using Notification.Domain.Entity;
 using Notification.Infrastructure.Repositories;
@@ -19,6 +18,9 @@ public class ProjectMemberAddedEventHandler : IRequestHandler<ProjectMemberAdded
     }
     public async Task Handle(ProjectMemberAddedEvent request, CancellationToken cancellationToken)
     {
+        if (request.IsNewProjectCreator)
+            return;
+
 
         var notification = new AppNotification(request.UserId,
                                                NotificationType.InvitationToProjectRecived,
@@ -41,7 +43,8 @@ public class ProjectMemberAddedEventHandler : IRequestHandler<ProjectMemberAdded
                                                notification.Description,
                                                notification.NotificationPartnerId,
                                                notification.NotificationPartnerEmail,
-                                               notification.NotificationPartnerPhotoUrl);
+                                               notification.NotificationPartnerPhotoUrl,
+                                               null);
 
         await _azureServiceBusSender.PublishMessage(@event);
 

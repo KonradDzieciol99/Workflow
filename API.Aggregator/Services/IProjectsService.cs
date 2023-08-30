@@ -1,5 +1,4 @@
 ﻿using API.Aggregator.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace API.Aggregator.Services;
 

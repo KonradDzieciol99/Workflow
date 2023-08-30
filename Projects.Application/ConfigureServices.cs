@@ -1,17 +1,11 @@
-﻿using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using Projects.Application.Common.Behaviours;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using FluentValidation;
-using Projects.Application.Common.Interfaces;
+﻿using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.DependencyInjection;
 using Projects.Application.Common.Authorization.Handlers;
+using Projects.Application.Common.Behaviours;
 using Projects.Application.Common.Mappings;
+using System.Reflection;
 
 namespace Projects.Application;
 

@@ -1,10 +1,9 @@
-using Microsoft.EntityFrameworkCore;
-using MessageBus.Events;
 using MessageBus;
+using Microsoft.EntityFrameworkCore;
+using Tasks;
+using Tasks.Application.IntegrationEvents;
 using Tasks.Infrastructure.DataAccess;
 using Tasks.Middleware;
-using Tasks;
-using Tasks.Application.IntegrationEvents.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,18 +11,7 @@ builder.Services.AddWebAPIServices(builder.Configuration);
 
 var app = builder.Build();
 
-var eventBus = app.Services.GetRequiredService<AzureServiceBusSubscriber>();// nie potrzeba tworzyæ scope bo to singletone
-
-var subscribeTasks = new List<Task>
-{
-    eventBus.Subscribe<ProjectMemberAddedEvent>(),
-    eventBus.Subscribe<ProjectMemberUpdatedEvent>(),
-    eventBus.Subscribe<ProjectMemberRemovedEvent>(),
-    eventBus.Subscribe<ProjectRemovedEvent>(),
-    eventBus.Subscribe<ProjectMemberAcceptInvitationEvent>(),
-    eventBus.Subscribe<ProjectMemberDeclineInvitationEvent>(),
-};
-await Task.WhenAll(subscribeTasks);
+await AddSubscriptions(app);
 
 if (app.Environment.IsDevelopment())
 {
@@ -31,7 +19,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     await ApplyMigration();
 }
-//app.UseHttpsRedirection();
 app.UseCors("allowAny");
 app.UseAuthentication();
 app.UseAuthorization();
@@ -57,6 +44,22 @@ async Task ApplyMigration()
     }
     await Task.CompletedTask;
     return;
+}
+async Task AddSubscriptions(WebApplication app)
+{
+    var eventBus = app.Services.GetRequiredService<AzureServiceBusSubscriber>();
+
+    var subscribeTasks = new List<Task>
+    {
+        eventBus.Subscribe<ProjectMemberAddedEvent>(),
+        eventBus.Subscribe<ProjectMemberUpdatedEvent>(),
+        eventBus.Subscribe<ProjectMemberRemovedEvent>(),
+        eventBus.Subscribe<ProjectRemovedEvent>(),
+        eventBus.Subscribe<ProjectMemberAcceptInvitationEvent>(),
+        eventBus.Subscribe<ProjectMemberDeclineInvitationEvent>(),
+    };
+
+    await Task.WhenAll(subscribeTasks);
 }
 
 public partial class Program { }

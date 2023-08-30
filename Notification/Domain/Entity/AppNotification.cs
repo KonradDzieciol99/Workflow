@@ -1,9 +1,4 @@
-﻿using MessageBus.Models;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson.Serialization.Serializers;
-using Notification.Domain.Common.Enums;
+﻿using Notification.Domain.Common.Enums;
 using Notification.Domain.Common.Exceptions;
 using Notification.Domain.Common.Models;
 
@@ -11,7 +6,7 @@ namespace Notification.Domain.Entity;
 
 public class AppNotification : BaseEntity
 {
-    public AppNotification(string userId, NotificationType notificationType, DateTime creationDate,string description, string? notificationPartnerId, string? notificationPartnerEmail, string? notificationPartnerPhotoUrl,bool displayed = false)
+    public AppNotification(string userId, NotificationType notificationType, DateTime creationDate, string description, string? notificationPartnerId, string? notificationPartnerEmail, string? notificationPartnerPhotoUrl, bool displayed = false)
     {
         UserId = userId ?? throw new ArgumentNullException(nameof(userId));
         NotificationType = notificationType;

@@ -4,41 +4,40 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace IdentityDuende.Pages.EmailConfirmation
+namespace IdentityDuende.Pages.EmailConfirmation;
+
+[SecurityHeaders]
+[AllowAnonymous]
+public class IndexModel : PageModel
 {
-    [SecurityHeaders]
-    [AllowAnonymous]
-    public class IndexModel : PageModel
+    private readonly UserManager<ApplicationUser> _userManager;
+    public IndexModel(UserManager<ApplicationUser> userManager)
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        public IndexModel(UserManager<ApplicationUser> userManager)
-        {
-            this._userManager = userManager;
-        }
-        public ViewModel View { get; set; } 
+        this._userManager = userManager;
+    }
+    public ViewModel View { get; set; }
 
-        public async Task<IActionResult> OnGet(string token,string email)
+    public async Task<IActionResult> OnGet(string token, string email)
+    {
+        if (ModelState.IsValid)
         {
-            if (ModelState.IsValid)
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user is not null)
             {
-                var user = await _userManager.FindByEmailAsync(email);
-                if (user is not null)
+                if (user.EmailConfirmed)
+                    return RedirectToPage("/EmailConfirmationInfo", new { email = user.Email, returnUrl = View.ReturnUrl });
+
+
+                var resoult = await _userManager.ConfirmEmailAsync(user, token);
+                if (resoult.Succeeded)
                 {
-                    if (user.EmailConfirmed)
-                        return RedirectToPage("/EmailConfirmationInfo", new { email = user.Email, returnUrl= View.ReturnUrl});
-                    
+                    View = new ViewModel(success: true);
 
-                    var resoult =await _userManager.ConfirmEmailAsync(user, token);
-                    if (resoult.Succeeded)
-                    {
-                        View = new ViewModel(success: true);
-
-                        return Page();
-                    }
+                    return Page();
                 }
             }
-
-            return NotFound();
         }
+
+        return NotFound();
     }
 }

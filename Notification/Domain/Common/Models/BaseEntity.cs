@@ -4,7 +4,7 @@ public class BaseEntity
 {
     public BaseEntity()
     {
-        
+
     }
     public BaseEntity(string id)
     {

@@ -1,12 +1,12 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using API.Aggregator.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using API.Aggregator.Services;
+using Microsoft.IdentityModel.Tokens;
 
 namespace API.Aggregator;
 
 public static class ConfigureServices
 {
-    public static IServiceCollection AddWebAPIServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddAggregatorServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddControllers();
         services.AddEndpointsApiExplorer();

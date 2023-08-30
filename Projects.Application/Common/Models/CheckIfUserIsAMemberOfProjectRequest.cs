@@ -1,8 +1,7 @@
-﻿namespace Projects.Application.Common.Models
+﻿namespace Projects.Application.Common.Models;
+
+public class CheckIfUserIsAMemberOfProjectRequest
 {
-    public class CheckIfUserIsAMemberOfProjectRequest
-    {
-        public string ProjectId { get; set; }
-        public string UserId { get; set; }
-    }
+    public string ProjectId { get; set; }
+    public string UserId { get; set; }
 }

@@ -1,19 +1,19 @@
 ﻿using AutoMapper;
 using MediatR;
-using MessageBus.Events;
 using MessageBus;
 using Microsoft.AspNetCore.Authorization;
 using Tasks.Application.Common.Authorization;
 using Tasks.Application.Common.Authorization.Requirements;
+using Tasks.Application.Common.Exceptions;
+using Tasks.Application.IntegrationEvents;
+using Tasks.Domain.Common.Exceptions;
+using Tasks.Domain.Services;
 using Tasks.Infrastructure.Repositories;
 using Tasks.Services;
-using Tasks.Application.Common.Exceptions;
-using Tasks.Domain.Services;
-using Tasks.Domain.Common.Exceptions;
 
 namespace Tasks.Application.AppTasks.Commands;
 
-public record DeleteAppTaskCommand(string Id,string ProjectId) : IAuthorizationRequest
+public record DeleteAppTaskCommand(string Id, string ProjectId) : IAuthorizationRequest
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement()
     {
@@ -45,15 +45,13 @@ public class DeleteAppTaskCommandHandler : IRequestHandler<DeleteAppTaskCommand>
     public async Task Handle(DeleteAppTaskCommand request, CancellationToken cancellationToken)
     {
 
-        var task = await _unitOfWork.AppTaskRepository.GetAsync(request.Id) ?? throw new TaskDomainException(string.Empty, new BadRequestException("Task cannot be found.")) ;
-       
-        var projectMember = await _unitOfWork.ProjectMemberRepository.GetAsync(_currentUserService.GetUserId(), request.ProjectId) ?? throw new TaskDomainException(string.Empty, new BadRequestException("Project Member cannot be found."));
-        //TODO asnotrqacking... readonly repo
+        var task = await _unitOfWork.AppTaskRepository.GetAsync(request.Id) ?? throw new TaskDomainException("Task cannot be found.",new NotFoundException());
+
+        var projectMember = await _unitOfWork.ProjectMemberRepository.GetAsync(_currentUserService.GetUserId(), request.ProjectId) ?? throw new TaskDomainException("Project Member cannot be found.");
 
         _appTaskService.RemoveAppTask(task, projectMember);
 
-        if (!await _unitOfWork.Complete())
-            throw new InvalidOperationException();
+        await _unitOfWork.Complete();
 
         await _azureServiceBusSender.PublishMessage(new TaskDeletedEvent(task.Id));
 

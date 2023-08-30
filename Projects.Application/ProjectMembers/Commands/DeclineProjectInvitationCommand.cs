@@ -3,17 +3,12 @@ using Microsoft.AspNetCore.Authorization;
 using Projects.Application.Common.Authorization;
 using Projects.Application.Common.Authorization.Requirements;
 using Projects.Application.Common.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Projects.Application.ProjectMembers.Commands;
 
 public record DeclineProjectInvitationCommand(string ProjectId) : IAuthorizationRequest
 {
-    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new List<IAuthorizationRequirement>()
+    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new()
     {
         new ProjectMembershipRequirement(ProjectId),
     };

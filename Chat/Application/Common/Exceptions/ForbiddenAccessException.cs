@@ -1,6 +1,4 @@
-﻿using System.Security;
-
-namespace Chat.Application.Common.Exceptions;
+﻿namespace Chat.Application.Common.Exceptions;
 
 public class ForbiddenAccessException : Exception
 {

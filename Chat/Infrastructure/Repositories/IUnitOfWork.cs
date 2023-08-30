@@ -1,10 +1,9 @@
-﻿namespace Chat.Infrastructure.Repositories
+﻿namespace Chat.Infrastructure.Repositories;
+
+public interface IUnitOfWork
 {
-    public interface IUnitOfWork
-    {
-        IFriendRequestRepository FriendRequestRepository { get; }
-        IMessagesRepository MessagesRepository { get; }
-        Task<bool> Complete();
-        bool HasChanges();
-    }
+    IFriendRequestRepository FriendRequestRepository { get; }
+    IMessagesRepository MessagesRepository { get; }
+    Task<bool> Complete();
+    bool HasChanges();
 }

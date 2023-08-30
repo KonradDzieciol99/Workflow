@@ -1,5 +1,5 @@
 ﻿using MessageBus;
-using MessageBus.Models;
+using Notification.Application.Common.Models;
 using Notification.Domain.Entity;
 
 namespace Notification.Application.IntegrationEvents;

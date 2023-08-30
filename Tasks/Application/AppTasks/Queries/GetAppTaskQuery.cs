@@ -1,20 +1,16 @@
 ﻿using AutoMapper;
 using MediatR;
-using MessageBus.Events;
-using MessageBus;
 using Microsoft.AspNetCore.Authorization;
-using Tasks.Application.AppTasks.Commands;
 using Tasks.Application.Common.Authorization;
 using Tasks.Application.Common.Authorization.Requirements;
+using Tasks.Application.Common.Exceptions;
 using Tasks.Application.Common.Models;
-using Tasks.Domain.Entity;
-using Tasks.Infrastructure.Repositories;
-using Tasks.Services;
 using Tasks.Domain.Common.Exceptions;
+using Tasks.Infrastructure.Repositories;
 
 namespace Tasks.Application.AppTasks.Queries;
 
-public record GetAppTaskQuery(string Id,string ProjectId) : IAuthorizationRequest<AppTaskDto>
+public record GetAppTaskQuery(string Id, string ProjectId) : IAuthorizationRequest<AppTaskDto>
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement()
     {
@@ -38,12 +34,7 @@ public class GetAppTaskQueryHandler : IRequestHandler<GetAppTaskQuery, AppTaskDt
     }
     public async Task<AppTaskDto> Handle(GetAppTaskQuery request, CancellationToken cancellationToken)
     {
-        var appTask = await _unitOfWork.AppTaskRepository.GetAsync(request.Id);
-
-        if (appTask == null)
-            throw new TaskDomainException("Such a task does not exist");
-        
-
+        var appTask = await _unitOfWork.AppTaskRepository.GetAsync(request.Id) ?? throw new TaskDomainException("Task cannot be found.", new NotFoundException());
         return _mapper.Map<AppTaskDto>(appTask);
     }
 }

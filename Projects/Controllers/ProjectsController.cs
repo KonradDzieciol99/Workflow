@@ -104,7 +104,7 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpPut("{projectId}")]
-    public async Task<ActionResult<ProjectsWithTotalCount>> Put([FromRoute] string projectId,[FromBody]UpdateProjectCommand command)
+    public async Task<ActionResult<ProjectsWithTotalCount>> Put([FromRoute] string projectId, [FromBody] UpdateProjectCommand command)
     {
         if (projectId != command.ProjectId)
             return BadRequest();

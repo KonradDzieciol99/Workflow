@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using MessageBus;
-using MessageBus.Events;
 using Notification.Application.AppNotifications.Queries;
 using Notification.Infrastructure.Repositories;
 using Notification.Services;
@@ -13,7 +12,7 @@ public class UserOnlineEventHandler : IRequestHandler<UserOnlineEvent>
     private readonly ICurrentUserService _currentUserService;
     private readonly IAzureServiceBusSender _azureServiceBusSender;
 
-    public UserOnlineEventHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService,IAzureServiceBusSender azureServiceBusSender)
+    public UserOnlineEventHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IAzureServiceBusSender azureServiceBusSender)
     {
         this._unitOfWork = unitOfWork;
         this._currentUserService = currentUserService;

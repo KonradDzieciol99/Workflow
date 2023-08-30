@@ -3,7 +3,7 @@ using Chat.Domain.Common.Models;
 
 namespace Chat.Domain.Entity;
 
-public class FriendRequest: BaseEntityWithCompositeKey
+public class FriendRequest : BaseEntityWithCompositeKey
 {
     private FriendRequest() { }
     public FriendRequest(string inviterUserId, string inviterUserEmail, string? inviterPhotoUrl, string invitedUserId, string invitedUserEmail, string? invitedPhotoUrl)

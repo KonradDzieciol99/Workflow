@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using MessageBus.Events;
 using Microsoft.AspNetCore.SignalR;
 using SignalR.Hubs;
 using SignalR.Models;
@@ -27,6 +26,6 @@ public class InviteUserToFriendsEventHandler : IRequestHandler<FriendRequestAdde
                                     request.InvitedUserId,
                                     request.InvitedUserEmail,
                                     request.InvitedUserPhotoUrl,
-                                    false) );
+                                    false));
     }
 }

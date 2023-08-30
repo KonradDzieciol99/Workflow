@@ -1,6 +1,5 @@
 ﻿using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
-using IdentityModel;
 
 namespace IdentityDuende.Configuration;
 
@@ -38,7 +37,7 @@ public static class Config
              new ApiResource("tasks", "Tasks Service") { Scopes = { "tasks" } },
              new ApiResource("aggregator", "Aggregator Service") { Scopes = { "aggregator" } },
          };
-    
+
 
     public static IEnumerable<Client> Clients =>
         new Client[]
@@ -53,7 +52,7 @@ public static class Config
                 RedirectUris = { "https://localhost:4200/home" },
                 FrontChannelLogoutUri = "https://localhost:4200",
                 PostLogoutRedirectUris = { "https://localhost:4200" },
-                AllowedCorsOrigins = { "https://localhost:4200" },
+                AllowedCorsOrigins = { "https://localhost:4200","http://localhost:5080" },
                 AllowOfflineAccess = true,
                 UpdateAccessTokenClaimsOnRefresh = true,
                 CoordinateLifetimeWithUserSession = true,

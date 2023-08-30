@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using MessageBus.Events;
 
 namespace EmailSender.IntegrationEvents.Handlers;
 
@@ -13,7 +12,7 @@ public class UserResentVerificationEmailIntegrationEventHandler : IRequestHandle
     }
     public async Task Handle(UserResentVerificationEmailIntegrationEvent request, CancellationToken cancellationToken)
     {
-        await _emailSender.CreateConfirmEmailMessage(request.UserEmail,request.VerificationToken, request.UserId);
+        await _emailSender.CreateConfirmEmailMessage(request.UserEmail, request.VerificationToken, request.UserId);
 
         return;
     }

@@ -13,14 +13,9 @@ public class NotificationService : BaseHttpService, INotificationService
 
     public async Task<bool> Get(string token)
     {
-        StringBuilder sb = new StringBuilder(_notificationServiceUrl);
+        var sb = new StringBuilder(_notificationServiceUrl);
         sb.Append($"/api/AppNotification/get?Skip={0}&Take={5}");
 
-        return await this.SendAsync<bool>(new ApiRequest()
-        {
-            HttpMethod = HttpMethod.Get,
-            Url = sb.ToString(),
-            AccessToken = token
-        });
+        return await this.SendAsync<bool>(new ApiRequest(HttpMethod.Get, sb.ToString(), null, token));
     }
 }

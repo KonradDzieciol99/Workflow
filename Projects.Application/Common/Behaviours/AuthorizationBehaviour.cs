@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Projects.Application.Common.Authorization;
 using Projects.Application.Common.Exceptions;
@@ -22,23 +21,23 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-            var authRequirementsList = request.GetAuthorizationRequirement();
+        var authRequirementsList = request.GetAuthorizationRequirement();
 
-            if (authRequirementsList.Any())
+        if (authRequirementsList.Any())
+        {
+            if (_currentUserService.GetUser() == null)
+                throw new UnauthorizedAccessException();
+
+            foreach (var requirement in authRequirementsList)
             {
-                if (_currentUserService.GetUser() == null)
-                    throw new UnauthorizedAccessException();
+                var result = await _authorizationService.AuthorizeAsync(_currentUserService.GetUser(), null, requirement);
 
-                foreach (var requirement in authRequirementsList)
+                if (!result.Succeeded)
                 {
-                    var result = await _authorizationService.AuthorizeAsync(_currentUserService.GetUser(),null,requirement);
-
-                    if (!result.Succeeded)
-                    {
-                        throw new ForbiddenAccessException();
-                    }
+                    throw new ForbiddenAccessException();
                 }
             }
+        }
         return await next();
     }
 }

@@ -1,16 +1,16 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+﻿using MediatR;
 using MessageBus.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Notification.Infrastructure.DataAccess;
-using MediatR;
+using Microsoft.IdentityModel.Tokens;
+using Notification.Application.Common.Authorization.Handlers;
 using Notification.Application.Common.Behaviours;
+using Notification.Infrastructure.DataAccess;
 using Notification.Infrastructure.Repositories;
 using Notification.Services;
-using Microsoft.AspNetCore.Authorization;
-using Notification.Application.Common.Authorization.Handlers;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace Notification;
 
 public static class ConfigureServices
 {
@@ -66,30 +66,8 @@ public static class ConfigureServices
             opt.AddBehavior(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehaviour<,>));
         });
 
-        services.AddAzureServiceBusSubscriber(opt =>
-        {
-            opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString") ?? throw new ArgumentNullException("ServiceBusConnectionString"); ;
-            opt.SubscriptionName = "notification";
-            //opt.QueueNameAndEventTypePair = new Dictionary<string, Type>()
-            //    {
-            //    };
-            //opt.TopicNameAndEventTypePair = new Dictionary<string, Type>()
-            //{
-            //    {configuration.GetValue<string>("NewUserRegistrationEvent"),typeof(NewUserRegistrationEvent)},
-            //    {"invite-user-to-friends-topic",typeof(FriendInvitationAddedEvent)},
-            //    {"friend-invitation-accepted-topic",typeof(FriendInvitationAcceptedEvent)},
-            //};
-            //opt.TopicNameWithSubscriptionName = new Dictionary<string, string>()
-            //{
-            //    {configuration.GetValue<string>("NewUserRegistrationEvent"),configuration.GetValue<string>("NewUserRegistrationEventSubscription")},
-            //    {"invite-user-to-friends-topic","notification"}, 
-            //    {"friend-invitation-accepted-topic","notification"},
-            //};
-        });
-        services.AddAzureServiceBusSender(opt =>
-        {
-            opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString")  ?? throw new ArgumentNullException("ServiceBusConnectionString");
-        });
+        services.AddAzureServiceBusSubscriber(configuration.GetSection("AzureServiceBusSubscriberOptions"));
+        services.AddAzureServiceBusSender(configuration.GetSection("AzureServiceBusSender"));
         services.AddDbContext<ApplicationDbContext>(opt =>
         {
             opt.UseSqlServer(configuration.GetConnectionString("DbContextConnString"));

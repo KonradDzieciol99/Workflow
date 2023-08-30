@@ -1,4 +1,5 @@
-﻿using Projects.Domain.Common.Exceptions;
+﻿using Projects.Domain.Common.Enums;
+using Projects.Domain.Common.Exceptions;
 using Projects.Domain.Common.Models;
 using Projects.Domain.DomainEvents;
 
@@ -6,13 +7,15 @@ namespace Projects.Domain.AggregatesModel.ProjectAggregate;
 
 public class Project : BaseEntity
 {
-    private Project(){ }
-    public Project(string name, string iconUrl)
+    private Project() { }
+    public Project(string name, string iconUrl, ProjectMember creator)
     {
         Id = Guid.NewGuid().ToString();
         Name = name;
         IconUrl = iconUrl;
-        ProjectMembers = new List<ProjectMember>();
+        ProjectMembers = new List<ProjectMember>() { creator };
+
+        this.AddDomainEvent(new ProjectMemberAddedDomainEvent(creator, true));
     }
 
     public string Id { get; private set; }
@@ -24,7 +27,7 @@ public class Project : BaseEntity
     {
         ProjectMembers.Add(newMember);
 
-        this.AddDomainEvent(new ProjectMemberAddedDomainEvent(newMember));
+        this.AddDomainEvent(new ProjectMemberAddedDomainEvent(newMember, false));
     }
     public void RemoveProjectMember(string id)
     {
@@ -43,7 +46,7 @@ public class Project : BaseEntity
     {
         this.AddDomainEvent(new ProjectRemovedDomainEvent(this));
     }
-    public void UpdateProjectMember(string userId,ProjectMemberType newType)
+    public void UpdateProjectMember(string userId, ProjectMemberType newType)
     {
         var member = this.ProjectMembers.FirstOrDefault(m => m.UserId == userId);
         if (member is null)
@@ -78,7 +81,7 @@ public class Project : BaseEntity
 
         if (currentLeader is not null && newLeader.Id == currentLeader.Id)
             throw new ProjectDomainException("the alleged new leader is already the leader of the team");
-  
+
         if (currentLeader is not null)
             currentLeader.Type = ProjectMemberType.Admin;
     }

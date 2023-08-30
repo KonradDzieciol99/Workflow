@@ -1,19 +1,19 @@
 ﻿
+using Chat.Application.Common.Authorization.Handlers;
+using Chat.Application.Common.Behaviours;
+using Chat.Application.Common.Mappings;
+using Chat.Domain.Services;
+using Chat.Infrastructure.DataAccess;
+using Chat.Infrastructure.Repositories;
+using Chat.Services;
 using FluentValidation;
 using MediatR;
+using MessageBus.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
-using MessageBus.Extensions;
-using Microsoft.AspNetCore.Authorization;
-using Chat.Infrastructure.DataAccess;
-using Chat.Infrastructure.Repositories;
-using Chat.Application.Common.Mappings;
-using Chat.Application.Common.Behaviours;
-using Chat.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Chat.Application.Common.Authorization.Handlers;
-using Chat.Domain.Services;
 
 namespace Chat;
 
@@ -89,16 +89,9 @@ public static class ConfigureServices
                       });
         });
 
-        services.AddAzureServiceBusSubscriber(opt =>
-        {
-            opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString") ?? throw new ArgumentNullException(nameof(opt.ServiceBusConnectionString));
-            opt.SubscriptionName = "chat";
-        });
 
-        services.AddAzureServiceBusSender(opt =>
-        {
-            opt.ServiceBusConnectionString = configuration.GetValue<string>("ServiceBusConnectionString") ?? throw new ArgumentNullException(nameof(opt.ServiceBusConnectionString));
-        });
+        services.AddAzureServiceBusSender(configuration.GetSection("AzureServiceBusSender"));
+        services.AddAzureServiceBusSubscriber(configuration.GetSection("AzureServiceBusSubscriberOptions"));
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
@@ -114,7 +107,6 @@ public static class ConfigureServices
         services.AddHttpContextAccessor();
 
         services.AddTransient<IMessageService, MessageService>();
-
 
         return services;
     }

@@ -1,13 +1,11 @@
 ﻿using Chat.Application.Common.Authorization;
 using Chat.Application.Common.Authorization.Requirements;
-using Chat.Application.Common.Models;
-using Chat.Domain.Entity;
-using MediatR;
-using MessageBus.Events;
-using MessageBus;
-using Microsoft.AspNetCore.Authorization;
+using Chat.Application.IntegrationEvents;
 using Chat.Infrastructure.Repositories;
 using Chat.Services;
+using MediatR;
+using MessageBus;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Chat.Application.FriendRequests.Commands;
 
@@ -15,7 +13,7 @@ public record DeleteFriendRequestCommand(string TargetUserId) : IAuthorizationRe
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement()
     {
-        return new List<IAuthorizationRequirement>(){new ShareFriendRequestRequirement(TargetUserId)};
+        return new List<IAuthorizationRequirement>() { new ShareFriendRequestRequirement(TargetUserId) };
     }
 }
 public class DeleteFriendRequestCommandHandler : IRequestHandler<DeleteFriendRequestCommand>
@@ -27,7 +25,7 @@ public class DeleteFriendRequestCommandHandler : IRequestHandler<DeleteFriendReq
     public DeleteFriendRequestCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IAzureServiceBusSender azureServiceBusSender)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService)); 
+        this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
         this._azureServiceBusSender = azureServiceBusSender ?? throw new ArgumentNullException(nameof(azureServiceBusSender));
     }
     public async Task Handle(DeleteFriendRequestCommand request, CancellationToken cancellationToken)
@@ -40,7 +38,7 @@ public class DeleteFriendRequestCommandHandler : IRequestHandler<DeleteFriendReq
             throw new InvalidOperationException();
 
         // Domain logic
-        
+
         if (friendRequest.InviterUserId == _currentUserService.GetUserId() && friendRequest.Confirmed == false)
         {
             var friendRequestCanceledEvent = new FriendRequestCanceledEvent(friendRequest.InviterUserId,
@@ -51,7 +49,8 @@ public class DeleteFriendRequestCommandHandler : IRequestHandler<DeleteFriendReq
                                                                     friendRequest.InvitedPhotoUrl);
             await _azureServiceBusSender.PublishMessage(friendRequestCanceledEvent);
             return;
-        }else if(friendRequest.InvitedUserId == _currentUserService.GetUserId() && friendRequest.Confirmed == false)
+        }
+        else if (friendRequest.InvitedUserId == _currentUserService.GetUserId() && friendRequest.Confirmed == false)
         {
             var friendRequestDeclinedEvent = new FriendRequestDeclinedEvent(friendRequest.InviterUserId,
                                                         friendRequest.InviterUserEmail,
@@ -69,10 +68,9 @@ public class DeleteFriendRequestCommandHandler : IRequestHandler<DeleteFriendReq
                                                                     friendRequest.InvitedUserId,
                                                                     friendRequest.InvitedUserEmail,
                                                                     friendRequest.InvitedPhotoUrl);
-        //
         await _azureServiceBusSender.PublishMessage(@event);
 
-       
+
         return;
     }
 }

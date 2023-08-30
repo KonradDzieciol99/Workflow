@@ -1,12 +1,7 @@
 ﻿using MediatR;
-using MessageBus.Events;
 using Projects.Application.Common.Interfaces;
+using Projects.Application.IntegrationEvents;
 using Projects.Domain.DomainEvents;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Projects.Application.Projects.DomainEventHandlers;
 
@@ -20,7 +15,7 @@ public class ProjectRemovedDomainEventHandler : INotificationHandler<ProjectRemo
     }
     public Task Handle(ProjectRemovedDomainEvent notification, CancellationToken cancellationToken)
     {
-        var @event = new ProjectRemovedEvent(notification.Project.Id,notification.Project.Name,notification.Project.IconUrl);
+        var @event = new ProjectRemovedEvent(notification.Project.Id, notification.Project.Name, notification.Project.IconUrl);
 
         _integrationEventService.AddIntegrationEvent(@event);
 
