@@ -1,6 +1,8 @@
 ﻿using Chat.Application.Common.Authorization;
 using Chat.Application.Common.Authorization.Requirements;
+using Chat.Application.Common.Exceptions;
 using Chat.Application.IntegrationEvents;
+using Chat.Domain.Common.Exceptions;
 using Chat.Domain.Entity;
 using Chat.Domain.Services;
 using Chat.Infrastructure.Repositories;
@@ -34,7 +36,7 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand>
     }
     public async Task Handle(SendMessageCommand request, CancellationToken cancellationToken)
     {
-        var friendRequest = await _unitOfWork.FriendRequestRepository.GetAsync(_currentUserService.GetUserId(), request.RecipientUserId);
+        var friendRequest = await _unitOfWork.FriendRequestRepository.GetAsync(_currentUserService.GetUserId(), request.RecipientUserId) ?? throw new ChatDomainException("Friend request cannot be found.", new NotFoundException());
 
         var message = new Message(_currentUserService.GetUserId(),
                                   _currentUserService.GetUserEmail(),
@@ -44,8 +46,7 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand>
 
         _messageService.AddMessage(message, friendRequest);
 
-        if (!await _unitOfWork.Complete())
-            throw new InvalidOperationException();
+        await _unitOfWork.Complete();
 
         var @event = new ChatMessageAddedEvent(message.Id,
                                                message.SenderId,

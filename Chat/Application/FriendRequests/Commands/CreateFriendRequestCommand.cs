@@ -37,8 +37,7 @@ public class CreateFriendRequestCommandHandler : IRequestHandler<CreateFriendReq
 
         _unitOfWork.FriendRequestRepository.Add(friendRequest);
 
-        if (!await _unitOfWork.Complete())
-            throw new InvalidOperationException();
+        await _unitOfWork.Complete();
 
         var friendInvitationAddedEvent = new FriendRequestAddedEvent(friendRequest.InviterUserId,
                                                                         friendRequest.InviterUserEmail,

@@ -1,6 +1,8 @@
 ﻿using Chat.Application.Common.Authorization;
 using Chat.Application.Common.Authorization.Requirements;
+using Chat.Application.Common.Exceptions;
 using Chat.Application.IntegrationEvents;
+using Chat.Domain.Common.Exceptions;
 using Chat.Infrastructure.Repositories;
 using Chat.Services;
 using MediatR;
@@ -30,12 +32,11 @@ public class DeleteFriendRequestCommandHandler : IRequestHandler<DeleteFriendReq
     }
     public async Task Handle(DeleteFriendRequestCommand request, CancellationToken cancellationToken)
     {
-        var friendRequest = await _unitOfWork.FriendRequestRepository.GetAsync(_currentUserService.GetUserId(), request.TargetUserId);
+        var friendRequest = await _unitOfWork.FriendRequestRepository.GetAsync(_currentUserService.GetUserId(), request.TargetUserId) ?? throw new ChatDomainException("Friend request cannot be found.", new NotFoundException());
 
         _unitOfWork.FriendRequestRepository.Remove(friendRequest);
 
-        if (!await _unitOfWork.Complete())
-            throw new InvalidOperationException();
+        await _unitOfWork.Complete();
 
         // Domain logic
 

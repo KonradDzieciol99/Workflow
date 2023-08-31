@@ -1,4 +1,7 @@
-﻿using MessageBus;
+﻿using MediatR;
+using MessageBus;
+using Microsoft.AspNetCore.SignalR;
+using SignalR.Hubs;
 
 namespace SignalR.IntegrationEvents;
 
@@ -28,4 +31,19 @@ public class NotificationAddedEvent : IntegrationEvent
     public string? NotificationPartnerEmail { get; set; }
     public string? NotificationPartnerPhotoUrl { get; set; }
     public List<string>? OldNotificationsIds { get; set; }
+}
+public class NotificationAddedEventHandler : IRequestHandler<NotificationAddedEvent>
+{
+
+    private readonly IHubContext<PresenceHub> _presenceHubContext;
+
+    public NotificationAddedEventHandler(IHubContext<PresenceHub> presenceHubContext)
+    {
+        _presenceHubContext = presenceHubContext;
+    }
+    public async Task Handle(NotificationAddedEvent request, CancellationToken cancellationToken)
+    {
+        //TODO zrobić DTO z NotificationAddedEvent
+        await _presenceHubContext.Clients.User(request.UserId).SendAsync("NewNotificationReceived", request);
+    }
 }

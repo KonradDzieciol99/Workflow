@@ -1,6 +1,7 @@
 using Chat;
 using Chat.Application.IntegrationEvents;
 using Chat.Infrastructure.DataAccess;
+using Chat.Middleware;
 using MessageBus;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,6 +23,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("allowAny");
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<ExceptionMiddleware>();
 app.MapControllers();
 app.Run();
 
@@ -56,3 +58,6 @@ async Task AddSubscriptions(WebApplication app)
 
     await Task.WhenAll(subscribeTasks);
 }
+
+
+public partial class Program { }

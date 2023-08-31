@@ -1,4 +1,6 @@
-﻿using MessageBus;
+﻿using EmailEmitter.Sender;
+using MediatR;
+using MessageBus;
 
 namespace EmailEmitter.IntegrationEvents;
 
@@ -17,3 +19,19 @@ public class RegistrationEvent : IntegrationEvent
     public string UserId { get; set; }
     public string? PhotoUrl { get; set; }
 }
+public class RegistrationEventHandler : IRequestHandler<RegistrationEvent>
+{
+    private readonly ISenderSource _emailSender;
+
+    public RegistrationEventHandler(ISenderSource emailSender)
+    {
+        _emailSender = emailSender;
+    }
+    public async Task Handle(RegistrationEvent request, CancellationToken cancellationToken)
+    {
+        await _emailSender.CreateConfirmEmailMessage(request.Email, request.Token, request.UserId);
+
+        return;
+    }
+}
+

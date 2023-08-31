@@ -1,5 +1,8 @@
 ﻿using Chat.Application.Common.Authorization;
 using Chat.Application.Common.Authorization.Requirements;
+using Chat.Application.Common.Exceptions;
+using Chat.Application.IntegrationEvents;
+using Chat.Domain.Common.Exceptions;
 using Chat.Infrastructure.Repositories;
 using Chat.Services;
 using MediatR;
@@ -29,12 +32,11 @@ public class AcceptFriendRequestCommandHandler : IRequestHandler<AcceptFriendReq
     }
     public async Task Handle(AcceptFriendRequestCommand request, CancellationToken cancellationToken)
     {
-        var friendRequest = await _unitOfWork.FriendRequestRepository.GetAsync(_currentUserService.GetUserId(), request.TargetUserId);
+        var friendRequest = await _unitOfWork.FriendRequestRepository.GetAsync(_currentUserService.GetUserId(), request.TargetUserId) ?? throw new ChatDomainException("Friend request cannot be found.", new NotFoundException());
 
         friendRequest.AcceptRequest(_currentUserService.GetUserId());
 
-        if (!await _unitOfWork.Complete())
-            throw new InvalidOperationException();
+        await _unitOfWork.Complete();
 
         var @event = new FriendRequestAcceptedEvent(friendRequest.InviterUserId,
                                                     friendRequest.InviterUserEmail,
