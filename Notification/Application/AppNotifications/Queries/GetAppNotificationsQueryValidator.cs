@@ -6,13 +6,23 @@ public class GetAppNotificationsQueryValidator : AbstractValidator<GetAppNotific
 {
     public GetAppNotificationsQueryValidator()
     {
-        RuleFor(x => x.Take).NotEmpty().GreaterThan(0).LessThan(31);
-        RuleFor(x => x.Skip);
-        RuleFor(x => x.OrderBy);
-        RuleFor(x => x.Filter);
-        RuleFor(x => x.SelectedColumns);
-        RuleFor(x => x.GroupBy);
-        RuleFor(x => x.IsDescending);
-        RuleFor(x => x.Search);
+        RuleFor(x => x.Skip)
+            .GreaterThanOrEqualTo(0);
+
+        RuleFor(x => x.Take)
+            .GreaterThan(0)
+            .LessThanOrEqualTo(50);
+
+        //RuleFor(x => x.OrderBy);
+
+        //RuleFor(x => x.IsDescending);
+
+       // RuleFor(x => x.Filter);
+
+        //RuleFor(x => x.GroupBy);
+
+        RuleFor(x => x.Search).MaximumLength(50);
+
+        //RuleFor(x => x.SelectedColumns);
     }
 }

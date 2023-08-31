@@ -1,4 +1,7 @@
-﻿using MessageBus;
+﻿using MediatR;
+using MessageBus;
+using Microsoft.AspNetCore.SignalR;
+using SignalR.Hubs;
 
 namespace SignalR.IntegrationEvents;
 
@@ -21,4 +24,18 @@ public class FriendRequestRemovedEvent : IntegrationEvent
     public string FriendToRemoveUserId { get; set; }
     public string FriendToRemoveUserEmail { get; set; }
     public string? FriendToRemoveUserPhotoUrl { get; set; }
+}
+public class FriendRequestRemovedEventHandler : IRequestHandler<FriendRequestRemovedEvent>
+{
+    private readonly IHubContext<MessagesHub> _messagesHubContext;
+
+    public FriendRequestRemovedEventHandler(IHubContext<MessagesHub> messagesHubContext)
+    {
+        _messagesHubContext = messagesHubContext;
+    }
+    public async Task Handle(FriendRequestRemovedEvent request, CancellationToken cancellationToken)
+    {
+        await _messagesHubContext.Clients.Users(request.FriendToRemoveUserId).SendAsync("FriendRequestRemoved", request.ActionInitiatorUserEmail);
+        return;
+    }
 }

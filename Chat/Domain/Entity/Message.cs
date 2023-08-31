@@ -1,4 +1,5 @@
-﻿using Chat.Domain.Common.Models;
+﻿using Chat.Domain.Common.Exceptions;
+using Chat.Domain.Common.Models;
 
 namespace Chat.Domain.Entity;
 
@@ -25,10 +26,16 @@ public class Message : BaseEntity
 
     public void MarkMessageAsRead()
     {
+        if (this.DateRead.HasValue)
+            throw new ChatDomainException("Message is already marked as read.");
+
         this.DateRead = DateTime.UtcNow;
     }
     public void MarkMessageAsRead(DateTime date)
     {
+        if (this.DateRead.HasValue)
+            throw new ChatDomainException("Message is already marked as read.");
+
         this.DateRead = date;
     }
 

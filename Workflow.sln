@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8640FB86-EFA1-4C60-9C1F-B6ABECEA26C9}"
-	ProjectSection(SolutionItems) = preProject
-		compose.yaml = compose.yaml
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{22D10ABD-F979-4A96-A6E8-3447244A3DF2}"
 EndProject
@@ -79,7 +76,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Envoy", "Envoy", "{5B01DE65
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmailEmitter", "EmailEmitter\EmailEmitter.csproj", "{A5EB5B59-A23A-4593-8183-D5475360E1A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestsHelpers", "TestsHelpers\TestsHelpers.csproj", "{6631A1C8-A35C-4231-AF57-B291E0AD4D25}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestsHelpers", "TestsHelpers\TestsHelpers.csproj", "{6631A1C8-A35C-4231-AF57-B291E0AD4D25}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{28A62895-F2C8-48AE-9578-BA1818BA5F9D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chat.IntegrationTests", "Chat.IntegrationTests\Chat.IntegrationTests.csproj", "{8BB153AD-163F-476F-A4B7-BA9F000525B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -159,6 +160,10 @@ Global
 		{6631A1C8-A35C-4231-AF57-B291E0AD4D25}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6631A1C8-A35C-4231-AF57-B291E0AD4D25}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6631A1C8-A35C-4231-AF57-B291E0AD4D25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BB153AD-163F-476F-A4B7-BA9F000525B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BB153AD-163F-476F-A4B7-BA9F000525B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BB153AD-163F-476F-A4B7-BA9F000525B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BB153AD-163F-476F-A4B7-BA9F000525B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -195,6 +200,8 @@ Global
 		{5B01DE65-B52B-4283-AA21-4076E6C55864} = {71DB4892-48C7-40C5-80C6-C9F6EF624C16}
 		{A5EB5B59-A23A-4593-8183-D5475360E1A1} = {3D191AA6-DF24-467A-93C4-45C1373A8E98}
 		{6631A1C8-A35C-4231-AF57-B291E0AD4D25} = {AC2E31EF-606E-44DD-B77F-7D3A9608D437}
+		{28A62895-F2C8-48AE-9578-BA1818BA5F9D} = {6E0F2DE1-8C27-4A89-995D-BE47CF4EBFC5}
+		{8BB153AD-163F-476F-A4B7-BA9F000525B6} = {28A62895-F2C8-48AE-9578-BA1818BA5F9D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {835CBD37-3795-4BFA-9CE2-C83C6D42CA55}

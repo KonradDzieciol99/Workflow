@@ -14,6 +14,7 @@ public class FriendRequest : BaseEntityWithCompositeKey
         InvitedUserId = invitedUserId ?? throw new ArgumentNullException(nameof(invitedUserId));
         InvitedUserEmail = invitedUserEmail ?? throw new ArgumentNullException(nameof(invitedUserEmail));
         InvitedPhotoUrl = invitedPhotoUrl;
+        Confirmed = false;
     }
     public string InviterUserId { get; private set; }
     public string InviterUserEmail { get; private set; }

@@ -1,4 +1,7 @@
-﻿using MessageBus;
+﻿using MediatR;
+using MessageBus;
+using Microsoft.AspNetCore.SignalR;
+using SignalR.Hubs;
 using SignalR.Models;
 
 namespace SignalR.IntegrationEvents;
@@ -15,4 +18,18 @@ public class UserConnectedToChatResponseEvent : IntegrationEvent
     public UserDto ConnectedUser { get; set; }
     public string RecipientEmail { get; set; }
     public List<MessageDto> Messages { get; set; }
+}
+public class UserConnectedToChatResponseEventHandler : IRequestHandler<UserConnectedToChatResponseEvent>
+{
+    private readonly IHubContext<ChatHub> _chatHubContext;
+
+    public UserConnectedToChatResponseEventHandler(IHubContext<ChatHub> chatHubContext)
+    {
+        this._chatHubContext = chatHubContext;
+    }
+    public async Task Handle(UserConnectedToChatResponseEvent request, CancellationToken cancellationToken)
+    {
+        await _chatHubContext.Clients.User(request.ConnectedUser.Id).SendAsync("ReceiveMessageThread", request.Messages);
+        return;
+    }
 }
