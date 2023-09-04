@@ -34,7 +34,8 @@ public class ApplicationDbContext : DbContext
 
         builder.Entity<ProjectMember>(opt =>
         {
-            opt.HasKey(x => new { x.UserId, x.ProjectId });
+            //opt.HasKey(x => new { x.UserId, x.ProjectId });
+            opt.HasKey(x => x.Id);
 
             opt.Property(x => x.Id).ValueGeneratedOnAdd();
         });

@@ -22,8 +22,7 @@ public class MessagesController : ControllerBase
     public async Task<IActionResult> Post([FromBody] SendMessageCommand command)
     {
         await _mediator.Send(command);
-
-        return NoContent();
+        return Created("",null);
     }
     [HttpGet]
     public async Task<ActionResult<List<MessageDto>>> Get([FromQuery] string RecipientId, [FromQuery] string RecipientEmail, [FromQuery] int Skip, [FromQuery] int Take)

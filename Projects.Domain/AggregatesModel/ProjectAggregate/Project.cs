@@ -106,6 +106,6 @@ public class Project : BaseEntity
 
         ProjectMembers.Remove(member);
 
-        this.AddDomainEvent(new ProjectMemberDeclineInvitationDomainEvent(member));
+        this.AddDomainEvent(new ProjectMemberDeclineInvitationDomainEvent(member,this));
     }
 }

@@ -1,9 +1,13 @@
 
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using HealthChecks.UI.Client;
+using Logging;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 using Photos.Common;
-using Photos.Models;
+using Photos.Common.Models;
+using Serilog;
 
 namespace Photos;
 
@@ -14,6 +18,8 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddWebAPIServices(builder.Configuration);
+
+        builder.Host.UseSerilog(SeriLogger.Configure);
 
         var app = builder.Build();
 
@@ -27,51 +33,16 @@ public class Program
         app.UseCors("allowAny");
         app.UseAuthentication();
         app.UseAuthorization();
+        app.MapControllers();
 
-        var group = app.MapGroup("/api")
-                       .RequireAuthorization("ApiScope")
-                       .WithOpenApi();
-
-        group.MapPost("/uploadIcon", async ([AsParameters] IconUploadRequest IconUploadRequest) =>
+        app.MapHealthChecks("/hc", new HealthCheckOptions()
         {
-
-            var blobPhotosContainerClient = IconUploadRequest.blobServiceClient.GetBlobContainerClient(builder.Configuration.GetValue<string>("AzureBlobStorage:BlobContainerProjectsIcons"));
-            var blobClient = blobPhotosContainerClient.GetBlobClient(IconUploadRequest.Name);
-            var blobUploadOptions = new BlobUploadOptions
-            {
-                HttpHeaders = new BlobHttpHeaders
-                {
-                    ContentType = "image/jpeg",
-                    ContentDisposition = "inline"
-                },
-            };
-
-            var result = await blobClient.UploadAsync(IconUploadRequest.File.OpenReadStream(), blobUploadOptions);
-
-            return Results.Ok();
-        })
-        .AddEndpointFilter<ValidatorFilter<IconUploadRequest>>();
-
-        group.MapGet("/getProjectsIcons", async ([FromServices] BlobServiceClient blobServiceClient) =>
+            Predicate = _ => true,
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
+        app.MapHealthChecks("/liveness", new HealthCheckOptions
         {
-            var blobPhotosContainerClient = blobServiceClient.GetBlobContainerClient(builder.Configuration.GetValue<string>("AzureBlobStorage:BlobContainerProjectsIcons"));
-
-            var files = new List<Icon>();
-
-            await foreach (BlobItem file in blobPhotosContainerClient.GetBlobsAsync())
-            {
-                string uri = blobPhotosContainerClient.Uri.ToString();
-                var name = file.Name;
-                var fullUri = $"{uri}/{name}";
-
-                files.Add(new Icon
-                {
-                    Url = fullUri,
-                    Name = name,
-                });
-            }
-
-            return Results.Ok(files);
+            Predicate = r => r.Name.Contains("self")
         });
 
         app.Run();

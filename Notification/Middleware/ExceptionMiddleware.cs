@@ -10,12 +10,20 @@ public class ExceptionMiddleware
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionMiddleware> _logger;
     private readonly IWebHostEnvironment _env;
+    private readonly Dictionary<Type, Func<NotificationDomainException, HttpContext, Task>> _exceptionHandlers;
 
     public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IWebHostEnvironment env)
     {
-        _next = next;
-        _logger = logger;
-        _env = env;
+        this._next = next;
+        this._logger = logger;
+        this._env = env;
+        _exceptionHandlers = new()
+            {
+                { typeof(ValidationException), HandleValidationException },
+                { typeof(NotificationDomainException), HandleDomainException },
+                { typeof(UnauthorizedAccessException), HandleUnauthorizedAccessException },
+                { typeof(ForbiddenAccessException), HandleForbiddenAccessException },
+            };
     }
 
     public async Task InvokeAsync(HttpContext httpContext)
@@ -32,50 +40,102 @@ public class ExceptionMiddleware
 
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        context.Response.ContentType = "application/json";
-
-        var type = exception.GetType();
-
-        _logger.LogError(exception, null);
-
-        if (exception is NotificationDomainException notificationDomainException)
+        if (exception is NotificationDomainException taskDomainException)
         {
-
-            var problemDetails = new ValidationProblemDetails()
+            Type type = taskDomainException.InnerException?.GetType() ?? typeof(NotificationDomainException);
+            if (_exceptionHandlers.ContainsKey(type))
             {
-                Instance = context.Request.Path,
-                Title = exception.Message,
-            };
-
-            var statusCode = (int)HttpStatusCode.BadRequest;
-
-            if (notificationDomainException.InnerException is not null)
-            {
-                problemDetails.Title = notificationDomainException.InnerException.Message;
-
-                if (notificationDomainException.InnerException is ForbiddenAccessException)
-                    statusCode = (int)HttpStatusCode.Forbidden;
-                else if (notificationDomainException.InnerException is UnauthorizedException)
-                    statusCode = (int)HttpStatusCode.Unauthorized;
-                else if (notificationDomainException.InnerException is ValidationException validationException)
-                {
-                    foreach (var item in validationException.Errors)
-                        problemDetails.Errors.Add(item.Key, item.Value);
-                }
+                await _exceptionHandlers[type].Invoke(taskDomainException, context);
+                return;
             }
-
-            context.Response.StatusCode = statusCode;
-            await context.Response.WriteAsJsonAsync(problemDetails);
         }
-        else
-        {
-            var message = "An error occur.Try it again.";
 
-            if (_env.IsDevelopment())
-                message = exception.Message;
+        var message = "An error occur.Try it again.";
+        if (_env.IsDevelopment())
+            message = exception.Message;
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+        await context.Response.WriteAsJsonAsync(message);
 
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            await context.Response.WriteAsJsonAsync(message);
-        }
     }
+
+    private async Task HandleUnauthorizedAccessException(NotificationDomainException exception, HttpContext context)
+    {
+        var message = new ProblemDetails()
+        {
+            Instance = context.Request.Path,
+            Type = nameof(UnauthorizedAccessException),
+            Title = "Unauthorized",
+            Detail = exception.Message,
+            Status = StatusCodes.Status401Unauthorized
+        };
+
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        await context.Response.WriteAsJsonAsync(message);
+        return;
+    }
+
+    private async Task HandleForbiddenAccessException(NotificationDomainException exception, HttpContext context)
+    {
+        var message = new ProblemDetails()
+        {
+            Instance = context.Request.Path,
+            Type = nameof(ForbiddenAccessException),
+            Title = "You have no rights to this resource",
+            Detail = exception.Message,
+            Status = StatusCodes.Status403Forbidden
+        };
+
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        await context.Response.WriteAsJsonAsync(message);
+        return;
+    }
+
+    private async Task HandleDomainException(NotificationDomainException exception, HttpContext context)
+    {
+        var message = new ProblemDetails()
+        {
+            Instance = context.Request.Path,
+            Type = nameof(Exception),
+            Detail = exception.Message,
+            Status = StatusCodes.Status400BadRequest
+        };
+
+        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+        await context.Response.WriteAsJsonAsync(message);
+        return;
+    }
+    private async Task HandleValidationException(NotificationDomainException exception, HttpContext context)
+    {
+        var innerException = (ValidationException)exception.InnerException!;
+
+        var message = new ValidationProblemDetails(innerException.Errors)
+        {
+            Instance = context.Request.Path,
+            Type = nameof(ValidationException),
+            Title = "Validation errors occurred",
+            Detail = exception.Message,
+            Status = StatusCodes.Status400BadRequest
+        };
+
+        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+        await context.Response.WriteAsJsonAsync(message);
+        return;
+    }
+
+    //private async Task HandleNotFoundException(NotificationDomainException exception, HttpContext context)
+    //{
+
+    //    var message = new ProblemDetails()
+    //    {
+    //        Instance = context.Request.Path,
+    //        Type = nameof(NotFoundException),
+    //        Title = "The specified resource was not found.",
+    //        Detail = exception.Message,
+    //        Status = StatusCodes.Status404NotFound
+    //    };
+
+    //    context.Response.StatusCode = StatusCodes.Status404NotFound;
+    //    await context.Response.WriteAsJsonAsync(message);
+    //    return;
+    //}
 }

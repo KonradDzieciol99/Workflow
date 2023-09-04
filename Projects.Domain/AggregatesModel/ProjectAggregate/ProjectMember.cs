@@ -11,14 +11,13 @@ public class ProjectMember : BaseEntity
 #pragma warning restore CS8618
     public ProjectMember(string userId, string userEmail, string? photoUrl, ProjectMemberType type, InvitationStatus invitationStatus)
     {
-        Id = Guid.NewGuid().ToString();
+        //Id = Guid.NewGuid().ToString();
         UserId = userId ?? throw new ArgumentNullException(nameof(userId));
         UserEmail = userEmail ?? throw new ArgumentNullException(nameof(userEmail));
         PhotoUrl = photoUrl;
         Type = type;
         InvitationStatus = invitationStatus;
     }
-
 
     public string Id { get; set; }
     public string UserId { get; set; }

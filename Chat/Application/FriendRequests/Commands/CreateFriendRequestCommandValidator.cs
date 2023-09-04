@@ -6,8 +6,8 @@ public class CreateFriendRequestCommandValidator: AbstractValidator<CreateFriend
 {
     public CreateFriendRequestCommandValidator()
     {
-        RuleFor(x => x.Id).NotEmpty();
-        RuleFor(x => x.Email).NotEmpty().EmailAddress();
+        RuleFor(x => x.TargetUserId).NotEmpty();
+        RuleFor(x => x.TargetUserEmail).NotEmpty().EmailAddress();
         //RuleFor(x => x.PhotoUrl);
     }
 }

@@ -35,16 +35,16 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
-  # emailsender:
-  #   environment:
-  #     - ASPNETCORE_ENVIRONMENT=Development
-  #     - ASPNETCORE_URLS=https://+:443;http://+:80
-  #   ports:
-  #     - "5006:80"
-  #     - "5007:443"
-  #   volumes:
-  #     - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-  #     - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+  emailemitter:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+    ports:
+      - "5006:80"
+      - "5007:443"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
   notification:
     environment:
@@ -100,20 +100,26 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  healthchecks:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "5018:80"
+
   envoy:
     volumes:
       - ./envoy.yaml:/etc/envoy/envoy.yaml
     ports:
-    - "5080:5080"
-    - "5081:5081"
+    - "5100:5080"
+    - "5101:5081"
 
-  emailemitter:
+  seq:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ACCEPT_EULA=Y
     ports:
-      - "5006:80"
-      - "5007:443"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+      - "5200:80"
+
+
+
+

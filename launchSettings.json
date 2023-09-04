@@ -13,7 +13,8 @@
         "emailsender": "StartDebugging",
         "chat": "StartDebugging",
         "api.aggregator": "StartDebugging",
-        "emailemitter": "StartDebugging"
+        "emailemitter": "StartDebugging",
+        "healthchecks": "StartDebugging"
       }
     }
   }

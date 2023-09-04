@@ -1,14 +1,19 @@
+using HealthChecks.UI.Client;
+using Logging;
 using MessageBus;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Notification;
 using Notification.Application.IntegrationEvents;
 using Notification.Infrastructure.DataAccess;
 using Notification.Middleware;
-
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddWebAPIServices(builder.Configuration);
+
+builder.Host.UseSerilog(SeriLogger.Configure);
 
 var app = builder.Build();
 
@@ -26,6 +31,15 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<ExceptionMiddleware>();
 app.MapControllers();
+app.MapHealthChecks("/hc", new HealthCheckOptions()
+{
+    Predicate = _ => true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+app.MapHealthChecks("/liveness", new HealthCheckOptions
+{
+    Predicate = r => r.Name.Contains("self")
+});
 
 await app.RunAsync();
 

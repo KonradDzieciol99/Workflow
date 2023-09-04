@@ -1,6 +1,6 @@
 using Duende.IdentityServer.Services;
-using IdentityDuende.Entities;
-using IdentityDuende.Events;
+using IdentityDuende.Domain.DomainEvents;
+using IdentityDuende.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

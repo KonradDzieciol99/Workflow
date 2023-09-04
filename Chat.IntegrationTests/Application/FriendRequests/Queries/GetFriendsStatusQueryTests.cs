@@ -1,6 +1,10 @@
-﻿using System;
+﻿using Chat.Application.Common.Models;
+using Chat.Application.FriendRequests.Queries;
+using Chat.Domain.Entity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,5 +25,45 @@ public class GetFriendsStatusQueryTests : IAsyncLifetime
     public Task DisposeAsync()
     {
         return Task.CompletedTask;
+    }
+    public static IEnumerable<object[]> GetAppTasksQueryList => new List<object[]>
+    {
+        new object[]{ new List<string> { "a","ss","dddd"}, FriendStatusType.Stranger },
+        new object[]{ new List<string> { "invitedUserId1", "invitedUserId2", }, FriendStatusType.InvitedByYou },
+        new object[]{ new List<string> { "invitedUserId1", "invitedUserId2", }, FriendStatusType.Friend },
+    };
+
+    [Theory]
+    [MemberData(nameof(GetAppTasksQueryList))]
+    public async Task GetFriendsStatusQuery_ValidData_ReturnsFriendRequestList(List<string> ids, FriendStatusType friendStatusType)
+    {
+
+        //arrange
+        var friendRequests = new List<FriendRequest>()
+        {
+            new FriendRequest("inviterUserId","inviterUserEmail@test.com",null,"invitedUserId1","invitedUserEmail@test.com1",null),
+            new FriendRequest("inviterUserId","inviterUserEmail@test.com",null,"invitedUserId2","invitedUserEmail@test.com2",null),
+        };
+
+        if (friendStatusType == FriendStatusType.Friend)
+        {
+            foreach (var friendRequest in friendRequests)
+            {
+                friendRequest.AcceptRequest(friendRequest.InvitedUserId);
+            }
+        }
+        _base._client.SetHeaders("inviterUserId", "inviterUserEmail@test.com");
+        _base._factory.SeedData<Program, ApplicationDbContext, FriendRequest>(friendRequests);
+
+        //act
+        var response = await _base._client.GetAsync($"api/FriendRequests/GetFriendsStatus?usersIds={string.Join("&usersIds=", ids)}");
+
+        //assert
+        var responseString = await response.Content.ReadAsStringAsync();
+        var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+        var returnedFriendStatuses = JsonSerializer.Deserialize<List<FriendStatusDto>>(responseString, options);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.All(returnedFriendStatuses, item => Assert.Equal(friendStatusType, item.Status));
     }
 }

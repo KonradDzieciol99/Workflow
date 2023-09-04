@@ -1,5 +1,5 @@
-﻿using IdentityDuende.Entities;
-using IdentityDuende.Models;
+﻿using IdentityDuende.Application.Models;
+using IdentityDuende.Domain.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

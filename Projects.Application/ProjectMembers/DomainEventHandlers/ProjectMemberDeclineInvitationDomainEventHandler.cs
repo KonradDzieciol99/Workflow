@@ -18,7 +18,7 @@ internal class ProjectMemberDeclineInvitationDomainEventHandler : INotificationH
         var @event = new ProjectMemberDeclineInvitationEvent(notification.Member.Id, notification.Member.UserId,
                                     notification.Member.UserEmail, notification.Member.PhotoUrl, (int)notification.Member.Type,
                                      notification.Member.ProjectId, (int)notification.Member.InvitationStatus,
-                                     notification.Member.MotherProject.Name, notification.Member.MotherProject.IconUrl
+                                     notification.Project.Name, notification.Project.IconUrl
                                      );
 
         _integrationEventService.AddIntegrationEvent(@event);

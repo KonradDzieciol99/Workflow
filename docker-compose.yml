@@ -9,11 +9,13 @@ services:
     environment:
       ACCEPT_EULA: "Y"
       MSSQL_SA_PASSWORD: "Testpassword1!"
+
   redis:
     image: redis:latest
     container_name: redis_cache
     ports:
       - "6379:6379"
+
   identityduende:
     image: ${DOCKER_REGISTRY-}identityduende
     build:
@@ -21,6 +23,7 @@ services:
       dockerfile: IdentityDuende/Dockerfile
     depends_on:
     - sql_server
+
   projects:
     image: ${DOCKER_REGISTRY-}projects
     build:
@@ -28,6 +31,7 @@ services:
       dockerfile: Projects/Dockerfile
     depends_on:
     - sql_server
+
   chat:
     image: ${DOCKER_REGISTRY-}chat
     build:
@@ -35,11 +39,7 @@ services:
       dockerfile: Chat/Dockerfile
     depends_on:
     - sql_server
-  # emailsender:
-  #   image: ${DOCKER_REGISTRY-}EmailEmitter
-  #   build:
-  #     context: .
-  #     dockerfile: EmailEmitter/Dockerfile
+
   notification:
     image: ${DOCKER_REGISTRY-}notification
     build:
@@ -47,11 +47,13 @@ services:
       dockerfile: Notification/Dockerfile
     depends_on:
     - sql_server
+
   photos:
     image: ${DOCKER_REGISTRY-}photos
     build:
       context: .
       dockerfile: Photos/Dockerfile
+
   signalr:
     image: ${DOCKER_REGISTRY-}signalr
     build:
@@ -59,6 +61,7 @@ services:
       dockerfile: SignalR/Dockerfile
     depends_on:
     - redis
+
   tasks:
     image: ${DOCKER_REGISTRY-}tasks
     build:
@@ -66,16 +69,27 @@ services:
       dockerfile: Tasks/Dockerfile
     depends_on:
     - sql_server
+
   api.aggregator:
     image: ${DOCKER_REGISTRY-}apiaggregator
     build:
       context: .
       dockerfile: API.Aggregator/Dockerfile
+
   envoy:
     image: envoyproxy/envoy:v1.27-latest
+
   emailemitter:
     image: ${DOCKER_REGISTRY-}emailemitter
     build:
       context: .
       dockerfile: EmailEmitter/Dockerfile
 
+  healthchecks:
+    image: ${DOCKER_REGISTRY-}healthchecks
+    build:
+      context: .
+      dockerfile: HealthChecks/Dockerfile
+
+  seq:
+    image: datalust/seq:latest

@@ -1,5 +1,5 @@
 ﻿using MessageBus;
-using SignalR.Models;
+using SignalR.Commons.Models;
 
 namespace SignalR.IntegrationEvents;
 

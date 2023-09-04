@@ -1,4 +1,8 @@
+using HealthChecks.UI.Client;
+using Logging;
 using MessageBus;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Serilog;
 using SignalR;
 using SignalR.Hubs;
 using SignalR.IntegrationEvents;
@@ -6,6 +10,8 @@ using SignalR.IntegrationEvents;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddWebAPIServices(builder.Configuration);
+
+builder.Host.UseSerilog(SeriLogger.Configure);
 
 var app = builder.Build();
 
@@ -19,8 +25,17 @@ app.UseAuthorization();
 app.MapHub<ChatHub>("/hub/Chat");
 app.MapHub<PresenceHub>("/hub/Presence");
 app.MapHub<MessagesHub>("/hub/Messages");
-app.Run();
+app.MapHealthChecks("/hc", new HealthCheckOptions()
+{
+    Predicate = _ => true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+app.MapHealthChecks("/liveness", new HealthCheckOptions
+{
+    Predicate = r => r.Name.Contains("self")
+});
 
+app.Run();
 
 async Task AddSubscriptions(WebApplication app)
 {

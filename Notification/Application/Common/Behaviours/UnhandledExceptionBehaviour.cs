@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Notification.Domain.Common.Exceptions;
 
 namespace Notification.Application.Common.Behaviours;
 
@@ -17,11 +18,15 @@ public class UnhandledExceptionBehaviour<TRequest, TResponse> : IPipelineBehavio
         {
             return await next();
         }
+        catch (NotificationDomainException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             var requestName = typeof(TRequest).Name;
 
-            _logger.LogError(ex, "Unhandled Exception for Request {Name} {@Request}", requestName, request);
+            _logger.LogError(ex, "Request: Unhandled Exception for Request {Name} {@Request}", requestName, request);
 
             throw;
         }

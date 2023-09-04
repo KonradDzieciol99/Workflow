@@ -1,4 +1,6 @@
-//using FluentValidation;
+using HealthChecks.UI.Client;
+using Logging;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Projects;
 using Projects.Application;
@@ -6,6 +8,7 @@ using Projects.Infrastructure;
 using Projects.Infrastructure.DataAccess;
 using Projects.Middleware;
 using Serilog;
+using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,8 +16,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddWebAPIServices();
-builder.Host.UseSerilog((context, services, loggerConfiguration) => loggerConfiguration
-    .WriteTo.Console(theme: AnsiConsoleTheme.Code).WriteTo.Debug());
+
+builder.Host.UseSerilog(SeriLogger.Configure);
 
 var app = builder.Build();
 
@@ -29,7 +32,17 @@ app.UseCors("allowAny");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<ExceptionMiddleware>();
+app.UseSerilogRequestLogging();
 app.MapControllers();
+app.MapHealthChecks("/hc", new HealthCheckOptions()
+{
+    Predicate = _ => true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+app.MapHealthChecks("/liveness", new HealthCheckOptions
+{
+    Predicate = r => r.Name.Contains("self")
+});
 app.Run();
 
 async Task ApplyMigration()
@@ -48,3 +61,5 @@ async Task ApplyMigration()
     }
     return;
 }
+
+public partial class Program { }
