@@ -1,9 +1,10 @@
 ﻿using MessageBus.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
 using System.Reflection;
-
+using SignalR.Commons.Behaviours;
 namespace SignalR;
 public static class ConfigureServices
 {
@@ -26,9 +27,10 @@ public static class ConfigureServices
 
         services.AddAzureServiceBusSender(configuration.GetSection("AzureServiceBusSender"));
 
-        services.AddMediatR(opt =>
+        services.AddMediatR(cfg =>
         {
-            opt.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            cfg.AddBehavior(typeof(MediatR.IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
         });
 
 
@@ -101,7 +103,26 @@ public static class ConfigureServices
                 policy.RequireClaim("scope", "signalR");
             });
         });
-
+        services.AddHealthChecks()
+                .AddCheck("self",
+                () => HealthCheckResult.Healthy(),
+                tags: new string[] { "api" }
+            )
+            .AddAzureServiceBusTopic(
+                configuration["AzureServiceBusSubscriberOptions:ServiceBusConnectionString"],
+                configuration["AzureServiceBusSubscriberOptions:TopicName"],
+                name: "signalr-azure-service-bus-check",
+                tags: new string[] { "azureServiceBus" }
+            )
+            .AddRedis(
+                configuration["ConnectionStrings:Redis"],
+                name: "signalr-redis-check",
+                tags: new string[] { "redis" })
+            .AddIdentityServer(
+                new Uri(configuration.GetValue<string>("urls:internal:IdentityHttp")),
+                name: "signalr-identity-check",
+                tags: new string[] { "identity" }
+            );
 
         return services;
     }

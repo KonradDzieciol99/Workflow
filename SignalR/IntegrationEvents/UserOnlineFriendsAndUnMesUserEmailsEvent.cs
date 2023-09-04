@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using MessageBus;
 using Microsoft.AspNetCore.SignalR;
+using SignalR.Commons.Models;
 using SignalR.Hubs;
-using SignalR.Models;
 using StackExchange.Redis;
 
 namespace SignalR.IntegrationEvents;

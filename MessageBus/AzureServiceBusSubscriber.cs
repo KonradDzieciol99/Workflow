@@ -55,7 +55,7 @@ public class AzureServiceBusSubscriber : BackgroundService
         var ex = args.Exception;
         var context = args.ErrorSource;
 
-        _logger.LogError(ex, "ERROR handling message: {ExceptionMessage} - Context: {@ExceptionContext}", ex.Message, context);
+        _logger.LogError(ex, "ERROR handling integation event: {ExceptionMessage} - Context: {@ExceptionContext}", ex.Message, context);
 
         return Task.CompletedTask;
     }

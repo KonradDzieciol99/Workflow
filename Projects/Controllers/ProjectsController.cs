@@ -25,14 +25,12 @@ public class ProjectsController : ControllerBase
     [HttpDelete("{projectId}/DeclineInvitation")]
     public async Task<IActionResult> DeclineProjectInvitation([FromRoute] string projectId)
     {
-
         await mediator.Send(new DeclineProjectInvitationCommand(projectId));
 
         return NoContent();
     }
 
     [Route("{projectId}/AcceptInvitation")]
-    [HttpPost]
     [HttpPut]
     public async Task<IActionResult> AcceptProjectInvitation([FromRoute] string projectId)
     {

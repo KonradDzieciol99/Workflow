@@ -1,9 +1,15 @@
+using HealthChecks.UI.Client;
 using IdentityDuende;
 using IdentityDuende.Infrastructure.DataAccess;
+using Logging;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddWebAPIServices(builder.Configuration);
+
+builder.Host.UseSerilog(SeriLogger.Configure);
 
 var app = builder.Build();
 
@@ -22,6 +28,15 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorPages().RequireAuthorization();
 app.MapControllers();
+app.MapHealthChecks("/hc", new HealthCheckOptions()
+{
+    Predicate = _ => true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+app.MapHealthChecks("/liveness", new HealthCheckOptions
+{
+    Predicate = r => r.Name.Contains("self")
+});
 app.Run();
 
 async Task ApplyMigration()

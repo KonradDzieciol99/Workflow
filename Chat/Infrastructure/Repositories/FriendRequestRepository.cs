@@ -43,21 +43,25 @@ public class FriendRequestRepository : IFriendRequestRepository
     //                                          .ToListAsync();
     //}
 
-    public async Task<List<FriendRequest>> GetReceivedFriendRequestsAsync(string userId)
+    public async Task<List<FriendRequest>> GetReceivedFriendRequestsAsync(string userId, GetReceivedFriendRequestsQuery @params)
     {
-        //return await _dbContext.FriendRequests.Where(x =>(x.InviterUserId == userId || x.InvitedUserId == userId) && x.Confirmed == false)
-        //                                      .ToListAsync();
-        return await _dbContext.FriendRequests.Where(x => x.InvitedUserId == userId && x.Confirmed == false)
-                                              .ToListAsync();
-    }
-    public async Task<List<FriendRequest>> GetConfirmedAsync(string UserId, GetConfirmedFriendRequestsQuery @params)
-    {
-
-
-        var query = _dbContext.FriendRequests.Where(x => (x.InviterUserId == UserId || x.InvitedUserId == UserId) && x.Confirmed == true);
+        var query = _dbContext.FriendRequests.Where(x => x.InvitedUserId == userId && x.Confirmed == false);
 
         if (!string.IsNullOrWhiteSpace(@params.Search))
-            query = query.Where(x => x.InviterUserId != UserId ? x.InviterUserEmail.StartsWith(@params.Search) : x.InvitedUserEmail.StartsWith(@params.Search));
+            query = query.Where(x => x.InviterUserEmail.StartsWith(@params.Search));
+
+        return await query.Skip(@params.Skip)
+                          .Take(@params.Take)
+                          .ToListAsync();
+    }
+    public async Task<List<FriendRequest>> GetConfirmedAsync(string userId, GetConfirmedFriendRequestsQuery @params)
+    {
+
+
+        var query = _dbContext.FriendRequests.Where(x => (x.InviterUserId == userId || x.InvitedUserId == userId) && x.Confirmed == true);
+
+        if (!string.IsNullOrWhiteSpace(@params.Search))
+            query = query.Where(x => x.InviterUserId != userId ? x.InviterUserEmail.StartsWith(@params.Search) : x.InvitedUserEmail.StartsWith(@params.Search));
 
         return await query.Skip(@params.Skip)
                           .Take(@params.Take)
@@ -104,10 +108,10 @@ public class FriendRequestRepository : IFriendRequestRepository
 
 
 
-    //public async Task<List<UserDto>> GetConfirmedUsersAsync(string UserId)
+    //public async Task<List<UserDto>> GetConfirmedUsersAsync(string userId)
     //{
     //    return await _dbContext.FriendRequests
-    //                        .Where(x => (x.InviterUserId == UserId || x.InvitedUserId == UserId) && x.Confirmed == true)
+    //                        .Where(x => (x.InviterUserId == userId || x.InvitedUserId == userId) && x.Confirmed == true)
     //                        .ToListAsync();
     //}
 }

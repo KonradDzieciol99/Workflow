@@ -25,7 +25,7 @@ public class FriendRequestsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<FriendRequestDto>> Post([FromBody] CreateFriendRequestCommand command)
     {
-        return await _mediator.Send(command);
+        return Created("",await _mediator.Send(command));
     }
 
     [HttpGet("GetConfirmedFriendRequests")]
@@ -35,15 +35,16 @@ public class FriendRequestsController : ControllerBase
     }
 
     [HttpGet("GetReceivedFriendRequests")]
-    public async Task<ActionResult<List<FriendRequestDto>>> GetReceivedFriendRequests()
+    public async Task<ActionResult<List<FriendRequestDto>>> GetReceivedFriendRequests([FromQuery] GetReceivedFriendRequestsQuery query)
     {
-        return await _mediator.Send(new GetReceivedFriendRequestsQuery());
+        return await _mediator.Send(query);
     }
 
     [HttpGet("GetFriendsStatus")]
     public async Task<ActionResult<List<FriendStatusDto>>> GetFriendsStatus([FromQuery] List<string> usersIds)
     {
-        return await _mediator.Send(new GetFriendsStatusQuery(usersIds));
+        var test = await _mediator.Send(new GetFriendsStatusQuery(usersIds));
+        return test;
     }
 
     [HttpDelete("{TargetUserId}")]

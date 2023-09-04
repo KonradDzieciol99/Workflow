@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using Projects.Application.Common.Interfaces;
 using Projects.Infrastructure.DataAccess;
@@ -98,6 +99,26 @@ public static class ConfigureServices
         //        new ProjectAuthorRequirement()
         //        ));
         //});
+        services.AddHealthChecks()
+            .AddCheck("self",
+            () => HealthCheckResult.Healthy(),
+            tags: new string[] { "api" }
+        )
+        .AddAzureServiceBusTopic(
+            configuration["AzureServiceBusSubscriberOptions:ServiceBusConnectionString"],
+            configuration["AzureServiceBusSubscriberOptions:TopicName"],
+            name: "projects-azure-service-bus-check",
+            tags: new string[] { "azureServiceBus" }
+        )
+        .AddSqlServer(
+            configuration["ConnectionStrings:DbContextConnString"],
+            name: "projects-sql-db-check",
+            tags: new string[] { "sql" })
+        .AddIdentityServer(
+            new Uri(configuration.GetValue<string>("urls:internal:IdentityHttp")),
+            name: "tasks-identity-check",
+            tags: new string[] { "identity" }
+        );
 
         return services;
     }

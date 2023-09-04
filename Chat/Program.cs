@@ -2,12 +2,18 @@ using Chat;
 using Chat.Application.IntegrationEvents;
 using Chat.Infrastructure.DataAccess;
 using Chat.Middleware;
+using HealthChecks.UI.Client;
+using Logging;
 using MessageBus;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddWebAPIServices(builder.Configuration);
+
+builder.Host.UseSerilog(SeriLogger.Configure);
 
 var app = builder.Build();
 
@@ -25,6 +31,15 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<ExceptionMiddleware>();
 app.MapControllers();
+app.MapHealthChecks("/hc", new HealthCheckOptions()
+{
+    Predicate = _ => true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+app.MapHealthChecks("/liveness", new HealthCheckOptions
+{
+    Predicate = r => r.Name.Contains("self")
+});
 app.Run();
 
 async Task ApplyMigration()

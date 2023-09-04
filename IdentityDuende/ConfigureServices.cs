@@ -1,8 +1,8 @@
 ﻿using Duende.IdentityServer;
 using Duende.IdentityServer.Services;
 using IdentityDuende.Configuration;
-using IdentityDuende.Entities;
-using IdentityDuende.Events;
+using IdentityDuende.Domain.DomainEvents;
+using IdentityDuende.Domain.Entities;
 using IdentityDuende.Infrastructure.DataAccess;
 using IdentityDuende.Infrastructure.Repositories;
 using IdentityDuende.Services;
@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
@@ -149,6 +150,31 @@ public static class ConfigureServices
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddTransient<IProfileService, ProfileService>();
+
+        services.AddHealthChecks()
+                    .AddCheck("self",
+                    () => HealthCheckResult.Healthy(),
+                    tags: new string[] { "api" }
+                    )
+                    .AddAzureServiceBusTopic(
+                        configuration["AzureServiceBusSender:ServiceBusConnectionString"],
+                        configuration["AzureServiceBusSender:TopicName"],
+                        name: "projects-azure-service-bus-check",
+                        tags: new string[] { "azureServiceBus" }
+                    )
+                    .AddSqlServer(
+                        configuration["ConnectionStrings:DbContextConnString"],
+                        name: "projects-sql-db-check",
+                        tags: new string[] { "sql" })
+                    .AddIdentityServer(
+                        new Uri("https://accounts.google.com/"),
+                        name: "identity-google-auth-check",
+                        tags: new string[] { "identity" })
+                    .AddIdentityServer(
+                        new Uri("https://login.microsoftonline.com/common/v2.0/"),
+                        name: "identity-microsoft-auth-check",
+                        tags: new string[] { "identity" });
+
 
         return services;
     }

@@ -1,6 +1,6 @@
 ﻿using MessageBus;
+using SignalR.Commons.Models;
 
-using SignalR.Models;
 namespace SignalR.IntegrationEvents;
 
 public class UserConnectedToChatEvent : IntegrationEvent

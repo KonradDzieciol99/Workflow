@@ -1,8 +1,11 @@
 ﻿using Azure.Storage.Blobs;
 using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
+using Photos.Application.Common.Behaviours;
 
 namespace Photos;
 
@@ -14,6 +17,8 @@ public static class ConfigureServices
         services.AddAuthorization();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
+
+        services.AddControllers();
 
         services.AddScoped(opt =>
         {
@@ -61,6 +66,14 @@ public static class ConfigureServices
             };
         });
 
+        services.AddMediatR(opt =>
+        {
+            opt.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            opt.AddBehavior(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
+            opt.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+            opt.AddBehavior(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehaviour<,>));
+        });
+
         services.AddAuthorization(options =>
         {
             options.AddPolicy("ApiScope", policy =>
@@ -69,6 +82,20 @@ public static class ConfigureServices
                 policy.RequireClaim("scope", "photos");
             });
         });
+
+        services.AddHealthChecks()
+            .AddCheck("self", () => HealthCheckResult.Healthy(),
+            tags: new string[] { "api" }
+            )
+            .AddAzureBlobStorage(configuration.GetConnectionString("AzureStorage"),
+                name: "photos-azure-blob-storage-check",
+                tags: new string[] { "azureServiceBus" })
+            .AddIdentityServer(
+                new Uri(configuration.GetValue<string>("urls:internal:IdentityHttp")),
+                name: "photos-identity-check",
+                tags: new string[] { "identity" }
+            );
+
 
         return services;
     }

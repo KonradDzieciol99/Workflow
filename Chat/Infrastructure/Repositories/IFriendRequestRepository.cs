@@ -8,7 +8,7 @@ public interface IFriendRequestRepository
 {
     void Add(FriendRequest entity);
     void AddRange(IEnumerable<FriendRequest> entities);
-    Task<List<FriendRequest>> GetReceivedFriendRequestsAsync(string userId);
+    Task<List<FriendRequest>> GetReceivedFriendRequestsAsync(string userId, GetReceivedFriendRequestsQuery query);
     Task<FriendRequest?> GetAsync(string sourceUserId, string targetUserId);
     void Remove(FriendRequest entity);
     Task<List<FriendRequest>> GetConfirmedAsync(string UserId, GetConfirmedFriendRequestsQuery @params);

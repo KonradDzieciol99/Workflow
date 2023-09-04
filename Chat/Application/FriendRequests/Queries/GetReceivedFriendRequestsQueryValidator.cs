@@ -6,6 +6,14 @@ public class GetReceivedFriendRequestsQueryValidator : AbstractValidator<GetRece
 {
     public GetReceivedFriendRequestsQueryValidator()
     {
-        
+        RuleFor(x => x.Skip)
+            .NotNull();
+
+        RuleFor(x => x.Take)
+            .NotNull()
+            .GreaterThan(0)
+            .LessThanOrEqualTo(50);
+
+        RuleFor(x => x.Search).MaximumLength(50);
     }
 }

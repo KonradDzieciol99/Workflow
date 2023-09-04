@@ -5,6 +5,7 @@ using MessageBus.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using Tasks.Application.Common.Authorization.Handlers;
@@ -100,6 +101,26 @@ public static class ConfigureServices
         services.AddHttpContextAccessor();
 
         services.AddTransient<IAppTaskService, AppTaskService>();
+
+        services.AddHealthChecks()
+                    .AddCheck("self",() => HealthCheckResult.Healthy(),
+                        tags: new string[] { "api" }
+                    )
+                    .AddAzureServiceBusTopic(
+                        configuration["AzureServiceBusSubscriberOptions:ServiceBusConnectionString"],
+                        configuration["AzureServiceBusSubscriberOptions:TopicName"],
+                        name: "tasks-azure-service-bus-check",
+                        tags: new string[] { "azureServiceBus" }
+                    )
+                    .AddSqlServer(
+                        configuration["ConnectionStrings:DbContextConnString"],
+                        name: "tasks-sql-db-check",
+                        tags: new string[] { "sql" })
+                    .AddIdentityServer(
+                        new Uri(configuration.GetValue<string>("urls:internal:IdentityHttp")),
+                        name: "tasks-identity-check",
+                        tags: new string[] { "identity" }
+                    );
 
         return services;
     }

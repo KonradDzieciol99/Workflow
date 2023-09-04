@@ -7,9 +7,10 @@ public class GetConfirmedFriendRequestsQueryValidator: AbstractValidator<GetConf
     public GetConfirmedFriendRequestsQueryValidator()
     {
         RuleFor(x => x.Skip)
-            .GreaterThanOrEqualTo(0);
+            .NotNull();
 
         RuleFor(x => x.Take)
+            .NotNull()
             .GreaterThan(0)
             .LessThanOrEqualTo(50);
 

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Chat.Application.FriendRequests.Queries;
 
-public record GetReceivedFriendRequestsQuery() : IAuthorizationRequest<List<FriendRequestDto>>
+public record GetReceivedFriendRequestsQuery(int Skip, int Take, string? Search) : IAuthorizationRequest<List<FriendRequestDto>>
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new();
 
@@ -27,7 +27,7 @@ public class GetFriendRequestsHandler : IRequestHandler<GetReceivedFriendRequest
     }
     public async Task<List<FriendRequestDto>> Handle(GetReceivedFriendRequestsQuery request, CancellationToken cancellationToken)
     {
-        var friendRequests = await _unitOfWork.FriendRequestRepository.GetReceivedFriendRequestsAsync(_currentUserService.GetUserId());
+        var friendRequests = await _unitOfWork.FriendRequestRepository.GetReceivedFriendRequestsAsync(_currentUserService.GetUserId(), request);
 
         return _mapper.Map<List<FriendRequestDto>>(friendRequests);
 

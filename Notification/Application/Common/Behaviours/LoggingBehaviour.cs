@@ -17,11 +17,11 @@ public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest> where T
 
     public async Task Process(TRequest request, CancellationToken cancellationToken)
     {
+
         var requestName = typeof(TRequest).Name;
         var userId = _currentUserService.GetUserId();
         var userEmail = _currentUserService.GetUserEmail();
 
-        _logger.LogInformation("CleanArchitecture Request: {Name} {@UserId} {@userEmail} {@Request}",
-            requestName, userId, userEmail, request);
+        _logger.LogInformation($"Request: {requestName} {userId} {userEmail} {request}");
     }
 }

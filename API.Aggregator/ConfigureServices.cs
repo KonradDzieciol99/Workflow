@@ -1,5 +1,6 @@
 ﻿using API.Aggregator.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 
 namespace API.Aggregator;
@@ -64,6 +65,14 @@ public static class ConfigureServices
                             .AllowCredentials();
                       });
         });
+
+        services.AddHealthChecks()
+            .AddCheck("self", () => HealthCheckResult.Healthy(), tags: new string[] { "api" })
+            .AddUrlGroup(new Uri($"{configuration["urls:internal:chat"]}/hc"), name: "chat-check", tags: new string[] { "chat" })
+            .AddUrlGroup(new Uri($"{configuration["urls:internal:IdentityHttp"]}/hc"), name: "identity-check", tags: new string[] { "identity" })
+            .AddUrlGroup(new Uri($"{configuration["urls:internal:notificationHttp"]}/hc"), name: "notification-check", tags: new string[] { "notification" })
+            .AddUrlGroup(new Uri($"{configuration["urls:internal:projectsHttp"]}/hc"), name: "projects-check", tags: new string[] { "projects" })
+            .AddUrlGroup(new Uri($"{configuration["urls:internal:tasksHttp"]}/hc"), name: "task-check", tags: new string[] { "task" });
 
         return services;
     }

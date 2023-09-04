@@ -1,12 +1,16 @@
-﻿using Chat.Application.FriendRequests.Commands;
+﻿using Azure;
+using Chat.Application.Common.Models;
+using Chat.Application.FriendRequests.Commands;
 using Chat.Domain.Entity;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
-
+using TestsHelpers;
 namespace Chat.IntegrationTests.Application.FriendRequests.Commands;
 [Collection("Base")]
 public class CreateFriendRequestCommandTests : IAsyncLifetime
@@ -26,28 +30,22 @@ public class CreateFriendRequestCommandTests : IAsyncLifetime
         await _base._checkpoint.ResetAsync(_base._msSqlContainer.GetConnectionString());
     }
     [Fact]
-    public async Task AcceptFriendRequestCommand_ValidData_ReturnsNoContent()
+    public async Task CreateFriendRequestCommand_ValidData_ReturnsCreated()
     {
         //arrange
-        var FriendRequests = new List<FriendRequest>()
-        {
-            new("inviterUserId","inviterUserEmail",null,"invitedUserId","invitedUserEmail",null),
-        };
-
-        _base._factory.SeedData<Program, ApplicationDbContext, FriendRequest>(FriendRequests);
-
-        _base._client.SetHeaders(FriendRequests[0].InvitedUserId, FriendRequests[0].InvitedUserEmail);
-
-        var command = new AcceptFriendRequestCommand(FriendRequests[0].InviterUserId);
+        _base._client.SetHeaders("testId", "testEmail@test.com");
+        CreateFriendRequestCommand command = new ("testTargetUserId", "testTargetUserEmail@test.com", null);
 
         //act
-        var response = await _base._client.PutAsync($"api/FriendRequests/{command.TargetUserId}", null);
-
+        var response = await _base._client.PostAsync($"api/FriendRequests", command.ToStringContent());
+        
         //assert
-        var friendReques = await _base._factory.FindAsync<Program, ApplicationDbContext, FriendRequest>(FriendRequests[0].InviterUserId, FriendRequests[0].InvitedUserId);
+        var responseString = await response.Content.ReadAsStringAsync();
+        var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+        var returnedAppTasks = JsonSerializer.Deserialize<FriendRequestDto>(responseString, options);
 
-        Assert.NotNull(friendReques);
-        Assert.Equal(true, friendReques.Confirmed);
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        Assert.NotNull(returnedAppTasks);
+        Assert.Equal(false,returnedAppTasks.Confirmed);
     }
 }

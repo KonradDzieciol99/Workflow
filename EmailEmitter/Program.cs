@@ -1,5 +1,7 @@
 using EmailEmitter.IntegrationEvents;
+using HealthChecks.UI.Client;
 using MessageBus;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 namespace EmailEmitter;
 public class Program
@@ -13,6 +15,16 @@ public class Program
         var app = builder.Build();
 
         await AddSubscriptions(app);
+
+        app.MapHealthChecks("/hc", new HealthCheckOptions()
+        {
+            Predicate = _ => true,
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
+        app.MapHealthChecks("/liveness", new HealthCheckOptions
+        {
+            Predicate = r => r.Name.Contains("self")
+        });
 
         if (app.Environment.IsDevelopment()) { }
 
