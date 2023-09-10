@@ -21,6 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
+		notes.txt = notes.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notification", "Notification", "{0C1BD562-84F3-4F5D-88FD-AC5E37F269DB}"
@@ -88,7 +89,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logging", "Logging\Logging.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B7602ED7-8725-4149-9B08-EC26CDB54327}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Projects.IntegrationTests", "Projects.IntegrationTests\Projects.IntegrationTests.csproj", "{67814893-5020-4FA4-82C0-7871E80D9907}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Projects.IntegrationTests", "Projects.IntegrationTests\Projects.IntegrationTests.csproj", "{67814893-5020-4FA4-82C0-7871E80D9907}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

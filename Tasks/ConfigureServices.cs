@@ -7,7 +7,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
+using System.ComponentModel;
 using System.Reflection;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 using Tasks.Application.Common.Authorization.Handlers;
 using Tasks.Application.Common.Behaviours;
 using Tasks.Common;
@@ -22,7 +25,12 @@ public static class ConfigureServices
 {
     public static IServiceCollection AddWebAPIServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddControllers();
+        services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new DateTimeConverter());
+                });
+
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
 
@@ -122,6 +130,20 @@ public static class ConfigureServices
                         tags: new string[] { "identity" }
                     );
 
+        services.AddScoped<SeedData>();
+
         return services;
+    }
+}
+public class DateTimeConverter : JsonConverter<DateTime>
+{
+    public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        return DateTime.Parse(reader.GetString());
+    }
+
+    public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
+    {
+        writer.WriteStringValue(value.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ssZ"));
     }
 }

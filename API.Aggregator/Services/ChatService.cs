@@ -15,7 +15,7 @@ public class ChatService : BaseHttpService, IChatService
     public async Task<List<FriendStatusDto>> GetFriendsStatus(List<string> Ids, string token)
     {
         var sb = new StringBuilder(_chatServiceUrl);
-        sb.Append($"/api/FriendRequests/GetFriendsStatus?usersIds={string.Join(",", Ids)}");
+        sb.Append($"/api/FriendRequests/GetFriendsStatus?usersIds={string.Join("&usersIds=", Ids)}");
 
         return await this.SendAsync<List<FriendStatusDto>>(new ApiRequest(HttpMethod.Get, sb.ToString(), null, token));
     }

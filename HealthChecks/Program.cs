@@ -1,4 +1,3 @@
-using Chat;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 namespace HealthChecks;

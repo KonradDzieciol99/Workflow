@@ -21,18 +21,21 @@ public class IdentityUserController : ControllerBase
         this._userManager = userManager;
     }
     [HttpGet("search/{email}")]
-    public async Task<ActionResult<List<UserDto>>> Search([FromRoute] string email)
+    public async Task<ActionResult<List<UserDto>>> Search([FromRoute] string email,[FromQuery] int take, [FromQuery]int skip)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var userEmail = User.FindFirstValue(ClaimTypes.Email);
 
         if (userEmail is null || userId is null)
-        { return BadRequest("User cannot be identified"); }
+         return BadRequest("User cannot be identified"); 
 
         var users = await _userManager.Users
                     .Where(user => user.Email.StartsWith(email) && user.Email != userEmail)
+                    .Skip(skip)
+                    .Take(take)
                     .Select(x => new UserDto(x.Id, x.Email, x.PictureUrl))
                     .ToListAsync();
+
         return Ok(users);
     }
 

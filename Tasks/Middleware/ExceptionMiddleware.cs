@@ -56,9 +56,18 @@ public class ExceptionMiddleware
             }
         }
 
-        var message = "An error occur.Try it again.";
+
+        var message = new ProblemDetails()
+        {
+            Instance = context.Request.Path,
+            Type = "InternalServerError",
+            Title = "Unknown error",
+            Detail = "An error occur.Try it again.",
+            Status = StatusCodes.Status500InternalServerError
+        };
+
         if (_env.IsDevelopment())
-            message = exception.Message;
+            message.Detail = exception.Message;
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
         await context.Response.WriteAsJsonAsync(message);
 

@@ -27,6 +27,7 @@ app.UseIdentityServer();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorPages().RequireAuthorization();
+app.MapDefaultControllerRoute();
 app.MapControllers();
 app.MapHealthChecks("/hc", new HealthCheckOptions()
 {

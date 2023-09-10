@@ -22,15 +22,18 @@ public record UpdateProjectMemberCommand(ProjectMemberType Type, string ProjectI
 public class UpdateProjectMemberCommandHandler : IRequestHandler<UpdateProjectMemberCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
-    public UpdateProjectMemberCommandHandler(IUnitOfWork unitOfWork)
+    private readonly ICurrentUserService _currentUserService;
+
+    public UpdateProjectMemberCommandHandler(IUnitOfWork unitOfWork,ICurrentUserService currentUserService)
     {
         _unitOfWork = unitOfWork;
+        this._currentUserService = currentUserService;
     }
     public async Task Handle(UpdateProjectMemberCommand request, CancellationToken cancellationToken)
     {
         var project = await _unitOfWork.ProjectRepository.GetOneAsync(request.ProjectId);
 
-        project.UpdateProjectMember(request.UserId, request.Type);
+        project.UpdateProjectMember(_currentUserService.GetUserId(), request.UserId, request.Type);
 
         await _unitOfWork.Complete();
     }

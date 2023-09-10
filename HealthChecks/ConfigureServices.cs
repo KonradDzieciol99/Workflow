@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 
-namespace Chat;
+namespace HealthChecks;
 
 public static class ConfigureServices
 {
@@ -17,7 +17,7 @@ public static class ConfigureServices
                     setup.SetEvaluationTimeInSeconds(5);
                 })
                 .AddInMemoryStorage();
-        
+
         return services;
     }
 }

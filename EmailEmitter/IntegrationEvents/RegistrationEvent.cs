@@ -4,21 +4,7 @@ using MessageBus;
 
 namespace EmailEmitter.IntegrationEvents;
 
-public class RegistrationEvent : IntegrationEvent
-{
-    public RegistrationEvent(string email, string token, string userId, string? photoUrl)
-    {
-        Email = email ?? throw new ArgumentNullException(nameof(email));
-        Token = token ?? throw new ArgumentNullException(nameof(token));
-        UserId = userId ?? throw new ArgumentNullException(nameof(userId));
-        PhotoUrl = photoUrl;
-    }
-
-    public string Email { get; set; }
-    public string Token { get; set; }
-    public string UserId { get; set; }
-    public string? PhotoUrl { get; set; }
-}
+public record RegistrationEvent(string Email, string Token, string UserId, string? PhotoUrl) : IntegrationEvent;
 public class RegistrationEventHandler : IRequestHandler<RegistrationEvent>
 {
     private readonly ISenderSource _emailSender;

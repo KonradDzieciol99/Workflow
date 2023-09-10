@@ -22,7 +22,7 @@ public class ProjectsService : BaseHttpService, IProjectsService
     public async Task<List<MemberStatusDto>> GetMembersStatuses(List<string> Ids, string projectId, string token)
     {
         var sb = new StringBuilder(_projectServiceUrl);
-        sb.Append($"/api/projects/{projectId}/GetMembersStatuses?usersIds={string.Join(",", Ids)}");
+        sb.Append($"/api/projects/{projectId}/GetMembersStatuses?usersIds={string.Join("&usersIds=", Ids)}");
 
         return await this.SendAsync<List<MemberStatusDto>>(new ApiRequest(HttpMethod.Get, sb.ToString(), null, token));
     }

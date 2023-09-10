@@ -10,7 +10,7 @@ public class GetAppNotificationsQueryValidator : AbstractValidator<GetAppNotific
             .GreaterThanOrEqualTo(0);
 
         RuleFor(x => x.Take)
-            .GreaterThan(0)
+            .GreaterThanOrEqualTo(5)
             .LessThanOrEqualTo(50);
 
         //RuleFor(x => x.OrderBy);

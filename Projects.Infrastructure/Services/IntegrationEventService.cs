@@ -24,11 +24,6 @@ public class IntegrationEventService : IIntegrationEventService
     {
         _integrationEvents.Remove(integrationEvent);
     }
-
-    //public void ClearIntegrationEvent()
-    //{
-    //    _integrationEvents.Clear();
-    //}
     public async Task PublishEventsThroughEventBusAsync()
     {
         foreach (var IntegrationEvent in _integrationEvents)

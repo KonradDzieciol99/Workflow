@@ -7,11 +7,8 @@ using StackExchange.Redis;
 
 namespace SignalR.IntegrationEvents;
 
-public class NewOnlineMessagesUserWithFriendsEvent : IntegrationEvent
-{
-    public IEnumerable<UserDto> NewOnlineUserChatFriends { get; set; }
-    public UserDto NewOnlineUser { get; set; }
-}
+public record NewOnlineMessagesUserWithFriendsEvent(IEnumerable<UserDto> NewOnlineUserChatFriends, UserDto NewOnlineUser) : IntegrationEvent;
+
 public class NewOnlineMessagesUserWithFriendsEventHandler : IRequestHandler<NewOnlineMessagesUserWithFriendsEvent>
 {
     private readonly IHubContext<MessagesHub> _messagesHubContext;

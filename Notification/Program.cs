@@ -30,6 +30,7 @@ app.UseCors("allowAny");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<ExceptionMiddleware>();
+app.MapDefaultControllerRoute();
 app.MapControllers();
 app.MapHealthChecks("/hc", new HealthCheckOptions()
 {

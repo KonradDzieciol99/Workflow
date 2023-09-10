@@ -46,18 +46,26 @@ public class Project : BaseEntity
     {
         this.AddDomainEvent(new ProjectRemovedDomainEvent(this));
     }
-    public void UpdateProjectMember(string userId, ProjectMemberType newType)
+    public void UpdateProjectMember(string performingActionUserId,string targetUserId, ProjectMemberType targetUserNewType)
     {
-        var member = this.ProjectMembers.FirstOrDefault(m => m.UserId == userId);
-        if (member is null)
+        var targetMember = this.ProjectMembers.FirstOrDefault(m => m.UserId == targetUserId);
+        var performingActionMember = this.ProjectMembers.FirstOrDefault(m => m.UserId == performingActionUserId);
+
+        if (targetMember is null)
             throw new ProjectDomainException("Such a member does not exist");
 
-        if (member.Type == ProjectMemberType.Leader)
+        if (targetMember.Type == ProjectMemberType.Leader)
             throw new ProjectDomainException("you cannot change a member who is a leader");
 
-        member.Type = newType;
+        if (performingActionMember.Type != ProjectMemberType.Leader && targetUserNewType == ProjectMemberType.Leader)
+            throw new ProjectDomainException("Only the project leader can transfer the title of leader.");
 
-        this.AddDomainEvent(new ProjectMemberUpdatedDomainEvent(member));
+        if (targetUserNewType == ProjectMemberType.Leader)   
+            performingActionMember.Type = ProjectMemberType.Admin;
+            
+        targetMember.Type = targetUserNewType;
+
+        this.AddDomainEvent(new ProjectMemberUpdatedDomainEvent(targetMember));
     }
 
     public void Update(string? name, string? iconUrl, string? NewLeaderId)

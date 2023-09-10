@@ -129,7 +129,7 @@ public static class ConfigureServices
             name: "chat-identity-check",
             tags: new string[] { "identity" }
         );
-
+        services.AddScoped<SeedData>();
         return services;
     }
 }
