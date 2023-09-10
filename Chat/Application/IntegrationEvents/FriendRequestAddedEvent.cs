@@ -2,7 +2,7 @@
 
 namespace Chat.Application.IntegrationEvents;
 
-public class FriendRequestAddedEvent : IntegrationEvent
+public record FriendRequestAddedEvent : IntegrationEvent
 {
     public FriendRequestAddedEvent(string invitationSendingUserId, string invitationSendingUserEmail, string? invitationSendingUserPhotoUrl, string invitedUserId, string invitedUserEmail, string? invitedUserPhotoUrl)
     {

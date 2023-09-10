@@ -3,7 +3,7 @@ using System;
 
 namespace MessageBus;
 
-public abstract class IntegrationEvent : IRequest
+public abstract record IntegrationEvent : IRequest
 {
     protected IntegrationEvent()
     {

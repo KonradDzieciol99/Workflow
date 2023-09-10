@@ -120,6 +120,8 @@ public static class ConfigureServices
             tags: new string[] { "identity" }
         );
 
+        services.AddScoped<SeedData>();
+
         return services;
     }
 }

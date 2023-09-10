@@ -29,6 +29,7 @@ app.UseCors("allowAny");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<ExceptionMiddleware>();
+app.MapDefaultControllerRoute();
 app.MapControllers();
 app.MapHealthChecks("/hc", new HealthCheckOptions()
 {
@@ -43,21 +44,10 @@ app.Run();
 
 async Task ApplyMigration()
 {
-    using (var scope = app.Services.CreateScope())
-    {
-        var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        try
-        {
-            if (initialiser.Database.IsSqlServer())
-                await initialiser.Database.MigrateAsync();
-        }
-        catch (Exception ex)
-        {
-            app.Logger.LogError(ex, "An error occurred while initialising the database.");
-            throw;
-        }
-    }
-    await Task.CompletedTask;
+    using var scope = app.Services.CreateScope();
+    var initialiser = scope.ServiceProvider.GetRequiredService<SeedData>();
+    await initialiser.InitialiseAsync();
+    await initialiser.SeedAsync();
     return;
 }
 async Task AddSubscriptions(WebApplication app)

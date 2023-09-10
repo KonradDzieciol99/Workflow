@@ -21,23 +21,24 @@ static_resources:
               domains: ["*"]
               routes:
               - match: { prefix: "/chat/" }
-                route: { prefix_rewrite: "/",cluster: chat }
+                route: { prefix_rewrite: "/",cluster: chat, timeout: 0s }
               - match: { prefix: "/notification/" }
-                route: { prefix_rewrite: "/",cluster: notification }
+                route: { prefix_rewrite: "/",cluster: notification, timeout: 0s }
               - match: { prefix: "/photos/" }
-                route: { prefix_rewrite: "/",cluster: photos }
+                route: { prefix_rewrite: "/",cluster: photos, timeout: 0s }
               - match: { prefix: "/tasks/"}
-                route: { prefix_rewrite: "/", cluster: tasks }
+                route: { prefix_rewrite: "/", cluster: tasks, timeout: 0s }
               - match: { prefix: "/aggregator/" }
-                route: { prefix_rewrite: "/", cluster: api.aggregator }
+                route: { prefix_rewrite: "/", cluster: api.aggregator, timeout: 0s }
               - match: { prefix: "/hub/" }
                 route: 
                     cluster: signalr
+                    timeout: 0s
                     upgrade_configs:
                         upgrade_type: "websocket"
                         enabled: true
               - match: { prefix: "/projects/" }
-                route: { prefix_rewrite: "/",cluster: projects }
+                route: { prefix_rewrite: "/",cluster: projects, timeout: 0s  }
           http_filters:
           - name: envoy.filters.http.router
             typed_config:

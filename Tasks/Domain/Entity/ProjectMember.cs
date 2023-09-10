@@ -27,12 +27,3 @@ public class ProjectMember
     public ICollection<AppTask> ConductedTasks { get; private set; }
     public ICollection<AppTask> AssignedTasks { get; private set; }
 }
-//public ProjectMember(string id, string userId, string userEmail, string? photoUrl, ProjectMemberType type, string projectId)
-//{
-//    Id = id ?? throw new ArgumentNullException(nameof(id));
-//    UserId = userId ?? throw new ArgumentNullException(nameof(userId));
-//    UserEmail = userEmail ?? throw new ArgumentNullException(nameof(userEmail));
-//    PhotoUrl = photoUrl;
-//    Type = type;
-//    ProjectId = projectId ?? throw new ArgumentNullException(nameof(projectId));
-//}

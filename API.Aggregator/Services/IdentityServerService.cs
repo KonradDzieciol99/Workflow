@@ -20,10 +20,10 @@ public class IdentityServerService : BaseHttpService, IIdentityServerService
 
         return await this.SendAsync<UserDto?>(new ApiRequest(HttpMethod.Get, sb.ToString(), null, token));
     }
-    public async Task<List<UserDto>> SearchAsync(string email, string token)
+    public async Task<List<UserDto>> SearchAsync(string email, string token, int take, int skip)
     {
         var sb = new StringBuilder(_identityUrl);
-        sb.Append($"/api/IdentityUser/search/{email}");
+        sb.Append($"/api/IdentityUser/search/{email}?take={take}&skip={skip}");
 
         return await this.SendAsync<List<UserDto>>(new ApiRequest(HttpMethod.Get, sb.ToString(), null, token));
     }

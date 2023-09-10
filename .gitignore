@@ -373,3 +373,4 @@ FodyWeavers.xsd
 /Domain/Domain.csproj
 /Infrastructure/Infrastructure.csproj
 /WebAPI/WebAPI.csproj
+/notes.txt

@@ -20,7 +20,6 @@ public record DeleteAppTaskCommand(string Id, string ProjectId) : IAuthorization
         var listOfRequirements = new List<IAuthorizationRequirement>()
         {
             new ProjectMembershipRequirement(ProjectId),
-            //new ProjectManagmentOrTaskAuthorRequirement(ProjectId,Id)
         };
         return listOfRequirements;
     }

@@ -5,9 +5,7 @@ using Photos.Common.Models;
 
 namespace Photos.Application.Icon.Queries;
 
-public record GetProjectsIconsQuery() : IRequest<List<Domain.Entity.Icon>>
-{
-}
+public record GetProjectsIconsQuery() : IRequest<List<Domain.Entity.Icon>>;
 public class GetProjectsIconsQueryHandler : IRequestHandler<GetProjectsIconsQuery, List<Domain.Entity.Icon>>
 {
     private readonly BlobServiceClient _blobServiceClient;

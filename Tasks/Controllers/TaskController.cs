@@ -25,7 +25,8 @@ public class TaskController : ControllerBase
             return BadRequest();
 
 
-        return await _mediator.Send(query);
+        var result = await _mediator.Send(query);
+        return result;
     }
 
     [HttpGet("{id}")]

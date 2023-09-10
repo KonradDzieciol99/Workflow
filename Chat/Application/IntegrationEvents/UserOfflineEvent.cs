@@ -5,10 +5,8 @@ using MediatR;
 
 namespace Chat.Application.IntegrationEvents;
 
-public class UserOfflineEvent : IntegrationEvent
-{
-    public UserDto User { get; set; }
-}
+public record UserOfflineEvent(UserDto User) : IntegrationEvent;
+
 public class UserOfflineEventHandler : IRequestHandler<UserOfflineEvent>
 {
     private readonly IUnitOfWork _unitOfWork;

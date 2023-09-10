@@ -24,12 +24,14 @@ public class IdentityController : ControllerBase
     }
 
     [HttpGet("search/{email}")]
-    public async Task<List<SearchedUserDto>> GetAsync([FromRoute] string email)
+    public async Task<List<SearchedUserDto>> GetAsync([FromRoute] string email,
+                                                      [FromQuery] int take,
+                                                      [FromQuery] int skip)
     {
 
         var token = await HttpContext.GetTokenAsync("access_token");
 
-        var usersFound = await _identityServerService.SearchAsync(email, token);
+        var usersFound = await _identityServerService.SearchAsync(email,token, take, skip);
 
         if (usersFound is null || usersFound.Count == 0)
             return new List<SearchedUserDto>();
@@ -41,11 +43,15 @@ public class IdentityController : ControllerBase
         return SearchedUsers;
     }
     [HttpGet("searchMember/{email}")]
-    public async Task<List<SearchedMemberDto>> searchMember([FromRoute] string email, [FromQuery] string projectId)
+    public async Task<List<SearchedMemberDto>> searchMember([FromRoute] string email,
+                                                            [FromQuery] string projectId,
+                                                            [FromQuery] int take,
+                                                            [FromQuery] int skip
+                                                            )
     {
         var token = await HttpContext.GetTokenAsync("access_token");
 
-        var usersFound = await _identityServerService.SearchAsync(email, token);
+        var usersFound = await _identityServerService.SearchAsync(email, token,take,skip);
 
         if (usersFound is null || usersFound.Count == 0)
             return new List<SearchedMemberDto>();

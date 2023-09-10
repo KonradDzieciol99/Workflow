@@ -21,6 +21,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("allowAny");
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapDefaultControllerRoute();
 app.MapControllers();
 app.MapHealthChecks("/hc", new HealthCheckOptions()
 {

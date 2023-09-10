@@ -33,8 +33,8 @@ public class Program
         app.UseCors("allowAny");
         app.UseAuthentication();
         app.UseAuthorization();
+        app.MapDefaultControllerRoute();
         app.MapControllers();
-
         app.MapHealthChecks("/hc", new HealthCheckOptions()
         {
             Predicate = _ => true,

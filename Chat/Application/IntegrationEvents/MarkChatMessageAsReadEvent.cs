@@ -4,11 +4,8 @@ using Chat.Infrastructure.Repositories;
 
 namespace Chat.Application.IntegrationEvents;
 
-public class MarkChatMessageAsReadEvent : IntegrationEvent
-{
-    public string ChatMessageId { get; set; }
-    public DateTime ChatMessageDateRead { get; set; }
-}
+public record MarkChatMessageAsReadEvent(string ChatMessageId, DateTime ChatMessageDateRead) : IntegrationEvent;
+
 public class MarkChatMessageAsReadEventHandler : IRequestHandler<MarkChatMessageAsReadEvent>
 {
     private IUnitOfWork _unitOfWork;

@@ -1,23 +1,23 @@
 ﻿using MessageBus;
 
 namespace Chat.Application.IntegrationEvents;
-internal class FriendRequestAcceptedEvent : IntegrationEvent
+public record FriendRequestAcceptedEvent : IntegrationEvent
 {
-
-    public FriendRequestAcceptedEvent(string inviterUserId, string inviterUserEmail, string? inviterPhotoUrl, string invitedUserId, string invitedUserEmail, string? invitedPhotoUrl)
+    public FriendRequestAcceptedEvent(string invitationSendingUserId, string invitationSendingUserEmail, string? invitationSendingUserPhotoUrl, string invitationAcceptingUserId, string invitationAcceptingUserEmail, string? invitationAcceptingUserPhotoUrl)
     {
-        this.inviterUserId = inviterUserId;
-        this.inviterUserEmail = inviterUserEmail;
-        this.inviterPhotoUrl = inviterPhotoUrl;
-        this.invitedUserId = invitedUserId;
-        this.invitedUserEmail = invitedUserEmail;
-        this.invitedPhotoUrl = invitedPhotoUrl;
+        InvitationSendingUserId = invitationSendingUserId ?? throw new ArgumentNullException(nameof(invitationSendingUserId));
+        InvitationSendingUserEmail = invitationSendingUserEmail ?? throw new ArgumentNullException(nameof(invitationSendingUserEmail));
+        InvitationSendingUserPhotoUrl = invitationSendingUserPhotoUrl;
+        InvitationAcceptingUserId = invitationAcceptingUserId ?? throw new ArgumentNullException(nameof(invitationAcceptingUserId));
+        InvitationAcceptingUserEmail = invitationAcceptingUserEmail ?? throw new ArgumentNullException(nameof(invitationAcceptingUserEmail));
+        InvitationAcceptingUserPhotoUrl = invitationAcceptingUserPhotoUrl;
     }
 
-    public string inviterUserId { get; private set; }
-    public string inviterUserEmail { get; private set; }
-    public string? inviterPhotoUrl { get; private set; }
-    public string invitedUserId { get; private set; }
-    public string invitedUserEmail { get; private set; }
-    public string? invitedPhotoUrl { get; private set; }
+    public string InvitationSendingUserId { get; set; }
+    public string InvitationSendingUserEmail { get; set; }
+    public string? InvitationSendingUserPhotoUrl { get; set; }
+
+    public string InvitationAcceptingUserId { get; set; }
+    public string InvitationAcceptingUserEmail { get; set; }
+    public string? InvitationAcceptingUserPhotoUrl { get; set; }
 }
