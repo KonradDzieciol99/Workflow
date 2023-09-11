@@ -1,6 +1,7 @@
 version: '3.4'
 
 services:
+
   sql_server:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: sql_server
@@ -15,36 +16,47 @@ services:
     container_name: redis_cache
     ports:
       - "6379:6379"
+  seq:
+    image: datalust/seq:latest
 
-  identityduende:
-    image: ${DOCKER_REGISTRY-}identityduende
+  envoy:
+    image: envoyproxy/envoy:v1.27-latest
+
+  api.aggregator:
+    image: ${DOCKER_REGISTRY-}apiaggregator
     build:
       context: .
-      dockerfile: IdentityDuende/Dockerfile
+      dockerfile: src/Aggregators/API.Aggregator/Dockerfile
+
+
+  healthchecks:
+    image: ${DOCKER_REGISTRY-}healthchecks
+    build:
+      context: .
+      dockerfile: src/Aggregators/HealthChecks/Dockerfile
+
+
+  tasks:
+    image: ${DOCKER_REGISTRY-}tasks
+    build:
+      context: .
+      dockerfile: src/Services/Tasks/Tasks/Dockerfile
     depends_on:
     - sql_server
+
+  signalr:
+    image: ${DOCKER_REGISTRY-}signalr
+    build:
+      context: .
+      dockerfile: src/Services/SignalR/SignalR/Dockerfile
+    depends_on:
+    - redis
 
   projects:
     image: ${DOCKER_REGISTRY-}projects
     build:
       context: .
-      dockerfile: Projects/Dockerfile
-    depends_on:
-    - sql_server
-
-  chat:
-    image: ${DOCKER_REGISTRY-}chat
-    build:
-      context: .
-      dockerfile: Chat/Dockerfile
-    depends_on:
-    - sql_server
-
-  notification:
-    image: ${DOCKER_REGISTRY-}notification
-    build:
-      context: .
-      dockerfile: Notification/Dockerfile
+      dockerfile: src/Services/Projects/Projects/Dockerfile
     depends_on:
     - sql_server
 
@@ -52,50 +64,43 @@ services:
     image: ${DOCKER_REGISTRY-}photos
     build:
       context: .
-      dockerfile: Photos/Dockerfile
+      dockerfile: src/Services/Photos/Photos/Dockerfile
 
-  signalr:
-    image: ${DOCKER_REGISTRY-}signalr
+
+  notification:
+    image: ${DOCKER_REGISTRY-}notification
     build:
       context: .
-      dockerfile: SignalR/Dockerfile
-    depends_on:
-    - redis
-
-  tasks:
-    image: ${DOCKER_REGISTRY-}tasks
-    build:
-      context: .
-      dockerfile: Tasks/Dockerfile
+      dockerfile: src/Services/Notifications/Notification/Dockerfile
     depends_on:
     - sql_server
 
-  api.aggregator:
-    image: ${DOCKER_REGISTRY-}apiaggregator
+  identityduende:
+    image: ${DOCKER_REGISTRY-}identityduende
     build:
       context: .
-      dockerfile: API.Aggregator/Dockerfile
-
-  envoy:
-    image: envoyproxy/envoy:v1.27-latest
+      dockerfile: src/Services/Identity/IdentityDuende/Dockerfile
+    depends_on:
+    - sql_server
 
   emailemitter:
     image: ${DOCKER_REGISTRY-}emailemitter
     build:
       context: .
-      dockerfile: EmailEmitter/Dockerfile
+      dockerfile: src/Services/Emails/EmailEmitter/Dockerfile
 
-  healthchecks:
-    image: ${DOCKER_REGISTRY-}healthchecks
+
+  chat:
+    image: ${DOCKER_REGISTRY-}chat
     build:
       context: .
-      dockerfile: HealthChecks/Dockerfile
+      dockerfile: src/Services/Chats/Chat/Dockerfile
+    depends_on:
+    - sql_server
 
-  seq:
-    image: datalust/seq:latest
+  # angular:
+  #   image: workflow-ui-image:latest
+  #   build:
+  #     context: C:\Users\konra\source\repos\WorkflowUI
+  #     dockerfile: dockerfile
 
-  angular:
-    image: workflow-ui-image:latest
-    build:
-      context: C:\Users\konra\source\repos\WorkflowUI
-      dockerfile: dockerfile
