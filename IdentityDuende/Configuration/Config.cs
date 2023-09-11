@@ -49,18 +49,15 @@ public static class Config
                 AllowedGrantTypes = GrantTypes.Code,
                 RequireClientSecret = false,
                 RequirePkce= true,
-                RedirectUris = { "https://localhost:4200/home" },
+                RedirectUris = { "https://localhost:4200/home", "http://localhost:4200/home", "http://localhost:1000/home" },
                 FrontChannelLogoutUri = "https://localhost:4200",
-                PostLogoutRedirectUris = { "https://localhost:4200" },
-                AllowedCorsOrigins = { "https://localhost:4200","http://localhost:5080" },
+                PostLogoutRedirectUris = { "https://localhost:4200", "http://localhost:4200", "http://localhost:1000" },
+                AllowedCorsOrigins = { "https://localhost:4200", "http://localhost:4200", "http://localhost:1000" },
                 AllowOfflineAccess = true,
                 UpdateAccessTokenClaimsOnRefresh = true,
                 CoordinateLifetimeWithUserSession = true,
                 RefreshTokenUsage = TokenUsage.OneTimeOnly,
                 AlwaysIncludeUserClaimsInIdToken = true,
-                ////UpdateAccessTokenClaimsOnRefresh = true, TO AAKURAt ciekawe
-                //AlwaysIncludeUserClaimsInIdToken = true, dotyczy Id Tokena
-                //AlwaysSendClientClaims= true, dotyczy Id Tokena
                 AllowedScopes =
                 {
                     IdentityServerConstants.StandardScopes.OpenId,

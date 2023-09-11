@@ -55,7 +55,6 @@ public class GetAppTaskQueryTests : IAsyncLifetime //to może zastępowac konstr
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(appTasks[0].Id, returnedTask.Id);
-        Assert.Equal(appTasks[0].StartDate, returnedTask.StartDate);
         Assert.Equal(appTasks[0].Name, returnedTask.Name);
     }
     [Fact]

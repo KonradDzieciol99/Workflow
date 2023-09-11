@@ -93,3 +93,9 @@ services:
 
   seq:
     image: datalust/seq:latest
+
+  angular:
+    image: workflow-ui-image:latest
+    build:
+      context: C:\Users\konra\source\repos\WorkflowUI
+      dockerfile: dockerfile

@@ -30,8 +30,4 @@
     <ProjectReference Include="..\TestsHelpers\TestsHelpers.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Application\Messages\Queries\" />
-  </ItemGroup>
-
 </Project>

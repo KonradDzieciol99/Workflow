@@ -16,7 +16,9 @@ public static class ConfigureServices
             opt.AddPolicy(name: "allowAny",
                       policy =>
                       {
-                          policy.WithOrigins("https://localhost:4200", "https://127.0.0.1:5500")
+                          policy.WithOrigins("https://localhost:4200",
+                                             "http://localhost:4200",
+                                             "http://localhost:1000")
                             .AllowAnyHeader()
                             .AllowAnyMethod()
                             .AllowCredentials();

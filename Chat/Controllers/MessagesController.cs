@@ -25,9 +25,9 @@ public class MessagesController : ControllerBase
         return Created("",null);
     }
     [HttpGet]
-    public async Task<ActionResult<List<MessageDto>>> Get([FromQuery] string RecipientId, [FromQuery] string RecipientEmail, [FromQuery] int Skip, [FromQuery] int Take)
+    public async Task<ActionResult<List<MessageDto>>> Get([FromQuery] GetMessageThreadQuery query)
     {
-        return await _mediator.Send(new GetMessageThreadQuery(RecipientEmail, RecipientId, Skip, Take));
+        return await _mediator.Send(query);
     }
 
 
