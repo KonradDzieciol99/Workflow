@@ -374,3 +374,4 @@ FodyWeavers.xsd
 /Infrastructure/Infrastructure.csproj
 /WebAPI/WebAPI.csproj
 /notes.txt
+**/appsettings.json
