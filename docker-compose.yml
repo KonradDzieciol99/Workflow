@@ -19,22 +19,17 @@ services:
   seq:
     image: datalust/seq:latest
 
-  envoy:
-    image: envoyproxy/envoy:v1.27-latest
-
   api.aggregator:
     image: ${DOCKER_REGISTRY-}apiaggregator
     build:
       context: .
       dockerfile: src/Aggregators/API.Aggregator/Dockerfile
 
-
   healthchecks:
     image: ${DOCKER_REGISTRY-}healthchecks
     build:
       context: .
       dockerfile: src/Aggregators/HealthChecks/Dockerfile
-
 
   tasks:
     image: ${DOCKER_REGISTRY-}tasks
@@ -113,4 +108,10 @@ services:
   #   build:
   #     context: C:\Users\konra\source\repos\WorkflowUI
   #     dockerfile: dockerfile
+
+  yarpproxy:
+    image: ${DOCKER_REGISTRY-}yarpproxy
+    build:
+      context: .
+      dockerfile: src/Proxy/Yarp/YarpProxy/Dockerfile
 

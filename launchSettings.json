@@ -14,7 +14,8 @@
         "chat": "StartDebugging",
         "api.aggregator": "StartDebugging",
         "emailemitter": "StartDebugging",
-        "healthchecks": "StartDebugging"
+        "healthchecks": "StartDebugging",
+        "yarpproxy": "StartDebugging"
       }
     }
   }
