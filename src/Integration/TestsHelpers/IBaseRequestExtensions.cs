@@ -11,6 +11,6 @@ namespace TestsHelpers;
 public static class IBaseRequestExtensions
 {
     public static StringContent ToStringContent(this IBaseRequest request)
-        => new StringContent(JsonSerializer.Serialize<object>(request), UTF8Encoding.UTF8, "application/json");
+        => new(JsonSerializer.Serialize<object>(request), UTF8Encoding.UTF8, "application/json");
     
 }

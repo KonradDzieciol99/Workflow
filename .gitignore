@@ -375,3 +375,4 @@ FodyWeavers.xsd
 /WebAPI/WebAPI.csproj
 /notes.txt
 **/appsettings.json
+/src/Proxy/Envoy/envoy.yaml

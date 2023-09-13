@@ -21,7 +21,7 @@ public class BaseHttpService : IBaseHttpService
     {
         try
         {
-            HttpRequestMessage message = new HttpRequestMessage();
+            HttpRequestMessage message = new();
             message.Headers.Add("Accept", "application/json");
             message.RequestUri = new Uri(apiRequest.Url);
             message.Method = apiRequest.HttpMethod;
