@@ -9,9 +9,9 @@ public record UserOnlineEvent(UserDto OnlineUser) : IntegrationEvent;
 public class UserOnlineEventHandler : IRequestHandler<UserOnlineEvent>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IAzureServiceBusSender _azureServiceBusSender;
+    private readonly IEventBusSender _azureServiceBusSender;
 
-    public UserOnlineEventHandler(IUnitOfWork unitOfWork, IAzureServiceBusSender _azureServiceBusSender)
+    public UserOnlineEventHandler(IUnitOfWork unitOfWork, IEventBusSender _azureServiceBusSender)
     {
         this._unitOfWork = unitOfWork;
         this._azureServiceBusSender = _azureServiceBusSender;

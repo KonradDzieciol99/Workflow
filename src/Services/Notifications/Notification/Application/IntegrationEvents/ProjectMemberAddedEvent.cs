@@ -11,9 +11,9 @@ public record ProjectMemberAddedEvent(string ProjectMemberId, string UserId, str
 public class ProjectMemberAddedEventHandler : IRequestHandler<ProjectMemberAddedEvent>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IAzureServiceBusSender _azureServiceBusSender;
+    private readonly IEventBusSender _azureServiceBusSender;
 
-    public ProjectMemberAddedEventHandler(IUnitOfWork unitOfWork, IAzureServiceBusSender azureServiceBusSender)
+    public ProjectMemberAddedEventHandler(IUnitOfWork unitOfWork, IEventBusSender azureServiceBusSender)
     {
         this._unitOfWork = unitOfWork;
         this._azureServiceBusSender = azureServiceBusSender;

@@ -12,9 +12,9 @@ public class UserOnlineEventHandler : IRequestHandler<UserOnlineEvent>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUserService;
-    private readonly IAzureServiceBusSender _azureServiceBusSender;
+    private readonly IEventBusSender _azureServiceBusSender;
 
-    public UserOnlineEventHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IAzureServiceBusSender azureServiceBusSender)
+    public UserOnlineEventHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IEventBusSender azureServiceBusSender)
     {
         this._unitOfWork = unitOfWork;
         this._currentUserService = currentUserService;

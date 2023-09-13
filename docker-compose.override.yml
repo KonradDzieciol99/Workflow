@@ -120,6 +120,10 @@ services:
     ports:
       - "5200:80"
  
+  rabbitmq:
+    ports:
+      - "15672:15672"
+      - "5672:5672"
   # angular:
   #   ports:
   #   - "1000:80"

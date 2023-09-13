@@ -40,9 +40,9 @@ public class UpdateAppTaskCommandHandler : IRequestHandler<UpdateAppTaskCommand,
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUserService;
     private readonly IMapper _mapper;
-    private readonly IAzureServiceBusSender _azureServiceBusSender;
+    private readonly IEventBusSender _azureServiceBusSender;
 
-    public UpdateAppTaskCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IMapper mapper, IAzureServiceBusSender messageBus)
+    public UpdateAppTaskCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IMapper mapper, IEventBusSender messageBus)
     {
         this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(_unitOfWork));
         this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(_currentUserService));

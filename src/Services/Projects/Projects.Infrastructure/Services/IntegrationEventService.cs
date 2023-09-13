@@ -5,8 +5,8 @@ namespace Projects.Infrastructure.Services;
 
 public class IntegrationEventService : IIntegrationEventService
 {
-    private readonly IAzureServiceBusSender _azureServiceBusSender;
-    public IntegrationEventService(IAzureServiceBusSender azureServiceBusSender)
+    private readonly IEventBusSender _azureServiceBusSender;
+    public IntegrationEventService(IEventBusSender azureServiceBusSender)
     {
         this._azureServiceBusSender = azureServiceBusSender;
     }

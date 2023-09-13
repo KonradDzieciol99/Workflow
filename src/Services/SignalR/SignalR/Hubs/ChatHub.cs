@@ -12,10 +12,10 @@ namespace SignalR.Hubs;
 public class ChatHub : Hub
 {
     private readonly IConnectionMultiplexer _connectionMultiplexer;
-    private readonly IAzureServiceBusSender _azureServiceBusSender;
+    private readonly IEventBusSender _azureServiceBusSender;
     private readonly IDatabase _redisDb;
 
-    public ChatHub(IConnectionMultiplexer connectionMultiplexer, IAzureServiceBusSender azureServiceBusSender)//, IUnitOfWork unitOfWork, IMapper mapper
+    public ChatHub(IConnectionMultiplexer connectionMultiplexer, IEventBusSender azureServiceBusSender)//, IUnitOfWork unitOfWork, IMapper mapper
     {
         _connectionMultiplexer = connectionMultiplexer;
         this._azureServiceBusSender = azureServiceBusSender;

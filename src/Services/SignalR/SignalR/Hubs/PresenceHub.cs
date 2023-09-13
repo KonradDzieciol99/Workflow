@@ -12,10 +12,10 @@ namespace SignalR.Hubs;
 public class PresenceHub : Hub
 {
     private readonly IConnectionMultiplexer _connectionMultiplexer;
-    private readonly IAzureServiceBusSender _messageBus;
+    private readonly IEventBusSender _messageBus;
 
     private readonly IDatabase _redisDb;
-    public PresenceHub(IConnectionMultiplexer connectionMultiplexer, IAzureServiceBusSender messageBus)
+    public PresenceHub(IConnectionMultiplexer connectionMultiplexer, IEventBusSender messageBus)
     {
         _connectionMultiplexer = connectionMultiplexer;
         _messageBus = messageBus;

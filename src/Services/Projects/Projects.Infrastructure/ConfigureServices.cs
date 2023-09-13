@@ -33,8 +33,8 @@ public static class ConfigureServices
         services.AddScoped<IIntegrationEventService, IntegrationEventService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        services.AddAzureServiceBusSender(configuration.GetSection("AzureServiceBusSender"));
-        services.AddAzureServiceBusSubscriber(configuration.GetSection("AzureServiceBusSubscriberOptions"));
+        services.AddRabbitMQConsumer(configuration.GetSection("RabbitMQConsumerOptions"));
+        services.AddRabbitMQSender(configuration.GetSection("RabbitMQConsumerOptions"));
 
         services.AddCors(opt =>
         {

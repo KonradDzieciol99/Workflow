@@ -24,10 +24,10 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUserService;
-    private readonly IAzureServiceBusSender _azureServiceBusSender;
+    private readonly IEventBusSender _azureServiceBusSender;
     private readonly IMessageService _messageService;
 
-    public SendMessageCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IAzureServiceBusSender azureServiceBusSender, IMessageService messageService)
+    public SendMessageCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IEventBusSender azureServiceBusSender, IMessageService messageService)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));

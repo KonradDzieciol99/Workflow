@@ -23,8 +23,9 @@ public static class ConfigureServices
         });
 
         services.AddScoped<ISenderSource, SenderSource>();
-        services.AddAzureServiceBusSubscriber(configuration.GetSection("AzureServiceBusSubscriberOptions"));
-        services.AddAzureServiceBusSender(configuration.GetSection("AzureServiceBusSender"));
+
+        services.AddRabbitMQConsumer(configuration.GetSection("RabbitMQConsumerOptions"));
+        services.AddRabbitMQSender(configuration.GetSection("RabbitMQConsumerOptions"));
 
         services.AddHealthChecks()
             .AddCheck("self",

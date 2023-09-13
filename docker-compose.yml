@@ -43,6 +43,7 @@ services:
       dockerfile: src/Services/Tasks/Tasks/Dockerfile
     depends_on:
     - sql_server
+    - rabbitmq
 
   signalr:
     image: ${DOCKER_REGISTRY-}signalr
@@ -51,6 +52,7 @@ services:
       dockerfile: src/Services/SignalR/SignalR/Dockerfile
     depends_on:
     - redis
+    - rabbitmq
 
   projects:
     image: ${DOCKER_REGISTRY-}projects
@@ -59,12 +61,15 @@ services:
       dockerfile: src/Services/Projects/Projects/Dockerfile
     depends_on:
     - sql_server
+    - rabbitmq
 
   photos:
     image: ${DOCKER_REGISTRY-}photos
     build:
       context: .
       dockerfile: src/Services/Photos/Photos/Dockerfile
+    depends_on:
+    - rabbitmq
 
   notification:
     image: ${DOCKER_REGISTRY-}notification
@@ -73,6 +78,7 @@ services:
       dockerfile: src/Services/Notifications/Notification/Dockerfile
     depends_on:
     - sql_server
+    - rabbitmq
 
   identityduende:
     image: ${DOCKER_REGISTRY-}identityduende
@@ -81,13 +87,15 @@ services:
       dockerfile: src/Services/Identity/IdentityDuende/Dockerfile
     depends_on:
     - sql_server
+    - rabbitmq
 
   emailemitter:
     image: ${DOCKER_REGISTRY-}emailemitter
     build:
       context: .
       dockerfile: src/Services/Emails/EmailEmitter/Dockerfile
-
+    depends_on:
+     - rabbitmq
 
   chat:
     image: ${DOCKER_REGISTRY-}chat
@@ -96,7 +104,10 @@ services:
       dockerfile: src/Services/Chats/Chat/Dockerfile
     depends_on:
     - sql_server
+    - rabbitmq
 
+  rabbitmq:
+    image: rabbitmq:3-management
   # angular:
   #   image: workflow-ui-image:latest
   #   build:

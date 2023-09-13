@@ -10,11 +10,11 @@ public record UserConnectedToChatEvent(UserDto ConnectedUser, string RecipientEm
 public class UserConnectedToChatEventHandler : IRequestHandler<UserConnectedToChatEvent>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IAzureServiceBusSender _azureServiceBusSender;
+    private readonly IEventBusSender _azureServiceBusSender;
     private readonly IMapper _mapper;
 
     public UserConnectedToChatEventHandler(IUnitOfWork unitOfWork,
-                                           IAzureServiceBusSender azureServiceBusSender,
+                                           IEventBusSender azureServiceBusSender,
                                            IMapper mapper)
     {
         this._unitOfWork = unitOfWork;
