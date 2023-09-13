@@ -38,9 +38,9 @@ public class AddTaskCommandHandler : IRequestHandler<AddTaskCommand, AppTaskDto>
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUserService;
     private readonly IMapper _mapper;
-    private readonly IAzureServiceBusSender _messageBus;
+    private readonly IEventBusSender _messageBus;
 
-    public AddTaskCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IMapper mapper, IAzureServiceBusSender messageBus)
+    public AddTaskCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IMapper mapper, IEventBusSender messageBus)
     {
         this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(_unitOfWork));
         this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(_currentUserService));

@@ -22,9 +22,9 @@ public class DeleteFriendRequestCommandHandler : IRequestHandler<DeleteFriendReq
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUserService;
-    private readonly IAzureServiceBusSender _azureServiceBusSender;
+    private readonly IEventBusSender _azureServiceBusSender;
 
-    public DeleteFriendRequestCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IAzureServiceBusSender azureServiceBusSender)
+    public DeleteFriendRequestCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IEventBusSender azureServiceBusSender)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));

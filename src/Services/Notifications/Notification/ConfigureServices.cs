@@ -69,8 +69,9 @@ public static class ConfigureServices
             opt.AddBehavior(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehaviour<,>));
         });
 
-        services.AddAzureServiceBusSubscriber(configuration.GetSection("AzureServiceBusSubscriberOptions"));
-        services.AddAzureServiceBusSender(configuration.GetSection("AzureServiceBusSender"));
+        services.AddRabbitMQConsumer(configuration.GetSection("RabbitMQConsumerOptions"));
+        services.AddRabbitMQSender(configuration.GetSection("RabbitMQConsumerOptions"));
+
         services.AddDbContext<ApplicationDbContext>(opt =>
         {
             opt.UseSqlServer(configuration.GetConnectionString("DbContextConnString"));

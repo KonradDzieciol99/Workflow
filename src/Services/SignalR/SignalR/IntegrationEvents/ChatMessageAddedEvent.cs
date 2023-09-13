@@ -10,12 +10,12 @@ public record ChatMessageAddedEvent(string Id, string SenderId, string SenderEma
 public class ChatMessageAddedEventHandler : IRequestHandler<ChatMessageAddedEvent>
 {
     private readonly IDatabase _redisDb;
-    private readonly IAzureServiceBusSender _azureServiceBusSender;
+    private readonly IEventBusSender _azureServiceBusSender;
     private readonly IHubContext<ChatHub> _chatHubContext;
     private readonly IHubContext<PresenceHub> _presenceHubContext;
 
     public ChatMessageAddedEventHandler(IConnectionMultiplexer connectionMultiplexer
-        , IAzureServiceBusSender azureServiceBusSender,
+        , IEventBusSender azureServiceBusSender,
         IHubContext<ChatHub> chatHubContext,
         IHubContext<PresenceHub> presenceHubContext,
         IHubContext<MessagesHub> messagesHubContext

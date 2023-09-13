@@ -10,9 +10,9 @@ public record ProjectMemberAcceptInvitationEvent(string ProjectMemberId, string 
 public class ProjectMemberAcceptInvitationEventHandler : IRequestHandler<ProjectMemberAcceptInvitationEvent>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IAzureServiceBusSender _azureServiceBusSender;
+    private readonly IEventBusSender _azureServiceBusSender;
 
-    public ProjectMemberAcceptInvitationEventHandler(IUnitOfWork unitOfWork, IAzureServiceBusSender azureServiceBusSender)
+    public ProjectMemberAcceptInvitationEventHandler(IUnitOfWork unitOfWork, IEventBusSender azureServiceBusSender)
     {
         this._unitOfWork = unitOfWork;
         this._azureServiceBusSender = azureServiceBusSender;

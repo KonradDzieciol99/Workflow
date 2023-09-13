@@ -7,9 +7,9 @@ namespace IdentityDuende.Domain.DomainEvents;
 
 public class IdentityEvents : IEventSink
 {
-    private readonly IAzureServiceBusSender _azureServiceBusSender;
+    private readonly IEventBusSender _azureServiceBusSender;
 
-    public IdentityEvents(IAzureServiceBusSender messageBus)
+    public IdentityEvents(IEventBusSender messageBus)
     {
         _azureServiceBusSender = messageBus;
     }

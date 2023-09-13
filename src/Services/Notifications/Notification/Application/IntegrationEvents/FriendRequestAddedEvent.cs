@@ -15,9 +15,9 @@ public record FriendRequestAddedEvent(string InvitationSendingUserId,
 public class FriendRequestAddedEventHandler : IRequestHandler<FriendRequestAddedEvent>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IAzureServiceBusSender _azureServiceBusSender;
+    private readonly IEventBusSender _azureServiceBusSender;
 
-    public FriendRequestAddedEventHandler(IUnitOfWork unitOfWork, IAzureServiceBusSender azureServiceBusSender)
+    public FriendRequestAddedEventHandler(IUnitOfWork unitOfWork, IEventBusSender azureServiceBusSender)
     {
         this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         this._azureServiceBusSender = azureServiceBusSender ?? throw new ArgumentNullException(nameof(azureServiceBusSender)); ;

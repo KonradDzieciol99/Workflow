@@ -10,9 +10,9 @@ public record UserOfflineEvent(UserDto User) : IntegrationEvent;
 public class UserOfflineEventHandler : IRequestHandler<UserOfflineEvent>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IAzureServiceBusSender _azureServiceBusSender;
+    private readonly IEventBusSender _azureServiceBusSender;
 
-    public UserOfflineEventHandler(IUnitOfWork unitOfWork, IAzureServiceBusSender _azureServiceBusSender)
+    public UserOfflineEventHandler(IUnitOfWork unitOfWork, IEventBusSender _azureServiceBusSender)
     {
         this._unitOfWork = unitOfWork;
         this._azureServiceBusSender = _azureServiceBusSender;

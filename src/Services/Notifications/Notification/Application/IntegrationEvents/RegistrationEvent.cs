@@ -10,9 +10,9 @@ public record RegistrationEvent(string Email, string Token, string UserId, strin
 public class RegistrationEventHandler : IRequestHandler<RegistrationEvent>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IAzureServiceBusSender _azureServiceBusSender;
+    private readonly IEventBusSender _azureServiceBusSender;
 
-    public RegistrationEventHandler(IUnitOfWork unitOfWork, IAzureServiceBusSender azureServiceBusSender)
+    public RegistrationEventHandler(IUnitOfWork unitOfWork, IEventBusSender azureServiceBusSender)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _azureServiceBusSender = azureServiceBusSender ?? throw new ArgumentNullException(nameof(azureServiceBusSender)); ;

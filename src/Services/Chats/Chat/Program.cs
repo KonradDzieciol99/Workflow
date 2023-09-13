@@ -53,7 +53,7 @@ async Task ApplyMigration() {
 
 async Task AddSubscriptions(WebApplication app)
 {
-    var eventBus = app.Services.GetRequiredService<AzureServiceBusSubscriber>();
+    var eventBus = app.Services.GetRequiredService<IEventBusConsumer>();
 
     var subscribeTasks = new List<Task>
     {

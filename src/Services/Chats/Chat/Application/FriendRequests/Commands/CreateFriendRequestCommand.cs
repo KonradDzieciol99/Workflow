@@ -18,9 +18,9 @@ public class CreateFriendRequestCommandHandler : IRequestHandler<CreateFriendReq
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUserService;
-    private readonly IAzureServiceBusSender _azureServiceBusSender;
+    private readonly IEventBusSender _azureServiceBusSender;
 
-    public CreateFriendRequestCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IAzureServiceBusSender azureServiceBusSender)
+    public CreateFriendRequestCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IEventBusSender azureServiceBusSender)
     {
         _unitOfWork = unitOfWork;
         this._currentUserService = currentUserService;

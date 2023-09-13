@@ -93,8 +93,8 @@ public static class ConfigureServices
         });
 
 
-        services.AddAzureServiceBusSender(configuration.GetSection("AzureServiceBusSender"));
-        services.AddAzureServiceBusSubscriber(configuration.GetSection("AzureServiceBusSubscriberOptions"));
+        services.AddRabbitMQConsumer(configuration.GetSection("RabbitMQConsumerOptions"));
+        services.AddRabbitMQSender(configuration.GetSection("RabbitMQConsumerOptions"));
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 

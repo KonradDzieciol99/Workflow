@@ -15,9 +15,9 @@ public record FriendRequestRemovedEvent(string ActionInitiatorUserId,
 public class FriendRequestRemovedEventHandler : IRequestHandler<FriendRequestRemovedEvent>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IAzureServiceBusSender _azureServiceBusSender;
+    private readonly IEventBusSender _azureServiceBusSender;
 
-    public FriendRequestRemovedEventHandler(IUnitOfWork unitOfWork, IAzureServiceBusSender azureServiceBusSender)
+    public FriendRequestRemovedEventHandler(IUnitOfWork unitOfWork, IEventBusSender azureServiceBusSender)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _azureServiceBusSender = azureServiceBusSender ?? throw new ArgumentNullException(nameof(azureServiceBusSender)); ;

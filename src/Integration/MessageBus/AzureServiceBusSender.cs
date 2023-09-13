@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MessageBus;
 
-public class AzureServiceBusSender : IAzureServiceBusSender
+public class AzureServiceBusSender : IEventBusSender
 {
     private readonly AzureServiceBusSenderOptions _options;
     public AzureServiceBusSender(IOptions<AzureServiceBusSenderOptions> options)

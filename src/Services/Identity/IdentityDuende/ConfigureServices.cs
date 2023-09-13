@@ -80,7 +80,7 @@ public static class ConfigureServices
         services.AddScoped<IEventSink, IdentityEvents>();
         services.AddScoped<SeedData>();
 
-        services.AddAzureServiceBusSender(configuration.GetSection("AzureServiceBusSender"));
+        services.AddRabbitMQSender(configuration.GetSection("RabbitMQConsumerOptions"));
 
         services.AddAuthentication()
         .AddOpenIdConnect("AzureOpenId", "Azure Active Directory OpenId", options =>
