@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using Bogus;
+using MessageBus;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using Respawn;
 using Testcontainers.MsSql;
-using TestsHelpers;
 
 namespace Tasks.IntegrationTests;
 
@@ -23,8 +25,8 @@ public class WebApplicationFactoryCollection : ICollectionFixture<Base>
 public class Base : IAsyncLifetime
 {
     public readonly WebApplicationFactory<Program> _factory;
-    public HttpClient _client;
-    public Respawner _checkpoint;
+    public HttpClient? _client;
+    public Respawner? _checkpoint;
     public readonly MsSqlContainer _msSqlContainer;
 
     public Base()
@@ -36,6 +38,15 @@ public class Base : IAsyncLifetime
             {
                 builder.ConfigureServices((context, services) =>
                 {
+                    var mockSender = new Mock<IEventBusSender>();
+                    var mockConsumer = new Mock<IEventBusConsumer>();
+
+                    mockSender.Setup(sender => sender.PublishMessage(It.IsAny<IntegrationEvent>())).Returns(Task.CompletedTask);
+                    mockConsumer.Setup(consumer => consumer.Subscribe<IntegrationEvent>()).Returns(Task.CompletedTask);
+
+                    services.AddSingleton<IEventBusSender>(mockSender.Object);
+                    services.AddSingleton<IEventBusConsumer>(mockConsumer.Object);
+
                     var dbContextOptions = services.SingleOrDefault(service => service.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
                     services.Remove(dbContextOptions);
 

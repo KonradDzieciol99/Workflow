@@ -30,10 +30,7 @@ public class DeleteFriendRequestCommandTests : IAsyncLifetime
     public async Task DeleteFriendRequestCommand_ValidData_ReturnsNoContent()
     {
         //arrange
-        var friendRequests = new List<FriendRequest>()
-        {
-            new FriendRequest("inviterUserId","inviterUserEmail@@test.com",null,"invitedUserId","invitedUserEmail@test.com",null),
-        };
+        var friendRequests = Base.GetFakeFriendRequests();
 
         _base._factory.SeedData<Program, ApplicationDbContext, FriendRequest>(friendRequests);
         _base._client.SetHeaders(friendRequests[0].InviterUserId, friendRequests[0].InviterUserEmail);

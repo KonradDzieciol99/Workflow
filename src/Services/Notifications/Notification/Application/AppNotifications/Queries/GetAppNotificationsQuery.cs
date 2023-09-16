@@ -6,7 +6,7 @@ using Notification.Services;
 
 namespace Notification.Application.AppNotifications.Queries;
 
-public record GetAppNotificationsQuery(int Skip, int Take, string? OrderBy, bool? IsDescending, string? Filter, string? GroupBy, string? Search, string[]? SelectedColumns) : IAuthorizationRequest<List<Domain.Entity.AppNotification>>
+public record GetAppNotificationsQuery(int Skip, int Take, string? OrderBy=null, bool? IsDescending = null, string? Filter = null, string? GroupBy = null, string? Search = null, string[]? SelectedColumns = null) : IAuthorizationRequest<List<Domain.Entity.AppNotification>>
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new();
 }

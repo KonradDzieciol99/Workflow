@@ -1,26 +1,26 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
+﻿using MessageBus;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Moq;
 using Respawn;
 using Testcontainers.MsSql;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Authentication;
-using TestsHelpers;
-using Projects.Infrastructure.DataAccess;
-using MessageBus;
-using Moq;
+using Microsoft.EntityFrameworkCore;
+using Bogus;
+using Notification.Domain.Entity;
+using Notification.Domain.Common.Enums;
+using Bogus.DataSets;
 
-namespace Projects.IntegrationTests;
-
+namespace Notification.IntegrationTests;
 [CollectionDefinition("Base")]
 public class WebApplicationFactoryCollection : ICollectionFixture<Base>
 {
-
 }
 public class Base : IAsyncLifetime
 {
     public readonly WebApplicationFactory<Program> _factory;
-    public HttpClient _client;
-    public Respawner _checkpoint;
+    public HttpClient? _client;
+    public Respawner? _checkpoint;
     public readonly MsSqlContainer _msSqlContainer;
 
     public Base()
@@ -28,11 +28,10 @@ public class Base : IAsyncLifetime
         _msSqlContainer = new MsSqlBuilder().WithImage("mcr.microsoft.com/mssql/server:2022-latest")
                                             .Build();
 
-        _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+        this._factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
         {
             builder.ConfigureServices((context, services) =>
             {
-
                 var mockSender = new Mock<IEventBusSender>();
                 var mockConsumer = new Mock<IEventBusConsumer>();
 
@@ -59,12 +58,14 @@ public class Base : IAsyncLifetime
                 {
                     options.AddPolicy("ApiScope", policy =>
                     {
-                        policy.RequireAssertion(context => true); // zawsze zwraca true
+                        policy.RequireAssertion(context => true); 
                     });
                 });
             });
         });
+
     }
+
 
     public async Task InitializeAsync()
     {
@@ -81,5 +82,29 @@ public class Base : IAsyncLifetime
     public async Task DisposeAsync()
     {
         await _msSqlContainer.DisposeAsync().AsTask();
+    }
+    public static List<AppNotification> GetFakeAppNotification(string userId,bool display = false, int amount = 1)
+    {
+
+        var now = DateTime.UtcNow;
+        var weekFromNow = now.AddDays(7);
+
+        return new Faker<AppNotification>()
+                             .StrictMode(false)
+                             .CustomInstantiator(f =>
+                                new AppNotification(userId,
+                                                    f.PickRandom<NotificationType>(),
+                                                    f.Date.Between(now, weekFromNow),
+                                                    f.Lorem.Sentences(),
+                                                    null,
+                                                    null,
+                                                    null)
+                             )
+                             .FinishWith((f, friendRequest) =>
+                             {
+                                 if (display)
+                                     friendRequest.MarkAsSeen();
+                             })
+                             .Generate(amount);
     }
 }

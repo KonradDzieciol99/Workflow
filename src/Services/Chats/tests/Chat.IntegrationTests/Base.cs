@@ -4,6 +4,10 @@ using Testcontainers.MsSql;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication;
+using Bogus;
+using Chat.Domain.Entity;
+using MessageBus;
+using Moq;
 
 namespace Chat.IntegrationTests;
 
@@ -28,6 +32,15 @@ public class Base : IAsyncLifetime
         {
             builder.ConfigureServices((context, services) =>
             {
+                var mockSender = new Mock<IEventBusSender>();
+                var mockConsumer = new Mock<IEventBusConsumer>();
+
+                mockSender.Setup(sender => sender.PublishMessage(It.IsAny<IntegrationEvent>())).Returns(Task.CompletedTask);
+                mockConsumer.Setup(consumer => consumer.Subscribe<IntegrationEvent>() ).Returns(Task.CompletedTask);
+
+                services.AddSingleton<IEventBusSender>(mockSender.Object);
+                services.AddSingleton<IEventBusConsumer>(mockConsumer.Object);
+
                 var dbContextOptions = services.SingleOrDefault(service => service.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
                 services.Remove(dbContextOptions);
 
@@ -67,5 +80,25 @@ public class Base : IAsyncLifetime
     public async Task DisposeAsync()
     {
         await _msSqlContainer.DisposeAsync().AsTask();
+    }
+    public static List<FriendRequest> GetFakeFriendRequests(int amount = 1, bool confirmed = false, string? staticInviterUserId = null, string? staticInviterUserEmail = null, string? staticInvitedUserId = null, string? staticInvitedUserEmail = null)
+    {
+
+        return new Faker<FriendRequest>()
+                             .StrictMode(false)
+                             .CustomInstantiator(f =>
+                                new FriendRequest(staticInviterUserId is null ? Guid.NewGuid().ToString() : staticInviterUserId,
+                                                  staticInviterUserEmail is null ? f.Internet.Email() : staticInviterUserEmail,
+                                                  null,
+                                                  staticInvitedUserId is null ? Guid.NewGuid().ToString() : staticInvitedUserId,
+                                                  staticInvitedUserEmail is null ? f.Internet.Email() : staticInvitedUserEmail,
+                                                  null)
+                             )
+                             .FinishWith((f, friendRequest) =>
+                             {
+                                 if (confirmed)
+                                     friendRequest.AcceptRequest(friendRequest.InvitedUserId);
+                             })
+                             .Generate(amount);
     }
 }

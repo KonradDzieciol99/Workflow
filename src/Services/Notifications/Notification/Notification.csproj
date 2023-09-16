@@ -46,4 +46,8 @@
     <ProjectReference Include="..\..\..\Integration\MessageBus\MessageBus.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Infrastructure\DataAccess\Migrations\" />
+  </ItemGroup>
+
 </Project>
