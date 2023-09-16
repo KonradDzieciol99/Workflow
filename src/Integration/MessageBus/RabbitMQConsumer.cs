@@ -46,39 +46,17 @@ public class RabbitMQConsumer : BackgroundService, IEventBusConsumer
                         exclusive: false,
                         autoDelete: false,
                         arguments: null);
-
-
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        //using var channel = _connection.CreateModel();
-
-
-
         var consumer = new AsyncEventingBasicConsumer(_channel);
 
-        //consumer.Received += EventHandlerAsync;
-        //var consumer = new EventingBasicConsumer(_channel);
         consumer.Received += EventHandlerAsync;
         _channel.BasicConsume(queue: _options.Queue,
                              autoAck: false,
                              consumer: consumer);
-
-
-        while (!stoppingToken.IsCancellationRequested)
-        {
-            // Tu możesz umieścić jakąś logikę, która ma być wykonywana w pętli,
-            // na przykład logowanie lub czekanie na jakieś inne zdarzenia.
-            // Poniższa linia powoduje, że nasza pętla czeka przez pewien czas przed kolejnym obiegiem:
-            var dd = _channel;
-
-            await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
-        }
-
-
         return;
-
     }
     private async Task EventHandlerAsync(object sender, BasicDeliverEventArgs eventArgs)
     {

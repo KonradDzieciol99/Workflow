@@ -1,5 +1,7 @@
-﻿using Chat.Application.FriendRequests.Commands;
+﻿using Bogus;
+using Chat.Application.FriendRequests.Commands;
 using Chat.Domain.Entity;
+using Org.BouncyCastle.Asn1.X509;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,10 +33,7 @@ public class AcceptFriendRequestCommandTests : IAsyncLifetime
     public async Task AcceptFriendRequestCommand_ValidData_ReturnsNoContent()
     {
         //arrange
-        var FriendRequests = new List<FriendRequest>()
-        {
-            new("inviterUserId","inviterUserEmail",null,"invitedUserId","invitedUserEmail",null),
-        };
+        var FriendRequests = Base.GetFakeFriendRequests();
 
         _base._factory.SeedData<Program, ApplicationDbContext, FriendRequest>(FriendRequests);
 
@@ -56,7 +55,8 @@ public class AcceptFriendRequestCommandTests : IAsyncLifetime
     public async Task AcceptFriendRequestCommand_InValidData_NoExistingFriendRequests_ReturnsForbidden()
     {
         //arrange
-        _base._client.SetHeaders("testId", "testEmail");
+        _base._client.SetHeaders("userId", "userEmail");
+
         var command = new AcceptFriendRequestCommand("targetUserId");
 
         //act
@@ -65,5 +65,7 @@ public class AcceptFriendRequestCommandTests : IAsyncLifetime
         //assert
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
+
+
 
 }

@@ -15,7 +15,7 @@ public static class IServiceCollectionExtension
                 .ValidateOnStart();
 
         services.AddSingleton<IEventBusConsumer,AzureServiceBusConsumer>();
-        services.AddHostedService(sp => (AzureServiceBusConsumer)sp.GetRequiredService<IEventBusConsumer>());
+        services.AddHostedService(sp => sp.GetRequiredService<IEventBusConsumer>());
         return services;
     }
     public static IServiceCollection AddAzureServiceBusSender(this IServiceCollection services, IConfigurationSection configurationSection)
@@ -37,7 +37,7 @@ public static class IServiceCollectionExtension
                 .ValidateOnStart();
 
         services.AddSingleton<IEventBusConsumer,RabbitMQConsumer>();
-        services.AddHostedService(sp => (RabbitMQConsumer)sp.GetRequiredService<IEventBusConsumer>());
+        services.AddHostedService(sp => sp.GetRequiredService<IEventBusConsumer>());
         return services;
     }
     public static IServiceCollection AddRabbitMQSender(this IServiceCollection services, IConfigurationSection configurationSection)

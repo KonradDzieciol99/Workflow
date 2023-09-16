@@ -81,3 +81,5 @@ async Task AddSubscriptions(WebApplication app)
 
     await Task.WhenAll(subscribeTasks);
 }
+
+public partial class Program { }

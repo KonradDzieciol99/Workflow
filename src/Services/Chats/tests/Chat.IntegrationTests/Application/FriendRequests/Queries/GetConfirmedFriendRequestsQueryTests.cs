@@ -31,8 +31,8 @@ public class GetConfirmedFriendRequestsQueryTests : IAsyncLifetime
 
     public static IEnumerable<object[]> GetAppTasksQueryList => new List<object[]>
     {
-        new object[]{ new GetConfirmedFriendRequestsQuery(0, 10, "invitedUserEmail@test.com1"), 4 },
-        new object[]{ new GetConfirmedFriendRequestsQuery(0, 50, null), 12},
+        new object[]{ new GetConfirmedFriendRequestsQuery(0, 50, "invitedUserEmail@test.com1"), 1},
+        new object[]{ new GetConfirmedFriendRequestsQuery(0, 12, null), 12},
         new object[]{ new GetConfirmedFriendRequestsQuery(0, 50, "cosczegoniema"), 0},
     };
 
@@ -42,26 +42,12 @@ public class GetConfirmedFriendRequestsQueryTests : IAsyncLifetime
     {
 
         //arrange
-        var friendRequests = new List<FriendRequest>()
-        {
-            new FriendRequest("inviterUserId","inviterUserEmail@test.com",null,"invitedUserId1","invitedUserEmail@test.com1",null),
-            new FriendRequest("inviterUserId","inviterUserEmail@test.com",null,"invitedUserId2","invitedUserEmail@test.com2",null),
-            new FriendRequest("inviterUserId","inviterUserEmail@test.com",null,"invitedUserId3","invitedUserEmail@test.com3",null),
-            new FriendRequest("inviterUserId","inviterUserEmail@test.com",null,"invitedUserId4","invitedUserEmail@test.com4",null),
-            new FriendRequest("inviterUserId","inviterUserEmail@test.com",null,"invitedUserId5","invitedUserEmail@test.com5",null),
-            new FriendRequest("inviterUserId","inviterUserEmail@test.com",null,"invitedUserId6","invitedUserEmail@test.com6",null),
-            new FriendRequest("inviterUserId","inviterUserEmail@test.com",null,"invitedUserId7","invitedUserEmail@test.com7",null),
-            new FriendRequest("inviterUserId","inviterUserEmail@test.com",null,"invitedUserId8","invitedUserEmail@test.com8",null),
-            new FriendRequest("inviterUserId","inviterUserEmail@test.com",null,"invitedUserId9","invitedUserEmail@test.com9",null),
-            new FriendRequest("inviterUserId","inviterUserEmail@test.com",null,"invitedUserId10","invitedUserEmail@test.com10",null),
-            new FriendRequest("inviterUserId","inviterUserEmail@test.com",null,"invitedUserId11","invitedUserEmail@test.com11",null),
-            new FriendRequest("inviterUserId","inviterUserEmail@test.com",null,"invitedUserId12","invitedUserEmail@test.com12",null),
-        };
+        var friendRequests = Base.GetFakeFriendRequests(50, true, "inviterUserId", "inviterUserEmail", null,null);
 
-        foreach (var friendRequest in friendRequests)
-        {
-            friendRequest.AcceptRequest(friendRequest.InvitedUserId);
-        }
+        var request = new FriendRequest(friendRequests[0].InviterUserId, friendRequests[0].InviterUserEmail, null, "invitedUserId@test.com1", "invitedUserEmail@test.com1", null);
+        request.AcceptRequest(request.InvitedUserId);
+
+        friendRequests.Add(request);
 
         _base._factory.SeedData<Program, ApplicationDbContext, FriendRequest>(friendRequests);
         _base._client.SetHeaders(friendRequests[0].InviterUserId, friendRequests[0].InviterUserEmail);
@@ -76,6 +62,6 @@ public class GetConfirmedFriendRequestsQueryTests : IAsyncLifetime
         var returnedFriendRequests = JsonSerializer.Deserialize<List<FriendRequestDto>>(responseString, options);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.True(returnedFriendRequests.Count == amount);
+        Assert.Equal(returnedFriendRequests.Count, amount);
     }
 }

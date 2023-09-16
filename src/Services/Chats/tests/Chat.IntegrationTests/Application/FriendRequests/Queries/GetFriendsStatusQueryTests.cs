@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using TestsHelpers;
 
 namespace Chat.IntegrationTests.Application.FriendRequests.Queries;
 [Collection("Base")]
@@ -28,7 +29,7 @@ public class GetFriendsStatusQueryTests : IAsyncLifetime
     }
     public static IEnumerable<object[]> GetAppTasksQueryList => new List<object[]>
     {
-        new object[]{ new List<string> { "a","ss","dddd"}, FriendStatusType.Stranger },
+        new object[]{ new List<string> { "non","non2","non2"}, FriendStatusType.Stranger },
         new object[]{ new List<string> { "invitedUserId1", "invitedUserId2", }, FriendStatusType.InvitedByYou },
         new object[]{ new List<string> { "invitedUserId1", "invitedUserId2", }, FriendStatusType.Friend },
     };
@@ -52,7 +53,7 @@ public class GetFriendsStatusQueryTests : IAsyncLifetime
                 friendRequest.AcceptRequest(friendRequest.InvitedUserId);
             }
         }
-        _base._client.SetHeaders("inviterUserId", "inviterUserEmail@test.com");
+        _base._client.SetHeaders(friendRequests[0].InviterUserId, friendRequests[0].InviterUserEmail);
         _base._factory.SeedData<Program, ApplicationDbContext, FriendRequest>(friendRequests);
 
         //act

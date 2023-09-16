@@ -15,12 +15,14 @@ public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest> where T
         _currentUserService = currentUserService;
     }
 
-    public async Task Process(TRequest request, CancellationToken cancellationToken)
+    public Task Process(TRequest request, CancellationToken cancellationToken)
     {
         var requestName = typeof(TRequest).Name;
         var userId = _currentUserService.GetUserId();
         var userEmail = _currentUserService.GetUserEmail();
 
         _logger.LogInformation($"Request: {requestName} {userId} {userEmail} {request}");
+
+        return Task.CompletedTask;
     }
 }
