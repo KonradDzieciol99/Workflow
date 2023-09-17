@@ -19,10 +19,10 @@ public class SeedData
 
     public SeedData(ILogger<SeedData> logger, ApplicationDbContext context,IUnitOfWork unitOfWork, IIntegrationEventService integrationEventService)
     {
-        _logger = logger;
-        _context = context;
-        this._unitOfWork = unitOfWork;
-        this._integrationEventService = integrationEventService;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        this._integrationEventService = integrationEventService ?? throw new ArgumentNullException(nameof(integrationEventService));
     }
 
     public async Task InitialiseAsync()

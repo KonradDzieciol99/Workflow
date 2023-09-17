@@ -12,11 +12,11 @@ public class FriendRequestRemovedEventHandler : IRequestHandler<FriendRequestRem
 
     public FriendRequestRemovedEventHandler(IHubContext<MessagesHub> messagesHubContext)
     {
-        _messagesHubContext = messagesHubContext;
+        _messagesHubContext = messagesHubContext ?? throw new ArgumentNullException(nameof(messagesHubContext));
     }
     public async Task Handle(FriendRequestRemovedEvent request, CancellationToken cancellationToken)
     {
-        await _messagesHubContext.Clients.Users(request.FriendToRemoveUserId).SendAsync("FriendRequestRemoved", request.ActionInitiatorUserEmail);
+        await _messagesHubContext.Clients.Users(request.FriendToRemoveUserId).SendAsync("FriendRequestRemoved", request.ActionInitiatorUserEmail, cancellationToken: cancellationToken);
         return;
     }
 }

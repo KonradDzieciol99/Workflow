@@ -15,7 +15,7 @@ public class ReadOnlyProjectMemberRepository : IReadOnlyProjectMemberRepository
 
     public ReadOnlyProjectMemberRepository(ApplicationDbContext applicationDbContext)
     {
-        this.ProjectMembersQuery = applicationDbContext.ProjectMembers.AsNoTracking();
+        this.ProjectMembersQuery = applicationDbContext.ProjectMembers.AsNoTracking() ?? throw new ArgumentNullException(nameof(applicationDbContext));
     }
     public async Task<Project?> GetOneAsync(string projectName, string userId)
     {

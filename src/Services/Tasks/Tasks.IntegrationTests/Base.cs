@@ -64,7 +64,7 @@ public class Base : IAsyncLifetime
                     {
                         options.AddPolicy("ApiScope", policy =>
                         {
-                            policy.RequireAssertion(context => true); // zawsze zwraca true
+                            policy.RequireAssertion(context => true);
                         });
                     });
                 });

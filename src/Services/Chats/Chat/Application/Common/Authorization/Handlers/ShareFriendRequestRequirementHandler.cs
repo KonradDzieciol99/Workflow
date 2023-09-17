@@ -14,8 +14,8 @@ public class ShareFriendRequestRequirementHandler : AuthorizationHandler<ShareFr
     }
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ShareFriendRequestRequirement requirement)
     {
-        var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new ArgumentNullException(nameof(ClaimTypes.NameIdentifier));
-        var targetUserId = requirement.TargetUserId ?? throw new ArgumentNullException(nameof(context.Resource));
+        var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new ArgumentNullException(nameof(context));
+        var targetUserId = requirement.TargetUserId ?? throw new ArgumentNullException(nameof(requirement));
 
         var result = await _unitOfWork.FriendRequestRepository.CheckIfTheyShareFriendRequest(userId, targetUserId);
 

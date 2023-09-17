@@ -21,7 +21,7 @@ public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest> where T
         var userId = _currentUserService.GetUserId();
         var userEmail = _currentUserService.GetUserEmail();
 
-        _logger.LogInformation($"Request: {requestName} {userId} {userEmail} {request}");
+        _logger.LogInformation("Request: {Name} {@UserId} {@userEmail} {@Request}", requestName, userId, userEmail, request);
 
         return Task.CompletedTask;
     }

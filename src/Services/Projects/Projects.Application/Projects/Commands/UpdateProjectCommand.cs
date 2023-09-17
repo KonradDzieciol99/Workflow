@@ -21,14 +21,10 @@ public record UpdateProjectCommand(string? Name, string? IconUrl, string? NewLea
 public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ICurrentUserService _currentUserService;
-    private readonly IMapper _mapper;
 
-    public UpdateProjectCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IMapper mapper)
+    public UpdateProjectCommandHandler(IUnitOfWork unitOfWork)
     {
-        this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(_unitOfWork));
-        this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(_currentUserService));
-        this._mapper = mapper ?? throw new ArgumentNullException(nameof(_mapper));
+        this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
 
     public async Task Handle(UpdateProjectCommand request, CancellationToken cancellationToken)

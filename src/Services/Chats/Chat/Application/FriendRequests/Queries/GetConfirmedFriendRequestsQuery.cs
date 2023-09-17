@@ -31,5 +31,4 @@ public class GetConfirmedFriendRequestsQueryHandler : IRequestHandler<GetConfirm
         return _mapper.Map<List<FriendRequestDto>>(friendRequests);
 
     }
-
 }

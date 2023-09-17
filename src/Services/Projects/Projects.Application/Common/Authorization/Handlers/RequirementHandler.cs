@@ -21,22 +21,15 @@ public class RequirementHandler : IAuthorizationHandler
         {
             if (requirement is ProjectAuthorRequirement)
             {
-                var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new ArgumentNullException(nameof(ClaimTypes.NameIdentifier));
-                var projectId = context.Resource as string ?? throw new ArgumentNullException(nameof(context.Resource));
-                //mozna lepiej
-
+                var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new ArgumentNullException(nameof(context));
+                var projectId = context.Resource as string ?? throw new ArgumentNullException(nameof(context));
 
                 context.Succeed(requirement);
-
-                // if (projectMember is not null && projectMember.Type == ProjectMemberType.Leader)
-
-
-                //context.User, context.Resource
             }
             else if (requirement is ProjectManagementRequirement)
             {
-                var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new ArgumentNullException(nameof(ClaimTypes.NameIdentifier));
-                var projectId = context.Resource as string ?? throw new ArgumentNullException(nameof(context.Resource));
+                var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new ArgumentNullException(nameof(context));
+                var projectId = context.Resource as string ?? throw new ArgumentNullException(nameof(context));
 
                 var projectMember = await _unitOfWork.ReadOnlyProjectMemberRepository.GetProjectMemberAsync(projectId, userId);
 

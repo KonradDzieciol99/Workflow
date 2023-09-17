@@ -90,9 +90,9 @@ public class GetAppTaskQueryTests : IAsyncLifetime //to może zastępowac konstr
         };
         var appTasks = new List<AppTask>()
         {
-            new AppTask("task1",null,"1",null,/*null,null,*/Priority.Low,State.ToDo,new DateTime(2023,6,4),new DateTime(2023,6,5),"1"),
-            new AppTask("task2",null,"1",null,/*null,null,*/Priority.Low,State.ToDo,new DateTime(2023,6,5),new DateTime(2023,6,7),"2"),
-            new AppTask("task3",null,"1",null,/*null,null,*/Priority.Low,State.ToDo,new DateTime(2023,6,7),new DateTime(2023,6,8),"3"),
+            new AppTask("task1",null,"1",null,Priority.Low,State.ToDo,new DateTime(2023,6,4),new DateTime(2023,6,5),"1"),
+            new AppTask("task2",null,"1",null,Priority.Low,State.ToDo,new DateTime(2023,6,5),new DateTime(2023,6,7),"2"),
+            new AppTask("task3",null,"1",null,Priority.Low,State.ToDo,new DateTime(2023,6,7),new DateTime(2023,6,8),"3"),
         };
 
         var AddedMebers = _base._factory.SeedData<Program, ApplicationDbContext, ProjectMember>(projectMembers);

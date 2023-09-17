@@ -2,6 +2,6 @@
 
 public class MemberStatusDto
 {
-    public string UserId { get; set; }
-    public MemberStatusType Status { get; set; }
+    public required string UserId { get; set; }
+    public required MemberStatusType Status { get; set; }
 }

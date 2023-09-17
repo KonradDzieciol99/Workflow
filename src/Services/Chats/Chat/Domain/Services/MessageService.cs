@@ -6,17 +6,17 @@ namespace Chat.Domain.Services;
 
 public class MessageService : IMessageService
 {
-    private readonly IMessagesRepository _messagesRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
     public MessageService(IUnitOfWork unitOfWork)
     {
-        _messagesRepository = unitOfWork.MessagesRepository ?? throw new ArgumentNullException(nameof(unitOfWork.MessagesRepository));
+        this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
     public void AddMessage(Message message, FriendRequest friendRequest)
     {
         if (!friendRequest.Confirmed)
             throw new ChatDomainException("Request must be confirmed");
 
-        _messagesRepository.Add(message);
+        _unitOfWork.MessagesRepository.Add(message);
     }
 }

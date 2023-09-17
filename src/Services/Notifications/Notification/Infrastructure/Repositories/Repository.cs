@@ -10,7 +10,7 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
 
     public Repository(ApplicationDbContext applicationDbContext)
     {
-        _dbContext = applicationDbContext;
+        _dbContext = applicationDbContext ?? throw new ArgumentNullException(nameof(applicationDbContext));
     }
     public void Add(TEntity entity)
     {

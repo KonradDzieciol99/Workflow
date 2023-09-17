@@ -8,7 +8,7 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddHealthChecksServices(builder.Configuration);
+        builder.Services.AddHealthChecksServices();
 
         var app = builder.Build();
 

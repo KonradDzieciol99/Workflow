@@ -19,21 +19,7 @@ public class AppNotification : BaseEntity
     }
 
     private AppNotification() { }
-
-    //public AppNotification(string userId, string notificationType, DateTime creationDate, string description, string? notificationPartnerId, string? notificationPartnerEmail, string? notificationPartnerPhotoUrl, bool displayed = false)
-    //{
-    //    UserId = userId ?? throw new ArgumentNullException(nameof(userId));
-    //    NotificationType = notificationType ?? throw new ArgumentNullException(nameof(notificationType));
-    //    CreationDate = creationDate;
-    //    Description = description ?? throw new ArgumentNullException(nameof(description));
-    //    NotificationPartnerId = notificationPartnerId;
-    //    NotificationPartnerEmail = notificationPartnerEmail;
-    //    NotificationPartnerPhotoUrl = notificationPartnerPhotoUrl;
-    //    Displayed = displayed;
-    //}
-
     public string UserId { get; private set; }
-    //public object? ObjectId { get; private set; }
     public NotificationType NotificationType { get; private set; }
     public DateTime CreationDate { get; private set; }
     public bool Displayed { get; private set; }

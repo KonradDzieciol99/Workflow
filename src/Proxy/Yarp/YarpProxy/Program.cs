@@ -1,10 +1,18 @@
-var builder = WebApplication.CreateBuilder(args);
+namespace YarpProxy;
 
-builder.Services.AddReverseProxy()
-    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+public class Program
+{
+    private static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
 
-var app = builder.Build();
+        builder.Services.AddReverseProxy()
+            .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
-app.MapReverseProxy();
+        var app = builder.Build();
 
-app.Run();
+        app.MapReverseProxy();
+
+        app.Run();
+    }
+}

@@ -1,5 +1,6 @@
 ﻿using Azure.Messaging.ServiceBus;
 using MessageBus.Models;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
 using System.Text;
@@ -13,7 +14,7 @@ public class AzureServiceBusSender : IEventBusSender
     private readonly AzureServiceBusSenderOptions _options;
     public AzureServiceBusSender(IOptions<AzureServiceBusSenderOptions> options)
     {
-        this._options = options.Value;
+        this._options = options.Value ?? throw new ArgumentNullException(nameof(options));
     }
     public async Task PublishMessage(IntegrationEvent message)
     {

@@ -10,16 +10,13 @@ public record FriendRequestAddedEvent(string InvitationSendingUserId, string Inv
 public class FriendRequestAddedEventHandler : IRequestHandler<FriendRequestAddedEvent>
 {
     private readonly IHubContext<MessagesHub> _messagesHubContext;
-    private readonly IHubContext<PresenceHub> _presenceHubContext;
 
-    public FriendRequestAddedEventHandler(IHubContext<MessagesHub> messagesHubContext, IHubContext<PresenceHub> presenceHubContext)
+    public FriendRequestAddedEventHandler(IHubContext<MessagesHub> messagesHubContext)
     {
-        _messagesHubContext = messagesHubContext;
-        _presenceHubContext = presenceHubContext;
+        _messagesHubContext = messagesHubContext ?? throw new ArgumentNullException(nameof(messagesHubContext));
     }
     public async Task Handle(FriendRequestAddedEvent request, CancellationToken cancellationToken)
     {
-        //await _presenceHubContext.Clients.User(request.InvitedUser.UserId).SendAsync("NewInvitationToFriendsReceived", new { inviterEmail = request.UserWhoInvited.UserEmail });
         await _messagesHubContext.Clients.User(request.InvitedUserId).SendAsync(
             "NewInvitationToFriendsReceived",
             new FriendInvitationDto(request.InvitationSendingUserId,
@@ -28,6 +25,6 @@ public class FriendRequestAddedEventHandler : IRequestHandler<FriendRequestAdded
                                     request.InvitedUserId,
                                     request.InvitedUserEmail,
                                     request.InvitedUserPhotoUrl,
-                                    false));
+                                    false), cancellationToken: cancellationToken);
     }
 }

@@ -7,11 +7,11 @@ namespace Projects.Infrastructure.Repositories;
 
 public class ReadOnlyProjectRepository : IReadOnlyProjectRepository
 {
-    private IQueryable<Project> _projectsQuery;
+    private readonly IQueryable<Project> _projectsQuery;
 
     public ReadOnlyProjectRepository(ApplicationDbContext applicationDbContext)
     {
-        this._projectsQuery = applicationDbContext.Projects.AsNoTracking();
+        this._projectsQuery = applicationDbContext.Projects.AsNoTracking() ?? throw new ArgumentNullException(nameof(applicationDbContext));
     }
     public async Task<Project?> GetOneAsync(string projectId)
     {

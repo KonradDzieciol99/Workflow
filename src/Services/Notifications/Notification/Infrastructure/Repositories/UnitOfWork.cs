@@ -10,7 +10,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     public IAppNotificationRepository AppNotificationRepository => new AppNotificationRepository(_applicationDbContext);
     public UnitOfWork(ApplicationDbContext applicationDbContext)
     {
-        _applicationDbContext = applicationDbContext;
+        _applicationDbContext = applicationDbContext ?? throw new ArgumentNullException(nameof(applicationDbContext));
     }
     public async Task<bool> Complete()
     {

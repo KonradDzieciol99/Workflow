@@ -28,18 +28,15 @@ public class DeleteAppTaskCommandHandler : IRequestHandler<DeleteAppTaskCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUserService;
-    private readonly IMapper _mapper;
-    private readonly IEventBusSender _azureServiceBusSender;
+    private readonly IEventBusSender _eventBusSender;
     private readonly IAppTaskService _appTaskService;
 
-    public DeleteAppTaskCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IMapper mapper, IEventBusSender messageBus, IAppTaskService appTaskService)
+    public DeleteAppTaskCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IEventBusSender eventBusSender, IAppTaskService appTaskService)
     {
-        this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(_unitOfWork));
-        this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(_currentUserService));
-        this._mapper = mapper ?? throw new ArgumentNullException(nameof(_mapper));
-        this._azureServiceBusSender = messageBus ?? throw new ArgumentNullException(nameof(_azureServiceBusSender));
-        this._appTaskService = appTaskService ?? throw new ArgumentNullException(nameof(appTaskService)); ;
-        ;
+        this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+        this._eventBusSender = eventBusSender ?? throw new ArgumentNullException(nameof(eventBusSender));
+        this._appTaskService = appTaskService ?? throw new ArgumentNullException(nameof(appTaskService));
     }
     public async Task Handle(DeleteAppTaskCommand request, CancellationToken cancellationToken)
     {
@@ -52,7 +49,7 @@ public class DeleteAppTaskCommandHandler : IRequestHandler<DeleteAppTaskCommand>
 
         await _unitOfWork.Complete();
 
-        await _azureServiceBusSender.PublishMessage(new TaskDeletedEvent(task.Id));
+        await _eventBusSender.PublishMessage(new TaskDeletedEvent(task.Id));
 
         return;
 

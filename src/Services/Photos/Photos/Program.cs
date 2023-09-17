@@ -1,12 +1,6 @@
-
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
 using HealthChecks.UI.Client;
 using Logging;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Mvc;
-using Photos.Common;
-using Photos.Common.Models;
 using Serilog;
 
 namespace Photos;

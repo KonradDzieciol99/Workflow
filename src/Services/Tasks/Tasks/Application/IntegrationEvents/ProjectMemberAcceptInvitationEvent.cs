@@ -10,12 +10,9 @@ public record ProjectMemberAcceptInvitationEvent(string ProjectMemberId, string 
 public class ProjectMemberAcceptInvitationEventHandler : IRequestHandler<ProjectMemberAcceptInvitationEvent>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
-
-    public ProjectMemberAcceptInvitationEventHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    public ProjectMemberAcceptInvitationEventHandler(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
     }
     public async Task Handle(ProjectMemberAcceptInvitationEvent request, CancellationToken cancellationToken)
     {
@@ -31,11 +28,5 @@ public class ProjectMemberAcceptInvitationEventHandler : IRequestHandler<Project
         }
 
         throw new InvalidOperationException("An error occurred while removing a project member.");
-
-        //if (!await _unitOfWork.Complete())
-        //    throw new InvalidOperationException("An error occurred while updating a project member.");
-
-        //await Task.CompletedTask;
-        //return;
     }
 }

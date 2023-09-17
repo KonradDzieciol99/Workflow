@@ -31,7 +31,7 @@ public class AddProjectMemberCommandHandler : IRequestHandler<AddProjectMemberCo
     private readonly IUnitOfWork _unitOfWork;
     public AddProjectMemberCommandHandler(IUnitOfWork unitOfWork)
     {
-        _unitOfWork = unitOfWork;
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
     public async Task<ProjectMemberDto> Handle(AddProjectMemberCommand request, CancellationToken cancellationToken)
     {

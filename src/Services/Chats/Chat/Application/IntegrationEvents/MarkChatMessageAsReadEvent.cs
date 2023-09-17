@@ -8,7 +8,7 @@ public record MarkChatMessageAsReadEvent(string ChatMessageId, DateTime ChatMess
 
 public class MarkChatMessageAsReadEventHandler : IRequestHandler<MarkChatMessageAsReadEvent>
 {
-    private IUnitOfWork _unitOfWork;
+    private readonly IUnitOfWork _unitOfWork;
 
     public MarkChatMessageAsReadEventHandler(IUnitOfWork unitOfWork)
     {
@@ -16,7 +16,7 @@ public class MarkChatMessageAsReadEventHandler : IRequestHandler<MarkChatMessage
     }
     public async Task Handle(MarkChatMessageAsReadEvent request, CancellationToken cancellationToken)
     {
-        var message = await _unitOfWork.MessagesRepository.GetAsync(request.ChatMessageId);
+        var message = await _unitOfWork.MessagesRepository.GetAsync(request.ChatMessageId) ?? throw new InvalidOperationException("Such a message does not exist");
 
         message.MarkMessageAsRead(request.ChatMessageDateRead);
 

@@ -13,7 +13,7 @@ public class ProjectMember
         UserEmail = userEmail ?? throw new ArgumentNullException(nameof(userEmail));
         PhotoUrl = photoUrl;
         Type = type;
-        this.invitationStatus = invitationStatus;
+        InvitationStatus = invitationStatus;
         ProjectId = projectId ?? throw new ArgumentNullException(nameof(projectId));
     }
 
@@ -22,7 +22,7 @@ public class ProjectMember
     public string UserEmail { get; private set; }
     public string? PhotoUrl { get; private set; }
     public ProjectMemberType Type { get; private set; }
-    public InvitationStatus invitationStatus { get; private set; }
+    public InvitationStatus InvitationStatus { get; private set; }
     public string ProjectId { get; private set; }
     public ICollection<AppTask> ConductedTasks { get; private set; }
     public ICollection<AppTask> AssignedTasks { get; private set; }

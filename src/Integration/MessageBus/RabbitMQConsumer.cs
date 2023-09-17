@@ -26,8 +26,8 @@ public class RabbitMQConsumer : BackgroundService, IEventBusConsumer
     private readonly ILogger<AzureServiceBusConsumer> _logger;
     private readonly RabbitMQConsumerOptions _options;
     private readonly ConcurrentDictionary<string, Type> _events;
-    private IConnection _connection;
-    private IModel _channel;
+    private readonly IConnection _connection;
+    private readonly IModel _channel;
 
     public RabbitMQConsumer(IServiceScopeFactory serviceScopeFactory,
                             IOptions<RabbitMQConsumerOptions> options,
@@ -37,7 +37,7 @@ public class RabbitMQConsumer : BackgroundService, IEventBusConsumer
         this._logger = logger;
         this._options = options.Value;
         this._events = new ConcurrentDictionary<string, Type>();
-        _connection = new ConnectionFactory { HostName = _options.Host, UserName = _options.UserName, Password = _options.Password, DispatchConsumersAsync = true }.CreateConnection();
+        _connection = new ConnectionFactory {Uri= new Uri(_options.RabbitMQConnectionString), DispatchConsumersAsync = true }.CreateConnection();
         _channel = _connection.CreateModel();
         RemoveAllRulesAsync().GetAwaiter().GetResult();
         _channel.ExchangeDeclare(exchange: _options.Exchange, type: "direct");
@@ -58,31 +58,26 @@ public class RabbitMQConsumer : BackgroundService, IEventBusConsumer
                              consumer: consumer);
         return;
     }
-    private async Task EventHandlerAsync(object sender, BasicDeliverEventArgs eventArgs)
+    private async Task EventHandlerAsync(object sender, BasicDeliverEventArgs args)
     {
-        var eventName = eventArgs.RoutingKey;
-        var body = Encoding.UTF8.GetString(eventArgs.Body.Span);
+        var eventName = args.RoutingKey;
+        var body = Encoding.UTF8.GetString(args.Body.Span);
 
         try
         {
+            var type = _events[eventName] ?? throw new InvalidOperationException($"You did not subscribe to this event {eventName}");
 
-            var type = _events[eventName];
-            if (type == null)
-            {
-                throw new ArgumentNullException("You did not subscribe to this event");
-            }
-
-            MethodInfo sendAsyncMethod = this.GetType().GetMethod(nameof(SendAsync), BindingFlags.NonPublic | BindingFlags.Instance) ?? throw new ArgumentNullException("Something went wrong.");
+            MethodInfo sendAsyncMethod = this.GetType().GetMethod(nameof(SendAsync), BindingFlags.NonPublic | BindingFlags.Instance) ?? throw new InvalidOperationException($"Something went wrong during execution {nameof(SendAsync)}");
 
             await (Task)sendAsyncMethod.MakeGenericMethod(type).Invoke(this, new object[] { body });
 
-            _channel.BasicAck(eventArgs.DeliveryTag, multiple: false);
+            _channel.BasicAck(args.DeliveryTag, multiple: false);
 
         }
         catch (Exception)
         {
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
-                _channel.BasicAck(eventArgs.DeliveryTag, multiple: false);
+                _channel.BasicAck(args.DeliveryTag, multiple: false);
             else
                 throw;
         }
@@ -100,7 +95,7 @@ public class RabbitMQConsumer : BackgroundService, IEventBusConsumer
         var @event = JsonSerializer.Deserialize<T>(eventJSON, options);
 
         if (@event is null)
-            throw new ArgumentNullException($"Message is empty{@event}");
+            throw new ArgumentNullException($"Message is empty {@event}");
 
         using var scope = _serviceScopeFactory.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();

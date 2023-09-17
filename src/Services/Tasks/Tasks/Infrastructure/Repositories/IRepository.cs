@@ -8,9 +8,7 @@ public interface IRepository<TEntity> where TEntity : class
     void AddRange(IEnumerable<TEntity> entities);
     void Remove(TEntity entity);
     void RemoveRange(IEnumerable<TEntity> entities);
-    //Task<TEntity?> GetOneAsync(Expression<Func<TEntity, bool>> predicate);
     Task<TEntity?> GetOneByIdAsync(params object?[]? keyValues);
     Task<List<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> predicate);
-    //Task<int> ExecuteDeleteAsync(string id);
 
 }

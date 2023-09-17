@@ -17,20 +17,18 @@ public class ChatMessageAddedEventHandler : IRequestHandler<ChatMessageAddedEven
     public ChatMessageAddedEventHandler(IConnectionMultiplexer connectionMultiplexer
         , IEventBusSender azureServiceBusSender,
         IHubContext<ChatHub> chatHubContext,
-        IHubContext<PresenceHub> presenceHubContext,
-        IHubContext<MessagesHub> messagesHubContext
+        IHubContext<PresenceHub> presenceHubContext
         )
     {
-        _redisDb = connectionMultiplexer.GetDatabase();
-        _azureServiceBusSender = azureServiceBusSender;
-        _chatHubContext = chatHubContext;
-        _presenceHubContext = presenceHubContext;
+        _redisDb = connectionMultiplexer.GetDatabase() ?? throw new ArgumentNullException(nameof(connectionMultiplexer));
+        _azureServiceBusSender = azureServiceBusSender ?? throw new ArgumentNullException(nameof(azureServiceBusSender));
+        _chatHubContext = chatHubContext ?? throw new ArgumentNullException(nameof(chatHubContext));
+        _presenceHubContext = presenceHubContext ?? throw new ArgumentNullException(nameof(presenceHubContext));
     }
     public async Task Handle(ChatMessageAddedEvent request, CancellationToken cancellationToken)
     {
 
         var groupName = GetGroupName(request.SenderEmail, request.RecipientEmail);
-
         var values = await _redisDb.HashValuesAsync(groupName);
         if (values.Contains(request.RecipientEmail))
         {
@@ -38,8 +36,8 @@ public class ChatMessageAddedEventHandler : IRequestHandler<ChatMessageAddedEven
             await _azureServiceBusSender.PublishMessage(markChatMessageAsReadEvent);
         }
 
-        await _chatHubContext.Clients.Group(groupName).SendAsync("NewMessage", request);
-        await _presenceHubContext.Clients.User(request.RecipientId).SendAsync("NewMessageReceived", new { senderEmail = request.SenderEmail });
+        await _chatHubContext.Clients.Group(groupName).SendAsync("NewMessage", request, cancellationToken: cancellationToken);
+        await _presenceHubContext.Clients.User(request.RecipientId).SendAsync("NewMessageReceived", new { senderEmail = request.SenderEmail }, cancellationToken: cancellationToken);
 
         return;
     }

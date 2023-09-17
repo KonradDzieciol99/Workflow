@@ -10,11 +10,7 @@ namespace MessageBus.Models;
 public class RabbitMQConsumerOptions
 {
     [Required]
-    public required string Host { get; set; }
-    [Required]
-    public required string UserName { get; set; }
-    [Required]
-    public required string Password { get; set; }
+    public required string RabbitMQConnectionString { get; set; }
     [Required]
     public required string Exchange { get; set; }
     [Required]

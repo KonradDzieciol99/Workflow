@@ -118,12 +118,12 @@ public class Index : PageModel
         return Page();
     }
 
-    private async Task<ViewModel> BuildViewModelAsync(string returnUrl, InputModel model = null)
+    private async Task<ViewModel> BuildViewModelAsync(string returnUrl, InputModel? model = null)
     {
         var request = await _interaction.GetAuthorizationContextAsync(returnUrl);
         if (request != null)
         {
-            return CreateConsentViewModel(model, returnUrl, request);
+            return CreateConsentViewModel(model, request);
         }
         else
         {
@@ -132,9 +132,8 @@ public class Index : PageModel
         return null;
     }
 
-    private ViewModel CreateConsentViewModel(
-        InputModel model, string returnUrl,
-        AuthorizationRequest request)
+    private ViewModel CreateConsentViewModel(InputModel model,
+                                             AuthorizationRequest request)
     {
         var vm = new ViewModel
         {

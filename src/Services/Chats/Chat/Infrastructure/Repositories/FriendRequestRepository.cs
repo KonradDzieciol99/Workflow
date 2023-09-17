@@ -12,7 +12,7 @@ public class FriendRequestRepository : IFriendRequestRepository
 
     public FriendRequestRepository(ApplicationDbContext applicationDbContext)
     {
-        _dbContext = applicationDbContext;
+        _dbContext = applicationDbContext ?? throw new ArgumentNullException(nameof(applicationDbContext));
     }
     public void Add(FriendRequest entity)
     {
@@ -28,21 +28,10 @@ public class FriendRequestRepository : IFriendRequestRepository
     }
     public async Task<FriendRequest?> GetAsync(string sourceUserId, string targetUserId)
     {
-        //return await _dbContext.FriendRequests.FindAsync(sourceUserId, targetUserId);
         return await _dbContext.FriendRequests.SingleOrDefaultAsync(x => (x.InviterUserId == sourceUserId && x.InvitedUserId == targetUserId) ||
                                                                          (x.InviterUserId == targetUserId && x.InvitedUserId == sourceUserId)
                                                                          );
-
-        //.FirstOrDefaultAsync(x => (x.InviterUserId == userId && x.InvitedUserId == recipientId)
-        //|| (x.InviterUserId == recipientId && x.InvitedUserId == userId));
     }
-
-    //public async Task<List<FriendRequest>> GetAsync(string userId) //old
-    //{
-    //    return await _dbContext.FriendRequests.Where(fr => fr.InviterUserId == userId || fr.InvitedUserId == userId)
-    //                                          .ToListAsync();
-    //}
-
     public async Task<List<FriendRequest>> GetReceivedFriendRequestsAsync(string userId, GetReceivedFriendRequestsQuery @params)
     {
         var query = _dbContext.FriendRequests.Where(x => x.InvitedUserId == userId && x.Confirmed == false);
@@ -56,8 +45,6 @@ public class FriendRequestRepository : IFriendRequestRepository
     }
     public async Task<List<FriendRequest>> GetConfirmedAsync(string userId, GetConfirmedFriendRequestsQuery @params)
     {
-
-
         var query = _dbContext.FriendRequests.Where(x => (x.InviterUserId == userId || x.InvitedUserId == userId) && x.Confirmed == true);
 
         if (!string.IsNullOrWhiteSpace(@params.Search))
@@ -66,7 +53,6 @@ public class FriendRequestRepository : IFriendRequestRepository
         return await query.Skip(@params.Skip)
                           .Take(@params.Take)
                           .ToListAsync();
-
     }
     public async Task<List<FriendRequest>> GetConfirmedAsync(string UserId)
     {
@@ -86,7 +72,6 @@ public class FriendRequestRepository : IFriendRequestRepository
             .Where(r =>
                 (r.InviterUserId == userId && userIds.Contains(r.InvitedUserId)) ||
                 (r.InvitedUserId == userId && userIds.Contains(r.InviterUserId))
-            //(r.InviterUserId != userId && userIds.Contains(r.InviterUserId) && r.InvitedUserId == userId)
             )
             .Select(r => new FriendStatusDto
             {
@@ -105,13 +90,4 @@ public class FriendRequestRepository : IFriendRequestRepository
                  )
                  .ToList();
     }
-
-
-
-    //public async Task<List<UserDto>> GetConfirmedUsersAsync(string userId)
-    //{
-    //    return await _dbContext.FriendRequests
-    //                        .Where(x => (x.InviterUserId == userId || x.InvitedUserId == userId) && x.Confirmed == true)
-    //                        .ToListAsync();
-    //}
 }

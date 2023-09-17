@@ -36,4 +36,8 @@
     <ProjectReference Include="..\..\..\Integration\MessageBus\MessageBus.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Infrastructure\Common\Extensions\" />
+  </ItemGroup>
+
 </Project>

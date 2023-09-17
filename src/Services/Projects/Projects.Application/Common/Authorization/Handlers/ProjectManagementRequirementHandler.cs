@@ -11,12 +11,12 @@ public class ProjectManagementRequirementHandler : AuthorizationHandler<ProjectM
 
     public ProjectManagementRequirementHandler(IUnitOfWork unitOfWork)
     {
-        _unitOfWork = unitOfWork;
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ProjectManagementRequirement requirement)
     {
-        var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new ArgumentNullException(nameof(ClaimTypes.NameIdentifier));
-        var projectId = requirement.ProjectId ?? throw new ArgumentNullException(nameof(context.Resource));
+        var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new ArgumentNullException(nameof(context));
+        var projectId = requirement.ProjectId ?? throw new ArgumentNullException(nameof(requirement));
 
         var result = await _unitOfWork.ReadOnlyProjectMemberRepository.CheckIfUserHasRightsToMenageUserAsync(projectId, userId);
 

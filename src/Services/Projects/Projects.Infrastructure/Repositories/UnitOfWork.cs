@@ -97,7 +97,6 @@ public class UnitOfWork : IUnitOfWork, IDisposable
             if (_currentTransaction != null)
             {
                 _currentTransaction.Dispose();
-                _currentTransaction = null;
             }
         }
     }
@@ -112,7 +111,6 @@ public class UnitOfWork : IUnitOfWork, IDisposable
             if (_currentTransaction != null)
             {
                 _currentTransaction.Dispose();
-                _currentTransaction = null;
             }
         }
     }

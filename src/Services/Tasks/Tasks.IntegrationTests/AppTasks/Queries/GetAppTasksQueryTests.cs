@@ -60,9 +60,7 @@ public class GetAppTasksQueryTests : IAsyncLifetime //to może zastępowac konst
         var response = await _base._client.GetAsync($"api/projects/{projectMembers[0].ProjectId}/task?{queryParams}");
 
         //assert
-        var responseString = await response.Content.ReadAsStringAsync();
-        var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-        var returnedAppTasks = JsonSerializer.Deserialize<AppTaskDtosWithTotalCount>(responseString, options);
+
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -85,7 +83,6 @@ public class GetAppTasksQueryTests : IAsyncLifetime //to może zastępowac konst
 
         //assert
 
-        var responseString = await response.Content.ReadAsStringAsync();
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 }

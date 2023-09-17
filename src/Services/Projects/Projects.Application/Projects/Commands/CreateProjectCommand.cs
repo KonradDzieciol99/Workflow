@@ -12,7 +12,7 @@ namespace Projects.Application.Projects.Commands;
 
 public record CreateProjectCommand(string Name, Icon Icon) : IAuthorizationRequest<ProjectDto>
 {
-    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new() { };
+    public List<IAuthorizationRequirement> GetAuthorizationRequirement() => new();
 }
 public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand, ProjectDto>
 {
@@ -22,9 +22,9 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
 
     public CreateProjectCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IMapper mapper)
     {
-        this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(_unitOfWork));
-        this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(_currentUserService));
-        this._mapper = mapper ?? throw new ArgumentNullException(nameof(_mapper));
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
     public async Task<ProjectDto> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {

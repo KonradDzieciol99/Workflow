@@ -5,16 +5,13 @@ using Tasks.Infrastructure.Repositories;
 
 namespace Tasks.Application.IntegrationEvents;
 
-public record ProjectMemberDeclineInvitationEvent(string ProjectMemberId, string UserId, string UserEmail, string? PhotoUrl, int Type, string ProjectId, int InvitationStatus, string ProjectName, string projectIconUrl) : IntegrationEvent;
+public record ProjectMemberDeclineInvitationEvent(string ProjectMemberId, string UserId, string UserEmail, string? PhotoUrl, int Type, string ProjectId, int InvitationStatus, string ProjectName, string ProjectIconUrl) : IntegrationEvent;
 public class ProjectMemberDeclineInvitationEventHandler : IRequestHandler<ProjectMemberDeclineInvitationEvent>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
-
-    public ProjectMemberDeclineInvitationEventHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    public ProjectMemberDeclineInvitationEventHandler(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
     }
     public async Task Handle(ProjectMemberDeclineInvitationEvent request, CancellationToken cancellationToken)
     {

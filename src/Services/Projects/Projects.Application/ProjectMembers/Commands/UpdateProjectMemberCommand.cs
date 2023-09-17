@@ -26,8 +26,8 @@ public class UpdateProjectMemberCommandHandler : IRequestHandler<UpdateProjectMe
 
     public UpdateProjectMemberCommandHandler(IUnitOfWork unitOfWork,ICurrentUserService currentUserService)
     {
-        _unitOfWork = unitOfWork;
-        this._currentUserService = currentUserService;
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
     }
     public async Task Handle(UpdateProjectMemberCommand request, CancellationToken cancellationToken)
     {

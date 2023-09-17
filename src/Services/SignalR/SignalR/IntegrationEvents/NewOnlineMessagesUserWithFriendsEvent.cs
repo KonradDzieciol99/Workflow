@@ -17,8 +17,8 @@ public class NewOnlineMessagesUserWithFriendsEventHandler : IRequestHandler<NewO
     public NewOnlineMessagesUserWithFriendsEventHandler(IConnectionMultiplexer connectionMultiplexer,
         IHubContext<MessagesHub> messagesHubContext)
     {
-        _messagesHubContext = messagesHubContext;
-        _redisDb = connectionMultiplexer.GetDatabase();
+        _messagesHubContext = messagesHubContext ?? throw new ArgumentNullException(nameof(messagesHubContext));
+        _redisDb = connectionMultiplexer.GetDatabase() ?? throw new ArgumentNullException(nameof(connectionMultiplexer));
     }
     public async Task Handle(NewOnlineMessagesUserWithFriendsEvent request, CancellationToken cancellationToken)
     {
@@ -37,7 +37,7 @@ public class NewOnlineMessagesUserWithFriendsEventHandler : IRequestHandler<NewO
                 onlineUsers.Add(request.NewOnlineUserChatFriends.ElementAt(i));
             }
         }
-        await _messagesHubContext.Clients.User(request.NewOnlineUser.Id).SendAsync("GetOnlineUsers", onlineUsers);
+        await _messagesHubContext.Clients.User(request.NewOnlineUser.Id).SendAsync("GetOnlineUsers", onlineUsers, cancellationToken: cancellationToken);
         return;
     }
 }

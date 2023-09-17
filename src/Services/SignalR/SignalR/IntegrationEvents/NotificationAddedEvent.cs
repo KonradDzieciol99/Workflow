@@ -13,11 +13,10 @@ public class NotificationAddedEventHandler : IRequestHandler<NotificationAddedEv
 
     public NotificationAddedEventHandler(IHubContext<PresenceHub> presenceHubContext)
     {
-        _presenceHubContext = presenceHubContext;
+        _presenceHubContext = presenceHubContext ?? throw new ArgumentNullException(nameof(presenceHubContext));
     }
     public async Task Handle(NotificationAddedEvent request, CancellationToken cancellationToken)
     {
-        //TODO zrobić DTO z NotificationAddedEvent
-        await _presenceHubContext.Clients.User(request.UserId).SendAsync("NewNotificationReceived", request);
+        await _presenceHubContext.Clients.User(request.UserId).SendAsync("NewNotificationReceived", request, cancellationToken: cancellationToken);
     }
 }

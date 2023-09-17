@@ -1,4 +1,6 @@
-﻿namespace SignalR.Commons.Models;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace SignalR.Commons.Models;
 
 public class FriendInvitationDto
 {
@@ -6,7 +8,7 @@ public class FriendInvitationDto
     {
 
     }
-
+    [SetsRequiredMembers]
     public FriendInvitationDto(string inviterUserId, string inviterUserEmail, string? inviterPhotoUrl, string invitedUserId, string invitedUserEmail, string? invitedPhotoUrl, bool confirmed)
     {
         InviterUserId = inviterUserId ?? throw new ArgumentNullException(nameof(inviterUserId));
@@ -18,11 +20,11 @@ public class FriendInvitationDto
         Confirmed = confirmed;
     }
 
-    public string InviterUserId { get; set; }
-    public string InviterUserEmail { get; set; }
+    public required string InviterUserId { get; set; }
+    public required string InviterUserEmail { get; set; }
     public string? InviterPhotoUrl { get; set; }
-    public string InvitedUserId { get; set; }
-    public string InvitedUserEmail { get; set; }
+    public required string InvitedUserId { get; set; }
+    public required string InvitedUserEmail { get; set; }
     public string? InvitedPhotoUrl { get; set; }
-    public bool Confirmed { get; set; }
+    public required bool Confirmed { get; set; }
 }

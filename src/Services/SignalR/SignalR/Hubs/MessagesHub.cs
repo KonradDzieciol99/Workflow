@@ -7,7 +7,7 @@ namespace SignalR.Hubs;
 [Authorize(Policy = "ApiScope")]
 public class MessagesHub : Hub
 {
-    public MessagesHub(IConnectionMultiplexer connectionMultiplexer)
+    public MessagesHub()
     {
     }
 

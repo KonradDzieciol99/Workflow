@@ -21,24 +21,19 @@ public class ApplicationDbContext : DbContext
         {
             opt.HasKey(x => x.Id);
 
-            //opt.HasMany<ProjectMember>(x => x.ProjectMembers)
-            //.WithOne(x => x.MotherProject)
-            //.HasForeignKey(x => x.ProjectId)
-            //.OnDelete(DeleteBehavior.Cascade);
-
             opt.Property(x => x.Id).ValueGeneratedOnAdd();
 
             opt.HasOne(x => x.TaskLeader)
                .WithMany(x => x.ConductedTasks)
                .HasForeignKey(x => x.TaskLeaderId)
                .OnDelete(DeleteBehavior.Restrict)
-               .IsRequired(false);///tu może być błąd !!!
+               .IsRequired(false);
 
             opt.HasOne(x => x.TaskAssignee)
                .WithMany(x => x.AssignedTasks)
                .HasForeignKey(x => x.TaskAssigneeMemberId)
                .OnDelete(DeleteBehavior.Restrict)
-               .IsRequired(false);///tu może być błąd !!!
+               .IsRequired(false);
         });
 
         builder.Entity<ProjectMember>(opt =>

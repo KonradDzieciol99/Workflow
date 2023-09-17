@@ -9,12 +9,9 @@ public record ProjectMemberRemovedEvent(string ProjectMemberId, string ProjectId
 public class ProjectMemberRemovedEventHandler : IRequestHandler<ProjectMemberRemovedEvent>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
-
-    public ProjectMemberRemovedEventHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    public ProjectMemberRemovedEventHandler(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
     }
     public async Task Handle(ProjectMemberRemovedEvent request, CancellationToken cancellationToken)
     {

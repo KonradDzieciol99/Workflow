@@ -47,6 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Infrastructure\Common\Extensions\" />
     <Folder Include="Infrastructure\DataAccess\Migrations\" />
   </ItemGroup>
 

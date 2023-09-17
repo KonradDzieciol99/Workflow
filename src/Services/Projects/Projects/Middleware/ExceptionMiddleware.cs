@@ -10,13 +10,22 @@ public class ExceptionMiddleware
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionMiddleware> _logger;
     private readonly IWebHostEnvironment _env;
+    private readonly Dictionary<Type, Func<ProjectDomainException, HttpContext, Task>> _exceptionHandlers;
 
     public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IWebHostEnvironment env)
     {
         this._next = next;
         this._logger = logger;
         this._env = env;
+        _exceptionHandlers = new()
+            {
+                { typeof(ValidationException), HandleValidationException },
+                { typeof(ProjectDomainException), HandleDomainException },
+                { typeof(UnauthorizedAccessException), HandleUnauthorizedAccessException },
+                { typeof(ForbiddenAccessException), HandleForbiddenAccessException },
+            };
     }
+
     public async Task InvokeAsync(HttpContext httpContext)
     {
         try
@@ -28,93 +37,97 @@ public class ExceptionMiddleware
             await HandleExceptionAsync(httpContext, ex);
         }
     }
+
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        context.Response.ContentType = "application/json";
-
-        var type = exception.GetType();
-
-        _logger.LogError(exception, null);
-
         if (exception is ProjectDomainException taskDomainException)
         {
-
-            var problemDetails = new ValidationProblemDetails()
+            Type type = taskDomainException.InnerException?.GetType() ?? typeof(ProjectDomainException);
+            if (_exceptionHandlers.TryGetValue(type, out var handler))
             {
-                Instance = context.Request.Path,
-                Title = exception.Message,
-            };
-
-            var statusCode = (int)HttpStatusCode.BadRequest;
-
-            if (taskDomainException.InnerException is not null)
-            {
-                problemDetails.Title = taskDomainException.InnerException.Message;
-
-                if (taskDomainException.InnerException is ForbiddenAccessException)
-                    statusCode = (int)HttpStatusCode.Forbidden;
-                else if (taskDomainException.InnerException is UnauthorizedException)
-                    statusCode = (int)HttpStatusCode.Unauthorized;
-                else if (taskDomainException.InnerException is Application.Common.Exceptions.ValidationException internalEx)
-                {
-                    foreach (var item in internalEx.Errors)
-                        problemDetails.Errors.Add(item.Key, item.Value);
-                }
+                await handler.Invoke(taskDomainException, context);
+                return;
             }
-
-            context.Response.StatusCode = statusCode;
-            await context.Response.WriteAsJsonAsync(problemDetails);
         }
-        else
+
+
+        var message = new ProblemDetails()
         {
-            var message = "An error occur.Try it again.";
+            Instance = context.Request.Path,
+            Type = "InternalServerError",
+            Title = "Unknown error",
+            Detail = "An error occur.Try it again.",
+            Status = StatusCodes.Status500InternalServerError
+        };
 
-            if (_env.IsDevelopment())
-                message = exception.Message;
+        if (_env.IsDevelopment())
+            message.Detail = exception.Message;
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+        await context.Response.WriteAsJsonAsync(message);
 
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            await context.Response.WriteAsJsonAsync(message);
-        }
     }
-    //private async Task HandleExceptionAsync(HttpContext context, Exception exception)
-    //{
-    //    context.Response.ContentType = "application/json";
 
+    private async Task HandleUnauthorizedAccessException(ProjectDomainException exception, HttpContext context)
+    {
+        var message = new ProblemDetails()
+        {
+            Instance = context.Request.Path,
+            Type = nameof(UnauthorizedAccessException),
+            Title = "Unauthorized",
+            Detail = exception.Message,
+            Status = StatusCodes.Status401Unauthorized
+        };
 
-    //    var type = exception.GetType();
-    //    if (exception is BadHttpRequestException badHttpRequestException)
-    //    {
-    //        //var problemDetails = new ProblemDetails
-    //        //{
-    //        //    //Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
-    //        //    //Title = "Bad Request",
-    //        //    //Status = 400,
-    //        //    Detail = badHttpRequestException.Message,
-    //        //    //Instance = context.Request.Path
-    //        //};
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        await context.Response.WriteAsJsonAsync(message);
+        return;
+    }
 
-    //        context.Response.StatusCode = badHttpRequestException.StatusCode;
-    //        await context.Response.WriteAsJsonAsync( new {error = badHttpRequestException.Message }); 
-    //    }
-    //    else if (exception is Application.Common.Exceptions.ValidationException appValidationException)
-    //    {
-    //        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-    //        await context.Response.WriteAsJsonAsync(appValidationException.Errors);
-    //    }
-    //    //else if (exception is BadRequestException badRequestException)
-    //    //{
-    //    //    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-    //    //    await context.Response.WriteAsync(badRequestException.Message);
-    //    //}
-    //    else if (exception is UnauthorizedAccessException unauthorizedAccessException)
-    //    {
-    //        context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-    //        await context.Response.WriteAsJsonAsync(unauthorizedAccessException.Message);
-    //    }
-    //    else
-    //    {
-    //        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-    //        await context.Response.WriteAsJsonAsync(exception.Message);
-    //    }
-    //}
+    private async Task HandleForbiddenAccessException(ProjectDomainException exception, HttpContext context)
+    {
+        var message = new ProblemDetails()
+        {
+            Instance = context.Request.Path,
+            Type = nameof(ForbiddenAccessException),
+            Title = "You have no rights to this resource",
+            Detail = exception.Message,
+            Status = StatusCodes.Status403Forbidden
+        };
+
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        await context.Response.WriteAsJsonAsync(message);
+        return;
+    }
+
+    private async Task HandleDomainException(ProjectDomainException exception, HttpContext context)
+    {
+        var message = new ProblemDetails()
+        {
+            Instance = context.Request.Path,
+            Type = nameof(Exception),
+            Detail = exception.Message,
+            Status = StatusCodes.Status400BadRequest
+        };
+
+        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+        await context.Response.WriteAsJsonAsync(message);
+        return;
+    }
+    private async Task HandleValidationException(ProjectDomainException exception, HttpContext context)
+    {
+        var innerException = (ValidationException)exception.InnerException!;
+
+        var message = new ValidationProblemDetails(innerException.Errors)
+        {
+            Instance = context.Request.Path,
+            Type = nameof(ValidationException),
+            Title = "Validation errors occurred",
+            Detail = exception.Message,
+            Status = StatusCodes.Status400BadRequest
+        };
+
+        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+        await context.Response.WriteAsJsonAsync(message);
+        return;
+    }
 }

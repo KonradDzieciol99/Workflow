@@ -13,19 +13,12 @@ namespace IdentityDuende.Pages.EmailConfirmationInfo;
 public class IndexModel : PageModel
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
-    private readonly RoleManager<IdentityRole> _roleInManager;
     private readonly IEventService _events;
     public ViewModel View { get; set; }
 
-    public IndexModel(UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-            RoleManager<IdentityRole> roleInManager,
-            IEventService events)
+    public IndexModel(UserManager<ApplicationUser> userManager,IEventService events)
     {
         this._userManager = userManager;
-        this._signInManager = signInManager;
-        this._roleInManager = roleInManager;
         this._events = events;
     }
 

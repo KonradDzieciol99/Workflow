@@ -13,11 +13,11 @@ public class UserOfflineWithFriendsEventHandler : IRequestHandler<UserOfflineWit
 
     public UserOfflineWithFriendsEventHandler(IHubContext<PresenceHub> presenceHubContext)
     {
-        this._presenceHubContext = presenceHubContext;
+        this._presenceHubContext = presenceHubContext  ?? throw new ArgumentNullException(nameof(presenceHubContext));
     }
     public async Task Handle(UserOfflineWithFriendsEvent request, CancellationToken cancellationToken)
     {
-        await _presenceHubContext.Clients.Users(request.UserChatFriends.Select(x => x.Id)).SendAsync("UserIsOffline", request.User.Email);
+        await _presenceHubContext.Clients.Users(request.UserChatFriends.Select(x => x.Id)).SendAsync("UserIsOffline", request.User.Email, cancellationToken: cancellationToken);
         return;
     }
 }

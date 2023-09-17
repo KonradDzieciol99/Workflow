@@ -20,8 +20,8 @@ public class DeclineProjectInvitationCommandHandler : IRequestHandler<DeclinePro
 
     public DeclineProjectInvitationCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
     {
-        this._unitOfWork = unitOfWork;
-        this._currentUserService = currentUserService;
+        this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
     }
     public async Task Handle(DeclineProjectInvitationCommand request, CancellationToken cancellationToken)
     {

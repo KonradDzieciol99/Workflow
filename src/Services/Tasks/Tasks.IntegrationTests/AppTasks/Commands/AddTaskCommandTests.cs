@@ -69,7 +69,7 @@ public class AddTaskCommandTests : IAsyncLifetime //to może zastępowac konstru
 
         _base._client.SetHeaders(projectMembers[0].UserId, projectMembers[0].UserEmail);
 
-        var command = new AddTaskCommand(null, null, projectMembers[0].ProjectId, null, (Priority)4, (State)94, new DateTime(2023, 6, 4), new DateTime(2023, 6, 5), "1");
+        var command = new AddTaskCommand("x", null, projectMembers[0].ProjectId, null, (Priority)4, (State)94, new DateTime(2023, 6, 4), new DateTime(2023, 6, 5), "1");
         var content = new StringContent(JsonSerializer.Serialize(command), UTF8Encoding.UTF8, "application/json");
 
         //act

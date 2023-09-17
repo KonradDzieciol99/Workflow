@@ -25,9 +25,9 @@ public class DeleteProjectCommandHandler : IRequestHandler<DeleteProjectCommand>
 
     public DeleteProjectCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IMapper mapper)
     {
-        this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(_unitOfWork));
-        this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(_currentUserService));
-        this._mapper = mapper ?? throw new ArgumentNullException(nameof(_mapper));
+        this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+        this._mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     public async Task Handle(DeleteProjectCommand request, CancellationToken cancellationToken)

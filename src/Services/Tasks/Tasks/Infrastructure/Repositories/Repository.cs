@@ -36,8 +36,4 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
         _dbContext.Set<TEntity>().RemoveRange(entities);
     }
-    //public async Task<int> ExecuteDeleteAsync(string id)
-    //{
-    //    return await _dbContext.Set<TEntity>().Where(x => x.Id == id).ExecuteDeleteAsync();
-    //}
 }

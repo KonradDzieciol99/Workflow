@@ -15,14 +15,14 @@ public class UserOnlineNotifcationsAndUnreadEventHandler : IRequestHandler<UserO
 
     public UserOnlineNotifcationsAndUnreadEventHandler(IHubContext<PresenceHub> presenceHubContext)
     {
-        _presenceHubContext = presenceHubContext;
+        _presenceHubContext = presenceHubContext ?? throw new ArgumentNullException(nameof(presenceHubContext)); 
     }
 
     public async Task Handle(UserOnlineNotifcationsAndUnreadEvent request, CancellationToken cancellationToken)
     {
 
-        await _presenceHubContext.Clients.User(request.OnlineUser.Id).SendAsync("ReceiveNotifications", new PagedAppNotifications(request.AppNotifications, request.TotalCount));
-        await _presenceHubContext.Clients.User(request.OnlineUser.Id).SendAsync("ReceiveUnreadNotifications", request.UnreadIds);
+        await _presenceHubContext.Clients.User(request.OnlineUser.Id).SendAsync("ReceiveNotifications", new PagedAppNotifications(request.AppNotifications, request.TotalCount), cancellationToken: cancellationToken);
+        await _presenceHubContext.Clients.User(request.OnlineUser.Id).SendAsync("ReceiveUnreadNotifications", request.UnreadIds, cancellationToken: cancellationToken);
 
         return;
     }
