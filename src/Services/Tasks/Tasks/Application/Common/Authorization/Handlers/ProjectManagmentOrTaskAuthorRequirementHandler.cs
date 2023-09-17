@@ -14,9 +14,9 @@ public class ProjectManagmentOrTaskAuthorRequirementHandler : AuthorizationHandl
     }
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ProjectManagmentOrTaskAuthorRequirement requirement)
     {
-        var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new ArgumentNullException(nameof(ClaimTypes.NameIdentifier));
-        var projectId = requirement.ProjectId ?? throw new ArgumentNullException(nameof(requirement.ProjectId));
-        var appTaskId = requirement.AppTaskId ?? throw new ArgumentNullException(nameof(requirement.AppTaskId));
+        var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new ArgumentNullException(nameof(context));
+        var projectId = requirement.ProjectId ?? throw new ArgumentNullException(nameof(requirement));
+        var appTaskId = requirement.AppTaskId ?? throw new ArgumentNullException(nameof(requirement));
 
         var result = await _unitOfWork.AppTaskRepository.CheckIfUserHasRightsToMenageTaskAsync(projectId, userId, appTaskId);
 

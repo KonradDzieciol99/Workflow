@@ -26,7 +26,7 @@ public class MarkAsSeenAppNotificationCommandHandler : IRequestHandler<MarkAsSee
 
     public MarkAsSeenAppNotificationCommandHandler(IUnitOfWork unitOfWork)
     {
-        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(_unitOfWork));
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
     public async Task Handle(MarkAsSeenAppNotificationCommand request, CancellationToken cancellationToken)
     {

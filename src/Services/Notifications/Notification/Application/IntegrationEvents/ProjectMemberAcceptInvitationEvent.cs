@@ -10,12 +10,10 @@ public record ProjectMemberAcceptInvitationEvent(string ProjectMemberId, string 
 public class ProjectMemberAcceptInvitationEventHandler : IRequestHandler<ProjectMemberAcceptInvitationEvent>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IEventBusSender _azureServiceBusSender;
 
-    public ProjectMemberAcceptInvitationEventHandler(IUnitOfWork unitOfWork, IEventBusSender azureServiceBusSender)
+    public ProjectMemberAcceptInvitationEventHandler(IUnitOfWork unitOfWork)
     {
-        this._unitOfWork = unitOfWork;
-        this._azureServiceBusSender = azureServiceBusSender;
+        this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
     public async Task Handle(ProjectMemberAcceptInvitationEvent request, CancellationToken cancellationToken)
     {
@@ -41,19 +39,6 @@ public class ProjectMemberAcceptInvitationEventHandler : IRequestHandler<Project
 
         if (!await _unitOfWork.Complete())
             throw new InvalidOperationException();
-
-        //var @event = new NotificationAddedEvent(notification.Id,
-        //                                       notification.UserId,
-        //                                       (int)notification.NotificationType,
-        //                                       notification.CreationDate,
-        //                                       notification.Displayed,
-        //                                       notification.Description,
-        //                                       notification.NotificationPartnerId,
-        //                                       notification.NotificationPartnerEmail,
-        //                                       notification.NotificationPartnerPhotoUrl,
-        //                                       oldNotifications.Select(x => x.Id).ToList());
-
-        //await _azureServiceBusSender.PublishMessage(@event);
 
         return;
     }

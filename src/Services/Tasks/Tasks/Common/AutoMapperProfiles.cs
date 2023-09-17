@@ -10,9 +10,6 @@ public class AutoMapperProfiles : Profile
 {
     public AutoMapperProfiles()
     {
-        //CreateMap<CreateAppTaskDto, AppTask>();
-        //CreateMap<AppTask, CreateAppTaskDto>();
-
         CreateMap<AppTask, AddTaskCommand>();
         CreateMap<AddTaskCommand, AppTask>();
 

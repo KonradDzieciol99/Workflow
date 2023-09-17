@@ -112,12 +112,12 @@ public class Consent : PageModel
         return Page();
     }
 
-    private async Task<ViewModel> BuildViewModelAsync(string id, InputModel model = null)
+    private async Task<ViewModel> BuildViewModelAsync(string id, InputModel? model = null)
     {
         var request = await _interaction.GetLoginRequestByInternalIdAsync(id);
         if (request != null && request.Subject.GetSubjectId() == User.GetSubjectId())
         {
-            return CreateConsentViewModel(model, id, request);
+            return CreateConsentViewModel(model, request);
         }
         else
         {
@@ -127,7 +127,7 @@ public class Consent : PageModel
     }
 
     private ViewModel CreateConsentViewModel(
-        InputModel model, string id,
+        InputModel model,
         BackchannelUserLoginRequest request)
     {
         var vm = new ViewModel

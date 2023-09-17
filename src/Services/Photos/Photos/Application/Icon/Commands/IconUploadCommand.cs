@@ -16,8 +16,6 @@ public record IconUploadCommand(IFormFile File, string Name) : IAuthorizationReq
         return new List<IAuthorizationRequirement>();
     }
 }
-
-
 public class IconUploadCommandHandler : IRequestHandler<IconUploadCommand>
 {
     private readonly BlobServiceClient _blobServiceClient;
@@ -25,8 +23,8 @@ public class IconUploadCommandHandler : IRequestHandler<IconUploadCommand>
 
     public IconUploadCommandHandler(BlobServiceClient blobServiceClient, IConfiguration configuration)
     {
-        this._blobServiceClient = blobServiceClient ?? throw new ArgumentNullException(nameof(BlobServiceClient));
-        this._configuration = configuration ?? throw new ArgumentNullException(nameof(IConfiguration));
+        this._blobServiceClient = blobServiceClient ?? throw new ArgumentNullException(nameof(blobServiceClient));
+        this._configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
     }
 
     public async Task Handle(IconUploadCommand request, CancellationToken cancellationToken)
@@ -42,7 +40,7 @@ public class IconUploadCommandHandler : IRequestHandler<IconUploadCommand>
             },
         };
 
-        await blobClient.UploadAsync(request.File.OpenReadStream(), blobUploadOptions);
+        await blobClient.UploadAsync(request.File.OpenReadStream(), blobUploadOptions, cancellationToken);
 
         return;
     }

@@ -25,10 +25,6 @@ public class AppNotificationRepository : Repository<AppNotification>, IAppNotifi
     {
         return await _applicationDbContext.AppNotification.SingleOrDefaultAsync(x => x.Id == Id);
     }
-    //public async Task<AppNotification?> GetAsync(Expression<Func<AppNotification, bool>> predicate)
-    //{
-    //    return await _applicationDbContext.AppNotification.SingleOrDefaultAsync(predicate);
-    //}
     public async Task<List<AppNotification>> GetByNotificationPartnersIdsAsync(string NotificationPartnerIdOne, string NotificationPartnerIdTwo, List<NotificationType> notificationTypes)
     {
         return await _applicationDbContext.AppNotification.Where(x => ((x.UserId == NotificationPartnerIdOne && x.NotificationPartnerId == NotificationPartnerIdTwo) ||

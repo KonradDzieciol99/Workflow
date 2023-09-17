@@ -22,7 +22,7 @@ public class RabbitMQSender : IEventBusSender
 
     public Task PublishMessage(IntegrationEvent message)
     {
-        var factory = new ConnectionFactory { HostName = _options.Host, UserName = _options.UserName, Password = _options.Password, DispatchConsumersAsync = true };
+        var factory = new ConnectionFactory { Uri=new Uri(_options.RabbitMQConnectionString), DispatchConsumersAsync = true };
 
         using var connection = factory.CreateConnection();
         using var channel = connection.CreateModel();

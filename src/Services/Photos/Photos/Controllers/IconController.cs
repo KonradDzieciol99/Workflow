@@ -17,7 +17,7 @@ public class IconController : ControllerBase
 
     public IconController(IMediator mediator)
     {
-        this._mediator = mediator ?? throw new ArgumentNullException(nameof(IMediator));
+        this._mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
     [HttpPost]

@@ -15,6 +15,5 @@ public class AddTaskCommandValidator : AbstractValidator<AddTaskCommand>
         RuleFor(x => x.State).IsInEnum();
         RuleFor(x => x.TaskAssigneeMemberId).MinimumLength(1).MaximumLength(50);
         RuleFor(x => x.Description).MaximumLength(500);
-        //RuleFor(x => x.DueDate);
     }
 }

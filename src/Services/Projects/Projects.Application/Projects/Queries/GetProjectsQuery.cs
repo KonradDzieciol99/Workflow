@@ -20,9 +20,9 @@ public class GetProjectsQueryHandler : IRequestHandler<GetProjectsQuery, Project
 
     public GetProjectsQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserService currentUserService)
     {
-        _unitOfWork = unitOfWork;
-        this._mapper = mapper;
-        this._currentUserService = currentUserService;
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        this._mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
     }
 
     public async Task<ProjectsWithTotalCount> Handle(GetProjectsQuery request, CancellationToken cancellationToken)
@@ -33,19 +33,6 @@ public class GetProjectsQueryHandler : IRequestHandler<GetProjectsQuery, Project
 
         return projectsWithTotalCount;
     }
-
-    //public async Task<ProjectsWithTotalCount> Handle(GetProjectsQuery request, CancellationToken cancellationToken)
-    //{
-    //    var result = await _unitOfWork.ReadOnlyProjectMemberRepository.Get(_currentUserService.UserId, request.AppParams);
-
-    //    var projectsWithTotalCount = new ProjectsWithTotalCount()
-    //    {
-    //        Count = result.TotalCount,
-    //        Result = _mapper.Map<List<ProjectDto>>(result.Projects)
-    //    };
-
-    //    return projectsWithTotalCount;
-    //}
 }
 
 

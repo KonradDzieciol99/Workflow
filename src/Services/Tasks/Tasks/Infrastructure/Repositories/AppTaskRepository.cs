@@ -49,7 +49,7 @@ public class AppTaskRepository : Repository<AppTask>, IAppTaskRepository
 
         query = string.IsNullOrWhiteSpace(@params.Search) switch
         {
-            true => query.Where(x => x.ProjectId == @params.ProjectId), //pobiera wszyskie zadania dla danego projektu
+            true => query.Where(x => x.ProjectId == @params.ProjectId),
             false => query.Where(x => x.ProjectId == @params.ProjectId && x.Name.StartsWith(@params.Search)),
         };
 
@@ -61,32 +61,4 @@ public class AppTaskRepository : Repository<AppTask>, IAppTaskRepository
 
         return (projects, totalCount);
     }
-    //public async Task<(List<Project> Projects, int TotalCount)> Get(string userId, GetProjectsQuery appParams)
-    //{
-
-    //    var query = ProjectMembersQuery.AsQueryable();
-
-    //    query = query.Include(pm => pm.MotherProject);
-    //    //.ThenInclude(p => p.ProjectMembers);
-
-    //    if (string.IsNullOrWhiteSpace(appParams.OrderBy) == false && appParams.IsDescending.HasValue)
-    //    {
-    //        query.OrderBy(appParams.OrderBy, appParams.IsDescending.Value);
-    //    }
-
-    //    query = string.IsNullOrWhiteSpace(appParams.Search) switch
-    //    {
-    //        true => query.Where(x => x.UserId == userId),
-    //        false => query.Where(x => x.UserId == userId && x.MotherProject.Name.StartsWith(appParams.Search)),
-    //    };
-
-    //    int totalCount = await query.CountAsync();
-
-    //    var projects = await query.Select(pm => pm.MotherProject)
-    //                              .Skip(appParams.Skip)
-    //                              .Take(appParams.Take)
-    //                              .ToListAsync();
-
-    //    return (projects, totalCount);
-    //}
 }

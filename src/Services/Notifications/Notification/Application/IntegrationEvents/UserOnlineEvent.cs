@@ -11,14 +11,12 @@ public record UserOnlineEvent(UserDto OnlineUser) : IntegrationEvent;
 public class UserOnlineEventHandler : IRequestHandler<UserOnlineEvent>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ICurrentUserService _currentUserService;
     private readonly IEventBusSender _azureServiceBusSender;
 
-    public UserOnlineEventHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IEventBusSender azureServiceBusSender)
+    public UserOnlineEventHandler(IUnitOfWork unitOfWork,IEventBusSender azureServiceBusSender)
     {
-        this._unitOfWork = unitOfWork;
-        this._currentUserService = currentUserService;
-        this._azureServiceBusSender = azureServiceBusSender;
+        this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        this._azureServiceBusSender = azureServiceBusSender ?? throw new ArgumentNullException(nameof(azureServiceBusSender));
     }
     public async Task Handle(UserOnlineEvent request, CancellationToken cancellationToken)
     {
@@ -33,13 +31,6 @@ public class UserOnlineEventHandler : IRequestHandler<UserOnlineEvent>
         await _azureServiceBusSender.PublishMessage(@event);
 
         return;
-
-        //odczytać jeszcze ilość nieprzecz
-        // a może zrobić tak że sprawdzać tylko ile jest nieodzytanych i na przykład zwracać id nieodczytanych notyfikacji a..
-        // a notyfikacje w samie w sobie będzie pobierać.. w innym serwisie
-        // nie to nie jest doby pommysł bo jak będą przychodziły nowe notyfikacje to włąsnie do tego serwisu a 
-        // a na poczatek ma pobierać po prostu 5 ostatnich według Daty, jeśli użytkownik bedzie chiał będzie mógł sobie kliknąć ze
-        //mają się pojawić nieprzeczytane w tedy pobiera nieprzeczytane TYLKO bez przecztanych tak jak na fb 
     }
 }
 

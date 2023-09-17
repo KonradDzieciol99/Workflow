@@ -36,15 +36,13 @@ public record AddTaskCommand(string Name,
 public class AddTaskCommandHandler : IRequestHandler<AddTaskCommand, AppTaskDto>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ICurrentUserService _currentUserService;
     private readonly IMapper _mapper;
     private readonly IEventBusSender _messageBus;
 
-    public AddTaskCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IMapper mapper, IEventBusSender messageBus)
+    public AddTaskCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IEventBusSender messageBus)
     {
-        this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(_unitOfWork));
-        this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(_currentUserService));
-        this._mapper = mapper ?? throw new ArgumentNullException(nameof(_mapper));
+        this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        this._mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         this._messageBus = messageBus ?? throw new ArgumentNullException(nameof(messageBus));
     }
     public async Task<AppTaskDto> Handle(AddTaskCommand request, CancellationToken cancellationToken)

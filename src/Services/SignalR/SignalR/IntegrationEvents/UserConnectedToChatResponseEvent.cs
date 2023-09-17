@@ -13,11 +13,11 @@ public class UserConnectedToChatResponseEventHandler : IRequestHandler<UserConne
 
     public UserConnectedToChatResponseEventHandler(IHubContext<ChatHub> chatHubContext)
     {
-        this._chatHubContext = chatHubContext;
+        this._chatHubContext = chatHubContext ?? throw new ArgumentNullException( nameof(chatHubContext));
     }
     public async Task Handle(UserConnectedToChatResponseEvent request, CancellationToken cancellationToken)
     {
-        await _chatHubContext.Clients.User(request.ConnectedUser.Id).SendAsync("ReceiveMessageThread", request.Messages);
+        await _chatHubContext.Clients.User(request.ConnectedUser.Id).SendAsync("ReceiveMessageThread", request.Messages, cancellationToken: cancellationToken);
         return;
     }
 }

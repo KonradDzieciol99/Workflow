@@ -19,12 +19,6 @@ services:
   seq:
     image: datalust/seq:latest
 
-  api.aggregator:
-    image: ${DOCKER_REGISTRY-}apiaggregator
-    build:
-      context: .
-      dockerfile: src/Aggregators/API.Aggregator/Dockerfile
-
   healthchecks:
     image: ${DOCKER_REGISTRY-}healthchecks
     build:
@@ -103,15 +97,16 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management
-  # angular:
-  #   image: workflow-ui-image:latest
-  #   build:
-  #     context: C:\Users\konra\source\repos\WorkflowUI
-  #     dockerfile: dockerfile
 
   yarpproxy:
     image: ${DOCKER_REGISTRY-}yarpproxy
     build:
       context: .
       dockerfile: src/Proxy/Yarp/YarpProxy/Dockerfile
+
+  api.aggregator:
+    image: ${DOCKER_REGISTRY-}apiaggregator
+    build:
+      context: .
+      dockerfile: src/Aggregators/Aggregator/API.Aggregator/Dockerfile
 

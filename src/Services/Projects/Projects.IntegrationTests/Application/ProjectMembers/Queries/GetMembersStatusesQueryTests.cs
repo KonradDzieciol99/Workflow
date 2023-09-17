@@ -53,10 +53,10 @@ public class GetMembersStatusesQueryTests: IAsyncLifetime
         projects[0].AddProjectMember(invitedMember2);
         _base._factory.SeedData<Program, ApplicationDbContext, Project>(projects);
         _base._client.SetHeaders("testUserId", "testUserEmail@test.com");
-        var query = baseQuery with { projectId = projects[0].Id };
+        var query = baseQuery with { ProjectId = projects[0].Id };
 
         //act
-        var response = await _base._client.GetAsync($"api/Projects/{query.projectId}/GetMembersStatuses?usersIds={string.Join("&usersIds=", query.UsersIds)}");
+        var response = await _base._client.GetAsync($"api/Projects/{query.ProjectId}/GetMembersStatuses?usersIds={string.Join("&usersIds=", query.UsersIds)}");
 
         //assert
         var responseString = await response.Content.ReadAsStringAsync();

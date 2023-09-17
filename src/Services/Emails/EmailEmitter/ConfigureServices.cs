@@ -11,9 +11,9 @@ public static class ConfigureServices
     public static IServiceCollection AddWebAPIServices(this IServiceCollection services, IConfiguration configuration)
     {
 
-        services.AddFluentEmail(configuration["EmailConfiguration:From"] ?? throw new ArgumentNullException("EmailConfiguration:From"))
+        services.AddFluentEmail(configuration["EmailConfiguration:From"] ?? throw new ArgumentNullException(nameof(configuration)))
                 .AddRazorRenderer()
-                .AddSendGridSender(configuration["SendGrid:Key"] ?? throw new ArgumentNullException("SendGrid:Key"));
+                .AddSendGridSender(configuration["SendGrid:Key"] ?? throw new ArgumentNullException(nameof(configuration)));
 
         services.AddMediatR(cfg =>
         {

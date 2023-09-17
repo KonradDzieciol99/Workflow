@@ -12,17 +12,14 @@ public record UserOnlineFriendsAndUnMesUserEmailsEvent(UserDto OnlineUser,
                                                        List<string> UnreadMessagesUserEmails) : IntegrationEvent;
 public class UserOnlineFriendsAndUnMesUserEmailsEventHandler : IRequestHandler<UserOnlineFriendsAndUnMesUserEmailsEvent>
 {
-
-    private readonly IHubContext<MessagesHub> _messagesHubContext;
     private readonly IHubContext<PresenceHub> _presenceHubContext;
     private readonly IDatabase _redisDb;
 
     public UserOnlineFriendsAndUnMesUserEmailsEventHandler(IConnectionMultiplexer connectionMultiplexer,
-        IHubContext<MessagesHub> messagesHubContext, IHubContext<PresenceHub> presenceHubContext)
+                                                           IHubContext<PresenceHub> presenceHubContext)
     {
-        _messagesHubContext = messagesHubContext;
-        _presenceHubContext = presenceHubContext;
-        _redisDb = connectionMultiplexer.GetDatabase();
+        _presenceHubContext = presenceHubContext ?? throw new ArgumentNullException(nameof(presenceHubContext));
+        _redisDb = connectionMultiplexer.GetDatabase() ?? throw new ArgumentNullException(nameof(connectionMultiplexer));
     }
     public async Task Handle(UserOnlineFriendsAndUnMesUserEmailsEvent request, CancellationToken cancellationToken)
     {
@@ -37,9 +34,9 @@ public class UserOnlineFriendsAndUnMesUserEmailsEventHandler : IRequestHandler<U
             .Where((friend, i) => onlineStatuses[i])
             .ToList();
 
-        await _presenceHubContext.Clients.Users(request.ListOfAcceptedFriends.Select(x => x.Id)).SendAsync("UserIsOnline", request.OnlineUser.Email);
-        await _presenceHubContext.Clients.User(request.OnlineUser.Id).SendAsync("ReceiveOnlineUsers", onlineUsers.Select(x => x.Email));
-        await _presenceHubContext.Clients.User(request.OnlineUser.Id).SendAsync("ReceiveUnreadMessages", request.UnreadMessagesUserEmails);
+        await _presenceHubContext.Clients.Users(request.ListOfAcceptedFriends.Select(x => x.Id)).SendAsync("UserIsOnline", request.OnlineUser.Email, cancellationToken: cancellationToken);
+        await _presenceHubContext.Clients.User(request.OnlineUser.Id).SendAsync("ReceiveOnlineUsers", onlineUsers.Select(x => x.Email), cancellationToken: cancellationToken);
+        await _presenceHubContext.Clients.User(request.OnlineUser.Id).SendAsync("ReceiveUnreadMessages", request.UnreadMessagesUserEmails, cancellationToken: cancellationToken);
 
         return;
     }

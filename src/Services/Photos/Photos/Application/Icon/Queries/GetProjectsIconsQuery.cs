@@ -13,8 +13,8 @@ public class GetProjectsIconsQueryHandler : IRequestHandler<GetProjectsIconsQuer
 
     public GetProjectsIconsQueryHandler(BlobServiceClient blobServiceClient,IConfiguration configuration)
     {
-        this._blobServiceClient = blobServiceClient ?? throw new ArgumentNullException(nameof(BlobServiceClient));
-        this._configuration = configuration ?? throw new ArgumentNullException(nameof(IConfiguration));
+        this._blobServiceClient = blobServiceClient ?? throw new ArgumentNullException(nameof(blobServiceClient));
+        this._configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
     }
 
     public async Task<List<Domain.Entity.Icon>> Handle(GetProjectsIconsQuery request, CancellationToken cancellationToken)
@@ -24,7 +24,7 @@ public class GetProjectsIconsQueryHandler : IRequestHandler<GetProjectsIconsQuer
 
         var icons = new List<Domain.Entity.Icon>();
 
-        await foreach (BlobItem file in blobPhotosContainerClient.GetBlobsAsync())
+        await foreach (BlobItem file in blobPhotosContainerClient.GetBlobsAsync(cancellationToken: cancellationToken))
         {
             string uri = blobPhotosContainerClient.Uri.ToString();
             var name = file.Name;

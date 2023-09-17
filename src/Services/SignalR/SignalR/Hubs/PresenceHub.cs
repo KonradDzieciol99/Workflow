@@ -57,11 +57,4 @@ public class PresenceHub : Hub
 
         await base.OnDisconnectedAsync(exception);
     }
-    private async Task<bool[]> KeyExists(RedisKey[] keys)
-    {
-        var tasks = keys.Select(key => _redisDb.KeyExistsAsync(key));
-        var results = await Task.WhenAll(tasks);
-
-        return results;
-    }
 }

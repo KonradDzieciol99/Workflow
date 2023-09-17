@@ -40,14 +40,14 @@ public class UpdateAppTaskCommandHandler : IRequestHandler<UpdateAppTaskCommand,
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUserService;
     private readonly IMapper _mapper;
-    private readonly IEventBusSender _azureServiceBusSender;
+    private readonly IEventBusSender _eventBusSender;
 
-    public UpdateAppTaskCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IMapper mapper, IEventBusSender messageBus)
+    public UpdateAppTaskCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IMapper mapper, IEventBusSender eventBusSender)
     {
-        this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(_unitOfWork));
-        this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(_currentUserService));
-        this._mapper = mapper ?? throw new ArgumentNullException(nameof(_mapper));
-        this._azureServiceBusSender = messageBus ?? throw new ArgumentNullException(nameof(_azureServiceBusSender)); ;
+        this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+        this._mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        this._eventBusSender = eventBusSender ?? throw new ArgumentNullException(nameof(eventBusSender)); ;
     }
     public async Task<AppTaskDto> Handle(UpdateAppTaskCommand request, CancellationToken cancellationToken)
     {
@@ -64,7 +64,7 @@ public class UpdateAppTaskCommandHandler : IRequestHandler<UpdateAppTaskCommand,
 
         await _unitOfWork.Complete();
 
-        await _azureServiceBusSender.PublishMessage(new TaskDeletedEvent(task.Id));
+        await _eventBusSender.PublishMessage(new TaskDeletedEvent(task.Id));
 
         return _mapper.Map<AppTaskDto>(task);
     }

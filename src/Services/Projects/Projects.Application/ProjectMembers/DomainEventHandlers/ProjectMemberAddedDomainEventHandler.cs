@@ -11,7 +11,7 @@ public class ProjectMemberAddedDomainEventHandler : INotificationHandler<Project
 
     public ProjectMemberAddedDomainEventHandler(IIntegrationEventService integrationEventService)
     {
-        this._integrationEventService = integrationEventService;
+        this._integrationEventService = integrationEventService ?? throw new ArgumentNullException(nameof(integrationEventService));
     }
     public Task Handle(ProjectMemberAddedDomainEvent notification, CancellationToken cancellationToken)
     {

@@ -29,14 +29,4 @@ public class MessagesController : ControllerBase
     {
         return await _mediator.Send(query);
     }
-
-
-    ///// <summary>
-    ///// Only available from the aggregate, as it is necessary to check unread messages
-    ///// </summary>
-    //[HttpGet]
-    //public async Task<ActionResult<int>> GetUnreadMessagesCount()
-    //{
-    //    return await _mediator.Send(new GetUnreadMessagesCountQuery());
-    //}
 }

@@ -30,7 +30,7 @@ public class ProjectMemberRepository : Repository<ProjectMember>, IProjectMember
                                                                 n => n.Type,
                                                                 projectMemberType)
                                                             .SetProperty(
-                                                                b => b.invitationStatus,
+                                                                b => b.InvitationStatus,
                                                                 invitationStatus)
                                                             );
     }

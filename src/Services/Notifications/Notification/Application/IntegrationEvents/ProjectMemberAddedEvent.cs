@@ -15,8 +15,8 @@ public class ProjectMemberAddedEventHandler : IRequestHandler<ProjectMemberAdded
 
     public ProjectMemberAddedEventHandler(IUnitOfWork unitOfWork, IEventBusSender azureServiceBusSender)
     {
-        this._unitOfWork = unitOfWork;
-        this._azureServiceBusSender = azureServiceBusSender;
+        this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        this._azureServiceBusSender = azureServiceBusSender ?? throw new ArgumentNullException(nameof(azureServiceBusSender));
     }
     public async Task Handle(ProjectMemberAddedEvent request, CancellationToken cancellationToken)
     {

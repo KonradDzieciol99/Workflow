@@ -22,14 +22,8 @@ public class ProfileService : IProfileService
     public async Task GetProfileDataAsync(ProfileDataRequestContext context)
     {
         string sub = context.Subject.GetSubjectId();
-        var user = await _userMgr.FindByIdAsync(sub);
-        if (user == null)
-            throw new ArgumentException("Invalid subject identifier");
-
+        var user = await _userMgr.FindByIdAsync(sub) ?? throw new InvalidOperationException("User not found for the given subject identifier.");
         var claims = GetClaimsFromUser(user);
-
-        var test = context.Caller;
-
 
         context.IssuedClaims = claims;
     }
@@ -45,11 +39,11 @@ public class ProfileService : IProfileService
     {
         var claims = new List<Claim>
         {
-            new Claim(JwtClaimTypes.Email, user.Email ?? throw new ArgumentNullException(nameof(user.Email))),
+            new(JwtClaimTypes.Email, user.Email ?? throw new ArgumentNullException(nameof(user))),
         };
 
         if (user.PictureUrl is not null)
-            claims.Add(new Claim(JwtClaimTypes.Picture, user.PictureUrl));
+            claims.Add(new(JwtClaimTypes.Picture, user.PictureUrl));
 
         return claims;
     }

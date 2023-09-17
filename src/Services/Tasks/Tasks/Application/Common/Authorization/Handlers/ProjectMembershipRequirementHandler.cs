@@ -14,8 +14,8 @@ public class ProjectMembershipRequirementHandler : AuthorizationHandler<ProjectM
     }
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ProjectMembershipRequirement requirement)
     {
-        var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new ArgumentNullException(nameof(ClaimTypes.NameIdentifier));
-        var projectId = requirement.ProjectId ?? throw new ArgumentNullException(nameof(context.Resource));
+        var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new ArgumentNullException(nameof(context));
+        var projectId = requirement.ProjectId ?? throw new ArgumentNullException(nameof(requirement));
 
         var result = await _unitOfWork.ProjectMemberRepository.CheckIfUserIsAMemberOfProject(projectId, userId);
 

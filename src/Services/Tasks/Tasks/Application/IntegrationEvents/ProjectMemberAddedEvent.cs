@@ -6,16 +6,14 @@ using Tasks.Domain.Entity;
 using Tasks.Infrastructure.Repositories;
 
 namespace Tasks.Application.IntegrationEvents;
-public record ProjectMemberAddedEvent(string ProjectMemberId, string UserId, string UserEmail, string? PhotoUrl, int Type, string ProjectId, int InvitationStatus, string ProjectName, string projectIconUrl, bool IsNewProjectCreator) : IntegrationEvent;
+public record ProjectMemberAddedEvent(string ProjectMemberId, string UserId, string UserEmail, string? PhotoUrl, int Type, string ProjectId, int InvitationStatus, string ProjectName, string ProjectIconUrl, bool IsNewProjectCreator) : IntegrationEvent;
 public class ProjectMemberAddedEventHandler : IRequestHandler<ProjectMemberAddedEvent>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
 
-    public ProjectMemberAddedEventHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    public ProjectMemberAddedEventHandler(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
     }
     public async Task Handle(ProjectMemberAddedEvent request, CancellationToken cancellationToken)
     {

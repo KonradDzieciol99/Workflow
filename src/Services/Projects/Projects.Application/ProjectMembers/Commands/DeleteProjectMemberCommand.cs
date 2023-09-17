@@ -6,7 +6,7 @@ using Projects.Application.Common.Interfaces;
 
 namespace Projects.Application.ProjectMembers.Commands;
 
-public record DeleteProjectMemberCommand(string memberId, string ProjectId) : IAuthorizationRequest
+public record DeleteProjectMemberCommand(string MemberId, string ProjectId) : IAuthorizationRequest
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement()
     {
@@ -24,14 +24,14 @@ public class DeleteProjectMemberCommandHandler : IRequestHandler<DeleteProjectMe
     private readonly IUnitOfWork _unitOfWork;
     public DeleteProjectMemberCommandHandler(IUnitOfWork unitOfWork)
     {
-        _unitOfWork = unitOfWork;
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
 
     public async Task Handle(DeleteProjectMemberCommand request, CancellationToken cancellationToken)
     {
         var project = await _unitOfWork.ProjectRepository.GetOneAsync(request.ProjectId);
 
-        project.RemoveProjectMember(request.memberId);
+        project.RemoveProjectMember(request.MemberId);
 
         await _unitOfWork.Complete();
     }

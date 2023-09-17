@@ -7,14 +7,14 @@ using Projects.Application.Common.Models;
 
 namespace Projects.Application.ProjectMembers.Queries;
 
-public record GetMembersStatusesQuery(string projectId, List<string> UsersIds) : IAuthorizationRequest<List<MemberStatusDto>>
+public record GetMembersStatusesQuery(string ProjectId, List<string> UsersIds) : IAuthorizationRequest<List<MemberStatusDto>>
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement()
     {
         var listOfRequirements = new List<IAuthorizationRequirement>()
         {
-            new ProjectMembershipRequirement(projectId),
-            new ProjectManagementRequirement(projectId)
+            new ProjectMembershipRequirement(ProjectId),
+            new ProjectManagementRequirement(ProjectId)
         };
         return listOfRequirements;
     }
@@ -30,13 +30,7 @@ public class GetFriendsStatusQueryHandler : IRequestHandler<GetMembersStatusesQu
 
     public async Task<List<MemberStatusDto>> Handle(GetMembersStatusesQuery request, CancellationToken cancellationToken)
     {
-        var membersStatuses = await _unitOfWork.ReadOnlyProjectMemberRepository.GetMembersStatusesAsync(request.projectId, request.UsersIds);
+        var membersStatuses = await _unitOfWork.ReadOnlyProjectMemberRepository.GetMembersStatusesAsync(request.ProjectId, request.UsersIds);
         return membersStatuses;
     }
 }
-
-//public async Task<List<FriendStatusDto>> Handle(GetFriendsStatusQuery request, CancellationToken cancellationToken)
-//{
-//    var friendRequests = await _unitOfWork.FriendRequestRepository.CheckUsersToUserStatusAsync(_currentUserService.GetUserId(), request.UsersIds);
-//    return friendRequests;
-//}

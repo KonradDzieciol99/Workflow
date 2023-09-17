@@ -16,8 +16,8 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
         ICurrentUserService currentUserService,
         IAuthorizationService authorizationService)
     {
-        _authorizationService = authorizationService;
-        _currentUserService = currentUserService;
+        _authorizationService = authorizationService ?? throw new ArgumentNullException(nameof(authorizationService));
+        _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
     }
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)

@@ -11,7 +11,7 @@ internal class ProjectMemberDeclineInvitationDomainEventHandler : INotificationH
 
     public ProjectMemberDeclineInvitationDomainEventHandler(IIntegrationEventService integrationEventService)
     {
-        this._integrationEventService = integrationEventService;
+        this._integrationEventService = integrationEventService ?? throw new ArgumentNullException(nameof(integrationEventService));
     }
     public Task Handle(ProjectMemberDeclineInvitationDomainEvent notification, CancellationToken cancellationToken)
     {

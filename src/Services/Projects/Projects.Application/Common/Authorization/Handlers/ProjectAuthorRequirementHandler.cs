@@ -10,12 +10,12 @@ public class ProjectAuthorRequirementHandler : AuthorizationHandler<ProjectAutho
     private readonly IUnitOfWork _unitOfWork;
     public ProjectAuthorRequirementHandler(IUnitOfWork unitOfWork)
     {
-        _unitOfWork = unitOfWork;
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ProjectAuthorRequirement requirement)
     {
-        var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new ArgumentNullException(nameof(ClaimTypes.NameIdentifier));
-        var projectId = requirement.ProjectId ?? throw new ArgumentNullException(nameof(context.Resource));
+        var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new ArgumentNullException(nameof(context));
+        var projectId = requirement.ProjectId ?? throw new ArgumentNullException(nameof(requirement));
 
         var result = await _unitOfWork.ReadOnlyProjectMemberRepository.CheckIfUserIsALeaderAsync(projectId, userId);
 

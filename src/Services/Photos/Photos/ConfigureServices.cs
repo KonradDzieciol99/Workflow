@@ -22,7 +22,7 @@ public static class ConfigureServices
 
         services.AddScoped(opt =>
         {
-            return new BlobServiceClient(configuration.GetConnectionString("AzureStorage") ?? throw new ArgumentNullException("AzureStorage"));
+            return new BlobServiceClient(configuration.GetConnectionString("AzureStorage") ?? throw new ArgumentNullException(nameof(configuration)));
         });
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
@@ -47,9 +47,9 @@ public static class ConfigureServices
         })
         .AddJwtBearer(opt =>
         {
-            var internalIdentityUrl = configuration.GetValue<string>("urls:internal:IdentityHttp") ?? throw new ArgumentNullException("urls:internal:IdentityHttp");
-            var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:IdentityHttp") ?? throw new ArgumentNullException("urls:external:IdentityHttp");
-            var externalIdentityUrlhttps = configuration.GetValue<string>("urls:external:IdentityHttps") ?? throw new ArgumentNullException("urls:external:IdentityHttps");
+            var internalIdentityUrl = configuration.GetValue<string>("urls:internal:IdentityHttp") ?? throw new ArgumentNullException(nameof(configuration));
+            var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:IdentityHttp") ?? throw new ArgumentNullException(nameof(configuration));
+            var externalIdentityUrlhttps = configuration.GetValue<string>("urls:external:IdentityHttps") ?? throw new ArgumentNullException(nameof(configuration));
 
             opt.RequireHttpsMetadata = false;
             opt.SaveToken = true;

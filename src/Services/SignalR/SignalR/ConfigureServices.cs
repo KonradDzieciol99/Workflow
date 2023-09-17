@@ -35,7 +35,7 @@ public static class ConfigureServices
         });
 
 
-        var redisConnString = configuration.GetConnectionString("Redis") ?? throw new ArgumentNullException("redisConnString");
+        var redisConnString = configuration.GetConnectionString("Redis") ?? throw new ArgumentNullException(nameof(configuration));
 
         services.AddSignalR(o =>
         {
@@ -60,9 +60,9 @@ public static class ConfigureServices
         })
         .AddJwtBearer(opt =>
          {
-             var internalIdentityUrl = configuration.GetValue<string>("urls:internal:IdentityHttp") ?? throw new ArgumentNullException("urls:internal:IdentityHttp");
-             var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:IdentityHttp") ?? throw new ArgumentNullException("urls:external:IdentityHttp");
-             var externalIdentityUrlhttps = configuration.GetValue<string>("urls:external:IdentityHttps") ?? throw new ArgumentNullException("urls:external:IdentityHttps");
+             var internalIdentityUrl = configuration.GetValue<string>("urls:internal:IdentityHttp") ?? throw new ArgumentNullException(nameof(configuration));
+             var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:IdentityHttp") ?? throw new ArgumentNullException(nameof(configuration));
+             var externalIdentityUrlhttps = configuration.GetValue<string>("urls:external:IdentityHttps") ?? throw new ArgumentNullException(nameof(configuration));
 
              opt.RequireHttpsMetadata = false;
              opt.SaveToken = true;

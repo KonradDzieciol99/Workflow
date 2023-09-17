@@ -233,7 +233,7 @@ public class SeedData
             var user = await _userManager.FindByEmailAsync(item.Email);
             if (user is not null)
             {
-                _logger.LogDebug($"{item.Email} already exists");
+                _logger.LogDebug("{email} already exists", item.Email);
                 continue;
             }
 
@@ -243,7 +243,7 @@ public class SeedData
             if (!result.Succeeded)
                 throw new Exception(result.Errors.First().Description);
 
-            _logger.LogDebug($"{item.Email} created", item);
+            _logger.LogDebug("{email} created", item.Email);
         }
 
         _logger.LogDebug("Seeding completed.");

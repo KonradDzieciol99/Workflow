@@ -22,8 +22,8 @@ public class GetProjectQueryHandler : IRequestHandler<GetProjectQuery, ProjectDt
 
     public GetProjectQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
     {
-        _unitOfWork = unitOfWork;
-        this._mapper = mapper;
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        this._mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     public async Task<ProjectDto> Handle(GetProjectQuery request, CancellationToken cancellationToken)

@@ -5,7 +5,7 @@ namespace HealthChecks;
 
 public static class ConfigureServices
 {
-    public static IServiceCollection AddHealthChecksServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddHealthChecksServices(this IServiceCollection services)
     {
         services.AddControllers();
 

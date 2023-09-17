@@ -29,8 +29,8 @@ public class GetAppTaskQueryHandler : IRequestHandler<GetAppTaskQuery, AppTaskDt
 
     public GetAppTaskQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
     {
-        this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(_unitOfWork));
-        this._mapper = mapper ?? throw new ArgumentNullException(nameof(_mapper));
+        this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        this._mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
     public async Task<AppTaskDto> Handle(GetAppTaskQuery request, CancellationToken cancellationToken)
     {

@@ -31,9 +31,7 @@ public class Project : BaseEntity
     }
     public void RemoveProjectMember(string id)
     {
-        var member = this.ProjectMembers.FirstOrDefault(m => m.Id == id);
-        if (member is null)
-            throw new ProjectDomainException("Such a member does not exist");
+        var member = this.ProjectMembers.FirstOrDefault(m => m.Id == id) ?? throw new ProjectDomainException("Such a member does not exist");
 
         if (member.Type == ProjectMemberType.Leader)
             throw new ProjectDomainException("you cannot remove a member who is a leader");
@@ -48,11 +46,8 @@ public class Project : BaseEntity
     }
     public void UpdateProjectMember(string performingActionUserId,string targetUserId, ProjectMemberType targetUserNewType)
     {
-        var targetMember = this.ProjectMembers.FirstOrDefault(m => m.UserId == targetUserId);
-        var performingActionMember = this.ProjectMembers.FirstOrDefault(m => m.UserId == performingActionUserId);
-
-        if (targetMember is null)
-            throw new ProjectDomainException("Such a member does not exist");
+        var targetMember = this.ProjectMembers.FirstOrDefault(m => m.UserId == targetUserId) ?? throw new ProjectDomainException("Such a member does not exist.");
+        var performingActionMember = this.ProjectMembers.FirstOrDefault(m => m.UserId == performingActionUserId) ?? throw new ProjectDomainException("User performing the operation is not part of the project.");
 
         if (targetMember.Type == ProjectMemberType.Leader)
             throw new ProjectDomainException("you cannot change a member who is a leader");
@@ -61,9 +56,9 @@ public class Project : BaseEntity
             throw new ProjectDomainException("Only the project leader can transfer the title of leader.");
 
         if (targetUserNewType == ProjectMemberType.Leader)   
-            performingActionMember.Type = ProjectMemberType.Admin;
+            performingActionMember.ChangeType(ProjectMemberType.Admin);
             
-        targetMember.Type = targetUserNewType;
+        targetMember.ChangeType(targetUserNewType);
 
         this.AddDomainEvent(new ProjectMemberUpdatedDomainEvent(targetMember));
     }
@@ -85,33 +80,27 @@ public class Project : BaseEntity
         if (newLeader is null)
             throw new ProjectDomainException("Alleged new leader is not a member of the team");
 
-        newLeader.Type = ProjectMemberType.Leader;
+        newLeader.ChangeType(ProjectMemberType.Leader);
 
         if (currentLeader is not null && newLeader.Id == currentLeader.Id)
             throw new ProjectDomainException("the alleged new leader is already the leader of the team");
 
         if (currentLeader is not null)
-            currentLeader.Type = ProjectMemberType.Admin;
+            currentLeader.ChangeType(ProjectMemberType.Admin);
     }
 
     public void AcceptInvitation(string currentUserID)
     {
-        var member = ProjectMembers.FirstOrDefault(m => m.UserId == currentUserID);
-
-        if (member is null)
-            throw new ProjectDomainException("Such a member does not exist");
-
+        var member = ProjectMembers.FirstOrDefault(m => m.UserId == currentUserID) ?? throw new ProjectDomainException("Such a member does not exist");
+       
         member.AcceptInvitation();
 
         this.AddDomainEvent(new ProjectMemberAcceptInvitationDomainEvent(member));
     }
     public void DeclineInvitation(string currentUserID)
     {
-        var member = ProjectMembers.FirstOrDefault(m => m.UserId == currentUserID);
-
-        if (member is null)
-            throw new ProjectDomainException("Such a member does not exist");
-
+        var member = ProjectMembers.FirstOrDefault(m => m.UserId == currentUserID) ?? throw new ProjectDomainException("Such a member does not exist");
+        
         ProjectMembers.Remove(member);
 
         this.AddDomainEvent(new ProjectMemberDeclineInvitationDomainEvent(member,this));

@@ -29,10 +29,10 @@ public class AzureServiceBusConsumer : BackgroundService, IEventBusConsumer
                                      IOptions<AzureServiceBusConsumerOptions> options,
                                      ILogger<AzureServiceBusConsumer> logger)
     {
-        this._serviceScopeFactory = serviceScopeFactory;
-        this._mediator = mediator;
-        this._logger = logger;
-        this._options = options.Value;
+        this._serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
+        this._mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        this._options = options.Value ?? throw new ArgumentNullException(nameof(options)); ;
         this._events = new ConcurrentDictionary<string, Type>();
         RemoveAllRulesAsync().GetAwaiter().GetResult();
 
@@ -45,7 +45,7 @@ public class AzureServiceBusConsumer : BackgroundService, IEventBusConsumer
         var BusProcessor = client.CreateProcessor(_options.TopicName, _options.SubscriptionName);
         BusProcessor.ProcessMessageAsync += EventHandlerAsync;
         BusProcessor.ProcessErrorAsync += ErrorHandler;
-        await BusProcessor.StartProcessingAsync();
+        await BusProcessor.StartProcessingAsync(stoppingToken);
 
         return;
     }
@@ -67,13 +67,9 @@ public class AzureServiceBusConsumer : BackgroundService, IEventBusConsumer
             var message = args.Message;
             var body = Encoding.UTF8.GetString(message.Body);
 
-            var type = _events[message.Subject];
-            if (type == null)
-            {
-                throw new ArgumentNullException("You did not subscribe to this event");
-            }
-
-            MethodInfo sendAsyncMethod = this.GetType().GetMethod(nameof(SendAsync), BindingFlags.NonPublic | BindingFlags.Instance) ?? throw new ArgumentNullException("Something went wrong.");
+            var type = _events[message.Subject] ?? throw new InvalidOperationException($"You did not subscribe to this event {message.Subject}");
+            
+            MethodInfo sendAsyncMethod = this.GetType().GetMethod(nameof(SendAsync), BindingFlags.NonPublic | BindingFlags.Instance) ?? throw new InvalidOperationException($"Something went wrong during execution {nameof(SendAsync)}");
 
             await (Task)sendAsyncMethod.MakeGenericMethod(type).Invoke(this, new object[] { body });
 

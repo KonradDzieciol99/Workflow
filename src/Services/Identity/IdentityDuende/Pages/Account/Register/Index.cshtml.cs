@@ -15,10 +15,7 @@ namespace IdentityDuende.Pages.Account.Register;
 public class IndexModel : PageModel
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
-    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IEventService _events;
-    private readonly IIdentityServerInteractionService _interaction;
     private readonly IAuthenticationSchemeProvider _schemeProvider;
     private readonly IIdentityProviderStore _identityProviderStore;
 
@@ -26,21 +23,15 @@ public class IndexModel : PageModel
 
     public IndexModel(
         UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-            RoleManager<IdentityRole> roleInManager,
             IEventService events,
-            IIdentityServerInteractionService interaction,
             IAuthenticationSchemeProvider schemeProvider,
             IIdentityProviderStore identityProviderStore
           )
     {
-        _roleManager = roleInManager;
         this._events = events;
-        this._interaction = interaction;
         this._schemeProvider = schemeProvider;
         this._identityProviderStore = identityProviderStore;
         _userManager = userManager;
-        _signInManager = signInManager;
     }
 
 

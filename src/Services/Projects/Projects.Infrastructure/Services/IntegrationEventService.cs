@@ -8,7 +8,7 @@ public class IntegrationEventService : IIntegrationEventService
     private readonly IEventBusSender _azureServiceBusSender;
     public IntegrationEventService(IEventBusSender azureServiceBusSender)
     {
-        this._azureServiceBusSender = azureServiceBusSender;
+        this._azureServiceBusSender = azureServiceBusSender ?? throw new ArgumentNullException(nameof(azureServiceBusSender));
     }
 
     private readonly List<IntegrationEvent> _integrationEvents = new();

@@ -13,9 +13,9 @@ public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest> where T
 
     public async Task Process(TRequest request, CancellationToken cancellationToken)
     {
-
         var requestName = typeof(TRequest).Name;
 
-        _logger.LogInformation($"Intergration Event: {requestName} {request}");
+        _logger.LogInformation("Intergration Event: {requestName} {@Request}", requestName, request);
+
     }
 }

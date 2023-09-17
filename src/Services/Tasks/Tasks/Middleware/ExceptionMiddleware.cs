@@ -49,9 +49,9 @@ public class ExceptionMiddleware
         if (exception is TaskDomainException taskDomainException)
         {
             Type type = taskDomainException.InnerException?.GetType() ?? typeof(TaskDomainException);
-            if (_exceptionHandlers.ContainsKey(type))
+            if (_exceptionHandlers.TryGetValue(type, out var handler))
             {
-                await _exceptionHandlers[type].Invoke(taskDomainException, context);
+                await handler.Invoke(taskDomainException, context);
                 return;
             }
         }

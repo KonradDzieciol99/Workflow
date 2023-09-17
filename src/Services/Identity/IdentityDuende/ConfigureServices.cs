@@ -40,9 +40,9 @@ public static class ConfigureServices
             string connString;
             var isDockerEnvironment = Environment.GetEnvironmentVariable("DOCKER_ENVIRONMENT");
             if (isDockerEnvironment is null || isDockerEnvironment == "true")
-                connString = configuration.GetConnectionString("DbContextConnString") ?? throw new ArgumentNullException("DbContextConnString");
+                connString = configuration.GetConnectionString("DbContextConnString") ?? throw new ArgumentNullException(nameof(configuration));
             else
-                connString = configuration.GetConnectionString("NonDockerDbContextConnString") ?? throw new ArgumentNullException("NonDockerDbContextConnString");
+                connString = configuration.GetConnectionString("NonDockerDbContextConnString") ?? throw new ArgumentNullException(nameof(configuration));
 
             opt.UseSqlServer(connString);
         });
@@ -128,9 +128,9 @@ public static class ConfigureServices
         })
         .AddJwtBearer(opt =>
         {
-            var internalIdentityUrl = configuration.GetValue<string>("urls:internal:IdentityHttp") ?? throw new ArgumentNullException("urls:internal:IdentityHttp");
-            var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:IdentityHttp") ?? throw new ArgumentNullException("urls:external:IdentityHttp");
-            var externalIdentityUrlhttps = configuration.GetValue<string>("urls:external:IdentityHttps") ?? throw new ArgumentNullException("urls:external:IdentityHttps");
+            var internalIdentityUrl = configuration.GetValue<string>("urls:internal:IdentityHttp") ?? throw new ArgumentNullException(nameof(configuration));
+            var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:IdentityHttp") ?? throw new ArgumentNullException(nameof(configuration));
+            var externalIdentityUrlhttps = configuration.GetValue<string>("urls:external:IdentityHttps") ?? throw new ArgumentNullException(nameof(configuration));
 
             opt.RequireHttpsMetadata = false;
             opt.SaveToken = true;

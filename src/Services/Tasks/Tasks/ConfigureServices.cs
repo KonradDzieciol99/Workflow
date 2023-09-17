@@ -23,7 +23,7 @@ namespace Tasks;
 
 public static class ConfigureServices
 {
-    public static IServiceCollection AddWebAPIServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddTasksServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddControllers()
                 .AddJsonOptions(options =>
@@ -44,9 +44,9 @@ public static class ConfigureServices
         })
         .AddJwtBearer(opt =>
         {
-            var internalIdentityUrl = configuration.GetValue<string>("urls:internal:IdentityHttp") ?? throw new ArgumentNullException("urls:internal:IdentityHttp");
-            var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:IdentityHttp") ?? throw new ArgumentNullException("urls:external:IdentityHttp");
-            var externalIdentityUrlhttps = configuration.GetValue<string>("urls:external:IdentityHttps") ?? throw new ArgumentNullException("urls:external:IdentityHttps");
+            var internalIdentityUrl = configuration.GetValue<string>("urls:internal:IdentityHttp") ?? throw new ArgumentNullException(nameof(configuration));
+            var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:IdentityHttp") ?? throw new ArgumentNullException(nameof(configuration));
+            var externalIdentityUrlhttps = configuration.GetValue<string>("urls:external:IdentityHttps") ?? throw new ArgumentNullException(nameof(configuration));
 
             opt.RequireHttpsMetadata = false;
             opt.SaveToken = true;
@@ -116,7 +116,7 @@ public static class ConfigureServices
                         tags: new string[] { "api" }
                     )
                     .AddAzureServiceBusTopic(
-                        configuration["AzureServiceBusSubscriberOptions:ServiceBusConnectionString"],
+                        configuration["AzureServiceBusSubscriberOptions:ServiceBusConnectionString"] ,
                         configuration["AzureServiceBusSubscriberOptions:TopicName"],
                         name: "tasks-azure-service-bus-check",
                         tags: new string[] { "azureServiceBus" }

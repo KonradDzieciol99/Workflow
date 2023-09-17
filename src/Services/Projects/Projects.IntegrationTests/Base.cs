@@ -19,8 +19,8 @@ public class WebApplicationFactoryCollection : ICollectionFixture<Base>
 public class Base : IAsyncLifetime
 {
     public readonly WebApplicationFactory<Program> _factory;
-    public HttpClient _client;
-    public Respawner _checkpoint;
+    public HttpClient? _client;
+    public Respawner? _checkpoint;
     public readonly MsSqlContainer _msSqlContainer;
 
     public Base()
@@ -59,7 +59,7 @@ public class Base : IAsyncLifetime
                 {
                     options.AddPolicy("ApiScope", policy =>
                     {
-                        policy.RequireAssertion(context => true); // zawsze zwraca true
+                        policy.RequireAssertion(context => true);
                     });
                 });
             });

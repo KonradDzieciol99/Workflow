@@ -16,7 +16,6 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(builder);
 
-
         builder.Entity<Project>(opt =>
         {
             opt.HasKey(x => x.Id);
@@ -26,15 +25,11 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(x => x.ProjectId)
             .OnDelete(DeleteBehavior.Cascade);
 
-            //opt.Property(x => x.Id).UseHiLo("Order_HiLo");
-            //opt.Property(x => x.Id).ValueGeneratedOnAdd
-
             opt.Property(x => x.Id).ValueGeneratedNever();
         });
 
         builder.Entity<ProjectMember>(opt =>
         {
-            //opt.HasKey(x => new { x.UserId, x.ProjectId });
             opt.HasKey(x => x.Id);
 
             opt.Property(x => x.Id).ValueGeneratedOnAdd();

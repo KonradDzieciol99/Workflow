@@ -16,6 +16,7 @@ public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest> where T
 
         var requestName = typeof(TRequest).Name;
 
-        _logger.LogInformation($"Intergration Event: {requestName} {request}");
+        _logger.LogInformation("Intergration Event: {requestName} {@request}", requestName, request);
+
     }
 }

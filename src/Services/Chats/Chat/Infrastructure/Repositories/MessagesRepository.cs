@@ -23,10 +23,6 @@ public class MessagesRepository : IMessagesRepository
     {
         _dbContext.Messages.Remove(entity);
     }
-    //public async Task<Message?> GetAsync(string sourceUserId, string targetUserId)
-    //{
-    //    return await _dbContext.Messages.FindAsync(sourceUserId, targetUserId);
-    //}
     public async Task<Message?> GetAsync(string messageId)
     {
         return await _dbContext.Messages.FindAsync(messageId);
@@ -47,35 +43,8 @@ public class MessagesRepository : IMessagesRepository
     public async Task<List<string>> GetUnreadMessagesUserEmails(string recipientId)
     {
         return await _dbContext.Messages
-            .Where(m => m.RecipientId == recipientId && m.DateRead == null)//&& !m.RecipientDeleted
+            .Where(m => m.RecipientId == recipientId && m.DateRead == null)
             .Select(m => m.SenderEmail)
             .ToListAsync();
     }
-
-    //public async Task<IEnumerable<Message>> GetMessageThreadAsync(string currentUserEmail, string recipientUserEmail)
-    //{
-    //    var query = applicationDbContext.Messages
-    //        .Where(
-    //            m => m.RecipientEmail == currentUserEmail && m.RecipientDeleted == false &&
-    //            m.SenderEmail == recipientUserEmail ||
-    //            m.RecipientEmail == recipientUserEmail && m.SenderDeleted == false &&
-    //            m.SenderEmail == currentUserEmail
-    //        )
-    //        .OrderBy(m => m.MessageSent)
-    //        .AsQueryable();
-
-
-    //    var unreadMessages = query.Where(m => m.DateRead == null
-    //        && m.RecipientEmail == currentUserEmail).ToList();
-
-    //    if (unreadMessages.Any())
-    //    {
-    //        foreach (var message in unreadMessages)
-    //        {
-    //            message.DateRead = DateTime.UtcNow;
-    //        }
-    //    }
-
-    //    return await query.ToListAsync();
-    //}       DO PRZETESTOWAIA !!!
 }

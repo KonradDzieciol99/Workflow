@@ -6,25 +6,20 @@ using Tasks.Infrastructure.Repositories;
 
 namespace Tasks.Application.IntegrationEvents;
 
-public record ProjectMemberUpdatedEvent(string? PhotoUrl, string ProjectMemberId, string UserId, string UserEmail, int Type, int InvitationStatus, string ProjectId) : IntegrationEvent;
+public record ProjectMemberUpdatedEvent(string? PhotoUrl, string ProjectMemberId, string UserId, string UserEmail, ProjectMemberType Type, InvitationStatus InvitationStatus, string ProjectId) : IntegrationEvent;
 public class ProjectMemberUpdatedEventHandler : IRequestHandler<ProjectMemberUpdatedEvent>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
 
-    public ProjectMemberUpdatedEventHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    public ProjectMemberUpdatedEventHandler(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
     }
     public async Task Handle(ProjectMemberUpdatedEvent request, CancellationToken cancellationToken)
     {
         var result = await _unitOfWork.ProjectMemberRepository.ExecuteUpdateAsync(request.ProjectMemberId,
-                                                                           (ProjectMemberType)request.Type
-                                                                           , (InvitationStatus)request.InvitationStatus);
-
-        //if (!await _unitOfWork.Complete())
-        //    throw new InvalidOperationException("An error occurred while updating a project member.");
+                                                                                  request.Type,
+                                                                                  request.InvitationStatus);
         if (result > 0)
         {
             await Task.CompletedTask;
@@ -32,8 +27,5 @@ public class ProjectMemberUpdatedEventHandler : IRequestHandler<ProjectMemberUpd
         }
 
         throw new InvalidOperationException("An error occurred while removing a project member.");
-
-        //await Task.CompletedTask;
-        //return;
     }
 }

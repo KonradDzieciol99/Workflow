@@ -15,7 +15,7 @@ public class ChatHub : Hub
     private readonly IEventBusSender _azureServiceBusSender;
     private readonly IDatabase _redisDb;
 
-    public ChatHub(IConnectionMultiplexer connectionMultiplexer, IEventBusSender azureServiceBusSender)//, IUnitOfWork unitOfWork, IMapper mapper
+    public ChatHub(IConnectionMultiplexer connectionMultiplexer, IEventBusSender azureServiceBusSender)
     {
         _connectionMultiplexer = connectionMultiplexer;
         this._azureServiceBusSender = azureServiceBusSender;
@@ -52,7 +52,7 @@ public class ChatHub : Hub
     }
     public override async Task OnDisconnectedAsync(Exception ex)
     {
-        var httpContext = Context.GetHttpContext() ?? throw new ArgumentNullException("httpContext error");
+        var httpContext = Context.GetHttpContext() ?? throw new ArgumentNullException(nameof(Context));
         var recipientEmail = httpContext.Request.Query["RecipientEmail"].ToString();
         if (string.IsNullOrEmpty(recipientEmail))
             throw new HubException("User cannot be identified");

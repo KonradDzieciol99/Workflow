@@ -10,7 +10,7 @@ public class ProjectRepository : IProjectRepository
 
     public ProjectRepository(ApplicationDbContext applicationDbContext)
     {
-        _applicationDbContext = applicationDbContext ?? throw new ArgumentNullException(nameof(_applicationDbContext));
+        _applicationDbContext = applicationDbContext ?? throw new ArgumentNullException(nameof(applicationDbContext));
     }
     public async Task<Project?> GetOneAsync(string projectId)
     {
@@ -21,8 +21,6 @@ public class ProjectRepository : IProjectRepository
     {
         return await _applicationDbContext.Projects.Where(x => x.Id == id).ExecuteDeleteAsync();
     }
-    private readonly ApplicationDbContext _dbContext;
-
     public void Add(Project entity)
     {
         _applicationDbContext.Projects.Add(entity);
