@@ -8,6 +8,7 @@ using API.Aggregator.Application.Commons.Behaviours;
 using API.Aggregator.Infrastructure.Services;
 using API.Aggregator.Services;
 using API.Aggregator.Infrastructure;
+using System.Net.Http;
 
 namespace API.Aggregator;
 
@@ -19,10 +20,14 @@ public static class ConfigureServices
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
 
-        services.AddHttpClient<IIdentityServerService, IdentityServerService>();
-        services.AddHttpClient<ITaskService, TaskService>();
-        services.AddHttpClient<IProjectsService, ProjectsService>();
-        services.AddHttpClient<IChatService, ChatService>();
+        services.AddHttpClient<IIdentityServerService, IdentityServerService>()
+            .AddHttpMessageHandler<HttpClientTokenForwarderDelegatingHandler>();
+        services.AddHttpClient<ITaskService, TaskService>()
+            .AddHttpMessageHandler<HttpClientTokenForwarderDelegatingHandler>();
+        services.AddHttpClient<IProjectsService, ProjectsService>()
+            .AddHttpMessageHandler<HttpClientTokenForwarderDelegatingHandler>();
+        services.AddHttpClient<IChatService, ChatService>()
+            .AddHttpMessageHandler<HttpClientTokenForwarderDelegatingHandler>();
 
         services.AddAuthentication(opt =>
         {
