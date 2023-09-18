@@ -20,7 +20,7 @@ The application was designed as a system for project management and real-time co
 
 ### Projects Page
 
-<img src="https://github.com/KonradDzieciol99/Workflow/blob/master/README-img/workflow-projects-page.png" align="right" width="100%" height="auto" />
+![](README-img/workflow-projects-page.png)
 
 <br>
 
