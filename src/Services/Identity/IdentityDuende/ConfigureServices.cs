@@ -75,57 +75,12 @@ public static class ConfigureServices
             .AddInMemoryClients(Config.Clients)
             .AddAspNetIdentity<ApplicationUser>();
 
-        //services.AddLocalApiAuthentication();
-
         services.AddScoped<IEventSink, IdentityEvents>();
         services.AddScoped<SeedData>();
 
         services.AddRabbitMQSender(configuration.GetSection("RabbitMQConsumerOptions"));
 
-        services.AddAuthentication()
-        .AddOpenIdConnect("AzureOpenId", "Azure Active Directory OpenId", options =>
-        {
-            //options.Authority = "https://login.microsoftonline.com/" + configuration["AzureAd:TenantId"] + "/v2.0/";
-            options.Authority = "https://login.microsoftonline.com/" + "5d3aafdf-d077-4419-bd3c-622d8000bc09" + "/v2.0/";
-            options.ClientId = configuration["Authentication:Microsoft:ClientId"];
-            options.ResponseType = OpenIdConnectResponseType.Code;
-            options.CallbackPath = "/signin-microsoft";
-            //            options.UsePkce = _identityServerConfiguration.UsePkce;
-
-            options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-            options.ForwardSignOut = IdentityServerConstants.DefaultCookieAuthenticationScheme;
-
-            //options.CallbackPath = "https://localhost:7122/signin-microsoft";
-            //options.CallbackPath = configuration["AzureAd:CallbackPath"];
-            options.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
-            options.RequireHttpsMetadata = false;
-            options.SaveTokens = true;
-            options.GetClaimsFromUserInfoEndpoint = true;
-
-            options.Scope.Add("profile");
-            options.Scope.Add("email");
-            options.Scope.Add("openid");
-            options.Scope.Add("User.Read");
-
-            options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "sub");
-        }).AddOpenIdConnect("Google", "Sign-in with Google", options =>
-        {
-            options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-            options.ForwardSignOut = IdentityServerConstants.DefaultCookieAuthenticationScheme;
-
-            options.Authority = "https://accounts.google.com/";
-            options.ClientId = "944959518171-o303j7ij1434c3j1mrcl983qedr167b9.apps.googleusercontent.com";//todo
-            options.ClientSecret = "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";//todo
-            options.CallbackPath = "/signin-google";//todo
-            options.GetClaimsFromUserInfoEndpoint = true;//We need this option
-            options.RequireHttpsMetadata = false;
-            options.SaveTokens = true;
-
-            options.Scope.Add("profile");
-            options.Scope.Add("email");
-            options.Scope.Add("openid");
-            options.ResponseType = OpenIdConnectResponseType.Code;
-        })
+        var authBuilder = services.AddAuthentication()
         .AddJwtBearer(opt =>
         {
             var internalIdentityUrl = configuration.GetValue<string>("urls:internal:IdentityHttp") ?? throw new ArgumentNullException(nameof(configuration));
@@ -148,25 +103,60 @@ public static class ConfigureServices
             };
         });
 
+        if (configuration.GetValue<bool>("externalAuth:enabled"))
+        {
+            authBuilder.AddOpenIdConnect("AzureOpenId", "Azure Active Directory OpenId", options =>
+             {
+                 options.Authority = "https://login.microsoftonline.com/" + configuration["externalAuth:Microsoft:Tenant"] + "/v2.0/";
+                 options.ClientId = configuration["externalAuth:Microsoft:ClientId"];
+                 options.ResponseType = OpenIdConnectResponseType.Code;
+                 options.CallbackPath = "/signin-microsoft";
+                 options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                 options.ForwardSignOut = IdentityServerConstants.DefaultCookieAuthenticationScheme;
+                 options.ClientSecret = configuration["externalAuth:Microsoft:ClientSecret"];
+                 options.RequireHttpsMetadata = false;
+                 options.SaveTokens = true;
+                 options.GetClaimsFromUserInfoEndpoint = true;
+                 options.Scope.Add("profile");
+                 options.Scope.Add("email");
+                 options.Scope.Add("openid");
+                 options.Scope.Add("User.Read");
+                 options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "sub");
+
+             }).AddOpenIdConnect("Google", "Sign-in with Google", options =>
+             {
+                 options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                 options.ForwardSignOut = IdentityServerConstants.DefaultCookieAuthenticationScheme;
+                 options.Authority = "https://accounts.google.com/";
+                 options.ClientId = configuration["externalAuth:Microsoft:ClientId"];
+                 options.ClientSecret = configuration["externalAuth:Microsoft:ClientSecret"]; ;
+                 options.CallbackPath = "/signin-google";
+                 options.GetClaimsFromUserInfoEndpoint = true;
+                 options.RequireHttpsMetadata = false;
+                 options.SaveTokens = true;
+                 options.Scope.Add("profile");
+                 options.Scope.Add("email");
+                 options.Scope.Add("openid");
+                 options.ResponseType = OpenIdConnectResponseType.Code;
+             });
+        }
+
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddTransient<IProfileService, ProfileService>();
 
-        services.AddHealthChecks()
+        var healthChecksBuilder = services.AddHealthChecks()
                     .AddCheck("self",
                     () => HealthCheckResult.Healthy(),
                     tags: new string[] { "api" }
                     )
-                    .AddAzureServiceBusTopic(
-                        configuration["AzureServiceBusSender:ServiceBusConnectionString"],
-                        configuration["AzureServiceBusSender:TopicName"],
-                        name: "projects-azure-service-bus-check",
-                        tags: new string[] { "azureServiceBus" }
-                    )
                     .AddSqlServer(
                         configuration["ConnectionStrings:DbContextConnString"],
                         name: "projects-sql-db-check",
-                        tags: new string[] { "sql" })
-                    .AddIdentityServer(
+                        tags: new string[] { "sql" });
+
+        if (configuration.GetValue<bool>("externalAuth:enabled"))
+        {
+            healthChecksBuilder.AddIdentityServer(
                         new Uri("https://accounts.google.com/"),
                         name: "identity-google-auth-check",
                         tags: new string[] { "identity" })
@@ -174,7 +164,7 @@ public static class ConfigureServices
                         new Uri("https://login.microsoftonline.com/common/v2.0/"),
                         name: "identity-microsoft-auth-check",
                         tags: new string[] { "identity" });
-
+        }
 
         return services;
     }

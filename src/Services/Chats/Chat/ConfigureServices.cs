@@ -116,12 +116,6 @@ public static class ConfigureServices
             () => HealthCheckResult.Healthy(),
             tags: new string[] { "api" }
         )
-        .AddAzureServiceBusTopic(
-            configuration["AzureServiceBusSubscriberOptions:ServiceBusConnectionString"],
-            configuration["AzureServiceBusSubscriberOptions:TopicName"],
-            name: "chat-azure-service-bus-check",
-            tags: new string[] { "azureServiceBus" }
-        )
         .AddSqlServer(
             configuration["ConnectionStrings:DbContextConnString"],
             name: "chat-sql-db-check",

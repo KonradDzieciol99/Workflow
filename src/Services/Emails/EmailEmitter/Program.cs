@@ -2,6 +2,7 @@ using EmailEmitter.IntegrationEvents;
 using HealthChecks.UI.Client;
 using MessageBus;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Configuration;
 
 namespace EmailEmitter;
 public class Program
@@ -11,10 +12,10 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddWebAPIServices(builder.Configuration);
-
         var app = builder.Build();
 
-        await AddSubscriptions(app);
+        if (builder.Configuration.GetValue<bool>("SendGrid:enabled"))
+            await AddSubscriptions(app);
 
         app.MapHealthChecks("/hc", new HealthCheckOptions()
         {

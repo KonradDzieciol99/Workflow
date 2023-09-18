@@ -1,4 +1,5 @@
-﻿using Chat.Domain.Entity;
+﻿using Bogus;
+using Chat.Domain.Entity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -45,38 +46,23 @@ public class SeedData
 
     public async Task TrySeedAsync()
     {
+        var id = 0;
+        var friendRequestsForAlice = new Faker<FriendRequest>()
+            .StrictMode(false)
+            .RuleFor(f => f.InviterUserId, f => "50")
+            .RuleFor(f => f.InviterUserEmail, f => "AliceSmith@email.com")
+            .RuleFor(f => f.InviterPhotoUrl, f => "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png")
+            .RuleFor(f => f.InvitedUserId, f => id++.ToString())
+            .RuleFor(u => u.InvitedUserEmail, f => f.Internet.Email())
+            .RuleFor(u => u.InvitedPhotoUrl, f => f.Image.PicsumUrl(600,600))
+            .FinishWith((f, u) =>
+             {
+                 u.AcceptRequest(u.InvitedUserId);
+             })
+            .UseSeed(1111)
+            .Generate(50);
 
-        List<FriendRequest> friendRequestsForAlice = new()
-        {
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "0", "BobSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/bobPhoto.png"),
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "2", "JamesSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/JamesSmith.png"),
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "3", "EmilyJohnson@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png"),
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "4", "JohnWilliams@email.com", "https://1workflowstorage.blob.core.windows.net/photos/JohnWilliams.png"),
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "5", "OliviaJones@email.com", "https://1workflowstorage.blob.core.windows.net/photos/OliviaJones.png"),
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "6", "MichaelBrown@email.com", "https://1workflowstorage.blob.core.windows.net/photos/MichaelBrown.png"),
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "7", "SophiaDavis@email.com", "https://1workflowstorage.blob.core.windows.net/photos/SophiaDavis.png"),
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "8", "WilliamMiller@email.com", "https://1workflowstorage.blob.core.windows.net/photos/WilliamMille.png"),
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "9", "AvaWilson1@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AvaWilson1.png"),
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "10", "AvaWilson2@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AvaWilson2.png"),
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "11", "AvaWilson3@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AvaWilson3.png"),
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "12", "DavidMoore@email.com", "https://1workflowstorage.blob.core.windows.net/photos/DavidMoore.png"),
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "13", "IsabellaTaylor@email.com", "https://1workflowstorage.blob.core.windows.net/photos/IsabellaTaylor.png"),
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "14", "ChristopherWhite@email.com", "https://1workflowstorage.blob.core.windows.net/photos/ChristopherWhite.png"),
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "15", "MiaHarris@email.com", "https://1workflowstorage.blob.core.windows.net/photos/MiaHarris.png"),
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "16", "MatthewMartin@email.com", "https://1workflowstorage.blob.core.windows.net/photos/MatthewMartin.png"),
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "17", "AmeliaThompson@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AmeliaThompson.png"),
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "18", "DavidMoore@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png"),
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "19", "IsabellaTaylor@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png"),
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "20", "ChristopherWhite@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png"),
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "21", "MiaHarris@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png"),
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "22", "MatthewMartin@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png"),
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "23", "AmeliaThompson@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png"),
-            new FriendRequest("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", "24", "AndrewGarcia@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png"),
-        };
 
-        foreach (var item in friendRequestsForAlice)
-            item.AcceptRequest(item.InvitedUserId);
-        
 
         var friendRequest = await _context.FindAsync<FriendRequest>(friendRequestsForAlice[0].InviterUserId, friendRequestsForAlice[0].InvitedUserId);
         if (friendRequest is not null)
