@@ -11,10 +11,15 @@ The application was designed as a system for project management and real-time co
 - Friend Addition: A social feature allowing users to add friends and build a contact network within the platform.
 
 ### Live Chat 
+
 <img src="https://github.com/KonradDzieciol99/Workflow/blob/master/README-img/workflow-messages.png" align="right" width="100%" height="auto" />
+
 ### Projects Page
+
 <img src="https://github.com/KonradDzieciol99/Workflow/blob/master/README-img/workflow-projects-page.png" align="right" width="100%" height="auto" />
+
 ### Tasks Page 
+
 <img src="https://github.com/KonradDzieciol99/Workflow/blob/master/README-img/worflow-tasks-page-create-task.png" align="right" width="100%" height="auto" />
 
 ### Architecture overview
