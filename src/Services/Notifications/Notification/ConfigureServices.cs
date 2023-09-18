@@ -95,12 +95,6 @@ public static class ConfigureServices
                     .AddCheck("self",() => HealthCheckResult.Healthy(),
                         tags: new string[] { "api" }
                     )
-                    .AddAzureServiceBusTopic(
-                        configuration["AzureServiceBusSubscriberOptions:ServiceBusConnectionString"],
-                        configuration["AzureServiceBusSubscriberOptions:TopicName"],
-                        name: "notification-azure-service-bus-check",
-                        tags: new string[] { "azureServiceBus" }
-                    )
                     .AddSqlServer(
                         configuration["ConnectionStrings:DbContextConnString"],
                         name: "notification-sql-db-check",

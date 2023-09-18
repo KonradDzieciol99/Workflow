@@ -19,13 +19,13 @@ public class IconController : ControllerBase
     {
         this._mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
-
-    [HttpPost]
-    public async Task<IActionResult> Post([FromForm] IFormFile file, [FromQuery] string name)
-    {
-        await _mediator.Send(new IconUploadCommand(file,name));
-        return Ok();
-    }
+    //TODO
+    //[HttpPost]
+    //public async Task<IActionResult> Post([FromForm] IFormFile file, [FromQuery] string name)
+    //{
+    //    await _mediator.Send(new IconUploadCommand(file,name));
+    //    return Ok();
+    //}
 
     [HttpGet]
     public async Task<ActionResult<List<Icon>>> Get()

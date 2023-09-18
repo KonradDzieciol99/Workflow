@@ -56,41 +56,39 @@ public class SeedData
     public async Task TrySeedAsync()
     {
 
-        var occupations = new string[] { "gardener", "teacher", "writer", "programmer" };
-
         var photosList = new string[] { "avocadoChair.png", "bussinesStuff1.png", "bussinesStuff2.png",
         "bussinesStuff3.png","bussinesStuff4.png","bussinesStuff5.png","bussinesStuff6.png","dogo.png","gears.png","handPalm.png"};
 
+        //var leader = new ProjectMember("50", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", ProjectMemberType.Leader, InvitationStatus.Accepted);
 
-        var leader = new ProjectMember("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", ProjectMemberType.Leader, InvitationStatus.Accepted);
-        
-        var leaderIdInfo = leader.GetType().GetProperty("Id");
-        leaderIdInfo.SetValue(leader, "1", null);
+        //var leaderIdInfo = leader.GetType().GetProperty("Id");
+        //leaderIdInfo.SetValue(leader, "1", null);
 
-        var mainProject = new Project("Testable", "https://1workflowstorage.blob.core.windows.net/projectsicons/dogo.png", leader);
+        //var mainProject = new Project("Testable", "https://1workflowstorage.blob.core.windows.net/projectsicons/dogo.png", leader);
 
-        var idProperty = mainProject.GetType().GetProperty("Id");
-        idProperty.SetValue(mainProject, "1",null);
-        
-        var faker = new Faker<Project>()
+        //var idProperty = mainProject.GetType().GetProperty("Id");
+        //idProperty.SetValue(mainProject, "1",null);
+        var projectMemverId = 0;
+        var projectId = 0;
+        var projects = new Faker<Project>()
            .StrictMode(false)
-           .CustomInstantiator(f => new Project(
-               f.Commerce.ProductName(),
-               $"https://1workflowstorage.blob.core.windows.net/projectsicons/{f.PickRandom(photosList)}",
-               new("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", ProjectMemberType.Leader, InvitationStatus.Accepted)
-               )
-           //(Activator.CreateInstance(typeof(Project), nonPublic: true) as Project)
-           );
-           //.RuleFor(u => u.Name, f => f.Commerce.ProductName())
-           //.RuleFor(u => u.IconUrl, f => $"https://1workflowstorage.blob.core.windows.net/projectsicons/{f.PickRandom(photosList)}")
-           //.RuleFor(u => u.ProjectMembers, f => new List<ProjectMember>()
-           //{
-           //     new("1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", ProjectMemberType.Leader, InvitationStatus.Accepted),
-           //})
-           //.RuleFor(u => u.Id, f => Guid.NewGuid().ToString());
+           .CustomInstantiator(f =>
+           {
+               var leader = new ProjectMember("50", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", ProjectMemberType.Leader, InvitationStatus.Accepted);
+               var leaderIdInfo = leader.GetType().GetProperty(nameof(leader.Id));
+               leaderIdInfo!.SetValue(leader, projectMemverId++.ToString(), null);
 
-        var projects = faker.Generate(110);
-        projects.Add(mainProject);
+               var project = new Project(f.Commerce.ProductName(), $"https://1workflowstorage.blob.core.windows.net/projectsicons/{f.PickRandom(photosList)}", leader);
+               var idProperty = project.GetType().GetProperty(nameof(project.Id));
+               idProperty!.SetValue(project, projectId++.ToString(), null);
+
+               return project;
+           })
+           .UseSeed(1111)
+           .Generate(110);
+
+        //var projects = faker.Generate(110);
+        //projects.Add(mainProject);
 
         var projectsCount = await _context.Projects.CountAsync();
         if (projectsCount >=100)
@@ -103,7 +101,7 @@ public class SeedData
 
         _ = await _unitOfWork.Complete();
 
-        await _integrationEventService.PublishEventsThroughEventBusAsync();
+        //await _integrationEventService.PublishEventsThroughEventBusAsync();
 
         _logger.LogDebug("Seeding completed.");
     }

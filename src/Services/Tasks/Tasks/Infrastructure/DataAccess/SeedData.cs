@@ -48,26 +48,44 @@ public class SeedData
     public async Task TrySeedAsync()
     {
 
-        var member = new ProjectMember("1","1", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", ProjectMemberType.Leader, InvitationStatus.Accepted,"1");
+        //var member = new ProjectMember("1","50", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", ProjectMemberType.Leader, InvitationStatus.Accepted,"1");
 
         var now = DateTime.UtcNow;
+        var projectMemberId = 0;
+        var projectId = 0;
 
-        var faker = new Faker<AppTask>()
+        var projectMembers = new Faker<ProjectMember>()
+           .StrictMode(false)
+           .CustomInstantiator(f =>
+           {
+               var projectMember = new ProjectMember(projectMemberId++.ToString(),
+                                                     "50", "AliceSmith@email.com",
+                                                     "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png",
+                                                     ProjectMemberType.Leader,
+                                                     InvitationStatus.Accepted,
+                                                     projectId++.ToString()
+                                                     );
+               return projectMember;
+           })
+           .UseSeed(1111)
+           .Generate(110);
+
+
+        var tasks = new Faker<AppTask>()
            .StrictMode(false)
            .CustomInstantiator(f => new AppTask(
                f.Lorem.Word(),
                f.Lorem.Sentences(),
-               member.ProjectId,
+               projectMembers[0].ProjectId,
                null,
                f.PickRandom<Priority>(),
                f.PickRandom<State>(),
                f.Date.Between(now.AddDays(7),now.AddMonths(4)),
                f.Date.Between(now, now.AddDays(7)),
-               member.Id
+               projectMembers[0].Id
                )
-           );
-
-        var tasks = faker.Generate(140);
+           )
+           .Generate(140);
 
         var projectsCount = await _context.AppTasks.CountAsync();
         if (projectsCount >= 140)
@@ -76,7 +94,7 @@ public class SeedData
             return;
         }
 
-        _context.ProjectMembers.Add(member);
+        _context.ProjectMembers.AddRange(projectMembers);
 
         await _context.SaveChangesAsync();
         

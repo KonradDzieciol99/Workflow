@@ -10,7 +10,6 @@
 *.userosscache
 *.sln.docstates
 */appsettings.Development.json
-*/appsettings.json
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
@@ -362,8 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/Email/appsettings.json
-/Email/appsettings.Development.json
 /Identity/Identity.csproj
 /IdentityServer/IdentityServer.csproj
 /IdentityServer/IdentityServer.csproj
@@ -374,5 +371,3 @@ FodyWeavers.xsd
 /Infrastructure/Infrastructure.csproj
 /WebAPI/WebAPI.csproj
 /notes.txt
-**/appsettings.json
-/src/Proxy/Envoy/envoy.yaml

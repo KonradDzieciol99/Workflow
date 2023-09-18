@@ -109,12 +109,6 @@ public static class ConfigureServices
                 () => HealthCheckResult.Healthy(),
                 tags: new string[] { "api" }
             )
-            .AddAzureServiceBusTopic(
-                configuration["AzureServiceBusSubscriberOptions:ServiceBusConnectionString"],
-                configuration["AzureServiceBusSubscriberOptions:TopicName"],
-                name: "signalr-azure-service-bus-check",
-                tags: new string[] { "azureServiceBus" }
-            )
             .AddRedis(
                 configuration["ConnectionStrings:Redis"],
                 name: "signalr-redis-check",

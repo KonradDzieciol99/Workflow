@@ -5,7 +5,7 @@ namespace Chat.Domain.Entity;
 
 public class FriendRequest : BaseEntityWithCompositeKey
 {
-    private FriendRequest() { }
+    public FriendRequest() { }
     public FriendRequest(string inviterUserId, string inviterUserEmail, string? inviterPhotoUrl, string invitedUserId, string invitedUserEmail, string? invitedPhotoUrl)
     {
         InviterUserId = inviterUserId ?? throw new ArgumentNullException(nameof(inviterUserId));

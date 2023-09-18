@@ -22,7 +22,7 @@ public static class ConfigureServices
 
         services.AddScoped(opt =>
         {
-            return new BlobServiceClient(configuration.GetConnectionString("AzureStorage") ?? throw new ArgumentNullException(nameof(configuration)));
+            return new BlobServiceClient(new Uri(configuration.GetConnectionString("AzureStorage")) ?? throw new ArgumentNullException(nameof(configuration)));
         });
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
@@ -89,9 +89,9 @@ public static class ConfigureServices
             .AddCheck("self", () => HealthCheckResult.Healthy(),
             tags: new string[] { "api" }
             )
-            .AddAzureBlobStorage(configuration.GetConnectionString("AzureStorage"),
-                name: "photos-azure-blob-storage-check",
-                tags: new string[] { "azureServiceBus" })
+            //.AddAzureBlobStorage(configuration.GetConnectionString("AzureStorage"),
+            //    name: "photos-azure-blob-storage-check",
+            //    tags: new string[] { "azureServiceBus" })
             .AddIdentityServer(
                 new Uri(configuration.GetValue<string>("urls:internal:IdentityHttp")),
                 name: "photos-identity-check",
