@@ -30,3 +30,24 @@ The application was designed as a system for project management and real-time co
 - Inter-service communication: Use of RabbitMQ and Azure Service Bus for reliable and scalable inter-service communication.
 - Security and authentication: Integrated protection and identity management thanks to Duende Identity Server.
 - Frontend: User interface based on Angular, served by the nginx server and styled with Bootstrap.
+
+## Getting Started
+
+- Make sure you have docker [installed](https://docs.docker.com/docker-for-windows/install/)
+- Download the [Workflow-UI](https://github.com/KonradDzieciol99/WorkflowUI/) frontend
+- Use the following commands in the root folder of both projects
+
+```powershell
+docker-compose build
+docker-compose up
+```
+
+You should be able to browse different components of the application by using the below URLs :
+
+```
+Health Check : http://host.docker.internal:5018/
+Seq :  http://localhost:5200/
+Workflow :  http://localhost:1000/
+```
+
+
