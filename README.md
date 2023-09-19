@@ -24,7 +24,7 @@ The application was designed as a system for project management and real-time co
 
 ## Architecture overview
 
-![](README-img/workflowDiag.drawio.17.09.2023.svg)
+![](README-img/workflowDiag.drawio.svg)
 
 - Microservices: The microservice-based architecture allows for independent expansion and updates of individual application components.
 - Inter-service communication: Use of RabbitMQ and Azure Service Bus for reliable and scalable inter-service communication.
