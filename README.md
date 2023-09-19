@@ -3,7 +3,7 @@
 
 ![](README-img/workflowDiag.drawio.svg)
 
-The application was designed as a system for project management and real-time communication. It consists of several microservices, ensuring scalability and flexibility. Currently, it is in active development and is set to undergo further enhancements.
+The application was designed as a system for project management and real-time communication. It consists of microservices written using .NET, ensuring scalability and flexibility. The user interface was created using Angular. It is currently under active development and will undergo further improvements.
 
 ## Features
 - Live Chat: Enables users to engage in real-time conversations using SignalR, facilitating instant message exchange and information sharing.
