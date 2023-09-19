@@ -45,7 +45,7 @@ docker-compose up
 You should be able to browse different components of the application by using the below URLs :
 
 ```
-Health Check : http://host.docker.internal:5018/
+Health Check : http://localhost:5018/
 Seq :  http://localhost:5200/
 Workflow :  http://localhost:1000/
 ```
