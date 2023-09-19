@@ -1,7 +1,7 @@
 # Workflow
 #### Project Management and Real-time Communication Application
 
-![](README-img/workflowDiag.drawio.17.09.2023.svg)
+![](README-img/workflowDiag.drawio.svg)
 
 The application was designed as a system for project management and real-time communication. It consists of several microservices, ensuring scalability and flexibility. Currently, it is in active development and is set to undergo further enhancements.
 
