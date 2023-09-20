@@ -5,8 +5,10 @@ using HealthChecks.UI.Client;
 using Logging;
 using MessageBus;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System.Net;
 
 namespace Chat;
 
@@ -15,11 +17,12 @@ public class Program
     private static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
         builder.Configuration.AddEnvironmentVariables();
 
-        builder.Services.AddWebAPIServices(builder.Configuration);
-
         builder.Host.UseSerilog(SeriLogger.Configure);
+
+        builder.Services.AddWebAPIServices(builder.Configuration);
 
         var app = builder.Build();
 

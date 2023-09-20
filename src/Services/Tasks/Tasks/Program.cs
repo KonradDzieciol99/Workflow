@@ -2,7 +2,9 @@ using HealthChecks.UI.Client;
 using Logging;
 using MessageBus;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Serilog;
+using System.Net;
 using Tasks.Application.IntegrationEvents;
 using Tasks.Infrastructure.DataAccess;
 using Tasks.Middleware;
@@ -14,11 +16,12 @@ public class Program
     private static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
         builder.Configuration.AddEnvironmentVariables();
 
-        builder.Services.AddTasksServices(builder.Configuration);
-
         builder.Host.UseSerilog(SeriLogger.Configure);
+
+        builder.Services.AddTasksServices(builder.Configuration);
 
         var app = builder.Build();
 

@@ -46,7 +46,6 @@ public static class ConfigureServices
         {
             var internalIdentityUrl = configuration.GetValue<string>("urls:internal:IdentityHttp") ?? throw new ArgumentNullException(nameof(configuration));
             var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:IdentityHttp") ?? throw new ArgumentNullException(nameof(configuration));
-            var externalIdentityUrlhttps = configuration.GetValue<string>("urls:external:IdentityHttps") ?? throw new ArgumentNullException(nameof(configuration));
 
             opt.RequireHttpsMetadata = false;
             opt.SaveToken = true;
@@ -59,7 +58,7 @@ public static class ConfigureServices
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuers = new[] { externalIdentityUrlhttp, externalIdentityUrlhttps },
+                ValidIssuers = new[] { externalIdentityUrlhttp },
                 ClockSkew = TimeSpan.Zero
             };
         });
