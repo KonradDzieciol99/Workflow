@@ -5,7 +5,7 @@ using System.Text;
 
 namespace API.Aggregator.Infrastructure.Services;
 
-public class ChatService : BaseHttpService<AggregatorDomainException>, IChatService
+public class ChatService : BaseHttpService, IChatService
 {
     private readonly string _chatServiceUrl;
     public ChatService(HttpClient client, IConfiguration configuration) : base(client)

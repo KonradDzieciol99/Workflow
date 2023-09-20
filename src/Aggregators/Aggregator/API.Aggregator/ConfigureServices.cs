@@ -21,12 +21,16 @@ public static class ConfigureServices
         services.AddSwaggerGen();
 
         services.AddHttpClient<IIdentityServerService, IdentityServerService>()
+            .AddHttpMessageHandler<HttpClientErrorHandlingDelegatingHandler>()
             .AddHttpMessageHandler<HttpClientTokenForwarderDelegatingHandler>();
         services.AddHttpClient<ITaskService, TaskService>()
+            .AddHttpMessageHandler<HttpClientErrorHandlingDelegatingHandler>()
             .AddHttpMessageHandler<HttpClientTokenForwarderDelegatingHandler>();
         services.AddHttpClient<IProjectsService, ProjectsService>()
+            .AddHttpMessageHandler<HttpClientErrorHandlingDelegatingHandler>()
             .AddHttpMessageHandler<HttpClientTokenForwarderDelegatingHandler>();
         services.AddHttpClient<IChatService, ChatService>()
+            .AddHttpMessageHandler<HttpClientErrorHandlingDelegatingHandler>()
             .AddHttpMessageHandler<HttpClientTokenForwarderDelegatingHandler>();
 
         services.AddAuthentication(opt =>
@@ -98,6 +102,7 @@ public static class ConfigureServices
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddHttpContextAccessor();
         services.AddTransient<HttpClientTokenForwarderDelegatingHandler>();
+        services.AddTransient<HttpClientErrorHandlingDelegatingHandler>();
 
         return services;
     }

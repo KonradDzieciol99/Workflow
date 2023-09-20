@@ -4,7 +4,7 @@ using System.Text;
 
 namespace API.Aggregator.Infrastructure.Services;
 
-public class NotificationService : BaseHttpService<AggregatorDomainException>, INotificationService
+public class NotificationService : BaseHttpService, INotificationService
 {
     private readonly string _notificationServiceUrl;
     public NotificationService(HttpClient client, IConfiguration configuration) : base(client)

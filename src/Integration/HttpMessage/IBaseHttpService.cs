@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace HttpMessage;
 
-public interface IBaseHttpService<TDomainEx> where TDomainEx : Exception, new()
+public interface IBaseHttpService
 {
     Task<T> SendAsync<T>(ApiRequest apiRequest);
 }
