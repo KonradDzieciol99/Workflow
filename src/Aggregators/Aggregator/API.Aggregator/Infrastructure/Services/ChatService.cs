@@ -1,10 +1,11 @@
 ﻿using API.Aggregator.Application.Commons.Models;
+using API.Aggregator.Domain.Commons.Exceptions;
 using HttpMessage;
 using System.Text;
 
 namespace API.Aggregator.Infrastructure.Services;
 
-public class ChatService : BaseHttpService, IChatService
+public class ChatService : BaseHttpService<AggregatorDomainException>, IChatService
 {
     private readonly string _chatServiceUrl;
     public ChatService(HttpClient client, IConfiguration configuration) : base(client)

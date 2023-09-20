@@ -1,10 +1,11 @@
 ﻿using API.Aggregator.Application.Commons.Models;
+using API.Aggregator.Domain.Commons.Exceptions;
 using HttpMessage;
 using System.Text;
 
 namespace API.Aggregator.Infrastructure.Services;
 
-public class IdentityServerService : BaseHttpService, IIdentityServerService
+public class IdentityServerService : BaseHttpService<AggregatorDomainException>, IIdentityServerService
 {
     private readonly string _identityUrl;
 
