@@ -1,6 +1,7 @@
 using HealthChecks.UI.Client;
 using Logging;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Projects.Application;
 using Projects.Infrastructure;
@@ -9,6 +10,7 @@ using Projects.Middleware;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
+using System.Net;
 
 namespace Projects;
 
@@ -17,13 +19,14 @@ public class Program
     private static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
         builder.Configuration.AddEnvironmentVariables();
+
+        builder.Host.UseSerilog(SeriLogger.Configure);
 
         builder.Services.AddApplicationServices();
         builder.Services.AddInfrastructureServices(builder.Configuration);
         builder.Services.AddWebAPIServices();
-
-        builder.Host.UseSerilog(SeriLogger.Configure);
 
         var app = builder.Build();
 

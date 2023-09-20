@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using System.Net;
 
 namespace HealthChecks;
 
@@ -7,6 +9,7 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
         builder.Configuration.AddEnvironmentVariables();
 
         builder.Services.AddHealthChecksServices();

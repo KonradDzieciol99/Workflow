@@ -4,17 +4,20 @@ using Logging;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
 using API.Aggregator.Middleware;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using System.Net;
 
 namespace API.Aggregator;
 public class Program {
     private static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
         builder.Configuration.AddEnvironmentVariables();
 
-        builder.Services.AddAggregatorServices(builder.Configuration);
-
         builder.Host.UseSerilog(SeriLogger.Configure);
+
+        builder.Services.AddAggregatorServices(builder.Configuration);
 
         var app = builder.Build();
 
