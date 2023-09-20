@@ -5,7 +5,7 @@ using System.Text;
 
 namespace API.Aggregator.Infrastructure.Services;
 
-public class IdentityServerService : BaseHttpService<AggregatorDomainException>, IIdentityServerService
+public class IdentityServerService : BaseHttpService, IIdentityServerService
 {
     private readonly string _identityUrl;
 

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace API.Aggregator.Infrastructure.Services;
 
-public class ProjectsService : BaseHttpService<AggregatorDomainException>, IProjectsService
+public class ProjectsService : BaseHttpService, IProjectsService
 {
     private readonly string _projectServiceUrl;
     public ProjectsService(HttpClient client, IConfiguration configuration) : base(client)

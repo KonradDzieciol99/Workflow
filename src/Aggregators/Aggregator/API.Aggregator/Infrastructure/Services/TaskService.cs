@@ -4,7 +4,7 @@ using HttpMessage;
 
 namespace API.Aggregator.Infrastructure.Services;
 
-public class TaskService : BaseHttpService<AggregatorDomainException>, ITaskService
+public class TaskService : BaseHttpService, ITaskService
 {
     private readonly string _tasksServiceUrl;
     public TaskService(HttpClient client, IConfiguration configuration) : base(client)
