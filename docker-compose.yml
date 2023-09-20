@@ -19,14 +19,19 @@ services:
   seq:
     image: datalust/seq:latest
 
+  rabbitmq:
+    image: rabbitmq:3-management
+
   healthchecks:
     image: ${DOCKER_REGISTRY-}healthchecks
+    restart: unless-stopped
     build:
       context: .
       dockerfile: src/Aggregators/HealthChecks/Dockerfile
 
   tasks:
     image: ${DOCKER_REGISTRY-}tasks
+    restart: unless-stopped
     build:
       context: .
       dockerfile: src/Services/Tasks/Tasks/Dockerfile
@@ -36,6 +41,7 @@ services:
 
   signalr:
     image: ${DOCKER_REGISTRY-}signalr
+    restart: unless-stopped
     build:
       context: .
       dockerfile: src/Services/SignalR/SignalR/Dockerfile
@@ -45,6 +51,7 @@ services:
 
   projects:
     image: ${DOCKER_REGISTRY-}projects
+    restart: unless-stopped
     build:
       context: .
       dockerfile: src/Services/Projects/Projects/Dockerfile
@@ -54,6 +61,7 @@ services:
 
   photos:
     image: ${DOCKER_REGISTRY-}photos
+    restart: unless-stopped
     build:
       context: .
       dockerfile: src/Services/Photos/Photos/Dockerfile
@@ -62,6 +70,7 @@ services:
 
   notification:
     image: ${DOCKER_REGISTRY-}notification
+    restart: unless-stopped
     build:
       context: .
       dockerfile: src/Services/Notifications/Notification/Dockerfile
@@ -71,6 +80,7 @@ services:
 
   identityduende:
     image: ${DOCKER_REGISTRY-}identityduende
+    restart: unless-stopped
     build:
       context: .
       dockerfile: src/Services/Identity/IdentityDuende/Dockerfile
@@ -82,6 +92,7 @@ services:
    
   emailemitter:
     image: ${DOCKER_REGISTRY-}emailemitter
+    restart: unless-stopped
     build:
       context: .
       dockerfile: src/Services/Emails/EmailEmitter/Dockerfile
@@ -92,6 +103,7 @@ services:
 
   chat:
     image: ${DOCKER_REGISTRY-}chat
+    restart: unless-stopped
     build:
       context: .
       dockerfile: src/Services/Chats/Chat/Dockerfile
@@ -99,17 +111,16 @@ services:
     - sql_server
     - rabbitmq
 
-  rabbitmq:
-    image: rabbitmq:3-management
-
   yarpproxy:
     image: ${DOCKER_REGISTRY-}yarpproxy
+    restart: unless-stopped
     build:
       context: .
       dockerfile: src/Proxy/Yarp/YarpProxy/Dockerfile
 
   api.aggregator:
     image: ${DOCKER_REGISTRY-}apiaggregator
+    restart: unless-stopped
     build:
       context: .
       dockerfile: src/Aggregators/Aggregator/API.Aggregator/Dockerfile
