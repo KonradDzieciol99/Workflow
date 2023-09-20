@@ -63,16 +63,20 @@ public class Project : BaseEntity
         this.AddDomainEvent(new ProjectMemberUpdatedDomainEvent(targetMember));
     }
 
-    public void Update(string? name, string? iconUrl, string? NewLeaderId)
+    public void Update(string name, string iconUrl, string NewLeaderId)
     {
-        if (!string.IsNullOrEmpty(name))
+        bool wasChanged = false;
+
+        if (name != this.Name)
+        {
+            wasChanged = true;
             this.Name = name;
-
-        if (!string.IsNullOrEmpty(iconUrl))
+        }
+        if (iconUrl != this.IconUrl)
+        {
+            wasChanged = true;
             this.IconUrl = iconUrl;
-
-        if (NewLeaderId is null)
-            return;
+        }
 
         var newLeader = this.ProjectMembers.FirstOrDefault(m => m.Id == NewLeaderId);
         var currentLeader = this.ProjectMembers.FirstOrDefault(m => m.Type == ProjectMemberType.Leader);
@@ -80,13 +84,15 @@ public class Project : BaseEntity
         if (newLeader is null)
             throw new ProjectDomainException("Alleged new leader is not a member of the team");
 
-        newLeader.ChangeType(ProjectMemberType.Leader);
-
-        if (currentLeader is not null && newLeader.Id == currentLeader.Id)
-            throw new ProjectDomainException("the alleged new leader is already the leader of the team");
-
-        if (currentLeader is not null)
+        if (newLeader.Id != currentLeader.Id)
+        {
+            newLeader.ChangeType(ProjectMemberType.Leader);
             currentLeader.ChangeType(ProjectMemberType.Admin);
+            wasChanged = true;
+        }
+
+        if (!wasChanged)
+            throw new ProjectDomainException("No changes were made");
     }
 
     public void AcceptInvitation(string currentUserID)

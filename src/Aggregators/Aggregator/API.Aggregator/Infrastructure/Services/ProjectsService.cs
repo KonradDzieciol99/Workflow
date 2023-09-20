@@ -1,10 +1,11 @@
 ﻿using API.Aggregator.Application.Commons.Models;
+using API.Aggregator.Domain.Commons.Exceptions;
 using HttpMessage;
 using System.Text;
 
 namespace API.Aggregator.Infrastructure.Services;
 
-public class ProjectsService : BaseHttpService, IProjectsService
+public class ProjectsService : BaseHttpService<AggregatorDomainException>, IProjectsService
 {
     private readonly string _projectServiceUrl;
     public ProjectsService(HttpClient client, IConfiguration configuration) : base(client)

@@ -10,6 +10,7 @@ public class Program
     public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        builder.Configuration.AddEnvironmentVariables();
 
         builder.Services.AddWebAPIServices(builder.Configuration);
         var app = builder.Build();

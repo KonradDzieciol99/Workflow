@@ -1,3 +1,4 @@
+using Duende.IdentityServer.Events;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Stores;
 using IdentityDuende.Domain.DomainEvents;
@@ -7,6 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Configuration;
+using Microsoft.VisualBasic;
 
 namespace IdentityDuende.Pages.Account.Register;
 
@@ -14,23 +17,32 @@ namespace IdentityDuende.Pages.Account.Register;
 [AllowAnonymous]
 public class IndexModel : PageModel
 {
+    private readonly IIdentityServerInteractionService _interaction;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IEventService _events;
     private readonly IAuthenticationSchemeProvider _schemeProvider;
     private readonly IIdentityProviderStore _identityProviderStore;
+    private readonly IConfiguration _configuration;
+    private readonly SignInManager<ApplicationUser> _signInManager;
 
     public RegisterViewModel RegisterViewModel { get; set; }
 
     public IndexModel(
+        IIdentityServerInteractionService interaction,
         UserManager<ApplicationUser> userManager,
             IEventService events,
             IAuthenticationSchemeProvider schemeProvider,
-            IIdentityProviderStore identityProviderStore
+            IIdentityProviderStore identityProviderStore,
+            IConfiguration configuration,
+            SignInManager<ApplicationUser> signInManager
           )
     {
         this._events = events;
         this._schemeProvider = schemeProvider;
         this._identityProviderStore = identityProviderStore;
+        this._configuration = configuration;
+        this._signInManager = signInManager;
+        this._interaction = interaction;
         _userManager = userManager;
     }
 
@@ -52,14 +64,28 @@ public class IndexModel : PageModel
     {
         if (ModelState.IsValid)
         {
+
+
+
             var user = new ApplicationUser()
             {
                 UserName = Input.Email,
                 Email = Input.Email,
             };
 
+            if (!_configuration.GetValue<bool>("EmailEmiterEnabled"))
+                user.EmailConfirmed = true;
+
             var result = await _userManager.CreateAsync(user, Input.Password);
 
+            if (!_configuration.GetValue<bool>("EmailEmiterEnabled"))
+            {
+                _ = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, false, lockoutOnFailure: true);
+                var context = await _interaction.GetAuthorizationContextAsync(Input.ReturnUrl);
+                await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.Client.ClientId));
+                return Redirect(Input.ReturnUrl);
+            }
+            
             if (result.Succeeded)
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);

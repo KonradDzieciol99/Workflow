@@ -3,12 +3,14 @@ using HealthChecks.UI.Client;
 using Logging;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
+using API.Aggregator.Middleware;
 
 namespace API.Aggregator;
 public class Program {
     private static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        builder.Configuration.AddEnvironmentVariables();
 
         builder.Services.AddAggregatorServices(builder.Configuration);
 
@@ -25,6 +27,7 @@ public class Program {
         app.UseCors("allowAny");
         app.UseAuthentication();
         app.UseAuthorization();
+        app.UseMiddleware<ExceptionMiddleware>();
         app.MapDefaultControllerRoute();
         app.MapControllers();
         app.MapHealthChecks("/hc", new HealthCheckOptions()

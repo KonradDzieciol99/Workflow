@@ -1,9 +1,10 @@
-﻿using HttpMessage;
+﻿using API.Aggregator.Domain.Commons.Exceptions;
+using HttpMessage;
 using System.Text;
 
 namespace API.Aggregator.Infrastructure.Services;
 
-public class NotificationService : BaseHttpService, INotificationService
+public class NotificationService : BaseHttpService<AggregatorDomainException>, INotificationService
 {
     private readonly string _notificationServiceUrl;
     public NotificationService(HttpClient client, IConfiguration configuration) : base(client)
