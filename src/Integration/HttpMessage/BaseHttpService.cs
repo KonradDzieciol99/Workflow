@@ -1,4 +1,5 @@
 ﻿using HttpMessage.Models.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace HttpMessage;
 
-public class BaseHttpService : IBaseHttpService
+public class BaseHttpService<TDomainEx> : IBaseHttpService<TDomainEx> where TDomainEx : Exception, new()
 {
     private readonly HttpClient _client;
 
@@ -32,16 +33,23 @@ public class BaseHttpService : IBaseHttpService
             
             var apiResponse = await _client.SendAsync(message);
 
-            if (!apiResponse.IsSuccessStatusCode)
+            if (!apiResponse.IsSuccessStatusCode) 
+            {
+                var responseString = await apiResponse.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<ValidationProblemDetails>(responseString, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+
+
+                #pragma warning disable CS8597 // Thrown value may be null.
                 throw apiResponse.StatusCode switch
                 {
-                    HttpStatusCode.BadRequest => new BadRequestException(await apiResponse.Content.ReadAsStringAsync()),
-                    HttpStatusCode.Unauthorized => new UnauthorizedException(await apiResponse.Content.ReadAsStringAsync()),
-                    HttpStatusCode.Forbidden => new ForbiddenException(await apiResponse.Content.ReadAsStringAsync()),
-                    HttpStatusCode.NotFound => new NotFoundException(await apiResponse.Content.ReadAsStringAsync()),
+                    HttpStatusCode.BadRequest => (TDomainEx)Activator.CreateInstance(typeof(TDomainEx), result.Errors is null ?( result.Detail,new BadRequestException("") ):( result.Detail, new ValidationException() { Errors=result.Errors})),
+                    HttpStatusCode.Unauthorized => (TDomainEx)Activator.CreateInstance(typeof(TDomainEx), result.Detail,new UnauthorizedException("")),
+                    HttpStatusCode.Forbidden => (TDomainEx)Activator.CreateInstance(typeof(TDomainEx), result.Detail,new ForbiddenException("")),
+                    HttpStatusCode.NotFound => (TDomainEx)Activator.CreateInstance(typeof(TDomainEx), result.Detail,new NotFoundException("")),
                     _ => new HttpRequestException(await apiResponse.Content.ReadAsStringAsync()),
                 };
-            
+                #pragma warning restore CS8597 // Thrown value may be null.
+            }
 
             var apiContent = await apiResponse.Content.ReadAsStringAsync();
 
@@ -58,4 +66,5 @@ public class BaseHttpService : IBaseHttpService
             throw;
         }
     }
+
 }

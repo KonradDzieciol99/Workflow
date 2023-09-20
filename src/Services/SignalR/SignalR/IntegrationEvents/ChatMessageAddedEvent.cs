@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using MessageBus;
 using Microsoft.AspNetCore.SignalR;
+using SignalR.Commons.Models;
 using SignalR.Hubs;
 using StackExchange.Redis;
 
@@ -27,17 +28,26 @@ public class ChatMessageAddedEventHandler : IRequestHandler<ChatMessageAddedEven
     }
     public async Task Handle(ChatMessageAddedEvent request, CancellationToken cancellationToken)
     {
+        var message = new MessageDto(request.Id,
+                                     request.SenderId,
+                                     request.SenderEmail,
+                                     request.RecipientId,
+                                     request.RecipientEmail,
+                                     request.Content,
+                                     request.DateRead,
+                                     request.MessageSent);
 
-        var groupName = GetGroupName(request.SenderEmail, request.RecipientEmail);
+        var groupName = GetGroupName(message.SenderEmail, message.RecipientEmail);
         var values = await _redisDb.HashValuesAsync(groupName);
-        if (values.Contains(request.RecipientEmail))
+        if (values.Contains(message.RecipientEmail))
         {
-            var markChatMessageAsReadEvent = new MarkChatMessageAsReadEvent(request.Id, DateTime.UtcNow);
+            message.DateRead = DateTime.UtcNow;
+            var markChatMessageAsReadEvent = new MarkChatMessageAsReadEvent(message.Id, message.DateRead.Value);
             await _azureServiceBusSender.PublishMessage(markChatMessageAsReadEvent);
         }
 
-        await _chatHubContext.Clients.Group(groupName).SendAsync("NewMessage", request, cancellationToken: cancellationToken);
-        await _presenceHubContext.Clients.User(request.RecipientId).SendAsync("NewMessageReceived", new { senderEmail = request.SenderEmail }, cancellationToken: cancellationToken);
+        await _chatHubContext.Clients.Group(groupName).SendAsync("NewMessage", message, cancellationToken: cancellationToken);
+        //await _presenceHubContext.Clients.User(message.RecipientId).SendAsync("NewMessageReceived", new { senderEmail = message.SenderEmail }, cancellationToken: cancellationToken);
 
         return;
     }

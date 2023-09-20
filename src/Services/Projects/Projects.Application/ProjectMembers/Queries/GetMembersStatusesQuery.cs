@@ -14,7 +14,6 @@ public record GetMembersStatusesQuery(string ProjectId, List<string> UsersIds) :
         var listOfRequirements = new List<IAuthorizationRequirement>()
         {
             new ProjectMembershipRequirement(ProjectId),
-            new ProjectManagementRequirement(ProjectId)
         };
         return listOfRequirements;
     }

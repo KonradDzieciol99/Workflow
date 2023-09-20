@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Projects.Application.Common.Authorization;
 using Projects.Application.Common.Exceptions;
 using Projects.Application.Common.Interfaces;
+using Projects.Domain.Common.Exceptions;
 
 namespace Projects.Application.Common.Behaviours;
 
@@ -26,16 +27,14 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
         if (authRequirementsList.Any())
         {
             if (_currentUserService.GetUser() == null)
-                throw new UnauthorizedAccessException();
+                throw new UnauthorizedException();
 
             foreach (var requirement in authRequirementsList)
             {
                 var result = await _authorizationService.AuthorizeAsync(_currentUserService.GetUser(), null, requirement);
 
                 if (!result.Succeeded)
-                {
-                    throw new ForbiddenAccessException();
-                }
+                    throw new ProjectDomainException("You do not have access to this resource.", new ForbiddenAccessException());                
             }
         }
         return await next();

@@ -6,7 +6,7 @@ using Notification.Infrastructure.Repositories;
 
 namespace Notification.Application.IntegrationEvents;
 
-public record ProjectMemberAddedEvent(string ProjectMemberId, string UserId, string UserEmail, string? PhotoUrl, int Type, string ProjectId, int InvitationStatus, string ProjectName, string projectIconUrl, bool IsNewProjectCreator) : IntegrationEvent;
+public record ProjectMemberAddedEvent(string ProjectMemberId, string UserId, string UserEmail, string? PhotoUrl, int Type, string ProjectId, int InvitationStatus, string ProjectName, string ProjectIconUrl, bool IsNewProjectCreator) : IntegrationEvent;
 
 public class ProjectMemberAddedEventHandler : IRequestHandler<ProjectMemberAddedEvent>
 {
@@ -30,7 +30,7 @@ public class ProjectMemberAddedEventHandler : IRequestHandler<ProjectMemberAdded
                                                $"you have been invited to a {request.ProjectName}",
                                                request.ProjectId,
                                                request.ProjectName,
-                                               request.projectIconUrl);
+                                               request.ProjectIconUrl);
 
         _unitOfWork.AppNotificationRepository.Add(notification);
 

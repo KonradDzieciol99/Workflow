@@ -89,7 +89,7 @@ public class ExceptionMiddleware
         {
             Instance = context.Request.Path,
             Type = nameof(ForbiddenAccessException),
-            Title = "You have no rights to this resource",
+            Title = "Forbidden",
             Detail = exception.Message,
             Status = StatusCodes.Status403Forbidden
         };

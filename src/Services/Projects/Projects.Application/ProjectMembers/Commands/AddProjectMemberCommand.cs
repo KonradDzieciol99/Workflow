@@ -37,7 +37,7 @@ public class AddProjectMemberCommandHandler : IRequestHandler<AddProjectMemberCo
     {
         var project = await _unitOfWork.ProjectRepository.GetOneAsync(request.ProjectId);
 
-        var newMember = new ProjectMember(request.UserId, request.UserEmail, request.PhotoUrl, request.Type, InvitationStatus.Invited/*, request.ProjectId*/);
+        var newMember = new ProjectMember(request.UserId, request.UserEmail, request.PhotoUrl, request.Type, InvitationStatus.Invited);
 
         project.AddProjectMember(newMember);
 
