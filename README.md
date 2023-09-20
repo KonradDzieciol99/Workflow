@@ -30,7 +30,7 @@ The application was designed as a system for project management and real-time co
 - Inter-service communication: Use of RabbitMQ and Azure Service Bus for reliable and scalable inter-service communication.
 - Security and authentication: Integrated protection and identity management thanks to Duende Identity Server.
 - Frontend: User interface based on Angular, served by the nginx server and styled with Bootstrap.
-- Patterns: In all microservices, I have strived to follow the "clean architecture" pattern. Additionally, the "Projects" microservice implements a simplified DDD pattern. These aspects will be improved as I acquire new knowledge.
+- Patterns: In all microservices, I have strived to follow the Clean Architecture pattern. Additionally, the "Projects" microservice implements a simplified DDD pattern. These aspects will be improved as I acquire new knowledge.
 
 ## Getting Started
 
