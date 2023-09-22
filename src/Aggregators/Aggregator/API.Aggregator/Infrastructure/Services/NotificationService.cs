@@ -7,7 +7,7 @@ namespace API.Aggregator.Infrastructure.Services;
 public class NotificationService : BaseHttpService, INotificationService
 {
     private readonly string _notificationServiceUrl;
-    public NotificationService(HttpClient client, IConfiguration configuration) : base(client)
+    public NotificationService(IHttpClientFactory httpClientFactory, IConfiguration configuration) : base(httpClientFactory.CreateClient("InternalHttpClient"))
     {
         _notificationServiceUrl = configuration.GetValue<string>("urls:internal:notification") ?? throw new ArgumentNullException(nameof(configuration)); ;
     }
