@@ -8,7 +8,7 @@ namespace API.Aggregator.Infrastructure.Services;
 public class ProjectsService : BaseHttpService, IProjectsService
 {
     private readonly string _projectServiceUrl;
-    public ProjectsService(HttpClient client, IConfiguration configuration) : base(client)
+    public ProjectsService(IHttpClientFactory httpClientFactory, IConfiguration configuration) : base(httpClientFactory.CreateClient("InternalHttpClient"))
     {
         _projectServiceUrl = configuration.GetValue<string>("urls:internal:projectsHttp") ?? throw new ArgumentNullException(nameof(configuration)); ;
     }

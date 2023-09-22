@@ -27,7 +27,6 @@ public class HttpClientErrorHandlingDelegatingHandler: DelegatingHandler
                 HttpStatusCode.BadRequest => result.Errors is null
                     ? new AggregatorDomainException(result.Detail, new BadRequestException(""))
                     : new AggregatorDomainException(result.Detail, new ValidationException(result.Errors)),
-
                 HttpStatusCode.Unauthorized => new AggregatorDomainException(result.Detail, new UnauthorizedException("")),
                 HttpStatusCode.Forbidden => new AggregatorDomainException(result.Detail, new ForbiddenAccessException()),
                 HttpStatusCode.NotFound => new AggregatorDomainException(result.Detail, new NotFoundException("")),

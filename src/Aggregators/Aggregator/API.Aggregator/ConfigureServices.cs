@@ -9,6 +9,8 @@ using API.Aggregator.Infrastructure.Services;
 using API.Aggregator.Services;
 using API.Aggregator.Infrastructure;
 using System.Net.Http;
+using Polly;
+using Serilog;
 
 namespace API.Aggregator;
 
@@ -20,18 +22,21 @@ public static class ConfigureServices
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
 
-        services.AddHttpClient<IIdentityServerService, IdentityServerService>()
-            .AddHttpMessageHandler<HttpClientErrorHandlingDelegatingHandler>()
-            .AddHttpMessageHandler<HttpClientTokenForwarderDelegatingHandler>();
-        services.AddHttpClient<ITaskService, TaskService>()
-            .AddHttpMessageHandler<HttpClientErrorHandlingDelegatingHandler>()
-            .AddHttpMessageHandler<HttpClientTokenForwarderDelegatingHandler>();
-        services.AddHttpClient<IProjectsService, ProjectsService>()
-            .AddHttpMessageHandler<HttpClientErrorHandlingDelegatingHandler>()
-            .AddHttpMessageHandler<HttpClientTokenForwarderDelegatingHandler>();
-        services.AddHttpClient<IChatService, ChatService>()
-            .AddHttpMessageHandler<HttpClientErrorHandlingDelegatingHandler>()
-            .AddHttpMessageHandler<HttpClientTokenForwarderDelegatingHandler>();
+        services.AddHttpClient("InternalHttpClient")
+        .AddHttpMessageHandler<HttpClientTokenForwarderDelegatingHandler>()
+        .AddHttpMessageHandler<HttpClientErrorHandlingDelegatingHandler>()
+        .AddTransientHttpErrorPolicy(builder =>
+        {
+            return builder.WaitAndRetryAsync(
+                retryCount: 4,
+                sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(retryAttempt));
+        });
+
+        services.AddScoped<IChatService, ChatService>();
+        services.AddScoped<IIdentityServerService, IdentityServerService>();
+        services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IProjectsService, ProjectsService>();
+        services.AddScoped<ITaskService, TaskService>();
 
         services.AddAuthentication(opt =>
         {

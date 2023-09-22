@@ -8,7 +8,7 @@ namespace API.Aggregator.Infrastructure.Services;
 public class ChatService : BaseHttpService, IChatService
 {
     private readonly string _chatServiceUrl;
-    public ChatService(HttpClient client, IConfiguration configuration) : base(client)
+    public ChatService(IHttpClientFactory httpClientFactory, IConfiguration configuration) : base(httpClientFactory.CreateClient("InternalHttpClient"))
     {
         _chatServiceUrl = configuration.GetValue<string>("urls:internal:chat") ?? throw new ArgumentNullException(nameof(configuration)); ;
     }
