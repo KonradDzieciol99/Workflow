@@ -7,6 +7,7 @@ x-common-variables: &common-variables
     urls__internal__chat: http://chat:80
     urls__internal__projects: http://projects:80
     urls__external__identity: http://localhost:5000
+    urls__external__azureBlobStorage: http://127.0.0.1:10000/devstoreaccount1
     EmailEmiterEnabled: false
     ASPNETCORE_ENVIRONMENT: Development
     ASPNETCORE_URLS: http://+:80
@@ -19,12 +20,6 @@ x-common-variables: &common-variables
 
 services:
 
-  healthchecks:
-    environment:
-      <<: *common-variables
-    ports:
-      - "5018:80"
-
   seq:
     environment:
       - ACCEPT_EULA=Y
@@ -35,6 +30,12 @@ services:
     ports:
       - "15672:15672"
       - "5672:5672"
+
+  healthchecks:
+    environment:
+      <<: *common-variables
+    ports:
+      - "5018:80"
 
   identityduende:
     environment:
