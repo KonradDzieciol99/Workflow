@@ -6,6 +6,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using Photos.Application.Common.Behaviours;
+using Photos.Infrastructure.DataAccess;
 
 namespace Photos;
 
@@ -22,10 +23,10 @@ public static class ConfigureServices
 
         services.AddControllers();
 
-        services.AddScoped(opt =>
+        services.AddSingleton(opt =>
         {
             return new BlobServiceClient(
-                new Uri(configuration.GetConnectionString("AzureStorage"))
+                configuration.GetConnectionString("AzureStorage")
                     ?? throw new ArgumentNullException(nameof(configuration))
             );
         });
@@ -114,6 +115,10 @@ public static class ConfigureServices
                     name: "photos-identity-check",
                     tags: new string[] { "identity" }
                 );
+
+
+        services.AddScoped<SeedData>();
+
 
         return services;
     }

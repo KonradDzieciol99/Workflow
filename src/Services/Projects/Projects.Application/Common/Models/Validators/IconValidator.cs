@@ -1,10 +1,11 @@
 ﻿using FluentValidation;
+using Microsoft.Extensions.Configuration;
 
 namespace Projects.Application.Common.Models.Validators;
 
 public class IconValidator : AbstractValidator<Icon>
 {
-    public IconValidator()
+    public IconValidator(IConfiguration configuration)
     {
         RuleFor(x => x.Url)
             .NotEmpty()
@@ -24,7 +25,6 @@ public class IconValidator : AbstractValidator<Icon>
         bool isUri = Uri.TryCreate(url, UriKind.Absolute, out Uri? uriResult);
         return isUri
             && uriResult is not null
-            && uriResult.Scheme == Uri.UriSchemeHttps
-            && url.StartsWith("https://1workflowstorage.blob.core.windows.net/projectsicons/");
+            && url.StartsWith("http://127.0.0.1:10000/devstoreaccount1/projectsicons/");
     }
 }
