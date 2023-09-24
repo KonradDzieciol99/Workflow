@@ -14,15 +14,17 @@ using Tasks.Services;
 
 namespace Tasks.Application.AppTasks.Commands;
 
-public record AddTaskCommand(string Name,
-                             string? Description,
-                             string ProjectId,
-                             string? TaskAssigneeMemberId,
-                             Priority Priority,
-                             State State,
-                             DateTime DueDate,
-                             DateTime StartDate,
-                             string TaskLeaderId) : IAuthorizationRequest<AppTaskDto>
+public record AddTaskCommand(
+    string Name,
+    string? Description,
+    string ProjectId,
+    string? TaskAssigneeMemberId,
+    Priority Priority,
+    State State,
+    DateTime DueDate,
+    DateTime StartDate,
+    string TaskLeaderId
+) : IAuthorizationRequest<AppTaskDto>
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement()
     {
@@ -33,6 +35,7 @@ public record AddTaskCommand(string Name,
         return listOfRequirements;
     }
 }
+
 public class AddTaskCommandHandler : IRequestHandler<AddTaskCommand, AppTaskDto>
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -45,29 +48,40 @@ public class AddTaskCommandHandler : IRequestHandler<AddTaskCommand, AppTaskDto>
         this._mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         this._messageBus = messageBus ?? throw new ArgumentNullException(nameof(messageBus));
     }
-    public async Task<AppTaskDto> Handle(AddTaskCommand request, CancellationToken cancellationToken)
+
+    public async Task<AppTaskDto> Handle(
+        AddTaskCommand request,
+        CancellationToken cancellationToken
+    )
     {
-        var appTask = new AppTask(request.Name,
-                                  request.Description,
-                                  request.ProjectId,
-                                  request.TaskAssigneeMemberId,
-                                  request.Priority,
-                                  request.State,
-                                  request.DueDate,
-                                  request.StartDate,
-                                  request.TaskLeaderId);
+        var appTask = new AppTask(
+            request.Name,
+            request.Description,
+            request.ProjectId,
+            request.TaskAssigneeMemberId,
+            request.Priority,
+            request.State,
+            request.DueDate,
+            request.StartDate,
+            request.TaskLeaderId
+        );
 
         _unitOfWork.AppTaskRepository.Add(appTask);
 
         await _unitOfWork.Complete();
 
-        var @event = new TaskAddedEvent(appTask.Id,
-                           appTask.Name,
-                           appTask.Description,
-                           appTask.ProjectId,
-                           appTask.TaskAssigneeMemberId,
-                           (int)appTask.Priority,
-                           (int)appTask.State, appTask.DueDate, appTask.StartDate, appTask.TaskLeaderId);
+        var @event = new TaskAddedEvent(
+            appTask.Id,
+            appTask.Name,
+            appTask.Description,
+            appTask.ProjectId,
+            appTask.TaskAssigneeMemberId,
+            (int)appTask.Priority,
+            (int)appTask.State,
+            appTask.DueDate,
+            appTask.StartDate,
+            appTask.TaskLeaderId
+        );
 
         await _messageBus.PublishMessage(@event);
 

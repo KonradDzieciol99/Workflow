@@ -4,12 +4,18 @@ namespace IdentityDuende.Domain.DomainEvents;
 
 public class LocalUserRegisterSuccessEvent : Event
 {
-    public LocalUserRegisterSuccessEvent(string localUserEmail, string localUserActivateToken, string identityUserId, string? identityUserPhotoUrl)
-        : base(EventCategories.Authentication,
-                "Local User Register",
-                EventTypes.Success,
-                EventIds.UserLoginSuccess//<--TODO
-                )
+    public LocalUserRegisterSuccessEvent(
+        string localUserEmail,
+        string localUserActivateToken,
+        string identityUserId,
+        string? identityUserPhotoUrl
+    )
+        : base(
+            EventCategories.Authentication,
+            "Local User Register",
+            EventTypes.Success,
+            EventIds.UserLoginSuccess //<--TODO
+        )
     {
         LocalUserEmail = localUserEmail;
         LocalUserActivateToken = localUserActivateToken;

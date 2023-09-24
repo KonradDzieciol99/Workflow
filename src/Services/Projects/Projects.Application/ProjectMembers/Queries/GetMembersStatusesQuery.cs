@@ -7,7 +7,8 @@ using Projects.Application.Common.Models;
 
 namespace Projects.Application.ProjectMembers.Queries;
 
-public record GetMembersStatusesQuery(string ProjectId, List<string> UsersIds) : IAuthorizationRequest<List<MemberStatusDto>>
+public record GetMembersStatusesQuery(string ProjectId, List<string> UsersIds)
+    : IAuthorizationRequest<List<MemberStatusDto>>
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement()
     {
@@ -18,7 +19,9 @@ public record GetMembersStatusesQuery(string ProjectId, List<string> UsersIds) :
         return listOfRequirements;
     }
 }
-public class GetFriendsStatusQueryHandler : IRequestHandler<GetMembersStatusesQuery, List<MemberStatusDto>>
+
+public class GetFriendsStatusQueryHandler
+    : IRequestHandler<GetMembersStatusesQuery, List<MemberStatusDto>>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -27,9 +30,16 @@ public class GetFriendsStatusQueryHandler : IRequestHandler<GetMembersStatusesQu
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
 
-    public async Task<List<MemberStatusDto>> Handle(GetMembersStatusesQuery request, CancellationToken cancellationToken)
+    public async Task<List<MemberStatusDto>> Handle(
+        GetMembersStatusesQuery request,
+        CancellationToken cancellationToken
+    )
     {
-        var membersStatuses = await _unitOfWork.ReadOnlyProjectMemberRepository.GetMembersStatusesAsync(request.ProjectId, request.UsersIds);
+        var membersStatuses =
+            await _unitOfWork.ReadOnlyProjectMemberRepository.GetMembersStatusesAsync(
+                request.ProjectId,
+                request.UsersIds
+            );
         return membersStatuses;
     }
 }

@@ -5,23 +5,28 @@ using Photos.Application.Common.Exceptions;
 using Photos.Domain.Common.Exceptions;
 using Photos.Services;
 
-
 namespace Photos.Application.Common.Behaviours;
 
-public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IBaseAuthorizationRequest
+public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : IBaseAuthorizationRequest
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly ICurrentUserService _currentUserService;
 
     public AuthorizationBehaviour(
         ICurrentUserService currentUserService,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService
+    )
     {
         _authorizationService = authorizationService;
         _currentUserService = currentUserService;
     }
 
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    public async Task<TResponse> Handle(
+        TRequest request,
+        RequestHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken
+    )
     {
         var authRequirementsList = request.GetAuthorizationRequirement();
 
@@ -32,11 +37,17 @@ public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRe
 
             foreach (var requirement in authRequirementsList)
             {
-                var result = await _authorizationService.AuthorizeAsync(_currentUserService.GetUser(), null, requirement);
+                var result = await _authorizationService.AuthorizeAsync(
+                    _currentUserService.GetUser(),
+                    null,
+                    requirement
+                );
 
                 if (!result.Succeeded)
-                    throw new PhotosDomainException("You do not have access to this resource", new ForbiddenAccessException());
-
+                    throw new PhotosDomainException(
+                        "You do not have access to this resource",
+                        new ForbiddenAccessException()
+                    );
             }
         }
         return await next();

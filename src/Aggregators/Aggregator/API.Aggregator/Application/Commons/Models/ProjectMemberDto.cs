@@ -2,11 +2,16 @@
 
 public class ProjectMemberDto
 {
-    public ProjectMemberDto()
-    {
+    public ProjectMemberDto() { }
 
-    }
-    public ProjectMemberDto(string id, string userId, string userEmail, ProjectMemberType type, InvitationStatus invitationStatus, string projectId)
+    public ProjectMemberDto(
+        string id,
+        string userId,
+        string userEmail,
+        ProjectMemberType type,
+        InvitationStatus invitationStatus,
+        string projectId
+    )
     {
         Id = id;
         UserId = userId;

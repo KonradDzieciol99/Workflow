@@ -2,4 +2,5 @@
 
 namespace SignalR.IntegrationEvents;
 
-public record MarkChatMessageAsReadEvent(string ChatMessageId, DateTime ChatMessageDateRead) : IntegrationEvent;
+public record MarkChatMessageAsReadEvent(string ChatMessageId, DateTime ChatMessageDateRead)
+    : IntegrationEvent;

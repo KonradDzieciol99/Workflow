@@ -8,7 +8,12 @@ using Projects.Application.Common.Models.Dto;
 
 namespace Projects.Application.Projects.Commands;
 
-public record UpdateProjectCommand(string? Name, string? IconUrl, string? NewLeaderId, string ProjectId) : IAuthorizationRequest<ProjectDto>
+public record UpdateProjectCommand(
+    string? Name,
+    string? IconUrl,
+    string? NewLeaderId,
+    string ProjectId
+) : IAuthorizationRequest<ProjectDto>
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement()
     {
@@ -19,18 +24,22 @@ public record UpdateProjectCommand(string? Name, string? IconUrl, string? NewLea
         };
     }
 }
+
 public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand, ProjectDto>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public UpdateProjectCommandHandler(IUnitOfWork unitOfWork,IMapper mapper)
+    public UpdateProjectCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
     {
         this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         this._mapper = mapper;
     }
 
-    public async Task<ProjectDto> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
+    public async Task<ProjectDto> Handle(
+        UpdateProjectCommand request,
+        CancellationToken cancellationToken
+    )
     {
         var project = await _unitOfWork.ProjectRepository.GetOneAsync(request.ProjectId);
 

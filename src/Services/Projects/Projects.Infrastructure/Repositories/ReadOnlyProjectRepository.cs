@@ -11,10 +11,15 @@ public class ReadOnlyProjectRepository : IReadOnlyProjectRepository
 
     public ReadOnlyProjectRepository(ApplicationDbContext applicationDbContext)
     {
-        this._projectsQuery = applicationDbContext.Projects.AsNoTracking() ?? throw new ArgumentNullException(nameof(applicationDbContext));
+        this._projectsQuery =
+            applicationDbContext.Projects.AsNoTracking()
+            ?? throw new ArgumentNullException(nameof(applicationDbContext));
     }
+
     public async Task<Project?> GetOneAsync(string projectId)
     {
-        return await _projectsQuery.Include(x => x.ProjectMembers).SingleOrDefaultAsync(x => x.Id == projectId);
+        return await _projectsQuery
+            .Include(x => x.ProjectMembers)
+            .SingleOrDefaultAsync(x => x.Id == projectId);
     }
 }

@@ -10,20 +10,27 @@ public class ExceptionMiddleware
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionMiddleware> _logger;
     private readonly IWebHostEnvironment _env;
-    private readonly Dictionary<Type, Func<NotificationDomainException, HttpContext, Task>> _exceptionHandlers;
+    private readonly Dictionary<
+        Type,
+        Func<NotificationDomainException, HttpContext, Task>
+    > _exceptionHandlers;
 
-    public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IWebHostEnvironment env)
+    public ExceptionMiddleware(
+        RequestDelegate next,
+        ILogger<ExceptionMiddleware> logger,
+        IWebHostEnvironment env
+    )
     {
         this._next = next;
         this._logger = logger;
         this._env = env;
         _exceptionHandlers = new()
-            {
-                { typeof(ValidationException), HandleValidationException },
-                { typeof(NotificationDomainException), HandleDomainException },
-                { typeof(UnauthorizedAccessException), HandleUnauthorizedAccessException },
-                { typeof(ForbiddenAccessException), HandleForbiddenAccessException },
-            };
+        {
+            { typeof(ValidationException), HandleValidationException },
+            { typeof(NotificationDomainException), HandleDomainException },
+            { typeof(UnauthorizedAccessException), HandleUnauthorizedAccessException },
+            { typeof(ForbiddenAccessException), HandleForbiddenAccessException },
+        };
     }
 
     public async Task InvokeAsync(HttpContext httpContext)
@@ -42,7 +49,9 @@ public class ExceptionMiddleware
     {
         if (exception is NotificationDomainException taskDomainException)
         {
-            Type type = taskDomainException.InnerException?.GetType() ?? typeof(NotificationDomainException);
+            Type type =
+                taskDomainException.InnerException?.GetType()
+                ?? typeof(NotificationDomainException);
             if (_exceptionHandlers.TryGetValue(type, out var handler))
             {
                 await handler.Invoke(taskDomainException, context);
@@ -55,10 +64,12 @@ public class ExceptionMiddleware
             message = exception.Message;
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
         await context.Response.WriteAsJsonAsync(message);
-
     }
 
-    private async Task HandleUnauthorizedAccessException(NotificationDomainException exception, HttpContext context)
+    private async Task HandleUnauthorizedAccessException(
+        NotificationDomainException exception,
+        HttpContext context
+    )
     {
         var message = new ProblemDetails()
         {
@@ -74,7 +85,10 @@ public class ExceptionMiddleware
         return;
     }
 
-    private async Task HandleForbiddenAccessException(NotificationDomainException exception, HttpContext context)
+    private async Task HandleForbiddenAccessException(
+        NotificationDomainException exception,
+        HttpContext context
+    )
     {
         var message = new ProblemDetails()
         {
@@ -90,7 +104,10 @@ public class ExceptionMiddleware
         return;
     }
 
-    private async Task HandleDomainException(NotificationDomainException exception, HttpContext context)
+    private async Task HandleDomainException(
+        NotificationDomainException exception,
+        HttpContext context
+    )
     {
         var message = new ProblemDetails()
         {
@@ -104,7 +121,11 @@ public class ExceptionMiddleware
         await context.Response.WriteAsJsonAsync(message);
         return;
     }
-    private async Task HandleValidationException(NotificationDomainException exception, HttpContext context)
+
+    private async Task HandleValidationException(
+        NotificationDomainException exception,
+        HttpContext context
+    )
     {
         var innerException = (ValidationException)exception.InnerException!;
 

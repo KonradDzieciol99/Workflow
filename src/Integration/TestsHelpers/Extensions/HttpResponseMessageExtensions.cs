@@ -5,6 +5,5 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace TestsHelpers.Extensions;
-public static class HttpResponseMessageExtensions
-{
-}
+
+public static class HttpResponseMessageExtensions { }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Aggregator.Controllers;
+
 [Route("api/[controller]")]
 [ApiController]
 public class FriendRequestsController : ControllerBase
@@ -19,9 +20,11 @@ public class FriendRequestsController : ControllerBase
     }
 
     [HttpGet("search/{email}")]
-    public async Task<List<SearchedUserDto>> GetAsync([FromRoute] string email,
-                                                      [FromQuery] int take,
-                                                      [FromQuery] int skip)
+    public async Task<List<SearchedUserDto>> GetAsync(
+        [FromRoute] string email,
+        [FromQuery] int take,
+        [FromQuery] int skip
+    )
     {
         return await _mediator.Send(new SearchFriendAggregateQuery(email, take, skip));
     }

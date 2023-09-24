@@ -22,12 +22,16 @@ public record DeleteProjectMemberCommand(string MemberId, string ProjectId) : IA
 public class DeleteProjectMemberCommandHandler : IRequestHandler<DeleteProjectMemberCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
+
     public DeleteProjectMemberCommandHandler(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
 
-    public async Task Handle(DeleteProjectMemberCommand request, CancellationToken cancellationToken)
+    public async Task Handle(
+        DeleteProjectMemberCommand request,
+        CancellationToken cancellationToken
+    )
     {
         var project = await _unitOfWork.ProjectRepository.GetOneAsync(request.ProjectId);
 
@@ -36,5 +40,3 @@ public class DeleteProjectMemberCommandHandler : IRequestHandler<DeleteProjectMe
         await _unitOfWork.Complete();
     }
 }
-
-

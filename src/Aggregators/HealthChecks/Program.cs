@@ -22,10 +22,10 @@ public class Program
         {
             config.UIPath = "/hc-ui";
         });
-        app.MapHealthChecks("/liveness", new HealthCheckOptions
-        {
-            Predicate = r => r.Name.Contains("self")
-        });
+        app.MapHealthChecks(
+            "/liveness",
+            new HealthCheckOptions { Predicate = r => r.Name.Contains("self") }
+        );
 
         app.Run();
     }

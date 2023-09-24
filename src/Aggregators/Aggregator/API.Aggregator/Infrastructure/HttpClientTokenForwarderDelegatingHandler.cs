@@ -3,19 +3,22 @@ using System.Net.Http.Headers;
 
 namespace API.Aggregator.Infrastructure;
 
-
 public class HttpClientTokenForwarderDelegatingHandler : DelegatingHandler
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public HttpClientTokenForwarderDelegatingHandler(IHttpContextAccessor httpContextAccessor)
     {
-        _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor)); ;
+        _httpContextAccessor =
+            httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+        ;
     }
 
-    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    protected override async Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage request,
+        CancellationToken cancellationToken
+    )
     {
-
         var authorizationHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
 
         if (!string.IsNullOrEmpty(authorizationHeader))

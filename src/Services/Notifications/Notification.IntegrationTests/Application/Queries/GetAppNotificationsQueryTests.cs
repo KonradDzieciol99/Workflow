@@ -10,14 +10,17 @@ using System.Threading.Tasks;
 using TestsHelpers.Extensions;
 
 namespace Notification.IntegrationTests.Application.Queries;
+
 [Collection("Base")]
 public class GetAppNotificationsQueryTests : IAsyncLifetime
 {
     private readonly Base _base;
+
     public GetAppNotificationsQueryTests(Base @base)
     {
         _base = @base;
     }
+
     public async Task InitializeAsync()
     {
         await _base._checkpoint.ResetAsync(_base._msSqlContainer.GetConnectionString());
@@ -28,16 +31,20 @@ public class GetAppNotificationsQueryTests : IAsyncLifetime
         return Task.CompletedTask;
     }
 
-    public static IEnumerable<object[]> GetAppTasksQueryList => new List<object[]>
-    {
-        new object[]{ new GetAppNotificationsQuery(0, 50), 50},
-        new object[]{ new GetAppNotificationsQuery(0, 12), 12},
-        new object[]{ new GetAppNotificationsQuery(30, 20), 20},
-    };
+    public static IEnumerable<object[]> GetAppTasksQueryList =>
+        new List<object[]>
+        {
+            new object[] { new GetAppNotificationsQuery(0, 50), 50 },
+            new object[] { new GetAppNotificationsQuery(0, 12), 12 },
+            new object[] { new GetAppNotificationsQuery(30, 20), 20 },
+        };
 
     [Theory]
     [MemberData(nameof(GetAppTasksQueryList))]
-    public async Task GetAppNotificationsQueryTests_WithValidData_ReturnsNotificationsList(GetAppNotificationsQuery query, int amount)
+    public async Task GetAppNotificationsQueryTests_WithValidData_ReturnsNotificationsList(
+        GetAppNotificationsQuery query,
+        int amount
+    )
     {
         //arrange
 

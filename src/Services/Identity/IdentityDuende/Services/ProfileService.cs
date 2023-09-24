@@ -10,11 +10,9 @@ namespace IdentityDuende.Services;
 
 public class ProfileService : IProfileService
 {
-
     private readonly UserManager<ApplicationUser> _userMgr;
 
-    public ProfileService(
-        UserManager<ApplicationUser> userMgr)
+    public ProfileService(UserManager<ApplicationUser> userMgr)
     {
         _userMgr = userMgr;
     }
@@ -22,7 +20,11 @@ public class ProfileService : IProfileService
     public async Task GetProfileDataAsync(ProfileDataRequestContext context)
     {
         string sub = context.Subject.GetSubjectId();
-        var user = await _userMgr.FindByIdAsync(sub) ?? throw new InvalidOperationException("User not found for the given subject identifier.");
+        var user =
+            await _userMgr.FindByIdAsync(sub)
+            ?? throw new InvalidOperationException(
+                "User not found for the given subject identifier."
+            );
         var claims = GetClaimsFromUser(user);
 
         context.IssuedClaims = claims;
@@ -47,5 +49,4 @@ public class ProfileService : IProfileService
 
         return claims;
     }
-
 }

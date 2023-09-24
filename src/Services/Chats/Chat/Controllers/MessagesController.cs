@@ -18,12 +18,14 @@ public class MessagesController : ControllerBase
     {
         this._mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
+
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] SendMessageCommand command)
     {
         await _mediator.Send(command);
-        return Created("",null);
+        return Created("", null);
     }
+
     [HttpGet]
     public async Task<ActionResult<List<MessageDto>>> Get([FromQuery] GetMessageThreadQuery query)
     {

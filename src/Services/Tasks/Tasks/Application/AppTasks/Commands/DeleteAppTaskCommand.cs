@@ -24,6 +24,7 @@ public record DeleteAppTaskCommand(string Id, string ProjectId) : IAuthorization
         return listOfRequirements;
     }
 }
+
 public class DeleteAppTaskCommandHandler : IRequestHandler<DeleteAppTaskCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -31,19 +32,33 @@ public class DeleteAppTaskCommandHandler : IRequestHandler<DeleteAppTaskCommand>
     private readonly IEventBusSender _eventBusSender;
     private readonly IAppTaskService _appTaskService;
 
-    public DeleteAppTaskCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IEventBusSender eventBusSender, IAppTaskService appTaskService)
+    public DeleteAppTaskCommandHandler(
+        IUnitOfWork unitOfWork,
+        ICurrentUserService currentUserService,
+        IEventBusSender eventBusSender,
+        IAppTaskService appTaskService
+    )
     {
         this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
-        this._eventBusSender = eventBusSender ?? throw new ArgumentNullException(nameof(eventBusSender));
-        this._appTaskService = appTaskService ?? throw new ArgumentNullException(nameof(appTaskService));
+        this._currentUserService =
+            currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+        this._eventBusSender =
+            eventBusSender ?? throw new ArgumentNullException(nameof(eventBusSender));
+        this._appTaskService =
+            appTaskService ?? throw new ArgumentNullException(nameof(appTaskService));
     }
+
     public async Task Handle(DeleteAppTaskCommand request, CancellationToken cancellationToken)
     {
+        var task =
+            await _unitOfWork.AppTaskRepository.GetAsync(request.Id)
+            ?? throw new TaskDomainException("Task cannot be found.", new NotFoundException());
 
-        var task = await _unitOfWork.AppTaskRepository.GetAsync(request.Id) ?? throw new TaskDomainException("Task cannot be found.",new NotFoundException());
-
-        var projectMember = await _unitOfWork.ProjectMemberRepository.GetAsync(_currentUserService.GetUserId(), request.ProjectId) ?? throw new TaskDomainException("Project Member cannot be found.");
+        var projectMember =
+            await _unitOfWork.ProjectMemberRepository.GetAsync(
+                _currentUserService.GetUserId(),
+                request.ProjectId
+            ) ?? throw new TaskDomainException("Project Member cannot be found.");
 
         _appTaskService.RemoveAppTask(task, projectMember);
 
@@ -52,6 +67,5 @@ public class DeleteAppTaskCommandHandler : IRequestHandler<DeleteAppTaskCommand>
         await _eventBusSender.PublishMessage(new TaskDeletedEvent(task.Id));
 
         return;
-
     }
 }

@@ -2,14 +2,11 @@
 
 public class ChatDomainException : Exception
 {
-    public ChatDomainException()
-    { }
+    public ChatDomainException() { }
 
     public ChatDomainException(string message)
-        : base(message)
-    { }
+        : base(message) { }
 
     public ChatDomainException(string message, Exception innerException)
-        : base(message, innerException)
-    { }
+        : base(message, innerException) { }
 }

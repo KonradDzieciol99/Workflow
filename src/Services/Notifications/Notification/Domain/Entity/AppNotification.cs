@@ -6,7 +6,16 @@ namespace Notification.Domain.Entity;
 
 public class AppNotification : BaseEntity
 {
-    public AppNotification(string userId, NotificationType notificationType, DateTime creationDate, string description, string? notificationPartnerId, string? notificationPartnerEmail, string? notificationPartnerPhotoUrl, bool displayed = false)
+    public AppNotification(
+        string userId,
+        NotificationType notificationType,
+        DateTime creationDate,
+        string description,
+        string? notificationPartnerId,
+        string? notificationPartnerEmail,
+        string? notificationPartnerPhotoUrl,
+        bool displayed = false
+    )
     {
         UserId = userId ?? throw new ArgumentNullException(nameof(userId));
         NotificationType = notificationType;
@@ -19,6 +28,7 @@ public class AppNotification : BaseEntity
     }
 
     private AppNotification() { }
+
     public string UserId { get; private set; }
     public NotificationType NotificationType { get; private set; }
     public DateTime CreationDate { get; private set; }

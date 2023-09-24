@@ -4,7 +4,20 @@ namespace Tasks.Application.Common.Models;
 
 public class AppTaskDto
 {
-    public AppTaskDto(string id, string name, string? description, string projectId, string? taskAssigneeMemberId, ProjectMemberDto? taskAssignee, Priority priority, State state, DateTime dueDate, DateTime startDate, string? taskLeaderId, ProjectMemberDto? taskLeader)
+    public AppTaskDto(
+        string id,
+        string name,
+        string? description,
+        string projectId,
+        string? taskAssigneeMemberId,
+        ProjectMemberDto? taskAssignee,
+        Priority priority,
+        State state,
+        DateTime dueDate,
+        DateTime startDate,
+        string? taskLeaderId,
+        ProjectMemberDto? taskLeader
+    )
     {
         Id = id ?? throw new ArgumentNullException(nameof(id));
         Name = name ?? throw new ArgumentNullException(nameof(name));

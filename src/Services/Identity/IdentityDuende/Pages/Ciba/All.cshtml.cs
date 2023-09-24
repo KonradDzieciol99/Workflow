@@ -18,18 +18,22 @@ public class AllModel : PageModel
 
     [BindProperty, Required]
     public string Id { get; set; }
+
     [BindProperty, Required]
     public string Button { get; set; }
 
     private readonly IBackchannelAuthenticationInteractionService _backchannelAuthenticationInteraction;
 
-    public AllModel(IBackchannelAuthenticationInteractionService backchannelAuthenticationInteractionService)
+    public AllModel(
+        IBackchannelAuthenticationInteractionService backchannelAuthenticationInteractionService
+    )
     {
         _backchannelAuthenticationInteraction = backchannelAuthenticationInteractionService;
     }
 
     public async Task OnGet()
     {
-        Logins = await _backchannelAuthenticationInteraction.GetPendingLoginRequestsForCurrentUserAsync();
+        Logins =
+            await _backchannelAuthenticationInteraction.GetPendingLoginRequestsForCurrentUserAsync();
     }
 }

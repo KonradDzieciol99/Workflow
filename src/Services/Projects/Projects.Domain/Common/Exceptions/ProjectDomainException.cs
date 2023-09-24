@@ -5,14 +5,11 @@
 /// </summary>
 public class ProjectDomainException : Exception
 {
-    public ProjectDomainException()
-    { }
+    public ProjectDomainException() { }
 
     public ProjectDomainException(string message)
-        : base(message)
-    { }
+        : base(message) { }
 
     public ProjectDomainException(string message, Exception innerException)
-        : base(message, innerException)
-    { }
+        : base(message, innerException) { }
 }

@@ -11,7 +11,6 @@ using Testcontainers.MsSql;
 
 namespace Tasks.IntegrationTests;
 
-
 // można też uzywać IAsyncLifetime ale na to wygląda że odróżnai go od konstruktora i disposable to że jest asynchroniczny(i w sumie tyle)
 // Jeżeli klasy dzieci są w tej samej kolekcji, czyli mają atrybut[Collection("Base")], to testy z tych klas będą uruchamiane sekwencyjnie, a nie równolegle.
 [CollectionDefinition("Base")]
@@ -32,58 +31,86 @@ public class Base : IAsyncLifetime
 
     public Base()
     {
-        _msSqlContainer = new MsSqlBuilder().WithImage("mcr.microsoft.com/mssql/server:2022-latest")
-                                            .Build();
+        _msSqlContainer = new MsSqlBuilder()
+            .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
+            .Build();
 
         this._factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureAppConfiguration((context, configBuilder) =>
+        {
+            builder.ConfigureAppConfiguration(
+                (context, configBuilder) =>
                 {
-                    configBuilder.AddInMemoryCollection(new Dictionary<string, string?>
-                    {
-                        ["isTest"] = "true",
-                        ["RabbitMQOptions:RabbitMQConnectionString"] = "test",
-                        ["RabbitMQOptions:Exchange"] = "test",
-                        ["RabbitMQOptions:Queue"] = "test",
-                    });
-                });
-                builder.ConfigureServices((context, services) =>
+                    configBuilder.AddInMemoryCollection(
+                        new Dictionary<string, string?>
+                        {
+                            ["isTest"] = "true",
+                            ["RabbitMQOptions:RabbitMQConnectionString"] = "test",
+                            ["RabbitMQOptions:Exchange"] = "test",
+                            ["RabbitMQOptions:Queue"] = "test",
+                        }
+                    );
+                }
+            );
+            builder.ConfigureServices(
+                (context, services) =>
                 {
                     var mockSender = new Mock<IEventBusSender>();
                     var mockConsumer = new Mock<IEventBusConsumer>();
 
-                    mockSender.Setup(sender => sender.PublishMessage(It.IsAny<IntegrationEvent>())).Returns(Task.CompletedTask);
-                    mockConsumer.Setup(consumer => consumer.Subscribe<IntegrationEvent>()).Returns(Task.CompletedTask);
+                    mockSender
+                        .Setup(sender => sender.PublishMessage(It.IsAny<IntegrationEvent>()))
+                        .Returns(Task.CompletedTask);
+                    mockConsumer
+                        .Setup(consumer => consumer.Subscribe<IntegrationEvent>())
+                        .Returns(Task.CompletedTask);
 
                     services.AddSingleton<IEventBusSender>(mockSender.Object);
                     services.AddSingleton<IEventBusConsumer>(mockConsumer.Object);
 
-                    var dbContextOptions = services.SingleOrDefault(service => service.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
+                    var dbContextOptions = services.SingleOrDefault(
+                        service =>
+                            service.ServiceType == typeof(DbContextOptions<ApplicationDbContext>)
+                    );
                     services.Remove(dbContextOptions);
 
-                    var dbConnString = _msSqlContainer.GetConnectionString() ?? throw new ArgumentNullException("dbConnString");
-                    services.AddDbContext<ApplicationDbContext>(options =>
-                        options.UseSqlServer(dbConnString,
-                            builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+                    var dbConnString =
+                        _msSqlContainer.GetConnectionString()
+                        ?? throw new ArgumentNullException("dbConnString");
+                    services.AddDbContext<ApplicationDbContext>(
+                        options =>
+                            options.UseSqlServer(
+                                dbConnString,
+                                builder =>
+                                    builder.MigrationsAssembly(
+                                        typeof(ApplicationDbContext).Assembly.FullName
+                                    )
+                            )
+                    );
 
-                    services.AddAuthentication(opt =>
-                    {
-                        opt.DefaultAuthenticateScheme = TestAuthHandler.AuthenticationScheme;
-                        opt.DefaultChallengeScheme = TestAuthHandler.AuthenticationScheme;
-                    }).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme, options => { });
+                    services
+                        .AddAuthentication(opt =>
+                        {
+                            opt.DefaultAuthenticateScheme = TestAuthHandler.AuthenticationScheme;
+                            opt.DefaultChallengeScheme = TestAuthHandler.AuthenticationScheme;
+                        })
+                        .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
+                            TestAuthHandler.AuthenticationScheme,
+                            options => { }
+                        );
                     services.AddAuthorization(options =>
                     {
-                        options.AddPolicy("ApiScope", policy =>
-                        {
-                            policy.RequireAssertion(context => true);
-                        });
+                        options.AddPolicy(
+                            "ApiScope",
+                            policy =>
+                            {
+                                policy.RequireAssertion(context => true);
+                            }
+                        );
                     });
-                    
-
-                });
-            });
+                }
+            );
+        });
     }
-
 
     public async Task InitializeAsync()
     {
@@ -91,10 +118,13 @@ public class Base : IAsyncLifetime
 
         _client = _factory.CreateClient();
 
-        _checkpoint = await Respawner.CreateAsync(_msSqlContainer.GetConnectionString(), new RespawnerOptions
-        {
-            TablesToIgnore = new Respawn.Graph.Table[] { "__EFMigrationsHistory" }
-        });
+        _checkpoint = await Respawner.CreateAsync(
+            _msSqlContainer.GetConnectionString(),
+            new RespawnerOptions
+            {
+                TablesToIgnore = new Respawn.Graph.Table[] { "__EFMigrationsHistory" }
+            }
+        );
     }
 
     public async Task DisposeAsync()

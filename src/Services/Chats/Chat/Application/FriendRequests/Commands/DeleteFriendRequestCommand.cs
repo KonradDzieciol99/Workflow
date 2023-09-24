@@ -15,24 +15,46 @@ public record DeleteFriendRequestCommand(string TargetUserId) : IAuthorizationRe
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement()
     {
-        return new List<IAuthorizationRequirement>() { new ShareFriendRequestRequirement(TargetUserId) };
+        return new List<IAuthorizationRequirement>()
+        {
+            new ShareFriendRequestRequirement(TargetUserId)
+        };
     }
 }
+
 public class DeleteFriendRequestCommandHandler : IRequestHandler<DeleteFriendRequestCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUserService;
     private readonly IEventBusSender _azureServiceBusSender;
 
-    public DeleteFriendRequestCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IEventBusSender azureServiceBusSender)
+    public DeleteFriendRequestCommandHandler(
+        IUnitOfWork unitOfWork,
+        ICurrentUserService currentUserService,
+        IEventBusSender azureServiceBusSender
+    )
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
-        this._azureServiceBusSender = azureServiceBusSender ?? throw new ArgumentNullException(nameof(azureServiceBusSender));
+        this._currentUserService =
+            currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+        this._azureServiceBusSender =
+            azureServiceBusSender ?? throw new ArgumentNullException(nameof(azureServiceBusSender));
     }
-    public async Task Handle(DeleteFriendRequestCommand request, CancellationToken cancellationToken)
+
+    public async Task Handle(
+        DeleteFriendRequestCommand request,
+        CancellationToken cancellationToken
+    )
     {
-        var friendRequest = await _unitOfWork.FriendRequestRepository.GetAsync(_currentUserService.GetUserId(), request.TargetUserId) ?? throw new ChatDomainException("Friend request cannot be found.", new NotFoundException());
+        var friendRequest =
+            await _unitOfWork.FriendRequestRepository.GetAsync(
+                _currentUserService.GetUserId(),
+                request.TargetUserId
+            )
+            ?? throw new ChatDomainException(
+                "Friend request cannot be found.",
+                new NotFoundException()
+            );
 
         _unitOfWork.FriendRequestRepository.Remove(friendRequest);
 
@@ -40,37 +62,48 @@ public class DeleteFriendRequestCommandHandler : IRequestHandler<DeleteFriendReq
 
         // Domain logic
 
-        if (friendRequest.InviterUserId == _currentUserService.GetUserId() && friendRequest.Confirmed == false)
+        if (
+            friendRequest.InviterUserId == _currentUserService.GetUserId()
+            && friendRequest.Confirmed == false
+        )
         {
-            var friendRequestCanceledEvent = new FriendRequestCanceledEvent(friendRequest.InviterUserId,
-                                                                    friendRequest.InviterUserEmail,
-                                                                    friendRequest.InviterPhotoUrl,
-                                                                    friendRequest.InvitedUserId,
-                                                                    friendRequest.InvitedUserEmail,
-                                                                    friendRequest.InvitedPhotoUrl);
+            var friendRequestCanceledEvent = new FriendRequestCanceledEvent(
+                friendRequest.InviterUserId,
+                friendRequest.InviterUserEmail,
+                friendRequest.InviterPhotoUrl,
+                friendRequest.InvitedUserId,
+                friendRequest.InvitedUserEmail,
+                friendRequest.InvitedPhotoUrl
+            );
             await _azureServiceBusSender.PublishMessage(friendRequestCanceledEvent);
             return;
         }
-        else if (friendRequest.InvitedUserId == _currentUserService.GetUserId() && friendRequest.Confirmed == false)
+        else if (
+            friendRequest.InvitedUserId == _currentUserService.GetUserId()
+            && friendRequest.Confirmed == false
+        )
         {
-            var friendRequestDeclinedEvent = new FriendRequestDeclinedEvent(friendRequest.InviterUserId,
-                                                        friendRequest.InviterUserEmail,
-                                                        friendRequest.InviterPhotoUrl,
-                                                        friendRequest.InvitedUserId,
-                                                        friendRequest.InvitedUserEmail,
-                                                        friendRequest.InvitedPhotoUrl);
+            var friendRequestDeclinedEvent = new FriendRequestDeclinedEvent(
+                friendRequest.InviterUserId,
+                friendRequest.InviterUserEmail,
+                friendRequest.InviterPhotoUrl,
+                friendRequest.InvitedUserId,
+                friendRequest.InvitedUserEmail,
+                friendRequest.InvitedPhotoUrl
+            );
             await _azureServiceBusSender.PublishMessage(friendRequestDeclinedEvent);
             return;
         }
 
-        var @event = new FriendRequestRemovedEvent(friendRequest.InviterUserId,
-                                                                    friendRequest.InviterUserEmail,
-                                                                    friendRequest.InviterPhotoUrl,
-                                                                    friendRequest.InvitedUserId,
-                                                                    friendRequest.InvitedUserEmail,
-                                                                    friendRequest.InvitedPhotoUrl);
+        var @event = new FriendRequestRemovedEvent(
+            friendRequest.InviterUserId,
+            friendRequest.InviterUserEmail,
+            friendRequest.InviterPhotoUrl,
+            friendRequest.InvitedUserId,
+            friendRequest.InvitedUserEmail,
+            friendRequest.InvitedPhotoUrl
+        );
         await _azureServiceBusSender.PublishMessage(@event);
-
 
         return;
     }

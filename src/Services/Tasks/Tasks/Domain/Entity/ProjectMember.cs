@@ -6,7 +6,15 @@ public class ProjectMember
 {
     private ProjectMember() { }
 
-    public ProjectMember(string id, string userId, string userEmail, string? photoUrl, ProjectMemberType type, InvitationStatus invitationStatus, string projectId)
+    public ProjectMember(
+        string id,
+        string userId,
+        string userEmail,
+        string? photoUrl,
+        ProjectMemberType type,
+        InvitationStatus invitationStatus,
+        string projectId
+    )
     {
         Id = id ?? throw new ArgumentNullException(nameof(id));
         UserId = userId ?? throw new ArgumentNullException(nameof(userId));

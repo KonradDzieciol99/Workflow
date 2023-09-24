@@ -8,14 +8,17 @@ using System.Text.Json;
 using TestsHelpers.Extensions;
 
 namespace Services.IntegrationEvents.IntegrationTests.IntegrationEvents;
+
 [Collection("Base")]
 public class FriendRequestAcceptedEventTests : IAsyncLifetime
 {
     private readonly Base _base;
+
     public FriendRequestAcceptedEventTests(Base @base)
     {
         _base = @base;
     }
+
     public Task DisposeAsync()
     {
         return Task.CompletedTask;
@@ -31,11 +34,19 @@ public class FriendRequestAcceptedEventTests : IAsyncLifetime
     {
         //arrange
         var FriendRequests = ChatBase.GetFakeFriendRequests();
-        _base._chatFactory.SeedData<Chat.Program, ApplicationDbContext, FriendRequest>(FriendRequests);
-        _base._chatClient.SetHeaders(FriendRequests[0].InvitedUserId, FriendRequests[0].InvitedUserEmail);
+        _base._chatFactory.SeedData<Chat.Program, ApplicationDbContext, FriendRequest>(
+            FriendRequests
+        );
+        _base._chatClient.SetHeaders(
+            FriendRequests[0].InvitedUserId,
+            FriendRequests[0].InvitedUserEmail
+        );
         var command = new AcceptFriendRequestCommand(FriendRequests[0].InviterUserId);
 
-        _base._notificationClient.SetHeaders(FriendRequests[0].InvitedUserId, FriendRequests[0].InvitedUserEmail);
+        _base._notificationClient.SetHeaders(
+            FriendRequests[0].InvitedUserId,
+            FriendRequests[0].InvitedUserEmail
+        );
         var query = new GetAppNotificationsQuery(0, 1);
 
         //act
@@ -49,7 +60,9 @@ public class FriendRequestAcceptedEventTests : IAsyncLifetime
 
         while (counter < 15)
         {
-            var response = await _base._notificationClient.GetAsync($"api/AppNotification?{query.ToQueryString()}");
+            var response = await _base._notificationClient.GetAsync(
+                $"api/AppNotification?{query.ToQueryString()}"
+            );
             var responseString = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
             result = JsonSerializer.Deserialize<List<AppNotification>>(responseString, options);
@@ -57,13 +70,11 @@ public class FriendRequestAcceptedEventTests : IAsyncLifetime
             if (result.Count > 0)
                 break;
 
-
             counter++;
             await Task.Delay(100);
         }
 
-        Assert.Equal(1,result?.Count);
+        Assert.Equal(1, result?.Count);
         Assert.True(result[0].NotificationType == NotificationType.FriendRequestAccepted);
-
     }
 }

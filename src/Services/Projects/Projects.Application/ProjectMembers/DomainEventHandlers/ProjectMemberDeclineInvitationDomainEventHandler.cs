@@ -5,21 +5,36 @@ using Projects.Domain.DomainEvents;
 
 namespace Projects.Application.ProjectMembers.DomainEventHandlers;
 
-internal class ProjectMemberDeclineInvitationDomainEventHandler : INotificationHandler<ProjectMemberDeclineInvitationDomainEvent>
+internal class ProjectMemberDeclineInvitationDomainEventHandler
+    : INotificationHandler<ProjectMemberDeclineInvitationDomainEvent>
 {
     private readonly IIntegrationEventService _integrationEventService;
 
-    public ProjectMemberDeclineInvitationDomainEventHandler(IIntegrationEventService integrationEventService)
+    public ProjectMemberDeclineInvitationDomainEventHandler(
+        IIntegrationEventService integrationEventService
+    )
     {
-        this._integrationEventService = integrationEventService ?? throw new ArgumentNullException(nameof(integrationEventService));
+        this._integrationEventService =
+            integrationEventService
+            ?? throw new ArgumentNullException(nameof(integrationEventService));
     }
-    public Task Handle(ProjectMemberDeclineInvitationDomainEvent notification, CancellationToken cancellationToken)
+
+    public Task Handle(
+        ProjectMemberDeclineInvitationDomainEvent notification,
+        CancellationToken cancellationToken
+    )
     {
-        var @event = new ProjectMemberDeclineInvitationEvent(notification.Member.Id, notification.Member.UserId,
-                                    notification.Member.UserEmail, notification.Member.PhotoUrl, (int)notification.Member.Type,
-                                     notification.Member.ProjectId, (int)notification.Member.InvitationStatus,
-                                     notification.Project.Name, notification.Project.IconUrl
-                                     );
+        var @event = new ProjectMemberDeclineInvitationEvent(
+            notification.Member.Id,
+            notification.Member.UserId,
+            notification.Member.UserEmail,
+            notification.Member.PhotoUrl,
+            (int)notification.Member.Type,
+            notification.Member.ProjectId,
+            (int)notification.Member.InvitationStatus,
+            notification.Project.Name,
+            notification.Project.IconUrl
+        );
 
         _integrationEventService.AddIntegrationEvent(@event);
 

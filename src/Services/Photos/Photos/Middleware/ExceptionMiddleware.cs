@@ -3,7 +3,6 @@ using Photos.Application.Common.Exceptions;
 using Photos.Domain.Common.Exceptions;
 using System.Net;
 
-
 namespace Photos.Middleware;
 
 public class ExceptionMiddleware
@@ -11,21 +10,28 @@ public class ExceptionMiddleware
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionMiddleware> _logger;
     private readonly IWebHostEnvironment _env;
-    private readonly Dictionary<Type, Func<PhotosDomainException, HttpContext, Task>> _exceptionHandlers;
+    private readonly Dictionary<
+        Type,
+        Func<PhotosDomainException, HttpContext, Task>
+    > _exceptionHandlers;
 
-    public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IWebHostEnvironment env)
+    public ExceptionMiddleware(
+        RequestDelegate next,
+        ILogger<ExceptionMiddleware> logger,
+        IWebHostEnvironment env
+    )
     {
         _next = next;
         _logger = logger;
         _env = env;
         _exceptionHandlers = new()
-            {
-                { typeof(ValidationException), HandleValidationException },
-                { typeof(PhotosDomainException), HandleDomainException },
-                { typeof(UnauthorizedAccessException), HandleUnauthorizedAccessException },
-                { typeof(ForbiddenAccessException), HandleForbiddenAccessException },
-                { typeof(NotFoundException), HandleNotFoundException },
-            };
+        {
+            { typeof(ValidationException), HandleValidationException },
+            { typeof(PhotosDomainException), HandleDomainException },
+            { typeof(UnauthorizedAccessException), HandleUnauthorizedAccessException },
+            { typeof(ForbiddenAccessException), HandleForbiddenAccessException },
+            { typeof(NotFoundException), HandleNotFoundException },
+        };
     }
 
     public async Task InvokeAsync(HttpContext httpContext)
@@ -44,7 +50,8 @@ public class ExceptionMiddleware
     {
         if (exception is PhotosDomainException taskDomainException)
         {
-            Type type = taskDomainException.InnerException?.GetType() ?? typeof(PhotosDomainException);
+            Type type =
+                taskDomainException.InnerException?.GetType() ?? typeof(PhotosDomainException);
             if (_exceptionHandlers.TryGetValue(type, out var handler))
             {
                 await handler.Invoke(taskDomainException, context);
@@ -57,10 +64,12 @@ public class ExceptionMiddleware
             message = exception.Message;
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
         await context.Response.WriteAsJsonAsync(message);
-
     }
 
-    private async Task HandleUnauthorizedAccessException(PhotosDomainException exception, HttpContext context)
+    private async Task HandleUnauthorizedAccessException(
+        PhotosDomainException exception,
+        HttpContext context
+    )
     {
         var message = new ProblemDetails()
         {
@@ -76,7 +85,10 @@ public class ExceptionMiddleware
         return;
     }
 
-    private async Task HandleForbiddenAccessException(PhotosDomainException exception, HttpContext context)
+    private async Task HandleForbiddenAccessException(
+        PhotosDomainException exception,
+        HttpContext context
+    )
     {
         var message = new ProblemDetails()
         {
@@ -106,7 +118,11 @@ public class ExceptionMiddleware
         await context.Response.WriteAsJsonAsync(message);
         return;
     }
-    private async Task HandleValidationException(PhotosDomainException exception, HttpContext context)
+
+    private async Task HandleValidationException(
+        PhotosDomainException exception,
+        HttpContext context
+    )
     {
         var innerException = (ValidationException)exception.InnerException!;
 
@@ -126,7 +142,6 @@ public class ExceptionMiddleware
 
     private async Task HandleNotFoundException(PhotosDomainException exception, HttpContext context)
     {
-
         var message = new ProblemDetails()
         {
             Instance = context.Request.Path,

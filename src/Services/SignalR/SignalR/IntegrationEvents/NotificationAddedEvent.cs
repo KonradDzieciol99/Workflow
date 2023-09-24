@@ -5,18 +5,33 @@ using SignalR.Hubs;
 
 namespace SignalR.IntegrationEvents;
 
-public record NotificationAddedEvent(string Id, string UserId, int NotificationType, DateTime CreationDate, bool Displayed, string Description, string? NotificationPartnerId, string? NotificationPartnerEmail, string? NotificationPartnerPhotoUrl, List<string>? OldNotificationsIds) : IntegrationEvent;
+public record NotificationAddedEvent(
+    string Id,
+    string UserId,
+    int NotificationType,
+    DateTime CreationDate,
+    bool Displayed,
+    string Description,
+    string? NotificationPartnerId,
+    string? NotificationPartnerEmail,
+    string? NotificationPartnerPhotoUrl,
+    List<string>? OldNotificationsIds
+) : IntegrationEvent;
+
 public class NotificationAddedEventHandler : IRequestHandler<NotificationAddedEvent>
 {
-
     private readonly IHubContext<PresenceHub> _presenceHubContext;
 
     public NotificationAddedEventHandler(IHubContext<PresenceHub> presenceHubContext)
     {
-        _presenceHubContext = presenceHubContext ?? throw new ArgumentNullException(nameof(presenceHubContext));
+        _presenceHubContext =
+            presenceHubContext ?? throw new ArgumentNullException(nameof(presenceHubContext));
     }
+
     public async Task Handle(NotificationAddedEvent request, CancellationToken cancellationToken)
     {
-        await _presenceHubContext.Clients.User(request.UserId).SendAsync("NewNotificationReceived", request, cancellationToken: cancellationToken);
+        await _presenceHubContext.Clients
+            .User(request.UserId)
+            .SendAsync("NewNotificationReceived", request, cancellationToken: cancellationToken);
     }
 }

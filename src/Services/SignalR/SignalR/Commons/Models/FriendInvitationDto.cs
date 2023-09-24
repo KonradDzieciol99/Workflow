@@ -4,18 +4,26 @@ namespace SignalR.Commons.Models;
 
 public class FriendInvitationDto
 {
-    public FriendInvitationDto()
-    {
+    public FriendInvitationDto() { }
 
-    }
     [SetsRequiredMembers]
-    public FriendInvitationDto(string inviterUserId, string inviterUserEmail, string? inviterPhotoUrl, string invitedUserId, string invitedUserEmail, string? invitedPhotoUrl, bool confirmed)
+    public FriendInvitationDto(
+        string inviterUserId,
+        string inviterUserEmail,
+        string? inviterPhotoUrl,
+        string invitedUserId,
+        string invitedUserEmail,
+        string? invitedPhotoUrl,
+        bool confirmed
+    )
     {
         InviterUserId = inviterUserId ?? throw new ArgumentNullException(nameof(inviterUserId));
-        InviterUserEmail = inviterUserEmail ?? throw new ArgumentNullException(nameof(inviterUserEmail));
+        InviterUserEmail =
+            inviterUserEmail ?? throw new ArgumentNullException(nameof(inviterUserEmail));
         InviterPhotoUrl = inviterPhotoUrl;
         InvitedUserId = invitedUserId ?? throw new ArgumentNullException(nameof(invitedUserId));
-        InvitedUserEmail = invitedUserEmail ?? throw new ArgumentNullException(nameof(invitedUserEmail));
+        InvitedUserEmail =
+            invitedUserEmail ?? throw new ArgumentNullException(nameof(invitedUserEmail));
         InvitedPhotoUrl = invitedPhotoUrl;
         Confirmed = confirmed;
     }

@@ -8,15 +8,19 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     private bool disposed = false;
 
     public IAppTaskRepository AppTaskRepository => new AppTaskRepository(_applicationDbContext);
-    public IProjectMemberRepository ProjectMemberRepository => new ProjectMemberRepository(_applicationDbContext);
+    public IProjectMemberRepository ProjectMemberRepository =>
+        new ProjectMemberRepository(_applicationDbContext);
+
     public UnitOfWork(ApplicationDbContext applicationDbContext)
     {
         _applicationDbContext = applicationDbContext;
     }
+
     public async Task<bool> Complete()
     {
         return await _applicationDbContext.SaveChangesAsync() > 0;
     }
+
     public bool HasChanges()
     {
         _applicationDbContext.ChangeTracker.DetectChanges();
@@ -24,6 +28,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
 
         return changes;
     }
+
     // Metoda zwalniająca zasoby.
     protected virtual void Dispose(bool disposing)
     {

@@ -11,11 +11,18 @@ public class ProjectRemovedDomainEventHandler : INotificationHandler<ProjectRemo
 
     public ProjectRemovedDomainEventHandler(IIntegrationEventService integrationEventService)
     {
-        this._integrationEventService = integrationEventService ?? throw new ArgumentNullException(nameof(integrationEventService));
+        this._integrationEventService =
+            integrationEventService
+            ?? throw new ArgumentNullException(nameof(integrationEventService));
     }
+
     public Task Handle(ProjectRemovedDomainEvent notification, CancellationToken cancellationToken)
     {
-        var @event = new ProjectRemovedEvent(notification.Project.Id, notification.Project.Name, notification.Project.IconUrl);
+        var @event = new ProjectRemovedEvent(
+            notification.Project.Id,
+            notification.Project.Name,
+            notification.Project.IconUrl
+        );
 
         _integrationEventService.AddIntegrationEvent(@event);
 

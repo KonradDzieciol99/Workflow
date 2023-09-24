@@ -4,7 +4,9 @@ using MessageBus;
 
 namespace EmailEmitter.IntegrationEvents;
 
-public record RegistrationEvent(string Email, string Token, string UserId, string? PhotoUrl) : IntegrationEvent;
+public record RegistrationEvent(string Email, string Token, string UserId, string? PhotoUrl)
+    : IntegrationEvent;
+
 public class RegistrationEventHandler : IRequestHandler<RegistrationEvent>
 {
     private readonly ISenderSource _emailSender;
@@ -13,6 +15,7 @@ public class RegistrationEventHandler : IRequestHandler<RegistrationEvent>
     {
         _emailSender = emailSender;
     }
+
     public async Task Handle(RegistrationEvent request, CancellationToken cancellationToken)
     {
         await _emailSender.CreateConfirmEmailMessage(request.Email, request.Token, request.UserId);
@@ -20,4 +23,3 @@ public class RegistrationEventHandler : IRequestHandler<RegistrationEvent>
         return;
     }
 }
-

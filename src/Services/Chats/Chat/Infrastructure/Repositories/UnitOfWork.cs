@@ -7,18 +7,22 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     private readonly ApplicationDbContext _applicationDbContext;
     private bool disposed = false;
 
-    public IFriendRequestRepository FriendRequestRepository => new FriendRequestRepository(_applicationDbContext);
+    public IFriendRequestRepository FriendRequestRepository =>
+        new FriendRequestRepository(_applicationDbContext);
 
     public IMessagesRepository MessagesRepository => new MessagesRepository(_applicationDbContext);
 
     public UnitOfWork(ApplicationDbContext applicationDbContext)
     {
-        _applicationDbContext = applicationDbContext ?? throw new ArgumentNullException(nameof(applicationDbContext));
+        _applicationDbContext =
+            applicationDbContext ?? throw new ArgumentNullException(nameof(applicationDbContext));
     }
+
     public async Task<bool> Complete()
     {
         return await _applicationDbContext.SaveChangesAsync() > 0;
     }
+
     public bool HasChanges()
     {
         _applicationDbContext.ChangeTracker.DetectChanges();
@@ -26,6 +30,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
 
         return changes;
     }
+
     // Metoda zwalniająca zasoby.
     protected virtual void Dispose(bool disposing)
     {

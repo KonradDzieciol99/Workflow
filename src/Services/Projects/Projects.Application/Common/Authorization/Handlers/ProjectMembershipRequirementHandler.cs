@@ -5,7 +5,8 @@ using System.Security.Claims;
 
 namespace Projects.Application.Common.Authorization.Handlers;
 
-public class ProjectMembershipRequirementHandler : AuthorizationHandler<ProjectMembershipRequirement>
+public class ProjectMembershipRequirementHandler
+    : AuthorizationHandler<ProjectMembershipRequirement>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -13,12 +14,23 @@ public class ProjectMembershipRequirementHandler : AuthorizationHandler<ProjectM
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
-    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ProjectMembershipRequirement requirement)
-    {
-        var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new ArgumentNullException(nameof(context));
-        var projectId = requirement.ProjectId ?? throw new ArgumentNullException(nameof(requirement));
 
-        var result = await _unitOfWork.ReadOnlyProjectMemberRepository.CheckIfUserIsAMemberOfProject(projectId, userId);
+    protected override async Task HandleRequirementAsync(
+        AuthorizationHandlerContext context,
+        ProjectMembershipRequirement requirement
+    )
+    {
+        var userId =
+            context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? throw new ArgumentNullException(nameof(context));
+        var projectId =
+            requirement.ProjectId ?? throw new ArgumentNullException(nameof(requirement));
+
+        var result =
+            await _unitOfWork.ReadOnlyProjectMemberRepository.CheckIfUserIsAMemberOfProject(
+                projectId,
+                userId
+            );
 
         if (result)
             context.Succeed(requirement);

@@ -16,7 +16,7 @@ public class IndexModel : PageModel
     private readonly IEventService _events;
     public ViewModel View { get; set; }
 
-    public IndexModel(UserManager<ApplicationUser> userManager,IEventService events)
+    public IndexModel(UserManager<ApplicationUser> userManager, IEventService events)
     {
         this._userManager = userManager;
         this._events = events;
@@ -40,6 +40,7 @@ public class IndexModel : PageModel
         }
         return NotFound();
     }
+
     public async Task<IActionResult> OnPost()
     {
         var email = Request.Query["email"];

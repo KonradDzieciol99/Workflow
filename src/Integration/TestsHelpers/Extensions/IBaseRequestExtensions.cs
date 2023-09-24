@@ -8,9 +8,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace TestsHelpers.Extensions;
+
 public static class IBaseRequestExtensions
 {
-    public static StringContent ToStringContent(this IBaseRequest request)
-        => new(JsonSerializer.Serialize<object>(request), Encoding.UTF8, "application/json");
-
+    public static StringContent ToStringContent(this IBaseRequest request) =>
+        new(JsonSerializer.Serialize<object>(request), Encoding.UTF8, "application/json");
 }

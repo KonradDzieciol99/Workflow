@@ -2,4 +2,14 @@
 
 namespace Projects.Application.IntegrationEvents;
 
-public record ProjectMemberDeclineInvitationEvent(string ProjectMemberId, string UserId, string UserEmail, string? PhotoUrl, int Type, string ProjectId, int InvitationStatus, string ProjectName, string ProjectIconUrl) : IntegrationEvent;
+public record ProjectMemberDeclineInvitationEvent(
+    string ProjectMemberId,
+    string UserId,
+    string UserEmail,
+    string? PhotoUrl,
+    int Type,
+    string ProjectId,
+    int InvitationStatus,
+    string ProjectName,
+    string ProjectIconUrl
+) : IntegrationEvent;

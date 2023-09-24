@@ -9,6 +9,7 @@ using Serilog;
 using System.Net;
 
 namespace EmailEmitter;
+
 public class Program
 {
     public static async Task Main(string[] args)
@@ -25,20 +26,24 @@ public class Program
         if (builder.Configuration.GetValue<bool>("SendGrid:enabled"))
             await AddSubscriptions(app);
 
-        app.MapHealthChecks("/hc", new HealthCheckOptions()
-        {
-            Predicate = _ => true,
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        });
-        app.MapHealthChecks("/liveness", new HealthCheckOptions
-        {
-            Predicate = r => r.Name.Contains("self")
-        });
+        app.MapHealthChecks(
+            "/hc",
+            new HealthCheckOptions()
+            {
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            }
+        );
+        app.MapHealthChecks(
+            "/liveness",
+            new HealthCheckOptions { Predicate = r => r.Name.Contains("self") }
+        );
 
         if (app.Environment.IsDevelopment()) { }
 
         app.Run();
     }
+
     private static async Task AddSubscriptions(WebApplication app)
     {
         var eventBus = app.Services.GetRequiredService<IEventBusConsumer>();

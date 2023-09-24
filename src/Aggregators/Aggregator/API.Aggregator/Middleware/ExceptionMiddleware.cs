@@ -10,21 +10,28 @@ public class ExceptionMiddleware
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionMiddleware> _logger;
     private readonly IWebHostEnvironment _env;
-    private readonly Dictionary<Type, Func<AggregatorDomainException, HttpContext, Task>> _exceptionHandlers;
+    private readonly Dictionary<
+        Type,
+        Func<AggregatorDomainException, HttpContext, Task>
+    > _exceptionHandlers;
 
-    public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IWebHostEnvironment env)
+    public ExceptionMiddleware(
+        RequestDelegate next,
+        ILogger<ExceptionMiddleware> logger,
+        IWebHostEnvironment env
+    )
     {
         _next = next;
         _logger = logger;
         _env = env;
         _exceptionHandlers = new()
-            {
-                { typeof(ValidationException), HandleValidationException },
-                { typeof(AggregatorDomainException), HandleDomainException },
-                { typeof(UnauthorizedAccessException), HandleUnauthorizedAccessException },
-                { typeof(ForbiddenAccessException), HandleForbiddenAccessException },
-                { typeof(NotFoundException), HandleNotFoundException },
-            };
+        {
+            { typeof(ValidationException), HandleValidationException },
+            { typeof(AggregatorDomainException), HandleDomainException },
+            { typeof(UnauthorizedAccessException), HandleUnauthorizedAccessException },
+            { typeof(ForbiddenAccessException), HandleForbiddenAccessException },
+            { typeof(NotFoundException), HandleNotFoundException },
+        };
     }
 
     public async Task InvokeAsync(HttpContext httpContext)
@@ -43,7 +50,9 @@ public class ExceptionMiddleware
     {
         if (exception is AggregatorDomainException aggregatorDomainException)
         {
-            Type type = aggregatorDomainException.InnerException?.GetType() ?? typeof(AggregatorDomainException);
+            Type type =
+                aggregatorDomainException.InnerException?.GetType()
+                ?? typeof(AggregatorDomainException);
             if (_exceptionHandlers.TryGetValue(type, out var handler))
             {
                 await handler.Invoke(aggregatorDomainException, context);
@@ -56,10 +65,12 @@ public class ExceptionMiddleware
             message = exception.Message;
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
         await context.Response.WriteAsJsonAsync(message);
-
     }
 
-    private async Task HandleUnauthorizedAccessException(AggregatorDomainException exception, HttpContext context)
+    private async Task HandleUnauthorizedAccessException(
+        AggregatorDomainException exception,
+        HttpContext context
+    )
     {
         var message = new ProblemDetails()
         {
@@ -75,7 +86,10 @@ public class ExceptionMiddleware
         return;
     }
 
-    private async Task HandleForbiddenAccessException(AggregatorDomainException exception, HttpContext context)
+    private async Task HandleForbiddenAccessException(
+        AggregatorDomainException exception,
+        HttpContext context
+    )
     {
         var message = new ProblemDetails()
         {
@@ -91,7 +105,10 @@ public class ExceptionMiddleware
         return;
     }
 
-    private async Task HandleDomainException(AggregatorDomainException exception, HttpContext context)
+    private async Task HandleDomainException(
+        AggregatorDomainException exception,
+        HttpContext context
+    )
     {
         var message = new ProblemDetails()
         {
@@ -105,7 +122,11 @@ public class ExceptionMiddleware
         await context.Response.WriteAsJsonAsync(message);
         return;
     }
-    private async Task HandleValidationException(AggregatorDomainException exception, HttpContext context)
+
+    private async Task HandleValidationException(
+        AggregatorDomainException exception,
+        HttpContext context
+    )
     {
         var innerException = (ValidationException)exception.InnerException!;
 
@@ -123,9 +144,11 @@ public class ExceptionMiddleware
         return;
     }
 
-    private async Task HandleNotFoundException(AggregatorDomainException exception, HttpContext context)
+    private async Task HandleNotFoundException(
+        AggregatorDomainException exception,
+        HttpContext context
+    )
     {
-
         var message = new ProblemDetails()
         {
             Instance = context.Request.Path,

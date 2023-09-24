@@ -27,7 +27,8 @@ public class Callback : PageModel
         IEventService events,
         ILogger<Callback> logger,
         UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager)
+        SignInManager<ApplicationUser> signInManager
+    )
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -39,7 +40,9 @@ public class Callback : PageModel
     public async Task<IActionResult> OnGet()
     {
         // read external identity from the temporary cookie
-        var result = await HttpContext.AuthenticateAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
+        var result = await HttpContext.AuthenticateAsync(
+            IdentityServerConstants.ExternalCookieAuthenticationScheme
+        );
         if (result?.Succeeded != true)
         {
             throw new Exception("External authentication error");
@@ -57,9 +60,10 @@ public class Callback : PageModel
         // try to determine the unique id of the external user (issued by the provider)
         // the most common claim type for that are the sub claim and the NameIdentifier
         // depending on the external provider, some other claim type might be used
-        var userIdClaim = externalUser.FindFirst(JwtClaimTypes.Subject) ??
-                          externalUser.FindFirst(ClaimTypes.NameIdentifier) ??
-                          throw new Exception("Unknown userid");
+        var userIdClaim =
+            externalUser.FindFirst(JwtClaimTypes.Subject)
+            ?? externalUser.FindFirst(ClaimTypes.NameIdentifier)
+            ?? throw new Exception("Unknown userid");
 
         var provider = result.Properties.Items["scheme"];
         var providerUserId = userIdClaim.Value;
@@ -75,8 +79,6 @@ public class Callback : PageModel
         }
         else
             await UpdateUserPictureUrlIfNewClaimPictureExists(user, externalUser.Claims);
-
-
 
         // this allows us to collect any additional claims or properties
         // for the specific protocols used and store them in the local auth cookie.
@@ -96,7 +98,16 @@ public class Callback : PageModel
 
         // check if external login is in the context of an OIDC request
         var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-        await _events.RaiseAsync(new UserLoginSuccessEvent(provider, providerUserId, user.Id, user.UserName, true, context?.Client.ClientId));
+        await _events.RaiseAsync(
+            new UserLoginSuccessEvent(
+                provider,
+                providerUserId,
+                user.Id,
+                user.UserName,
+                true,
+                context?.Client.ClientId
+            )
+        );
 
         if (context != null)
         {
@@ -111,13 +122,20 @@ public class Callback : PageModel
         return Redirect(returnUrl);
     }
 
-    private async Task<ApplicationUser> AutoProvisionUserAsync(string provider, string providerUserId, IEnumerable<Claim> claims)
+    private async Task<ApplicationUser> AutoProvisionUserAsync(
+        string provider,
+        string providerUserId,
+        IEnumerable<Claim> claims
+    )
     {
         var sub = Guid.NewGuid().ToString();
 
-        var email = claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Email)?.Value ??
-            claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value ??
-            throw new ArgumentNullException(JwtClaimTypes.Email + " Or " + ClaimTypes.Email + "cannot be empty");
+        var email =
+            claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Email)?.Value
+            ?? claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value
+            ?? throw new ArgumentNullException(
+                JwtClaimTypes.Email + " Or " + ClaimTypes.Email + "cannot be empty"
+            );
 
         var user = new ApplicationUser
         {
@@ -128,24 +146,37 @@ public class Callback : PageModel
         };
 
         var identityResult = await _userManager.CreateAsync(user);
-        if (!identityResult.Succeeded) throw new Exception(identityResult.Errors.First().Description);
+        if (!identityResult.Succeeded)
+            throw new Exception(identityResult.Errors.First().Description);
 
-        identityResult = await _userManager.AddLoginAsync(user, new UserLoginInfo(provider, providerUserId, provider));
-        if (!identityResult.Succeeded) throw new Exception(identityResult.Errors.First().Description);
+        identityResult = await _userManager.AddLoginAsync(
+            user,
+            new UserLoginInfo(provider, providerUserId, provider)
+        );
+        if (!identityResult.Succeeded)
+            throw new Exception(identityResult.Errors.First().Description);
 
         return user;
     }
 
     // if the external login is OIDC-based, there are certain things we need to preserve to make logout work
     // this will be different for WS-Fed, SAML2p or other protocols
-    private void CaptureExternalLoginContext(AuthenticateResult externalResult, List<Claim> localClaims, AuthenticationProperties localSignInProps)
+    private void CaptureExternalLoginContext(
+        AuthenticateResult externalResult,
+        List<Claim> localClaims,
+        AuthenticationProperties localSignInProps
+    )
     {
         // capture the idp used to login, so the session knows where the user came from
-        localClaims.Add(new Claim(JwtClaimTypes.IdentityProvider, externalResult.Properties.Items["scheme"]));
+        localClaims.Add(
+            new Claim(JwtClaimTypes.IdentityProvider, externalResult.Properties.Items["scheme"])
+        );
 
         // if the external system sent a session id claim, copy it over
         // so we can use it for single sign-out
-        var sid = externalResult.Principal.Claims.FirstOrDefault(x => x.Type == JwtClaimTypes.SessionId);
+        var sid = externalResult.Principal.Claims.FirstOrDefault(
+            x => x.Type == JwtClaimTypes.SessionId
+        );
         if (sid != null)
         {
             localClaims.Add(new Claim(JwtClaimTypes.SessionId, sid.Value));
@@ -155,10 +186,19 @@ public class Callback : PageModel
         var idToken = externalResult.Properties.GetTokenValue("id_token");
         if (idToken != null)
         {
-            localSignInProps.StoreTokens(new[] { new AuthenticationToken { Name = "id_token", Value = idToken } });
+            localSignInProps.StoreTokens(
+                new[]
+                {
+                    new AuthenticationToken { Name = "id_token", Value = idToken }
+                }
+            );
         }
     }
-    private async Task UpdateUserPictureUrlIfNewClaimPictureExists(ApplicationUser user, IEnumerable<Claim> claims)
+
+    private async Task UpdateUserPictureUrlIfNewClaimPictureExists(
+        ApplicationUser user,
+        IEnumerable<Claim> claims
+    )
     {
         var pictureClaim = claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Picture)?.Value;
         if (pictureClaim != null)

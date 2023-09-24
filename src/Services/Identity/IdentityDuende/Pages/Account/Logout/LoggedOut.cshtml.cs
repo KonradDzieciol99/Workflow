@@ -27,12 +27,16 @@ public class LoggedOut : PageModel
         {
             AutomaticRedirectAfterSignOut = LogoutOptions.AutomaticRedirectAfterSignOut,
             PostLogoutRedirectUri = logout?.PostLogoutRedirectUri,
-            ClientName = string.IsNullOrEmpty(logout?.ClientName) ? logout?.ClientId : logout?.ClientName,
+            ClientName = string.IsNullOrEmpty(logout?.ClientName)
+                ? logout?.ClientId
+                : logout?.ClientName,
             SignOutIframeUrl = logout?.SignOutIFrameUrl
         };
 
-
-        if (LogoutOptions.AutomaticRedirectAfterSignOut && !string.IsNullOrWhiteSpace(logout?.PostLogoutRedirectUri))
+        if (
+            LogoutOptions.AutomaticRedirectAfterSignOut
+            && !string.IsNullOrWhiteSpace(logout?.PostLogoutRedirectUri)
+        )
             return Redirect(logout?.PostLogoutRedirectUri);
 
         return Page();

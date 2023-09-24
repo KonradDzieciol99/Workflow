@@ -25,7 +25,8 @@ public class Index : PageModel
         IDeviceFlowInteractionService interaction,
         IEventService eventService,
         IOptions<IdentityServerOptions> options,
-        ILogger<Index> logger)
+        ILogger<Index> logger
+    )
     {
         _interaction = interaction;
         _events = eventService;
@@ -56,10 +57,7 @@ public class Index : PageModel
             return Page();
         }
 
-        Input = new InputModel
-        {
-            UserCode = userCode,
-        };
+        Input = new InputModel { UserCode = userCode, };
 
         return Page();
     }
@@ -67,20 +65,24 @@ public class Index : PageModel
     public async Task<IActionResult> OnPost()
     {
         var request = await _interaction.GetAuthorizationContextAsync(Input.UserCode);
-        if (request == null) return RedirectToPage("/Home/Error/Index");
+        if (request == null)
+            return RedirectToPage("/Home/Error/Index");
 
         ConsentResponse grantedConsent = null;
 
         // user clicked 'no' - send back the standard 'access_denied' response
         if (Input.Button == "no")
         {
-            grantedConsent = new ConsentResponse
-            {
-                Error = AuthorizationError.AccessDenied
-            };
+            grantedConsent = new ConsentResponse { Error = AuthorizationError.AccessDenied };
 
             // emit event
-            await _events.RaiseAsync(new ConsentDeniedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues));
+            await _events.RaiseAsync(
+                new ConsentDeniedEvent(
+                    User.GetSubjectId(),
+                    request.Client.ClientId,
+                    request.ValidatedResources.RawScopeValues
+                )
+            );
         }
         // user clicked 'yes' - validate the data
         else if (Input.Button == "yes")
@@ -91,7 +93,15 @@ public class Index : PageModel
                 var scopes = Input.ScopesConsented;
                 if (ConsentOptions.EnableOfflineAccess == false)
                 {
-                    scopes = scopes.Where(x => x != Duende.IdentityServer.IdentityServerConstants.StandardScopes.OfflineAccess);
+                    scopes = scopes.Where(
+                        x =>
+                            x
+                            != Duende
+                                .IdentityServer
+                                .IdentityServerConstants
+                                .StandardScopes
+                                .OfflineAccess
+                    );
                 }
 
                 grantedConsent = new ConsentResponse
@@ -102,7 +112,15 @@ public class Index : PageModel
                 };
 
                 // emit event
-                await _events.RaiseAsync(new ConsentGrantedEvent(User.GetSubjectId(), request.Client.ClientId, request.ValidatedResources.RawScopeValues, grantedConsent.ScopesValuesConsented, grantedConsent.RememberConsent));
+                await _events.RaiseAsync(
+                    new ConsentGrantedEvent(
+                        User.GetSubjectId(),
+                        request.Client.ClientId,
+                        request.ValidatedResources.RawScopeValues,
+                        grantedConsent.ScopesValuesConsented,
+                        grantedConsent.RememberConsent
+                    )
+                );
             }
             else
             {
@@ -128,7 +146,6 @@ public class Index : PageModel
         return Page();
     }
 
-
     private async Task<ViewModel> BuildViewModelAsync(string userCode, InputModel? model = null)
     {
         var request = await _interaction.GetAuthorizationContextAsync(userCode);
@@ -140,7 +157,10 @@ public class Index : PageModel
         return null;
     }
 
-    private ViewModel CreateConsentViewModel(InputModel model, DeviceFlowAuthorizationRequest request)
+    private ViewModel CreateConsentViewModel(
+        InputModel model,
+        DeviceFlowAuthorizationRequest request
+    )
     {
         var vm = new ViewModel
         {
@@ -150,21 +170,46 @@ public class Index : PageModel
             AllowRememberConsent = request.Client.AllowRememberConsent
         };
 
-        vm.IdentityScopes = request.ValidatedResources.Resources.IdentityResources.Select(x => CreateScopeViewModel(x, model == null || model.ScopesConsented?.Contains(x.Name) == true)).ToArray();
+        vm.IdentityScopes = request.ValidatedResources.Resources.IdentityResources
+            .Select(
+                x =>
+                    CreateScopeViewModel(
+                        x,
+                        model == null || model.ScopesConsented?.Contains(x.Name) == true
+                    )
+            )
+            .ToArray();
 
         var apiScopes = new List<ScopeViewModel>();
         foreach (var parsedScope in request.ValidatedResources.ParsedScopes)
         {
-            var apiScope = request.ValidatedResources.Resources.FindApiScope(parsedScope.ParsedName);
+            var apiScope = request.ValidatedResources.Resources.FindApiScope(
+                parsedScope.ParsedName
+            );
             if (apiScope != null)
             {
-                var scopeVm = CreateScopeViewModel(parsedScope, apiScope, model == null || model.ScopesConsented?.Contains(parsedScope.RawValue) == true);
+                var scopeVm = CreateScopeViewModel(
+                    parsedScope,
+                    apiScope,
+                    model == null || model.ScopesConsented?.Contains(parsedScope.RawValue) == true
+                );
                 apiScopes.Add(scopeVm);
             }
         }
         if (DeviceOptions.EnableOfflineAccess && request.ValidatedResources.Resources.OfflineAccess)
         {
-            apiScopes.Add(GetOfflineAccessScope(model == null || model.ScopesConsented?.Contains(Duende.IdentityServer.IdentityServerConstants.StandardScopes.OfflineAccess) == true));
+            apiScopes.Add(
+                GetOfflineAccessScope(
+                    model == null
+                        || model.ScopesConsented?.Contains(
+                            Duende
+                                .IdentityServer
+                                .IdentityServerConstants
+                                .StandardScopes
+                                .OfflineAccess
+                        ) == true
+                )
+            );
         }
         vm.ApiScopes = apiScopes;
 
@@ -184,7 +229,11 @@ public class Index : PageModel
         };
     }
 
-    public ScopeViewModel CreateScopeViewModel(ParsedScopeValue parsedScopeValue, ApiScope apiScope, bool check)
+    public ScopeViewModel CreateScopeViewModel(
+        ParsedScopeValue parsedScopeValue,
+        ApiScope apiScope,
+        bool check
+    )
     {
         return new ScopeViewModel
         {

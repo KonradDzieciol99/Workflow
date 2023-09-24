@@ -20,12 +20,14 @@ public static class Policy
             .HandleTransientHttpError()
             .WaitAndRetryAsync(
                 retryCount: 5,
-                sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                onRetry: (exception, retryCount, context) =>
-                {
+                sleepDurationProvider: retryAttempt =>
+                    TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                onRetry: (exception, retryCount, context) => {
                     //Log.Error($"Retry {retryCount} of {context.PolicyKey} at {context.OperationKey}, due to: {exception}.");
-                });
+                }
+            );
     }
+
     public static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
     {
         return HttpPolicyExtensions

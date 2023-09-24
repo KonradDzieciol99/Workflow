@@ -6,14 +6,17 @@ namespace Projects.Infrastructure.Services;
 public class IntegrationEventService : IIntegrationEventService
 {
     private readonly IEventBusSender _azureServiceBusSender;
+
     public IntegrationEventService(IEventBusSender azureServiceBusSender)
     {
-        this._azureServiceBusSender = azureServiceBusSender ?? throw new ArgumentNullException(nameof(azureServiceBusSender));
+        this._azureServiceBusSender =
+            azureServiceBusSender ?? throw new ArgumentNullException(nameof(azureServiceBusSender));
     }
 
     private readonly List<IntegrationEvent> _integrationEvents = new();
 
-    public IReadOnlyCollection<IntegrationEvent> IntegrationEvents => _integrationEvents.AsReadOnly();
+    public IReadOnlyCollection<IntegrationEvent> IntegrationEvents =>
+        _integrationEvents.AsReadOnly();
 
     public void AddIntegrationEvent(IntegrationEvent integrationEvent)
     {
@@ -24,6 +27,7 @@ public class IntegrationEventService : IIntegrationEventService
     {
         _integrationEvents.Remove(integrationEvent);
     }
+
     public async Task PublishEventsThroughEventBusAsync()
     {
         foreach (var IntegrationEvent in _integrationEvents)
@@ -31,5 +35,4 @@ public class IntegrationEventService : IIntegrationEventService
 
         _integrationEvents.Clear();
     }
-
 }

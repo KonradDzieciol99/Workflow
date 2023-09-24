@@ -11,10 +11,12 @@ namespace IdentityDuende.Pages.EmailConfirmation;
 public class IndexModel : PageModel
 {
     private readonly UserManager<ApplicationUser> _userManager;
+
     public IndexModel(UserManager<ApplicationUser> userManager)
     {
         this._userManager = userManager;
     }
+
     public ViewModel View { get; set; }
 
     public async Task<IActionResult> OnGet(string token, string email)
@@ -25,8 +27,10 @@ public class IndexModel : PageModel
             if (user is not null)
             {
                 if (user.EmailConfirmed)
-                    return RedirectToPage("/EmailConfirmationInfo", new { email = user.Email, returnUrl = View.ReturnUrl });
-
+                    return RedirectToPage(
+                        "/EmailConfirmationInfo",
+                        new { email = user.Email, returnUrl = View.ReturnUrl }
+                    );
 
                 var resoult = await _userManager.ConfirmEmailAsync(user, token);
                 if (resoult.Succeeded)

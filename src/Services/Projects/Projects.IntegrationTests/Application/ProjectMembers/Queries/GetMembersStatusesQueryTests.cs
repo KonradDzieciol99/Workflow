@@ -14,50 +14,89 @@ using System.Threading.Tasks;
 using TestsHelpers.Extensions;
 
 namespace Projects.IntegrationTests.Application.ProjectMembers.Queries;
+
 [Collection("Base")]
-public class GetMembersStatusesQueryTests: IAsyncLifetime
+public class GetMembersStatusesQueryTests : IAsyncLifetime
 {
     private readonly Base _base;
+
     public GetMembersStatusesQueryTests(Base @base)
     {
         _base = @base;
     }
+
     public Task DisposeAsync()
     {
         return Task.CompletedTask;
     }
+
     public async Task InitializeAsync()
     {
         await _base._checkpoint.ResetAsync(_base._msSqlContainer.GetConnectionString());
     }
 
-    public static IEnumerable<object[]> GetMembersStatusesQueryList => new List<object[]>
-    {
-        new object[]{ new GetMembersStatusesQuery("id",new List<string>{"dd","sss","sssss","fdsfgd"}),MemberStatusType.Uninvited },
-        new object[]{ new GetMembersStatusesQuery("id",new List<string>{ "testUserId2", "testUserId3" }),MemberStatusType.Invited },
-    };
+    public static IEnumerable<object[]> GetMembersStatusesQueryList =>
+        new List<object[]>
+        {
+            new object[]
+            {
+                new GetMembersStatusesQuery(
+                    "id",
+                    new List<string> { "dd", "sss", "sssss", "fdsfgd" }
+                ),
+                MemberStatusType.Uninvited
+            },
+            new object[]
+            {
+                new GetMembersStatusesQuery(
+                    "id",
+                    new List<string> { "testUserId2", "testUserId3" }
+                ),
+                MemberStatusType.Invited
+            },
+        };
 
     [Theory]
     [MemberData(nameof(GetMembersStatusesQueryList))]
-    public async Task GetMembersStatusesQuery_ValidData_ReturnsOkAndStatuses(GetMembersStatusesQuery baseQuery ,MemberStatusType status)
+    public async Task GetMembersStatusesQuery_ValidData_ReturnsOkAndStatuses(
+        GetMembersStatusesQuery baseQuery,
+        MemberStatusType status
+    )
     {
         //arrange
-        var memberCreator = new ProjectMember("testUserId", "testUserEmail@test.com", null, ProjectMemberType.Leader, InvitationStatus.Accepted);
-        var projects = new List<Project>()
-        {
-            new Project("testProject","",memberCreator)
-        };
+        var memberCreator = new ProjectMember(
+            "testUserId",
+            "testUserEmail@test.com",
+            null,
+            ProjectMemberType.Leader,
+            InvitationStatus.Accepted
+        );
+        var projects = new List<Project>() { new Project("testProject", "", memberCreator) };
 
-        var invitedMember = new ProjectMember("testUserId2", "testUserEmail@test.com2", null, ProjectMemberType.Member, InvitationStatus.Invited);
+        var invitedMember = new ProjectMember(
+            "testUserId2",
+            "testUserEmail@test.com2",
+            null,
+            ProjectMemberType.Member,
+            InvitationStatus.Invited
+        );
         projects[0].AddProjectMember(invitedMember);
-        var invitedMember2 = new ProjectMember("testUserId3", "testUserEmail@test.com3", null, ProjectMemberType.Member, InvitationStatus.Invited);
+        var invitedMember2 = new ProjectMember(
+            "testUserId3",
+            "testUserEmail@test.com3",
+            null,
+            ProjectMemberType.Member,
+            InvitationStatus.Invited
+        );
         projects[0].AddProjectMember(invitedMember2);
         _base._factory.SeedData<Program, ApplicationDbContext, Project>(projects);
         _base._client.SetHeaders("testUserId", "testUserEmail@test.com");
         var query = baseQuery with { ProjectId = projects[0].Id };
 
         //act
-        var response = await _base._client.GetAsync($"api/Projects/{query.ProjectId}/GetMembersStatuses?usersIds={string.Join("&usersIds=", query.UsersIds)}");
+        var response = await _base._client.GetAsync(
+            $"api/Projects/{query.ProjectId}/GetMembersStatuses?usersIds={string.Join("&usersIds=", query.UsersIds)}"
+        );
 
         //assert
         var responseString = await response.Content.ReadAsStringAsync();

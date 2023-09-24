@@ -22,7 +22,11 @@ public class Index : PageModel
     [BindProperty]
     public string LogoutId { get; set; }
 
-    public Index(SignInManager<ApplicationUser> signInManager, IIdentityServerInteractionService interaction, IEventService events)
+    public Index(
+        SignInManager<ApplicationUser> signInManager,
+        IIdentityServerInteractionService interaction,
+        IEventService events
+    )
     {
         _signInManager = signInManager;
         _interaction = interaction;
@@ -78,13 +82,18 @@ public class Index : PageModel
             await _signInManager.SignOutAsync();
 
             // raise the logout event
-            await _events.RaiseAsync(new UserLogoutSuccessEvent(User.GetSubjectId(), User.GetDisplayName()));
+            await _events.RaiseAsync(
+                new UserLogoutSuccessEvent(User.GetSubjectId(), User.GetDisplayName())
+            );
 
             // see if we need to trigger federated logout
             var idp = User.FindFirst(JwtClaimTypes.IdentityProvider)?.Value;
 
             // if it's a local login we can ignore this workflow
-            if (idp != null && idp != Duende.IdentityServer.IdentityServerConstants.LocalIdentityProvider)
+            if (
+                idp != null
+                && idp != Duende.IdentityServer.IdentityServerConstants.LocalIdentityProvider
+            )
             {
                 // we need to see if the provider supports external logout
                 if (await HttpContext.GetSchemeSupportsSignOutAsync(idp))

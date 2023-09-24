@@ -2,6 +2,8 @@
 
 namespace IdentityDuende.Application.IntegrationEvents;
 
-public record UserResentVerificationEmailIntegrationEvent(string UserEmail,
-                                                          string VerificationToken,
-                                                          string UserId) : IntegrationEvent;
+public record UserResentVerificationEmailIntegrationEvent(
+    string UserEmail,
+    string VerificationToken,
+    string UserId
+) : IntegrationEvent;

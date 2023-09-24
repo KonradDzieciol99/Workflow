@@ -4,7 +4,14 @@ namespace Projects.Application.Common.Models.Dto;
 
 public class ProjectMemberDto
 {
-    public ProjectMemberDto(string id, string userId, string userEmail, ProjectMemberType type, InvitationStatus invitationStatus, string projectId)
+    public ProjectMemberDto(
+        string id,
+        string userId,
+        string userEmail,
+        ProjectMemberType type,
+        InvitationStatus invitationStatus,
+        string projectId
+    )
     {
         Id = id;
         UserId = userId;

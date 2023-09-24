@@ -14,10 +14,8 @@ using Microsoft.Extensions.Configuration;
 namespace API.Aggreggator.IntegrationTests;
 
 [CollectionDefinition("Base")]
-public class WebApplicationFactoryCollection : ICollectionFixture<Base>
-{
+public class WebApplicationFactoryCollection : ICollectionFixture<Base> { }
 
-}
 public class Base : IAsyncLifetime
 {
     public readonly WebApplicationFactory<Program> _factory;
@@ -28,54 +26,72 @@ public class Base : IAsyncLifetime
 
     public Base()
     {
-        _msSqlContainer = new MsSqlBuilder().WithImage("mcr.microsoft.com/mssql/server:2022-latest")
-                                            .Build();
+        _msSqlContainer = new MsSqlBuilder()
+            .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
+            .Build();
         _mockServer = WireMockServer.Start();
 
         _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
         {
-            builder.ConfigureAppConfiguration((context, configBuilder) =>
-            {
-                configBuilder.AddInMemoryCollection(new Dictionary<string, string?>
+            builder.ConfigureAppConfiguration(
+                (context, configBuilder) =>
                 {
-                    ["urls:internal:tasks"] = _mockServer.Urls[0],
-                    ["urls:internal:notification"] = _mockServer.Urls[0],
-                    ["urls:internal:chat"] = _mockServer.Urls[0],
-                    ["urls:internal:projects"] = _mockServer.Urls[0],
-                    ["urls:internal:identity"] = _mockServer.Urls[0],
-                    ["isTest"] = "true"
-                });
-            });
+                    configBuilder.AddInMemoryCollection(
+                        new Dictionary<string, string?>
+                        {
+                            ["urls:internal:tasks"] = _mockServer.Urls[0],
+                            ["urls:internal:notification"] = _mockServer.Urls[0],
+                            ["urls:internal:chat"] = _mockServer.Urls[0],
+                            ["urls:internal:projects"] = _mockServer.Urls[0],
+                            ["urls:internal:identity"] = _mockServer.Urls[0],
+                            ["isTest"] = "true"
+                        }
+                    );
+                }
+            );
 
-            builder.ConfigureServices((context, services) =>
-            {
-                services.AddAuthentication(opt =>
+            builder.ConfigureServices(
+                (context, services) =>
                 {
-                    opt.DefaultAuthenticateScheme = TestAuthHandler.AuthenticationScheme;
-                    opt.DefaultChallengeScheme = TestAuthHandler.AuthenticationScheme;
-                }).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme, options => { });
-                
-                services.AddAuthorization(options =>
-                {
-                    options.AddPolicy("ApiScope", policy =>
+                    services
+                        .AddAuthentication(opt =>
+                        {
+                            opt.DefaultAuthenticateScheme = TestAuthHandler.AuthenticationScheme;
+                            opt.DefaultChallengeScheme = TestAuthHandler.AuthenticationScheme;
+                        })
+                        .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
+                            TestAuthHandler.AuthenticationScheme,
+                            options => { }
+                        );
+
+                    services.AddAuthorization(options =>
                     {
-                        policy.RequireAssertion(context => true);
+                        options.AddPolicy(
+                            "ApiScope",
+                            policy =>
+                            {
+                                policy.RequireAssertion(context => true);
+                            }
+                        );
                     });
-                });
-                
-            });
+                }
+            );
         });
     }
+
     public async Task InitializeAsync()
     {
         await _msSqlContainer.StartAsync();
 
         _client = _factory.CreateClient();
 
-        _checkpoint = await Respawner.CreateAsync(_msSqlContainer.GetConnectionString(), new RespawnerOptions
-        {
-            TablesToIgnore = new Respawn.Graph.Table[] { "__EFMigrationsHistory" }
-        });
+        _checkpoint = await Respawner.CreateAsync(
+            _msSqlContainer.GetConnectionString(),
+            new RespawnerOptions
+            {
+                TablesToIgnore = new Respawn.Graph.Table[] { "__EFMigrationsHistory" }
+            }
+        );
     }
 
     public async Task DisposeAsync()

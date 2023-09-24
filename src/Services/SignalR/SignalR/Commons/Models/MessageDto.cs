@@ -2,7 +2,16 @@
 
 public class MessageDto
 {
-    public MessageDto(string id, string senderId, string senderEmail, string recipientId, string recipientEmail, string content, DateTime? dateRead, DateTime messageSent)
+    public MessageDto(
+        string id,
+        string senderId,
+        string senderEmail,
+        string recipientId,
+        string recipientEmail,
+        string content,
+        DateTime? dateRead,
+        DateTime messageSent
+    )
     {
         Id = id ?? throw new ArgumentNullException(nameof(id));
         SenderId = senderId ?? throw new ArgumentNullException(nameof(senderId));

@@ -2,10 +2,8 @@
 
 public class BaseEntity
 {
-    public BaseEntity()
-    {
+    public BaseEntity() { }
 
-    }
     public BaseEntity(string id)
     {
         Id = id ?? throw new ArgumentNullException(nameof(id));

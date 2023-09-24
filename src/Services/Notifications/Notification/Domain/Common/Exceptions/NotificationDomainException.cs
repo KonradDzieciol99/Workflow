@@ -2,14 +2,11 @@
 
 public class NotificationDomainException : Exception
 {
-    public NotificationDomainException()
-    { }
+    public NotificationDomainException() { }
 
     public NotificationDomainException(string message)
-        : base(message)
-    { }
+        : base(message) { }
 
     public NotificationDomainException(string message, Exception innerException)
-        : base(message, innerException)
-    { }
+        : base(message, innerException) { }
 }

@@ -5,17 +5,28 @@ using Projects.Domain.DomainEvents;
 
 namespace Projects.Application.ProjectMembers.DomainEventHandlers;
 
-internal class ProjectMemberRemovedDomainEventHandler : INotificationHandler<ProjectMemberRemovedDomainEvent>
+internal class ProjectMemberRemovedDomainEventHandler
+    : INotificationHandler<ProjectMemberRemovedDomainEvent>
 {
     private readonly IIntegrationEventService _integrationEventService;
 
     public ProjectMemberRemovedDomainEventHandler(IIntegrationEventService integrationEventService)
     {
-        this._integrationEventService = integrationEventService ?? throw new ArgumentNullException(nameof(integrationEventService));
+        this._integrationEventService =
+            integrationEventService
+            ?? throw new ArgumentNullException(nameof(integrationEventService));
     }
-    public Task Handle(ProjectMemberRemovedDomainEvent notification, CancellationToken cancellationToken)
+
+    public Task Handle(
+        ProjectMemberRemovedDomainEvent notification,
+        CancellationToken cancellationToken
+    )
     {
-        var @event = new ProjectMemberRemovedEvent(notification.Member.Id, notification.Member.ProjectId, notification.Member.UserId);
+        var @event = new ProjectMemberRemovedEvent(
+            notification.Member.Id,
+            notification.Member.ProjectId,
+            notification.Member.UserId
+        );
 
         _integrationEventService.AddIntegrationEvent(@event);
 

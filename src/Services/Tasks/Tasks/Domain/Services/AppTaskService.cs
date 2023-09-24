@@ -13,11 +13,14 @@ public class AppTaskService : IAppTaskService
     {
         _appTaskRepository = unitOfWork.AppTaskRepository;
     }
+
     public void RemoveAppTask(AppTask task, ProjectMember CurrentProjectMember)
     {
-        if (CurrentProjectMember.Type != ProjectMemberType.Leader
+        if (
+            CurrentProjectMember.Type != ProjectMemberType.Leader
             && CurrentProjectMember.Type != ProjectMemberType.Admin
-            && task.TaskLeaderId != CurrentProjectMember.Id)
+            && task.TaskLeaderId != CurrentProjectMember.Id
+        )
         {
             throw new TaskDomainException("User has no rights to delete this task");
         }

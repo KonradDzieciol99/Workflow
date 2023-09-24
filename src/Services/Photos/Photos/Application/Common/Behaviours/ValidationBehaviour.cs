@@ -5,7 +5,7 @@ using Photos.Domain.Common.Exceptions;
 namespace Photos.Application.Common.Behaviours;
 
 public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-     where TRequest : notnull
+    where TRequest : notnull
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;
 
@@ -14,15 +14,19 @@ public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TReque
         _validators = validators;
     }
 
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    public async Task<TResponse> Handle(
+        TRequest request,
+        RequestHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken
+    )
     {
         if (_validators.Any())
         {
             var context = new ValidationContext<TRequest>(request);
 
             var validationResults = await Task.WhenAll(
-                _validators.Select(v =>
-                    v.ValidateAsync(context, cancellationToken)));
+                _validators.Select(v => v.ValidateAsync(context, cancellationToken))
+            );
 
             var failures = validationResults
                 .Where(r => r.Errors.Any())
@@ -30,7 +34,10 @@ public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TReque
                 .ToList();
 
             if (failures.Any())
-                throw new PhotosDomainException($"Validation Errors for type {typeof(TRequest).Name}", new Exceptions.ValidationException(failures));
+                throw new PhotosDomainException(
+                    $"Validation Errors for type {typeof(TRequest).Name}",
+                    new Exceptions.ValidationException(failures)
+                );
         }
         return await next();
     }

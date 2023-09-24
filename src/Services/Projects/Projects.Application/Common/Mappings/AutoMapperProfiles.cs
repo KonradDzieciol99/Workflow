@@ -17,6 +17,5 @@ public class AutoMapperProfiles : Profile
 
         CreateMap<ProjectMemberAddedEvent, ProjectMember>();
         CreateMap<ProjectMember, ProjectMemberAddedEvent>();
-
     }
 }

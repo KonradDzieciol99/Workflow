@@ -11,8 +11,10 @@ public class RabbitMQSenderOptions
 {
     [Required]
     public required string RabbitMQConnectionString { get; set; }
+
     [Required]
     public required string Exchange { get; set; }
+
     [Required]
     public required string Queue { get; set; }
 }

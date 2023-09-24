@@ -6,9 +6,7 @@ namespace Tasks.Infrastructure.DataAccess;
 public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options)
-    {
-    }
+        : base(options) { }
 
     public DbSet<AppTask> AppTasks { get; set; }
     public DbSet<ProjectMember> ProjectMembers { get; set; }
@@ -24,16 +22,16 @@ public class ApplicationDbContext : DbContext
             opt.Property(x => x.Id).ValueGeneratedOnAdd();
 
             opt.HasOne(x => x.TaskLeader)
-               .WithMany(x => x.ConductedTasks)
-               .HasForeignKey(x => x.TaskLeaderId)
-               .OnDelete(DeleteBehavior.Restrict)
-               .IsRequired(false);
+                .WithMany(x => x.ConductedTasks)
+                .HasForeignKey(x => x.TaskLeaderId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired(false);
 
             opt.HasOne(x => x.TaskAssignee)
-               .WithMany(x => x.AssignedTasks)
-               .HasForeignKey(x => x.TaskAssigneeMemberId)
-               .OnDelete(DeleteBehavior.Restrict)
-               .IsRequired(false);
+                .WithMany(x => x.AssignedTasks)
+                .HasForeignKey(x => x.TaskAssigneeMemberId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired(false);
         });
 
         builder.Entity<ProjectMember>(opt =>
@@ -44,9 +42,3 @@ public class ApplicationDbContext : DbContext
         });
     }
 }
-
-
-
-
-
-

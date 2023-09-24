@@ -6,14 +6,23 @@ namespace Tasks.UnitTests.Domain;
 
 public class AppTaskTests
 {
-
     [Fact]
     public void UpdateTask_NoChanges_ThrowsTaskDomainException()
     {
         // Arrange
         var task = GetFakeAppTask();
-        // Act  
-        var action = () => task.UpdateTask("test", null, null, /*null, null,*/ Priority.Low, State.ToDo, new DateTime(1900, 12, 1), new DateTime(1899, 12, 1), null);
+        // Act
+        var action = () =>
+            task.UpdateTask(
+                "test",
+                null,
+                null, /*null, null,*/
+                Priority.Low,
+                State.ToDo,
+                new DateTime(1900, 12, 1),
+                new DateTime(1899, 12, 1),
+                null
+            );
         // Assert
         var ex = Assert.Throws<TaskDomainException>(action);
     }
@@ -31,8 +40,17 @@ public class AppTaskTests
         var newDueDate = new DateTime(1900, 12, 1);
         var newStartDate = new DateTime(1900, 12, 1).AddDays(1);
         var newTaskLeaderId = "New task leader id";
-        // Act  
-        task.UpdateTask(newName, newDescription, newTaskAssigneeMemberId, newPriority, newState, newDueDate, newStartDate, newTaskLeaderId);
+        // Act
+        task.UpdateTask(
+            newName,
+            newDescription,
+            newTaskAssigneeMemberId,
+            newPriority,
+            newState,
+            newDueDate,
+            newStartDate,
+            newTaskLeaderId
+        );
         // Assert
         Assert.Equal(newName, task.Name);
         Assert.Equal(newDescription, task.Description);
@@ -44,7 +62,16 @@ public class AppTaskTests
         Assert.Equal(newTaskLeaderId, task.TaskLeaderId);
     }
 
-    private AppTask GetFakeAppTask()
-        => new("test", null, "A", null, Priority.Low, State.ToDo, new DateTime(1900, 12, 1), new DateTime(1899, 12, 1), null);
-
+    private AppTask GetFakeAppTask() =>
+        new(
+            "test",
+            null,
+            "A",
+            null,
+            Priority.Low,
+            State.ToDo,
+            new DateTime(1900, 12, 1),
+            new DateTime(1899, 12, 1),
+            null
+        );
 }

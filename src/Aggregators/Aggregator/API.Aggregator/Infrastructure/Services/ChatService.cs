@@ -8,16 +8,25 @@ namespace API.Aggregator.Infrastructure.Services;
 public class ChatService : BaseHttpService, IChatService
 {
     private readonly string _chatServiceUrl;
-    public ChatService(IHttpClientFactory httpClientFactory, IConfiguration configuration) : base(httpClientFactory.CreateClient("InternalHttpClient"))
+
+    public ChatService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        : base(httpClientFactory.CreateClient("InternalHttpClient"))
     {
-        _chatServiceUrl = configuration.GetValue<string>("urls:internal:chat") ?? throw new ArgumentNullException(nameof(configuration)); ;
+        _chatServiceUrl =
+            configuration.GetValue<string>("urls:internal:chat")
+            ?? throw new ArgumentNullException(nameof(configuration));
+        ;
     }
 
     public async Task<List<FriendStatusDto>> GetFriendsStatus(List<string> Ids)
     {
         var sb = new StringBuilder(_chatServiceUrl);
-        sb.Append($"/api/FriendRequests/GetFriendsStatus?usersIds={string.Join("&usersIds=", Ids)}");
+        sb.Append(
+            $"/api/FriendRequests/GetFriendsStatus?usersIds={string.Join("&usersIds=", Ids)}"
+        );
 
-        return await SendAsync<List<FriendStatusDto>>(new ApiRequest(HttpMethod.Get, sb.ToString(), null));
+        return await SendAsync<List<FriendStatusDto>>(
+            new ApiRequest(HttpMethod.Get, sb.ToString(), null)
+        );
     }
 }
