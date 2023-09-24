@@ -23,25 +23,33 @@ public class FriendRequestsController : ControllerBase
     /// Only available from the aggregate, as it is necessary to check whether the specified user exists
     /// </summary>
     [HttpPost]
-    public async Task<ActionResult<FriendRequestDto>> Post([FromBody] CreateFriendRequestCommand command)
+    public async Task<ActionResult<FriendRequestDto>> Post(
+        [FromBody] CreateFriendRequestCommand command
+    )
     {
-        return Created("",await _mediator.Send(command));
+        return Created("", await _mediator.Send(command));
     }
 
     [HttpGet("GetConfirmedFriendRequests")]
-    public async Task<ActionResult<List<FriendRequestDto>>> GetConfirmedFriendRequests([FromQuery] GetConfirmedFriendRequestsQuery query)
+    public async Task<ActionResult<List<FriendRequestDto>>> GetConfirmedFriendRequests(
+        [FromQuery] GetConfirmedFriendRequestsQuery query
+    )
     {
         return await _mediator.Send(query);
     }
 
     [HttpGet("GetReceivedFriendRequests")]
-    public async Task<ActionResult<List<FriendRequestDto>>> GetReceivedFriendRequests([FromQuery] GetReceivedFriendRequestsQuery query)
+    public async Task<ActionResult<List<FriendRequestDto>>> GetReceivedFriendRequests(
+        [FromQuery] GetReceivedFriendRequestsQuery query
+    )
     {
         return await _mediator.Send(query);
     }
 
     [HttpGet("GetFriendsStatus")]
-    public async Task<ActionResult<List<FriendStatusDto>>> GetFriendsStatus([FromQuery] List<string> usersIds)
+    public async Task<ActionResult<List<FriendStatusDto>>> GetFriendsStatus(
+        [FromQuery] List<string> usersIds
+    )
     {
         var test = await _mediator.Send(new GetFriendsStatusQuery(usersIds));
         return test;

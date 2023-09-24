@@ -6,9 +6,7 @@ public class AddTaskCommandValidator : AbstractValidator<AddTaskCommand>
 {
     public AddTaskCommandValidator()
     {
-        RuleFor(x => x.Name).NotEmpty()
-            .MinimumLength(1)
-            .MaximumLength(50);
+        RuleFor(x => x.Name).NotEmpty().MinimumLength(1).MaximumLength(50);
         RuleFor(x => x.Priority).IsInEnum();
         RuleFor(x => x.ProjectId).NotEmpty();
         RuleFor(x => x.StartDate).NotEmpty();

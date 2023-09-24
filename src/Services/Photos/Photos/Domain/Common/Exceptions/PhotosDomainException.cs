@@ -2,14 +2,11 @@
 
 public class PhotosDomainException : Exception
 {
-    public PhotosDomainException()
-    { }
+    public PhotosDomainException() { }
 
     public PhotosDomainException(string message)
-        : base(message)
-    { }
+        : base(message) { }
 
     public PhotosDomainException(string message, Exception innerException)
-        : base(message, innerException)
-    { }
+        : base(message, innerException) { }
 }

@@ -28,9 +28,18 @@ public class DeleteAppNotificationCommandHandler : IRequestHandler<DeleteAppNoti
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
-    public async Task Handle(DeleteAppNotificationCommand request, CancellationToken cancellationToken)
+
+    public async Task Handle(
+        DeleteAppNotificationCommand request,
+        CancellationToken cancellationToken
+    )
     {
-        var appNotification = await _unitOfWork.AppNotificationRepository.GetAsync(request.Id) ?? throw new NotificationDomainException(string.Empty, new BadRequestException("Notification cannot be found."));
+        var appNotification =
+            await _unitOfWork.AppNotificationRepository.GetAsync(request.Id)
+            ?? throw new NotificationDomainException(
+                string.Empty,
+                new BadRequestException("Notification cannot be found.")
+            );
 
         _unitOfWork.AppNotificationRepository.Remove(appNotification);
 

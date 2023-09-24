@@ -1,9 +1,13 @@
-﻿
-namespace Projects.Application.Common.Models.Dto;
+﻿namespace Projects.Application.Common.Models.Dto;
 
 public class ProjectDto
 {
-    public ProjectDto(string id, string name, string iconUrl, ICollection<ProjectMemberDto> projectMembers)
+    public ProjectDto(
+        string id,
+        string name,
+        string iconUrl,
+        ICollection<ProjectMemberDto> projectMembers
+    )
     {
         Id = id;
         Name = name;

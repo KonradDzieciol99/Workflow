@@ -26,12 +26,15 @@ public class GetProjectQueryHandler : IRequestHandler<GetProjectQuery, ProjectDt
         this._mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<ProjectDto> Handle(GetProjectQuery request, CancellationToken cancellationToken)
+    public async Task<ProjectDto> Handle(
+        GetProjectQuery request,
+        CancellationToken cancellationToken
+    )
     {
-        var project = await _unitOfWork.ReadOnlyProjectRepository.GetOneAsync(request.ProjectId) ?? throw new BadRequestException("Project cannot be found.");
+        var project =
+            await _unitOfWork.ReadOnlyProjectRepository.GetOneAsync(request.ProjectId)
+            ?? throw new BadRequestException("Project cannot be found.");
 
         return _mapper.Map<ProjectDto>(project);
     }
 }
-
-

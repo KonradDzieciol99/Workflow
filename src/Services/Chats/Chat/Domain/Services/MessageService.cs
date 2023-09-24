@@ -12,6 +12,7 @@ public class MessageService : IMessageService
     {
         this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
+
     public void AddMessage(Message message, FriendRequest friendRequest)
     {
         if (!friendRequest.Confirmed)

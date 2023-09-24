@@ -8,6 +8,7 @@ using Serilog;
 using System.Net;
 
 namespace IdentityDuende;
+
 public class Program
 {
     private static async Task Main(string[] args)
@@ -41,15 +42,18 @@ public class Program
         app.MapRazorPages().RequireAuthorization();
         app.MapDefaultControllerRoute();
         app.MapControllers();
-        app.MapHealthChecks("/hc", new HealthCheckOptions()
-        {
-            Predicate = _ => true,
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        });
-        app.MapHealthChecks("/liveness", new HealthCheckOptions
-        {
-            Predicate = r => r.Name.Contains("self")
-        });
+        app.MapHealthChecks(
+            "/hc",
+            new HealthCheckOptions()
+            {
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            }
+        );
+        app.MapHealthChecks(
+            "/liveness",
+            new HealthCheckOptions { Predicate = r => r.Name.Contains("self") }
+        );
         app.Run();
 
         async Task ApplyMigration()

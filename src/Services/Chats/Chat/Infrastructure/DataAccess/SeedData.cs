@@ -22,7 +22,6 @@ public class SeedData
         {
             if (_context.Database.IsSqlServer())
                 await _context.Database.MigrateAsync();
-
         }
         catch (Exception ex)
         {
@@ -51,20 +50,26 @@ public class SeedData
             .StrictMode(false)
             .RuleFor(f => f.InviterUserId, f => "50")
             .RuleFor(f => f.InviterUserEmail, f => "AliceSmith@email.com")
-            .RuleFor(f => f.InviterPhotoUrl, f => "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png")
+            .RuleFor(
+                f => f.InviterPhotoUrl,
+                f => "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png"
+            )
             .RuleFor(f => f.InvitedUserId, f => id++.ToString())
             .RuleFor(u => u.InvitedUserEmail, f => f.Internet.Email())
-            .RuleFor(u => u.InvitedPhotoUrl, f => f.Image.PicsumUrl(600,600))
-            .FinishWith((f, u) =>
-             {
-                 u.AcceptRequest(u.InvitedUserId);
-             })
+            .RuleFor(u => u.InvitedPhotoUrl, f => f.Image.PicsumUrl(600, 600))
+            .FinishWith(
+                (f, u) =>
+                {
+                    u.AcceptRequest(u.InvitedUserId);
+                }
+            )
             .UseSeed(1111)
             .Generate(50);
 
-
-
-        var friendRequest = await _context.FindAsync<FriendRequest>(friendRequestsForAlice[0].InviterUserId, friendRequestsForAlice[0].InvitedUserId);
+        var friendRequest = await _context.FindAsync<FriendRequest>(
+            friendRequestsForAlice[0].InviterUserId,
+            friendRequestsForAlice[0].InvitedUserId
+        );
         if (friendRequest is not null)
         {
             _logger.LogDebug($"{nameof(friendRequest)} already exists", friendRequest);

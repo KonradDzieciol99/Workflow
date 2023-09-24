@@ -13,6 +13,7 @@ public class TasksController : ControllerBase
 
     public TasksController(IMediator mediator)
     {
-        this._mediator = mediator ?? throw new ArgumentNullException(nameof(mediator)); ;
+        this._mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        ;
     }
 }

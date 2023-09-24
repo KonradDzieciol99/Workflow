@@ -6,9 +6,8 @@ namespace Projects.Infrastructure.DataAccess;
 public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options)
-    {
-    }
+        : base(options) { }
+
     public DbSet<Project> Projects { get; set; }
     public DbSet<ProjectMember> ProjectMembers { get; set; }
 
@@ -21,9 +20,9 @@ public class ApplicationDbContext : DbContext
             opt.HasKey(x => x.Id);
 
             opt.HasMany<ProjectMember>(x => x.ProjectMembers)
-            .WithOne(x => x.MotherProject)
-            .HasForeignKey(x => x.ProjectId)
-            .OnDelete(DeleteBehavior.Cascade);
+                .WithOne(x => x.MotherProject)
+                .HasForeignKey(x => x.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             opt.Property(x => x.Id).ValueGeneratedNever();
         });
@@ -36,9 +35,3 @@ public class ApplicationDbContext : DbContext
         });
     }
 }
-
-
-
-
-
-

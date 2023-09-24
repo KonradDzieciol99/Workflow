@@ -4,4 +4,5 @@ using System.Runtime.CompilerServices;
 
 namespace Projects.Domain.DomainEvents;
 
-public record ProjectMemberDeclineInvitationDomainEvent(ProjectMember Member, Project Project) : INotification;
+public record ProjectMemberDeclineInvitationDomainEvent(ProjectMember Member, Project Project)
+    : INotification;

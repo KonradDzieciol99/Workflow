@@ -7,8 +7,13 @@ namespace API.Aggregator.Infrastructure.Services;
 public class TaskService : BaseHttpService, ITaskService
 {
     private readonly string _tasksServiceUrl;
-    public TaskService(IHttpClientFactory httpClientFactory, IConfiguration configuration) : base(httpClientFactory.CreateClient("InternalHttpClient"))
+
+    public TaskService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        : base(httpClientFactory.CreateClient("InternalHttpClient"))
     {
-        _tasksServiceUrl = configuration.GetValue<string>("ServicesUrl:Tasks") ?? throw new ArgumentNullException(nameof(configuration)); ;
+        _tasksServiceUrl =
+            configuration.GetValue<string>("ServicesUrl:Tasks")
+            ?? throw new ArgumentNullException(nameof(configuration));
+        ;
     }
 }

@@ -8,13 +8,23 @@ namespace EmailEmitter;
 
 public static class ConfigureServices
 {
-    public static IServiceCollection AddWebAPIServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddWebAPIServices(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
     {
         if (configuration.GetValue<bool>("SendGrid:enabled"))
         {
-            services.AddFluentEmail(configuration["EmailConfiguration:From"] ?? throw new ArgumentNullException(nameof(configuration)))
+            services
+                .AddFluentEmail(
+                    configuration["EmailConfiguration:From"]
+                        ?? throw new ArgumentNullException(nameof(configuration))
+                )
                 .AddRazorRenderer()
-                .AddSendGridSender(configuration["SendGrid:Key"] ?? throw new ArgumentNullException(nameof(configuration)));
+                .AddSendGridSender(
+                    configuration["SendGrid:Key"]
+                        ?? throw new ArgumentNullException(nameof(configuration))
+                );
 
             services.AddRabbitMQConsumer(configuration.GetSection("RabbitMQOptions"));
             services.AddRabbitMQSender(configuration.GetSection("RabbitMQOptions"));
@@ -24,31 +34,31 @@ public static class ConfigureServices
             services.AddMediatR(cfg =>
             {
                 cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
-                cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
-
+                cfg.AddBehavior(
+                    typeof(IPipelineBehavior<,>),
+                    typeof(UnhandledExceptionBehaviour<,>)
+                );
             });
         }
 
         var healthBuilder = services.AddHealthChecks();
 
-        if (!configuration.GetValue("isTest",true))
+        if (!configuration.GetValue("isTest", true))
         {
-            healthBuilder.AddCheck("self",
-                () => HealthCheckResult.Healthy(),
-                tags: new string[] { "api" }
-            )
-            .AddIdentityServer(
+            healthBuilder
+                .AddCheck("self", () => HealthCheckResult.Healthy(), tags: new string[] { "api" })
+                .AddIdentityServer(
                     new Uri(configuration.GetValue<string>("urls:internal:identity")),
                     name: "email-identity-check",
                     tags: new string[] { "identity" }
-             );
+                );
 
             if (configuration.GetValue<bool>("SendGrid:enabled"))
-                healthBuilder
-                    .AddSendGrid(
-                        configuration["SendGrid:Key"],
-                        name: "email-send-grid-check",
-                        tags: new string[] { "sendGrid" });
+                healthBuilder.AddSendGrid(
+                    configuration["SendGrid:Key"],
+                    name: "email-send-grid-check",
+                    tags: new string[] { "sendGrid" }
+                );
         }
 
         return services;

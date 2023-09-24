@@ -7,20 +7,33 @@ using StackExchange.Redis;
 
 namespace SignalR.IntegrationEvents;
 
-public record NewOnlineMessagesUserWithFriendsEvent(IEnumerable<UserDto> NewOnlineUserChatFriends, UserDto NewOnlineUser) : IntegrationEvent;
+public record NewOnlineMessagesUserWithFriendsEvent(
+    IEnumerable<UserDto> NewOnlineUserChatFriends,
+    UserDto NewOnlineUser
+) : IntegrationEvent;
 
-public class NewOnlineMessagesUserWithFriendsEventHandler : IRequestHandler<NewOnlineMessagesUserWithFriendsEvent>
+public class NewOnlineMessagesUserWithFriendsEventHandler
+    : IRequestHandler<NewOnlineMessagesUserWithFriendsEvent>
 {
     private readonly IHubContext<MessagesHub> _messagesHubContext;
     private readonly IDatabase _redisDb;
 
-    public NewOnlineMessagesUserWithFriendsEventHandler(IConnectionMultiplexer connectionMultiplexer,
-        IHubContext<MessagesHub> messagesHubContext)
+    public NewOnlineMessagesUserWithFriendsEventHandler(
+        IConnectionMultiplexer connectionMultiplexer,
+        IHubContext<MessagesHub> messagesHubContext
+    )
     {
-        _messagesHubContext = messagesHubContext ?? throw new ArgumentNullException(nameof(messagesHubContext));
-        _redisDb = connectionMultiplexer.GetDatabase() ?? throw new ArgumentNullException(nameof(connectionMultiplexer));
+        _messagesHubContext =
+            messagesHubContext ?? throw new ArgumentNullException(nameof(messagesHubContext));
+        _redisDb =
+            connectionMultiplexer.GetDatabase()
+            ?? throw new ArgumentNullException(nameof(connectionMultiplexer));
     }
-    public async Task Handle(NewOnlineMessagesUserWithFriendsEvent request, CancellationToken cancellationToken)
+
+    public async Task Handle(
+        NewOnlineMessagesUserWithFriendsEvent request,
+        CancellationToken cancellationToken
+    )
     {
         List<Task<bool>> listOfOnlineUsers = new();
         foreach (var item in request.NewOnlineUserChatFriends)
@@ -37,7 +50,9 @@ public class NewOnlineMessagesUserWithFriendsEventHandler : IRequestHandler<NewO
                 onlineUsers.Add(request.NewOnlineUserChatFriends.ElementAt(i));
             }
         }
-        await _messagesHubContext.Clients.User(request.NewOnlineUser.Id).SendAsync("GetOnlineUsers", onlineUsers, cancellationToken: cancellationToken);
+        await _messagesHubContext.Clients
+            .User(request.NewOnlineUser.Id)
+            .SendAsync("GetOnlineUsers", onlineUsers, cancellationToken: cancellationToken);
         return;
     }
 }

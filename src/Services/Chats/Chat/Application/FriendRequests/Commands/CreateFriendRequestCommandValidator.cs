@@ -2,7 +2,7 @@
 
 namespace Chat.Application.FriendRequests.Commands;
 
-public class CreateFriendRequestCommandValidator: AbstractValidator<CreateFriendRequestCommand>
+public class CreateFriendRequestCommandValidator : AbstractValidator<CreateFriendRequestCommand>
 {
     public CreateFriendRequestCommandValidator()
     {

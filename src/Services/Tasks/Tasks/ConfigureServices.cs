@@ -1,5 +1,4 @@
-﻿
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
 using MessageBus.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -23,13 +22,17 @@ namespace Tasks;
 
 public static class ConfigureServices
 {
-    public static IServiceCollection AddTasksServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddTasksServices(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
     {
-        services.AddControllers()
-                .AddJsonOptions(options =>
-                {
-                    options.JsonSerializerOptions.Converters.Add(new DateTimeConverter());
-                });
+        services
+            .AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new DateTimeConverter());
+            });
 
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
@@ -37,38 +40,46 @@ public static class ConfigureServices
         services.AddScoped<IAuthorizationHandler, ProjectMembershipRequirementHandler>();
         services.AddScoped<IAuthorizationHandler, ProjectManagmentOrTaskAuthorRequirementHandler>();
 
-        services.AddAuthentication(opt =>
-        {
-            opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-        .AddJwtBearer(opt =>
-        {
-            var internalIdentityUrl = configuration.GetValue<string>("urls:internal:identity") ?? throw new ArgumentNullException(nameof(configuration));
-            var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:identity") ?? throw new ArgumentNullException(nameof(configuration));
-
-            opt.RequireHttpsMetadata = false;
-            opt.SaveToken = true;
-            opt.Authority = internalIdentityUrl;
-            opt.Audience = "tasks";
-
-            opt.TokenValidationParameters = new TokenValidationParameters
+        services
+            .AddAuthentication(opt =>
             {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuers = new[] { externalIdentityUrlhttp },
-                ClockSkew = TimeSpan.Zero
-            };
-        });
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(opt =>
+            {
+                var internalIdentityUrl =
+                    configuration.GetValue<string>("urls:internal:identity")
+                    ?? throw new ArgumentNullException(nameof(configuration));
+                var externalIdentityUrlhttp =
+                    configuration.GetValue<string>("urls:external:identity")
+                    ?? throw new ArgumentNullException(nameof(configuration));
+
+                opt.RequireHttpsMetadata = false;
+                opt.SaveToken = true;
+                opt.Authority = internalIdentityUrl;
+                opt.Audience = "tasks";
+
+                opt.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuers = new[] { externalIdentityUrlhttp },
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("ApiScope", policy =>
-            {
-                policy.RequireAuthenticatedUser();
-                policy.RequireClaim("scope", "tasks");
-            });
+            options.AddPolicy(
+                "ApiScope",
+                policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "tasks");
+                }
+            );
         });
 
         services.AddDbContext<ApplicationDbContext>(opt =>
@@ -80,16 +91,21 @@ public static class ConfigureServices
 
         services.AddCors(opt =>
         {
-            opt.AddPolicy(name: "allowAny",
-                      policy =>
-                      {
-                          policy.WithOrigins("https://localhost:4200",
-                                             "http://localhost:4200",
-                                             "http://localhost:1000")
-                            .AllowAnyHeader()
-                            .AllowAnyMethod()
-                            .AllowCredentials();
-                      });
+            opt.AddPolicy(
+                name: "allowAny",
+                policy =>
+                {
+                    policy
+                        .WithOrigins(
+                            "https://localhost:4200",
+                            "http://localhost:4200",
+                            "http://localhost:1000"
+                        )
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                }
+            );
         });
 
         services.AddRabbitMQConsumer(configuration.GetSection("RabbitMQOptions"));
@@ -112,29 +128,33 @@ public static class ConfigureServices
 
         var healthBuilder = services.AddHealthChecks();
 
-        if (!configuration.GetValue("isTest",true))
+        if (!configuration.GetValue("isTest", true))
             healthBuilder
-                    .AddCheck("self",() => HealthCheckResult.Healthy(),
-                        tags: new string[] { "api" }
-                    )
-                    .AddSqlServer(
-                        configuration["ConnectionStrings:DbContextConnString"],
-                        name: "tasks-sql-db-check",
-                        tags: new string[] { "sql" })
-                    .AddIdentityServer(
-                        new Uri(configuration.GetValue<string>("urls:internal:identity")),
-                        name: "tasks-identity-check",
-                        tags: new string[] { "identity" }
-                    );
+                .AddCheck("self", () => HealthCheckResult.Healthy(), tags: new string[] { "api" })
+                .AddSqlServer(
+                    configuration["ConnectionStrings:DbContextConnString"],
+                    name: "tasks-sql-db-check",
+                    tags: new string[] { "sql" }
+                )
+                .AddIdentityServer(
+                    new Uri(configuration.GetValue<string>("urls:internal:identity")),
+                    name: "tasks-identity-check",
+                    tags: new string[] { "identity" }
+                );
 
         services.AddScoped<SeedData>();
 
         return services;
     }
 }
+
 public class DateTimeConverter : JsonConverter<DateTime>
 {
-    public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override DateTime Read(
+        ref Utf8JsonReader reader,
+        Type typeToConvert,
+        JsonSerializerOptions options
+    )
     {
         return DateTime.Parse(reader.GetString());
     }

@@ -1,5 +1,4 @@
-﻿
-using Chat.Application.Common.Authorization.Handlers;
+﻿using Chat.Application.Common.Authorization.Handlers;
 using Chat.Application.Common.Behaviours;
 using Chat.Application.Common.Mappings;
 using Chat.Domain.Services;
@@ -20,7 +19,10 @@ namespace Chat;
 
 public static class ConfigureServices
 {
-    public static IServiceCollection AddWebAPIServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddWebAPIServices(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
     {
         services.AddControllers();
         services.AddEndpointsApiExplorer();
@@ -28,39 +30,47 @@ public static class ConfigureServices
 
         services.AddScoped<IAuthorizationHandler, ShareFriendRequestRequirementHandler>();
 
-        services.AddAuthentication(opt =>
-        {
-            opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-        .AddJwtBearer(opt =>
-        {
-            var internalIdentityUrl = configuration.GetValue<string>("urls:internal:identity") ?? throw new ArgumentNullException(nameof(configuration));
-            var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:identity") ?? throw new ArgumentNullException(nameof(configuration));
-
-            opt.RequireHttpsMetadata = false;
-            opt.SaveToken = true;
-            opt.Authority = internalIdentityUrl;
-            opt.Audience = "chat";
-
-            opt.TokenValidationParameters = new TokenValidationParameters
+        services
+            .AddAuthentication(opt =>
             {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuers = new[] { externalIdentityUrlhttp },
-                ClockSkew = TimeSpan.Zero
-            };
-        });
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(opt =>
+            {
+                var internalIdentityUrl =
+                    configuration.GetValue<string>("urls:internal:identity")
+                    ?? throw new ArgumentNullException(nameof(configuration));
+                var externalIdentityUrlhttp =
+                    configuration.GetValue<string>("urls:external:identity")
+                    ?? throw new ArgumentNullException(nameof(configuration));
+
+                opt.RequireHttpsMetadata = false;
+                opt.SaveToken = true;
+                opt.Authority = internalIdentityUrl;
+                opt.Audience = "chat";
+
+                opt.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuers = new[] { externalIdentityUrlhttp },
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("ApiScope", policy =>
-            {
-                policy.RequireAuthenticatedUser();
-                policy.RequireClaim("scope", "chat");
-            });
+            options.AddPolicy(
+                "ApiScope",
+                policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "chat");
+                }
+            );
         });
 
         services.AddDbContext<ApplicationDbContext>(opt =>
@@ -68,9 +78,13 @@ public static class ConfigureServices
             string connString;
             var isDockerEnvironment = Environment.GetEnvironmentVariable("DOCKER_ENVIRONMENT");
             if (isDockerEnvironment is null || isDockerEnvironment == "true")
-                connString = configuration.GetConnectionString("DbContextConnString") ?? throw new ArgumentNullException("DbContextConnString");
+                connString =
+                    configuration.GetConnectionString("DbContextConnString")
+                    ?? throw new ArgumentNullException("DbContextConnString");
             else
-                connString = configuration.GetConnectionString("NonDockerDbContextConnString") ?? throw new ArgumentNullException("NonDockerDbContextConnString");
+                connString =
+                    configuration.GetConnectionString("NonDockerDbContextConnString")
+                    ?? throw new ArgumentNullException("NonDockerDbContextConnString");
 
             opt.UseSqlServer(connString);
         });
@@ -79,18 +93,22 @@ public static class ConfigureServices
 
         services.AddCors(opt =>
         {
-            opt.AddPolicy(name: "allowAny",
-                      policy =>
-                      {
-                          policy.WithOrigins("https://localhost:4200",
-                                             "http://localhost:4200",
-                                             "http://localhost:1000")
-                            .AllowAnyHeader()
-                            .AllowAnyMethod()
-                            .AllowCredentials();
-                      });
+            opt.AddPolicy(
+                name: "allowAny",
+                policy =>
+                {
+                    policy
+                        .WithOrigins(
+                            "https://localhost:4200",
+                            "http://localhost:4200",
+                            "http://localhost:1000"
+                        )
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                }
+            );
         });
-
 
         services.AddRabbitMQConsumer(configuration.GetSection("RabbitMQOptions"));
         services.AddRabbitMQSender(configuration.GetSection("RabbitMQOptions"));
@@ -114,16 +132,14 @@ public static class ConfigureServices
 
         var healthBuilder = services.AddHealthChecks();
 
-        if (!configuration.GetValue("isTest",true))
+        if (!configuration.GetValue("isTest", true))
             healthBuilder
-                .AddCheck("self",
-                    () => HealthCheckResult.Healthy(),
-                    tags: new string[] { "api" }
-                )
+                .AddCheck("self", () => HealthCheckResult.Healthy(), tags: new string[] { "api" })
                 .AddSqlServer(
                     configuration["ConnectionStrings:DbContextConnString"],
                     name: "chat-sql-db-check",
-                    tags: new string[] { "sql" })
+                    tags: new string[] { "sql" }
+                )
                 .AddIdentityServer(
                     new Uri(configuration.GetValue<string>("urls:internal:identity")),
                     name: "chat-identity-check",

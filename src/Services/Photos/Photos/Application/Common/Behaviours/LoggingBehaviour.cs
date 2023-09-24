@@ -4,7 +4,8 @@ using Photos.Services;
 
 namespace Photos.Application.Common.Behaviours;
 
-public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest> where TRequest : IBaseAuthorizationRequest
+public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest>
+    where TRequest : IBaseAuthorizationRequest
 {
     private readonly ILogger _logger;
     private readonly ICurrentUserService _currentUserService;
@@ -21,7 +22,12 @@ public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest> where T
         var userId = _currentUserService.GetUserId();
         var userEmail = _currentUserService.GetUserEmail();
 
-        _logger.LogInformation("Request: {requestName} {@UserId} {@userEmail} {@Request}", requestName, userId, userEmail, request);
-
+        _logger.LogInformation(
+            "Request: {requestName} {@UserId} {@userEmail} {@Request}",
+            requestName,
+            userId,
+            userEmail,
+            request
+        );
     }
 }

@@ -18,10 +18,13 @@ public class IconValidator : AbstractValidator<Icon>
             .Length(1, 100)
             .WithMessage("Name must be between 1 and 100 characters.");
     }
+
     private bool BeAValidUrl(string url)
     {
         bool isUri = Uri.TryCreate(url, UriKind.Absolute, out Uri? uriResult);
-        return isUri && uriResult is not null && uriResult.Scheme == Uri.UriSchemeHttps && url.StartsWith("https://1workflowstorage.blob.core.windows.net/projectsicons/");
+        return isUri
+            && uriResult is not null
+            && uriResult.Scheme == Uri.UriSchemeHttps
+            && url.StartsWith("https://1workflowstorage.blob.core.windows.net/projectsicons/");
     }
-
 }

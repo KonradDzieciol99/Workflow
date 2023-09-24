@@ -6,7 +6,14 @@ namespace Chat.Domain.Entity;
 public class Message : BaseEntity
 {
     private Message() { }
-    public Message(string senderId, string senderEmail, string recipientId, string recipientEmail, string content)
+
+    public Message(
+        string senderId,
+        string senderEmail,
+        string recipientId,
+        string recipientEmail,
+        string content
+    )
     {
         SenderId = senderId;
         SenderEmail = senderEmail;
@@ -14,6 +21,7 @@ public class Message : BaseEntity
         RecipientEmail = recipientEmail;
         Content = content;
     }
+
     public string SenderId { get; private set; }
     public string SenderEmail { get; private set; }
     public string RecipientId { get; private set; }
@@ -31,6 +39,7 @@ public class Message : BaseEntity
 
         this.DateRead = DateTime.UtcNow;
     }
+
     public void MarkMessageAsRead(DateTime date)
     {
         if (this.DateRead.HasValue)
@@ -38,5 +47,4 @@ public class Message : BaseEntity
 
         this.DateRead = date;
     }
-
 }

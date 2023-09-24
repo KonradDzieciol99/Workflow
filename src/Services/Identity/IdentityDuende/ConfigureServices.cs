@@ -20,37 +20,43 @@ namespace IdentityDuende;
 
 public static class ConfigureServices
 {
-    public static IServiceCollection AddWebAPIServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddWebAPIServices(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
     {
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
 
-        services.AddRazorPages()
+        services
+            .AddRazorPages()
             .AddViewOptions(options =>
             {
                 options.HtmlHelperOptions.ClientValidationEnabled = true;
                 options.HtmlHelperOptions.Html5DateRenderingMode = Html5DateRenderingMode.Rfc3339;
-
             });
 
         services.AddDbContext<ApplicationDbContext>(opt =>
         {
-            string connString = configuration.GetConnectionString("DbContextConnString") ?? throw new ArgumentNullException(nameof(configuration));
+            string connString =
+                configuration.GetConnectionString("DbContextConnString")
+                ?? throw new ArgumentNullException(nameof(configuration));
             opt.UseSqlServer(connString);
         });
 
-        services.AddIdentity<ApplicationUser, IdentityRole>(opt =>
-        {
-            opt.Password.RequireNonAlphanumeric = false;
-            opt.Password.RequireUppercase = false;
-            opt.Password.RequireDigit = false;
-            opt.User.RequireUniqueEmail = true;
-            opt.SignIn.RequireConfirmedEmail = true;
-            opt.Password.RequireNonAlphanumeric = false;
-        })
-        .AddEntityFrameworkStores<ApplicationDbContext>()
-        .AddDefaultTokenProviders();
+        services
+            .AddIdentity<ApplicationUser, IdentityRole>(opt =>
+            {
+                opt.Password.RequireNonAlphanumeric = false;
+                opt.Password.RequireUppercase = false;
+                opt.Password.RequireDigit = false;
+                opt.User.RequireUniqueEmail = true;
+                opt.SignIn.RequireConfirmedEmail = true;
+                opt.Password.RequireNonAlphanumeric = false;
+            })
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
 
         services
             .AddIdentityServer(options =>
@@ -60,7 +66,6 @@ public static class ConfigureServices
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
                 options.EmitStaticAudienceClaim = true;
-
             })
             .AddInMemoryIdentityResources(Config.IdentityResources)
             .AddInMemoryApiScopes(Config.ApiScopes)
@@ -73,64 +78,86 @@ public static class ConfigureServices
 
         services.AddRabbitMQSender(configuration.GetSection("RabbitMQOptions"));
 
-        var authBuilder = services.AddAuthentication()
-        .AddJwtBearer(opt =>
-        {
-            var internalIdentityUrl = configuration.GetValue<string>("urls:internal:identity") ?? throw new ArgumentNullException(nameof(configuration));
-            var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:identity") ?? throw new ArgumentNullException(nameof(configuration));
-
-            opt.RequireHttpsMetadata = false;
-            opt.SaveToken = true;
-            opt.Authority = internalIdentityUrl;
-            opt.Audience = IdentityServerConstants.LocalApi.ScopeName;
-
-            opt.TokenValidationParameters = new TokenValidationParameters
+        var authBuilder = services
+            .AddAuthentication()
+            .AddJwtBearer(opt =>
             {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuers = new[] { externalIdentityUrlhttp },
-                ClockSkew = TimeSpan.Zero
-            };
-        });
+                var internalIdentityUrl =
+                    configuration.GetValue<string>("urls:internal:identity")
+                    ?? throw new ArgumentNullException(nameof(configuration));
+                var externalIdentityUrlhttp =
+                    configuration.GetValue<string>("urls:external:identity")
+                    ?? throw new ArgumentNullException(nameof(configuration));
+
+                opt.RequireHttpsMetadata = false;
+                opt.SaveToken = true;
+                opt.Authority = internalIdentityUrl;
+                opt.Audience = IdentityServerConstants.LocalApi.ScopeName;
+
+                opt.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuers = new[] { externalIdentityUrlhttp },
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
 
         if (configuration.GetValue<bool>("externalAuth:enabled"))
         {
-            authBuilder.AddOpenIdConnect("AzureOpenId", "Azure Active Directory OpenId", options =>
-             {
-                 options.Authority = "https://login.microsoftonline.com/" + configuration["externalAuth:Microsoft:Tenant"] + "/v2.0/";
-                 options.ClientId = configuration["externalAuth:Microsoft:ClientId"];
-                 options.ResponseType = OpenIdConnectResponseType.Code;
-                 options.CallbackPath = "/signin-microsoft";
-                 options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                 options.ForwardSignOut = IdentityServerConstants.DefaultCookieAuthenticationScheme;
-                 options.ClientSecret = configuration["externalAuth:Microsoft:ClientSecret"];
-                 options.RequireHttpsMetadata = false;
-                 options.SaveTokens = true;
-                 options.GetClaimsFromUserInfoEndpoint = true;
-                 options.Scope.Add("profile");
-                 options.Scope.Add("email");
-                 options.Scope.Add("openid");
-                 options.Scope.Add("User.Read");
-                 options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "sub");
-
-             }).AddOpenIdConnect("Google", "Sign-in with Google", options =>
-             {
-                 options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                 options.ForwardSignOut = IdentityServerConstants.DefaultCookieAuthenticationScheme;
-                 options.Authority = "https://accounts.google.com/";
-                 options.ClientId = configuration["externalAuth:Microsoft:ClientId"];
-                 options.ClientSecret = configuration["externalAuth:Microsoft:ClientSecret"]; ;
-                 options.CallbackPath = "/signin-google";
-                 options.GetClaimsFromUserInfoEndpoint = true;
-                 options.RequireHttpsMetadata = false;
-                 options.SaveTokens = true;
-                 options.Scope.Add("profile");
-                 options.Scope.Add("email");
-                 options.Scope.Add("openid");
-                 options.ResponseType = OpenIdConnectResponseType.Code;
-             });
+            authBuilder
+                .AddOpenIdConnect(
+                    "AzureOpenId",
+                    "Azure Active Directory OpenId",
+                    options =>
+                    {
+                        options.Authority =
+                            "https://login.microsoftonline.com/"
+                            + configuration["externalAuth:Microsoft:Tenant"]
+                            + "/v2.0/";
+                        options.ClientId = configuration["externalAuth:Microsoft:ClientId"];
+                        options.ResponseType = OpenIdConnectResponseType.Code;
+                        options.CallbackPath = "/signin-microsoft";
+                        options.SignInScheme =
+                            IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                        options.ForwardSignOut =
+                            IdentityServerConstants.DefaultCookieAuthenticationScheme;
+                        options.ClientSecret = configuration["externalAuth:Microsoft:ClientSecret"];
+                        options.RequireHttpsMetadata = false;
+                        options.SaveTokens = true;
+                        options.GetClaimsFromUserInfoEndpoint = true;
+                        options.Scope.Add("profile");
+                        options.Scope.Add("email");
+                        options.Scope.Add("openid");
+                        options.Scope.Add("User.Read");
+                        options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "sub");
+                    }
+                )
+                .AddOpenIdConnect(
+                    "Google",
+                    "Sign-in with Google",
+                    options =>
+                    {
+                        options.SignInScheme =
+                            IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                        options.ForwardSignOut =
+                            IdentityServerConstants.DefaultCookieAuthenticationScheme;
+                        options.Authority = "https://accounts.google.com/";
+                        options.ClientId = configuration["externalAuth:Microsoft:ClientId"];
+                        options.ClientSecret = configuration["externalAuth:Microsoft:ClientSecret"];
+                        ;
+                        options.CallbackPath = "/signin-google";
+                        options.GetClaimsFromUserInfoEndpoint = true;
+                        options.RequireHttpsMetadata = false;
+                        options.SaveTokens = true;
+                        options.Scope.Add("profile");
+                        options.Scope.Add("email");
+                        options.Scope.Add("openid");
+                        options.ResponseType = OpenIdConnectResponseType.Code;
+                    }
+                );
         }
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -138,29 +165,28 @@ public static class ConfigureServices
 
         var healthChecksBuilder = services.AddHealthChecks();
 
-        if (!configuration.GetValue("isTest",true))
+        if (!configuration.GetValue("isTest", true))
         {
-
             healthChecksBuilder
-                    .AddCheck("self",
-                        () => HealthCheckResult.Healthy(),
-                        tags: new string[] { "api" }
-                        )
-                        .AddSqlServer(
-                            configuration["ConnectionStrings:DbContextConnString"],
-                            name: "projects-sql-db-check",
-                            tags: new string[] { "sql" });
+                .AddCheck("self", () => HealthCheckResult.Healthy(), tags: new string[] { "api" })
+                .AddSqlServer(
+                    configuration["ConnectionStrings:DbContextConnString"],
+                    name: "projects-sql-db-check",
+                    tags: new string[] { "sql" }
+                );
 
             if (configuration.GetValue<bool>("externalAuth:enabled"))
-                healthChecksBuilder.AddIdentityServer(
-                            new Uri("https://accounts.google.com/"),
-                            name: "identity-google-auth-check",
-                            tags: new string[] { "identity" })
-                        .AddIdentityServer(
-                            new Uri("https://login.microsoftonline.com/common/v2.0/"),
-                            name: "identity-microsoft-auth-check",
-                            tags: new string[] { "identity" });
-            
+                healthChecksBuilder
+                    .AddIdentityServer(
+                        new Uri("https://accounts.google.com/"),
+                        name: "identity-google-auth-check",
+                        tags: new string[] { "identity" }
+                    )
+                    .AddIdentityServer(
+                        new Uri("https://login.microsoftonline.com/common/v2.0/"),
+                        name: "identity-microsoft-auth-check",
+                        tags: new string[] { "identity" }
+                    );
         }
 
         return services;

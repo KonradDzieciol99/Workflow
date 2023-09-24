@@ -3,7 +3,9 @@ using System;
 using System.Threading.Tasks;
 
 namespace MessageBus;
-public interface IEventBusConsumer : IHostedService , IDisposable
+
+public interface IEventBusConsumer : IHostedService, IDisposable
 {
-    Task Subscribe<T>() where T : IntegrationEvent;
+    Task Subscribe<T>()
+        where T : IntegrationEvent;
 }

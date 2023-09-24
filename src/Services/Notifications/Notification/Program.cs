@@ -42,15 +42,18 @@ public class Program
         app.UseMiddleware<ExceptionMiddleware>();
         app.MapDefaultControllerRoute();
         app.MapControllers();
-        app.MapHealthChecks("/hc", new HealthCheckOptions()
-        {
-            Predicate = _ => true,
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        });
-        app.MapHealthChecks("/liveness", new HealthCheckOptions
-        {
-            Predicate = r => r.Name.Contains("self")
-        });
+        app.MapHealthChecks(
+            "/hc",
+            new HealthCheckOptions()
+            {
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            }
+        );
+        app.MapHealthChecks(
+            "/liveness",
+            new HealthCheckOptions { Predicate = r => r.Name.Contains("self") }
+        );
 
         await app.RunAsync();
 

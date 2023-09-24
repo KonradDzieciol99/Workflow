@@ -17,6 +17,7 @@ public class BaseHttpService : IBaseHttpService
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
+
     public async Task<T> SendAsync<T>(ApiRequest apiRequest)
     {
         _client.DefaultRequestHeaders.Clear();
@@ -27,13 +28,19 @@ public class BaseHttpService : IBaseHttpService
         message.Method = apiRequest.HttpMethod;
 
         if (apiRequest.Data != null)
-            message.Content = new StringContent(JsonSerializer.Serialize(apiRequest.Data), Encoding.UTF8, "application/json");
-        
+            message.Content = new StringContent(
+                JsonSerializer.Serialize(apiRequest.Data),
+                Encoding.UTF8,
+                "application/json"
+            );
+
         var apiResponse = await _client.SendAsync(message);
 
         var apiContent = await apiResponse.Content.ReadAsStringAsync();
 
-        return JsonSerializer.Deserialize<T>(apiContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        return JsonSerializer.Deserialize<T>(
+            apiContent,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+        );
     }
-
 }

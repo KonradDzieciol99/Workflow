@@ -6,7 +6,16 @@ using Tasks.Infrastructure.Repositories;
 
 namespace Tasks.Application.IntegrationEvents;
 
-public record ProjectMemberUpdatedEvent(string? PhotoUrl, string ProjectMemberId, string UserId, string UserEmail, ProjectMemberType Type, InvitationStatus InvitationStatus, string ProjectId) : IntegrationEvent;
+public record ProjectMemberUpdatedEvent(
+    string? PhotoUrl,
+    string ProjectMemberId,
+    string UserId,
+    string UserEmail,
+    ProjectMemberType Type,
+    InvitationStatus InvitationStatus,
+    string ProjectId
+) : IntegrationEvent;
+
 public class ProjectMemberUpdatedEventHandler : IRequestHandler<ProjectMemberUpdatedEvent>
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -15,11 +24,14 @@ public class ProjectMemberUpdatedEventHandler : IRequestHandler<ProjectMemberUpd
     {
         _unitOfWork = unitOfWork;
     }
+
     public async Task Handle(ProjectMemberUpdatedEvent request, CancellationToken cancellationToken)
     {
-        var result = await _unitOfWork.ProjectMemberRepository.ExecuteUpdateAsync(request.ProjectMemberId,
-                                                                                  request.Type,
-                                                                                  request.InvitationStatus);
+        var result = await _unitOfWork.ProjectMemberRepository.ExecuteUpdateAsync(
+            request.ProjectMemberId,
+            request.Type,
+            request.InvitationStatus
+        );
         if (result > 0)
         {
             await Task.CompletedTask;

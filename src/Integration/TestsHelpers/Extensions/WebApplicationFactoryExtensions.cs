@@ -3,18 +3,26 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace TestsHelpers.Extensions;
+
 public static class WebApplicationFactoryExtensions
 {
-    public static List<TEntity> SeedData<TProgram, TApplicationDbContext, TEntity>(this WebApplicationFactory<TProgram> factory, List<TEntity> entities)
+    public static List<TEntity> SeedData<TProgram, TApplicationDbContext, TEntity>(
+        this WebApplicationFactory<TProgram> factory,
+        List<TEntity> entities
+    )
         where TProgram : class
         where TApplicationDbContext : DbContext
         where TEntity : class
     {
-        var scopeFactory = factory.Services.GetService<IServiceScopeFactory>() ?? throw new ArgumentNullException(nameof(IServiceScopeFactory));
+        var scopeFactory =
+            factory.Services.GetService<IServiceScopeFactory>()
+            ?? throw new ArgumentNullException(nameof(IServiceScopeFactory));
 
         using (var scope = scopeFactory.CreateScope())
         {
-            var _dbContext = scope.ServiceProvider.GetService<TApplicationDbContext>() ?? throw new ArgumentNullException(nameof(TApplicationDbContext));
+            var _dbContext =
+                scope.ServiceProvider.GetService<TApplicationDbContext>()
+                ?? throw new ArgumentNullException(nameof(TApplicationDbContext));
 
             _dbContext.AddRange(entities);
 
@@ -23,7 +31,11 @@ public static class WebApplicationFactoryExtensions
 
         return entities;
     }
-    public async static Task<TEntity?> FindAsync<TProgram, TApplicationDbContext, TEntity>(this WebApplicationFactory<TProgram> factory, params object[] keyValues)
+
+    public static async Task<TEntity?> FindAsync<TProgram, TApplicationDbContext, TEntity>(
+        this WebApplicationFactory<TProgram> factory,
+        params object[] keyValues
+    )
         where TProgram : class
         where TApplicationDbContext : DbContext
         where TEntity : class

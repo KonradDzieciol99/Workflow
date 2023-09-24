@@ -34,14 +34,16 @@ public class ProjectsController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> AcceptProjectInvitation([FromRoute] string projectId)
     {
-
         await mediator.Send(new AcceptProjectInvitationCommand(projectId));
 
         return NoContent();
     }
 
     [HttpPost("{projectId}/projectMembers/addMember")]
-    public async Task<ActionResult<ProjectMemberDto?>> AddMember([FromRoute] string projectId, [FromBody] AddProjectMemberCommand command)
+    public async Task<ActionResult<ProjectMemberDto?>> AddMember(
+        [FromRoute] string projectId,
+        [FromBody] AddProjectMemberCommand command
+    )
     {
         if (projectId != command.ProjectId)
             return BadRequest();
@@ -50,8 +52,10 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpDelete("{projectId}/projectMembers/{projectMemberId}")]
-    public async Task<IActionResult> DeleteMember([FromRoute] string projectMemberId,
-                                                  [FromRoute] string projectId)
+    public async Task<IActionResult> DeleteMember(
+        [FromRoute] string projectMemberId,
+        [FromRoute] string projectId
+    )
     {
         await mediator.Send(new DeleteProjectMemberCommand(projectMemberId, projectId));
 
@@ -59,9 +63,11 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpPut("{projectId}/projectMembers/{projectMemberId}")]
-    public async Task<IActionResult> UpdateProjectMember([FromRoute] string projectMemberId,
-                        [FromRoute] string projectId,
-                        [FromBody] UpdateProjectMemberCommand command)
+    public async Task<IActionResult> UpdateProjectMember(
+        [FromRoute] string projectMemberId,
+        [FromRoute] string projectId,
+        [FromBody] UpdateProjectMemberCommand command
+    )
     {
         if (projectId != command.ProjectId && projectMemberId != command.UserId)
             return BadRequest();
@@ -84,7 +90,9 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<ProjectsWithTotalCount>> Create([FromBody] CreateProjectCommand command)
+    public async Task<ActionResult<ProjectsWithTotalCount>> Create(
+        [FromBody] CreateProjectCommand command
+    )
     {
         var result = await mediator.Send(command);
 
@@ -102,7 +110,10 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpPut("{projectId}")]
-    public async Task<ActionResult<ProjectDto>> Put([FromRoute] string projectId, [FromBody] UpdateProjectCommand command)
+    public async Task<ActionResult<ProjectDto>> Put(
+        [FromRoute] string projectId,
+        [FromBody] UpdateProjectCommand command
+    )
     {
         if (projectId != command.ProjectId)
             return BadRequest();
@@ -111,9 +122,11 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpGet("{projectId}/GetMembersStatuses")]
-    public async Task<ActionResult<List<MemberStatusDto>>> GetMembersStatuses([FromRoute] string projectId, [FromQuery] List<string> usersIds)
+    public async Task<ActionResult<List<MemberStatusDto>>> GetMembersStatuses(
+        [FromRoute] string projectId,
+        [FromQuery] List<string> usersIds
+    )
     {
         return await mediator.Send(new GetMembersStatusesQuery(projectId, usersIds));
     }
-
 }

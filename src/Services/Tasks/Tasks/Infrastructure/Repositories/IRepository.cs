@@ -2,7 +2,8 @@
 
 namespace Tasks.Infrastructure.Repositories;
 
-public interface IRepository<TEntity> where TEntity : class
+public interface IRepository<TEntity>
+    where TEntity : class
 {
     void Add(TEntity entity);
     void AddRange(IEnumerable<TEntity> entities);
@@ -10,5 +11,4 @@ public interface IRepository<TEntity> where TEntity : class
     void RemoveRange(IEnumerable<TEntity> entities);
     Task<TEntity?> GetOneByIdAsync(params object?[]? keyValues);
     Task<List<TEntity>> GetManyAsync(Expression<Func<TEntity, bool>> predicate);
-
 }

@@ -7,7 +7,8 @@ using Projects.Domain.Common.Enums;
 
 namespace Projects.Application.ProjectMembers.Commands;
 
-public record UpdateProjectMemberCommand(ProjectMemberType Type, string ProjectId, string UserId) : IAuthorizationRequest
+public record UpdateProjectMemberCommand(ProjectMemberType Type, string ProjectId, string UserId)
+    : IAuthorizationRequest
 {
     public List<IAuthorizationRequirement> GetAuthorizationRequirement()
     {
@@ -19,17 +20,26 @@ public record UpdateProjectMemberCommand(ProjectMemberType Type, string ProjectI
         return listOfRequirements;
     }
 }
+
 public class UpdateProjectMemberCommandHandler : IRequestHandler<UpdateProjectMemberCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUserService;
 
-    public UpdateProjectMemberCommandHandler(IUnitOfWork unitOfWork,ICurrentUserService currentUserService)
+    public UpdateProjectMemberCommandHandler(
+        IUnitOfWork unitOfWork,
+        ICurrentUserService currentUserService
+    )
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+        this._currentUserService =
+            currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
     }
-    public async Task Handle(UpdateProjectMemberCommand request, CancellationToken cancellationToken)
+
+    public async Task Handle(
+        UpdateProjectMemberCommand request,
+        CancellationToken cancellationToken
+    )
     {
         var project = await _unitOfWork.ProjectRepository.GetOneAsync(request.ProjectId);
 
@@ -38,5 +48,3 @@ public class UpdateProjectMemberCommandHandler : IRequestHandler<UpdateProjectMe
         await _unitOfWork.Complete();
     }
 }
-
-

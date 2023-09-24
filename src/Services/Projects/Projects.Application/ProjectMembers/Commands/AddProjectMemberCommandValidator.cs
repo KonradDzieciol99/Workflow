@@ -11,7 +11,5 @@ public class AddProjectMemberCommandValidator : AbstractValidator<AddProjectMemb
         RuleFor(x => x.UserEmail).NotEmpty().EmailAddress();
         RuleFor(x => x.PhotoUrl);
         RuleFor(x => x.Type).IsInEnum();
-
-
     }
 }

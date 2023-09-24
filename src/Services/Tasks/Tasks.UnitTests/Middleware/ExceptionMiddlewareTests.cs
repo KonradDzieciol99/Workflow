@@ -15,14 +15,15 @@ namespace Tasks.UnitTests.Middleware;
 
 public class ExceptionMiddlewareTests
 {
-
     [Fact]
     public async Task InvokeAsync_WhenForbiddenAccessExceptionIsThrown_ReturnsForbidden()
     {
         // Arrange
         var loggerMock = new Mock<ILogger<ExceptionMiddleware>>();
         var envMock = new Mock<IWebHostEnvironment>();
-        envMock.Setup(x => x.EnvironmentName).Returns(Microsoft.Extensions.Hosting.Environments.Development);
+        envMock
+            .Setup(x => x.EnvironmentName)
+            .Returns(Microsoft.Extensions.Hosting.Environments.Development);
 
         var context = new DefaultHttpContext();
         context.Response.Body = new MemoryStream();
@@ -52,13 +53,16 @@ public class ExceptionMiddlewareTests
         Assert.Equal(nameof(ForbiddenAccessException), response.Type);
         Assert.NotNull(response);
     }
+
     [Fact]
     public async Task InvokeAsync_WhenCalledCompletedTask_ReturnsOk()
     {
         //Arange
         var loggerMock = new Mock<ILogger<ExceptionMiddleware>>();
         var envMock = new Mock<IWebHostEnvironment>();
-        envMock.Setup(x => x.EnvironmentName).Returns(Microsoft.Extensions.Hosting.Environments.Development);
+        envMock
+            .Setup(x => x.EnvironmentName)
+            .Returns(Microsoft.Extensions.Hosting.Environments.Development);
 
         var context = new DefaultHttpContext();
         context.Response.Body = new MemoryStream();
@@ -74,22 +78,31 @@ public class ExceptionMiddlewareTests
 
         Assert.Equal((int)HttpStatusCode.OK, context.Response.StatusCode);
     }
+
     [Fact]
     public async Task InvokeAsync_WhenValidationExceptionExceptionIsThrown_ReturnsValidationProblemDetails()
     {
         // Arrange
         var loggerMock = new Mock<ILogger<ExceptionMiddleware>>();
         var envMock = new Mock<IWebHostEnvironment>();
-        envMock.Setup(x => x.EnvironmentName).Returns(Microsoft.Extensions.Hosting.Environments.Development);
+        envMock
+            .Setup(x => x.EnvironmentName)
+            .Returns(Microsoft.Extensions.Hosting.Environments.Development);
 
         var context = new DefaultHttpContext();
         context.Response.Body = new MemoryStream();
 
-        var failures = new List<ValidationFailure>() { new ValidationFailure("testProp", "testError") };
+        var failures = new List<ValidationFailure>()
+        {
+            new ValidationFailure("testProp", "testError")
+        };
 
         RequestDelegate next = (innerContext) =>
         {
-            throw new TaskDomainException("Test message", new Tasks.Application.Common.Exceptions.ValidationException(failures));
+            throw new TaskDomainException(
+                "Test message",
+                new Tasks.Application.Common.Exceptions.ValidationException(failures)
+            );
         };
 
         var middleware = new ExceptionMiddleware(next, loggerMock.Object, envMock.Object);
@@ -104,7 +117,11 @@ public class ExceptionMiddlewareTests
         var stream = reader.ReadToEnd();
 
         var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-        var response = JsonSerializer.Deserialize<Tasks.Application.Common.Exceptions.ValidationException>(stream, options);
+        var response =
+            JsonSerializer.Deserialize<Tasks.Application.Common.Exceptions.ValidationException>(
+                stream,
+                options
+            );
 
         Assert.Equal((int)HttpStatusCode.BadRequest, context.Response.StatusCode);
         Assert.NotNull(response);

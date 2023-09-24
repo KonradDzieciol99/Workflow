@@ -16,21 +16,30 @@ public class ProjectsController : ControllerBase
 
     public ProjectsController(IMediator mediator)
     {
-        this._mediator = mediator ?? throw new ArgumentNullException(nameof(mediator)); ;
+        this._mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        ;
     }
 
     [HttpPost("projectMembers/{email}")]
-    public async Task<ActionResult<ProjectMemberDto?>> AddMember([FromRoute] string projectId, [FromRoute] string email, [FromQuery] ProjectMemberType type)
+    public async Task<ActionResult<ProjectMemberDto?>> AddMember(
+        [FromRoute] string projectId,
+        [FromRoute] string email,
+        [FromQuery] ProjectMemberType type
+    )
     {
         return await _mediator.Send(new AddProjectMemberAggregateCommand(email, type, projectId));
     }
+
     [HttpGet("projectMembers/SearchProjectMember/{email}")]
-    public async Task<List<SearchedMemberDto>> searchMember([FromRoute] string email,
-                                                            [FromQuery] string projectId,
-                                                            [FromQuery] int take,
-                                                            [FromQuery] int skip
-                                                            )
+    public async Task<List<SearchedMemberDto>> searchMember(
+        [FromRoute] string email,
+        [FromQuery] string projectId,
+        [FromQuery] int take,
+        [FromQuery] int skip
+    )
     {
-        return await _mediator.Send(new SearchProjectMemberAggregateQuery(email, projectId, take, skip));
+        return await _mediator.Send(
+            new SearchProjectMemberAggregateQuery(email, projectId, take, skip)
+        );
     }
 }

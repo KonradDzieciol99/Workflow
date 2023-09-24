@@ -16,21 +16,26 @@ namespace API.Aggregator;
 
 public static class ConfigureServices
 {
-    public static IServiceCollection AddAggregatorServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddAggregatorServices(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
     {
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
 
-        services.AddHttpClient("InternalHttpClient")
-        .AddHttpMessageHandler<HttpClientTokenForwarderDelegatingHandler>()
-        .AddHttpMessageHandler<HttpClientErrorHandlingDelegatingHandler>()
-        .AddTransientHttpErrorPolicy(builder =>
-        {
-            return builder.WaitAndRetryAsync(
-                retryCount: 4,
-                sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(retryAttempt));
-        });
+        services
+            .AddHttpClient("InternalHttpClient")
+            .AddHttpMessageHandler<HttpClientTokenForwarderDelegatingHandler>()
+            .AddHttpMessageHandler<HttpClientErrorHandlingDelegatingHandler>()
+            .AddTransientHttpErrorPolicy(builder =>
+            {
+                return builder.WaitAndRetryAsync(
+                    retryCount: 4,
+                    sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(retryAttempt)
+                );
+            });
 
         services.AddScoped<IChatService, ChatService>();
         services.AddScoped<IIdentityServerService, IdentityServerService>();
@@ -38,65 +43,97 @@ public static class ConfigureServices
         services.AddScoped<IProjectsService, ProjectsService>();
         services.AddScoped<ITaskService, TaskService>();
 
-        services.AddAuthentication(opt =>
-        {
-            opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-        .AddJwtBearer(opt =>
-        {
-            var internalIdentityUrl = configuration.GetValue<string>("urls:internal:identity") ?? throw new ArgumentNullException(nameof(configuration));
-            var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:identity") ?? throw new ArgumentNullException(nameof(configuration));
-
-            opt.RequireHttpsMetadata = false;
-            opt.SaveToken = true;
-            opt.Authority = internalIdentityUrl;
-            opt.Audience = "aggregator";
-
-            opt.TokenValidationParameters = new TokenValidationParameters
+        services
+            .AddAuthentication(opt =>
             {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuers = new[] { externalIdentityUrlhttp },
-                ClockSkew = TimeSpan.Zero
-            };
-        });
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(opt =>
+            {
+                var internalIdentityUrl =
+                    configuration.GetValue<string>("urls:internal:identity")
+                    ?? throw new ArgumentNullException(nameof(configuration));
+                var externalIdentityUrlhttp =
+                    configuration.GetValue<string>("urls:external:identity")
+                    ?? throw new ArgumentNullException(nameof(configuration));
+
+                opt.RequireHttpsMetadata = false;
+                opt.SaveToken = true;
+                opt.Authority = internalIdentityUrl;
+                opt.Audience = "aggregator";
+
+                opt.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuers = new[] { externalIdentityUrlhttp },
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("ApiScope", policy =>
-            {
-                policy.RequireAuthenticatedUser();
-                policy.RequireClaim("scope", "aggregator");
-            });
+            options.AddPolicy(
+                "ApiScope",
+                policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "aggregator");
+                }
+            );
         });
 
         services.AddCors(opt =>
         {
-            opt.AddPolicy(name: "allowAny",
-                      policy =>
-                      {
-                          policy.WithOrigins("https://localhost:4200",
-                                             "http://localhost:4200",
-                                             "http://localhost:1000")
-                            .AllowAnyHeader()
-                            .AllowAnyMethod()
-                            .AllowCredentials();
-                      });
+            opt.AddPolicy(
+                name: "allowAny",
+                policy =>
+                {
+                    policy
+                        .WithOrigins(
+                            "https://localhost:4200",
+                            "http://localhost:4200",
+                            "http://localhost:1000"
+                        )
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                }
+            );
         });
 
-
         var healthBuilder = services.AddHealthChecks();
-        if (!configuration.GetValue("isTest",true))
-            healthBuilder.AddCheck("self", () => HealthCheckResult.Healthy(), tags: new string[] { "api" })
-                .AddUrlGroup(new Uri($"{configuration["urls:internal:chat"]}/hc"), name: "chat-check", tags: new string[] { "chat" })
-                .AddUrlGroup(new Uri($"{configuration["urls:internal:identity"]}/hc"), name: "identity-check", tags: new string[] { "identity" })
-                .AddUrlGroup(new Uri($"{configuration["urls:internal:notification"]}/hc"), name: "notification-check", tags: new string[] { "notification" })
-                .AddUrlGroup(new Uri($"{configuration["urls:internal:projects"]}/hc"), name: "projects-check", tags: new string[] { "projects" })
-                .AddUrlGroup(new Uri($"{configuration["urls:internal:tasks"]}/hc"), name: "task-check", tags: new string[] { "task" });
-        
+        if (!configuration.GetValue("isTest", true))
+            healthBuilder
+                .AddCheck("self", () => HealthCheckResult.Healthy(), tags: new string[] { "api" })
+                .AddUrlGroup(
+                    new Uri($"{configuration["urls:internal:chat"]}/hc"),
+                    name: "chat-check",
+                    tags: new string[] { "chat" }
+                )
+                .AddUrlGroup(
+                    new Uri($"{configuration["urls:internal:identity"]}/hc"),
+                    name: "identity-check",
+                    tags: new string[] { "identity" }
+                )
+                .AddUrlGroup(
+                    new Uri($"{configuration["urls:internal:notification"]}/hc"),
+                    name: "notification-check",
+                    tags: new string[] { "notification" }
+                )
+                .AddUrlGroup(
+                    new Uri($"{configuration["urls:internal:projects"]}/hc"),
+                    name: "projects-check",
+                    tags: new string[] { "projects" }
+                )
+                .AddUrlGroup(
+                    new Uri($"{configuration["urls:internal:tasks"]}/hc"),
+                    name: "task-check",
+                    tags: new string[] { "task" }
+                );
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 

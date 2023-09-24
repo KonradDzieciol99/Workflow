@@ -1,6 +1,4 @@
-﻿
-
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore.Storage;
 using Projects.Application.Common.Interfaces;
 using Projects.Domain.AggregatesModel.ProjectAggregate;
@@ -14,17 +12,20 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     private readonly ApplicationDbContext _applicationDbContext;
     private readonly IMediator _mediator;
     private bool disposed = false;
+
     public UnitOfWork(ApplicationDbContext applicationDbContext, IMediator mediator)
     {
         _applicationDbContext = applicationDbContext;
         _mediator = mediator;
     }
-    public IReadOnlyProjectMemberRepository ReadOnlyProjectMemberRepository => new ReadOnlyProjectMemberRepository(_applicationDbContext);
+
+    public IReadOnlyProjectMemberRepository ReadOnlyProjectMemberRepository =>
+        new ReadOnlyProjectMemberRepository(_applicationDbContext);
 
     public IProjectRepository ProjectRepository => new ProjectRepository(_applicationDbContext);
 
-    public IReadOnlyProjectRepository ReadOnlyProjectRepository => new ReadOnlyProjectRepository(_applicationDbContext);
-
+    public IReadOnlyProjectRepository ReadOnlyProjectRepository =>
+        new ReadOnlyProjectRepository(_applicationDbContext);
 
     public async Task<bool> Complete()
     {
@@ -32,14 +33,15 @@ public class UnitOfWork : IUnitOfWork, IDisposable
 
         return await _applicationDbContext.SaveChangesAsync() > 0;
     }
+
     public bool HasChanges()
     {
-
         _applicationDbContext.ChangeTracker.DetectChanges();
         var changes = _applicationDbContext.ChangeTracker.HasChanges();
 
         return changes;
     }
+
     // Metoda zwalniająca zasoby.
     protected virtual void Dispose(bool disposing)
     {
@@ -64,23 +66,32 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         Dispose(true);
         GC.SuppressFinalize(this);
     }
+
     private IDbContextTransaction _currentTransaction;
+
     public bool HasActiveTransaction()
     {
         return _currentTransaction != null;
     }
+
     public async Task<IDbContextTransaction?> BeginTransactionAsync()
     {
-        if (_currentTransaction != null) return null;
+        if (_currentTransaction != null)
+            return null;
 
         _currentTransaction = await _applicationDbContext.Database.BeginTransactionAsync();
 
         return _currentTransaction;
     }
+
     public async Task CommitTransactionAsync(IDbContextTransaction transaction)
     {
-        if (transaction == null) throw new ArgumentNullException(nameof(transaction));
-        if (transaction != _currentTransaction) throw new InvalidOperationException($"Transaction {transaction.TransactionId} is not current");
+        if (transaction == null)
+            throw new ArgumentNullException(nameof(transaction));
+        if (transaction != _currentTransaction)
+            throw new InvalidOperationException(
+                $"Transaction {transaction.TransactionId} is not current"
+            );
 
         try
         {
@@ -100,6 +111,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
             }
         }
     }
+
     public void RollbackTransaction()
     {
         try

@@ -30,12 +30,12 @@ public class IndexModel : PageModel
     public IndexModel(
         IIdentityServerInteractionService interaction,
         UserManager<ApplicationUser> userManager,
-            IEventService events,
-            IAuthenticationSchemeProvider schemeProvider,
-            IIdentityProviderStore identityProviderStore,
-            IConfiguration configuration,
-            SignInManager<ApplicationUser> signInManager
-          )
+        IEventService events,
+        IAuthenticationSchemeProvider schemeProvider,
+        IIdentityProviderStore identityProviderStore,
+        IConfiguration configuration,
+        SignInManager<ApplicationUser> signInManager
+    )
     {
         this._events = events;
         this._schemeProvider = schemeProvider;
@@ -46,10 +46,8 @@ public class IndexModel : PageModel
         _userManager = userManager;
     }
 
-
     [BindProperty]
     public RegisterInputModel Input { get; set; }
-
 
     public async Task<IActionResult> OnGet(string returnUrl)
     {
@@ -64,14 +62,7 @@ public class IndexModel : PageModel
     {
         if (ModelState.IsValid)
         {
-
-
-
-            var user = new ApplicationUser()
-            {
-                UserName = Input.Email,
-                Email = Input.Email,
-            };
+            var user = new ApplicationUser() { UserName = Input.Email, Email = Input.Email, };
 
             if (!_configuration.GetValue<bool>("EmailEmiterEnabled"))
                 user.EmailConfirmed = true;
@@ -80,19 +71,36 @@ public class IndexModel : PageModel
 
             if (!_configuration.GetValue<bool>("EmailEmiterEnabled"))
             {
-                _ = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, false, lockoutOnFailure: true);
+                _ = await _signInManager.PasswordSignInAsync(
+                    Input.Email,
+                    Input.Password,
+                    false,
+                    lockoutOnFailure: true
+                );
                 var context = await _interaction.GetAuthorizationContextAsync(Input.ReturnUrl);
-                await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.Client.ClientId));
+                await _events.RaiseAsync(
+                    new UserLoginSuccessEvent(
+                        user.UserName,
+                        user.Id,
+                        user.UserName,
+                        clientId: context?.Client.ClientId
+                    )
+                );
                 return Redirect(Input.ReturnUrl);
             }
-            
+
             if (result.Succeeded)
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-                await _events.RaiseAsync(new LocalUserRegisterSuccessEvent(user.Email, token, user.Id, null));
+                await _events.RaiseAsync(
+                    new LocalUserRegisterSuccessEvent(user.Email, token, user.Id, null)
+                );
 
-                return RedirectToPage("/EmailConfirmationInfo/Index", new { email = user.Email, returnUrl = Input.ReturnUrl });
+                return RedirectToPage(
+                    "/EmailConfirmationInfo/Index",
+                    new { email = user.Email, returnUrl = Input.ReturnUrl }
+                );
             }
 
             foreach (var item in result.Errors)
@@ -102,7 +110,6 @@ public class IndexModel : PageModel
 
                 ModelState.AddModelError(string.Empty, item.Description);
             }
-
         }
         await BuildModelAsync(Input.ReturnUrl);
         return Page();
@@ -110,33 +117,34 @@ public class IndexModel : PageModel
 
     private async Task BuildModelAsync(string returnUrl)
     {
-        Input = new RegisterInputModel
-        {
-            ReturnUrl = returnUrl
-        };
+        Input = new RegisterInputModel { ReturnUrl = returnUrl };
 
         var schemes = await _schemeProvider.GetAllSchemesAsync();
 
         var providers = schemes
             .Where(x => x.DisplayName != null)
-            .Select(x => new RegisterViewModel.ExternalProvider
-            {
-                DisplayName = x.DisplayName ?? x.Name,
-                AuthenticationScheme = x.Name
-            }).ToList();
+            .Select(
+                x =>
+                    new RegisterViewModel.ExternalProvider
+                    {
+                        DisplayName = x.DisplayName ?? x.Name,
+                        AuthenticationScheme = x.Name
+                    }
+            )
+            .ToList();
 
         var dyanmicSchemes = (await _identityProviderStore.GetAllSchemeNamesAsync())
             .Where(x => x.Enabled)
-            .Select(x => new RegisterViewModel.ExternalProvider
-            {
-                AuthenticationScheme = x.Scheme,
-                DisplayName = x.DisplayName
-            });
+            .Select(
+                x =>
+                    new RegisterViewModel.ExternalProvider
+                    {
+                        AuthenticationScheme = x.Scheme,
+                        DisplayName = x.DisplayName
+                    }
+            );
         providers.AddRange(dyanmicSchemes);
 
-        RegisterViewModel = new RegisterViewModel
-        {
-            ExternalProviders = providers.ToArray(),
-        };
+        RegisterViewModel = new RegisterViewModel { ExternalProviders = providers.ToArray(), };
     }
 }

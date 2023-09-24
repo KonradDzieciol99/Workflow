@@ -20,7 +20,8 @@ public record MarkAsSeenAppNotificationCommand(string Id) : IAuthorizationReques
     }
 }
 
-public class MarkAsSeenAppNotificationCommandHandler : IRequestHandler<MarkAsSeenAppNotificationCommand>
+public class MarkAsSeenAppNotificationCommandHandler
+    : IRequestHandler<MarkAsSeenAppNotificationCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -28,10 +29,18 @@ public class MarkAsSeenAppNotificationCommandHandler : IRequestHandler<MarkAsSee
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
-    public async Task Handle(MarkAsSeenAppNotificationCommand request, CancellationToken cancellationToken)
-    {
 
-        var appNotification = await _unitOfWork.AppNotificationRepository.GetAsync(request.Id) ?? throw new NotificationDomainException(string.Empty, new BadRequestException("Notification cannot be found."));
+    public async Task Handle(
+        MarkAsSeenAppNotificationCommand request,
+        CancellationToken cancellationToken
+    )
+    {
+        var appNotification =
+            await _unitOfWork.AppNotificationRepository.GetAsync(request.Id)
+            ?? throw new NotificationDomainException(
+                string.Empty,
+                new BadRequestException("Notification cannot be found.")
+            );
 
         appNotification.MarkAsSeen();
 

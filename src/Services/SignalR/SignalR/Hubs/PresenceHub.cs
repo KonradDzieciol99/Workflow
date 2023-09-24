@@ -15,6 +15,7 @@ public class PresenceHub : Hub
     private readonly IEventBusSender _messageBus;
 
     private readonly IDatabase _redisDb;
+
     public PresenceHub(IConnectionMultiplexer connectionMultiplexer, IEventBusSender messageBus)
     {
         _connectionMultiplexer = connectionMultiplexer;
@@ -24,9 +25,14 @@ public class PresenceHub : Hub
 
     public override async Task OnConnectedAsync()
     {
-        var httpContext = Context.GetHttpContext() ?? throw new ArgumentNullException("httpContext error");
-        var email = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new HubException("User cannot be identified");
-        var id = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new HubException("User cannot be identified");
+        var httpContext =
+            Context.GetHttpContext() ?? throw new ArgumentNullException("httpContext error");
+        var email =
+            httpContext.User.FindFirstValue(ClaimTypes.Email)
+            ?? throw new HubException("User cannot be identified");
+        var id =
+            httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? throw new HubException("User cannot be identified");
 
         await _redisDb.SetAddAsync($"presence-{email}", Context.ConnectionId);
 
@@ -38,10 +44,14 @@ public class PresenceHub : Hub
 
     public override async Task OnDisconnectedAsync(Exception exception)
     {
-        var httpContext = Context.GetHttpContext() ?? throw new ArgumentNullException("httpContext error");
-        var email = httpContext.User.FindFirstValue(ClaimTypes.Email) ?? throw new HubException("User cannot be identified");
-        var id = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new HubException("User cannot be identified");
-
+        var httpContext =
+            Context.GetHttpContext() ?? throw new ArgumentNullException("httpContext error");
+        var email =
+            httpContext.User.FindFirstValue(ClaimTypes.Email)
+            ?? throw new HubException("User cannot be identified");
+        var id =
+            httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? throw new HubException("User cannot be identified");
 
         await _redisDb.SetRemoveAsync($"presence-{email}", Context.ConnectionId);
         var ConnectionLength = await _redisDb.SetLengthAsync($"presence-{email}");
@@ -52,7 +62,6 @@ public class PresenceHub : Hub
 
             var newOnlineUserEvent = new UserOfflineEvent(new UserDto(id, email, null));
             await _messageBus.PublishMessage(newOnlineUserEvent);
-
         }
 
         await base.OnDisconnectedAsync(exception);

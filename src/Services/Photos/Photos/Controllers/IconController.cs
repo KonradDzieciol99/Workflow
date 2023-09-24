@@ -19,6 +19,7 @@ public class IconController : ControllerBase
     {
         this._mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
+
     //TODO
     //[HttpPost]
     //public async Task<IActionResult> Post([FromForm] IFormFile file, [FromQuery] string name)
@@ -30,6 +31,6 @@ public class IconController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<Icon>>> Get()
     {
-        return Ok(await _mediator.Send(new GetProjectsIconsQuery()));        
+        return Ok(await _mediator.Send(new GetProjectsIconsQuery()));
     }
 }

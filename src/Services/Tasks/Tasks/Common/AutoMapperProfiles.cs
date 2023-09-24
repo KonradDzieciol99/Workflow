@@ -21,6 +21,5 @@ public class AutoMapperProfiles : Profile
 
         CreateMap<ProjectMember, ProjectMemberDto>();
         CreateMap<ProjectMemberDto, ProjectMember>();
-
     }
 }

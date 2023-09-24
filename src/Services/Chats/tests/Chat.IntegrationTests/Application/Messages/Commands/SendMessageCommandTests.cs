@@ -10,14 +10,17 @@ using System.Threading.Tasks;
 using TestsHelpers.Extensions;
 
 namespace Chat.IntegrationTests.Application.Messages.Commands;
+
 [Collection("Base")]
-public class SendMessageCommandTests: IAsyncLifetime
+public class SendMessageCommandTests : IAsyncLifetime
 {
     private readonly Base _base;
+
     public SendMessageCommandTests(Base @base)
     {
         _base = @base;
     }
+
     public async Task InitializeAsync()
     {
         await _base._checkpoint.ResetAsync(_base._msSqlContainer.GetConnectionString());
@@ -27,13 +30,21 @@ public class SendMessageCommandTests: IAsyncLifetime
     {
         return Task.CompletedTask;
     }
+
     [Fact]
     public async Task SendMessageCommand_ValidData_ReturnsCreated()
     {
         //arrange
         var FriendRequests = new List<FriendRequest>()
         {
-            new("inviterUserId","inviterUserEmail",null,"invitedUserId","invitedUserEmail",null),
+            new(
+                "inviterUserId",
+                "inviterUserEmail",
+                null,
+                "invitedUserId",
+                "invitedUserEmail",
+                null
+            ),
         };
 
         FriendRequests[0].AcceptRequest("invitedUserId");

@@ -23,10 +23,15 @@ public class DeleteProjectCommandHandler : IRequestHandler<DeleteProjectCommand>
     private readonly ICurrentUserService _currentUserService;
     private readonly IMapper _mapper;
 
-    public DeleteProjectCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IMapper mapper)
+    public DeleteProjectCommandHandler(
+        IUnitOfWork unitOfWork,
+        ICurrentUserService currentUserService,
+        IMapper mapper
+    )
     {
         this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        this._currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+        this._currentUserService =
+            currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
         this._mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 

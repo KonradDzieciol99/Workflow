@@ -2,6 +2,4 @@
 
 namespace API.Aggregator.Infrastructure.Services;
 
-public interface ITaskService
-{
-}
+public interface ITaskService { }

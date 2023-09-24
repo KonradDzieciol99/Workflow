@@ -11,7 +11,11 @@ public class SeedData
     private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public SeedData(ILogger<SeedData> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager/*,RoleManager<AppRole> roleManager*/ )
+    public SeedData(
+        ILogger<SeedData> logger,
+        ApplicationDbContext context,
+        UserManager<ApplicationUser> userManager /*,RoleManager<AppRole> roleManager*/
+    )
     {
         _logger = logger;
         _context = context;
@@ -24,7 +28,6 @@ public class SeedData
         {
             if (_context.Database.IsSqlServer())
                 await _context.Database.MigrateAsync();
-
         }
         catch (Exception ex)
         {
@@ -48,36 +51,39 @@ public class SeedData
 
     public async Task TrySeedAsync()
     {
-
         var id = 0;
         var users = new Faker<ApplicationUser>()
             .StrictMode(false)
             .RuleFor(f => f.Id, f => id++.ToString())
             .RuleFor(f => f.UserName, f => f.Internet.Email())
             .RuleFor(f => f.Email, (f, u) => u.UserName)
-            .RuleFor(f => f.PictureUrl, f => f.Image.PicsumUrl(600,600))
+            .RuleFor(f => f.PictureUrl, f => f.Image.PicsumUrl(600, 600))
             .RuleFor(u => u.EmailConfirmed, f => true)
             .UseSeed(1111)
             .Generate(50);
 
-        users.Add(new ApplicationUser
-        {
-            UserName = "AliceSmith@email.com",
-            Email = "AliceSmith@email.com",
-            EmailConfirmed = true,
-            PictureUrl = "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png",
-            Id = "50"
-        });
-        users.Add(new ApplicationUser
-        {
-            UserName = "BobSmith@email.com",
-            Email = "BobSmith@email.com",
-            EmailConfirmed = true,
-            PictureUrl = "https://1workflowstorage.blob.core.windows.net/photos/bobPhoto.png",
-            Id = "51"
-        });
-        
-            
+        users.Add(
+            new ApplicationUser
+            {
+                UserName = "AliceSmith@email.com",
+                Email = "AliceSmith@email.com",
+                EmailConfirmed = true,
+                PictureUrl =
+                    "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png",
+                Id = "50"
+            }
+        );
+        users.Add(
+            new ApplicationUser
+            {
+                UserName = "BobSmith@email.com",
+                Email = "BobSmith@email.com",
+                EmailConfirmed = true,
+                PictureUrl = "https://1workflowstorage.blob.core.windows.net/photos/bobPhoto.png",
+                Id = "51"
+            }
+        );
+
         var result = await _userManager.FindByEmailAsync(users[0].Email);
         if (result is not null)
             return;

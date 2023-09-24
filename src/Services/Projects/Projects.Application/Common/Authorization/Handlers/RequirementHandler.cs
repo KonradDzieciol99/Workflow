@@ -13,6 +13,7 @@ public class RequirementHandler : IAuthorizationHandler
     {
         _unitOfWork = unitOfWork;
     }
+
     public async Task HandleAsync(AuthorizationHandlerContext context)
     {
         var pendingRequirements = context.PendingRequirements.ToList();
@@ -21,17 +22,27 @@ public class RequirementHandler : IAuthorizationHandler
         {
             if (requirement is ProjectAuthorRequirement)
             {
-                var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new ArgumentNullException(nameof(context));
-                var projectId = context.Resource as string ?? throw new ArgumentNullException(nameof(context));
+                var userId =
+                    context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                    ?? throw new ArgumentNullException(nameof(context));
+                var projectId =
+                    context.Resource as string ?? throw new ArgumentNullException(nameof(context));
 
                 context.Succeed(requirement);
             }
             else if (requirement is ProjectManagementRequirement)
             {
-                var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new ArgumentNullException(nameof(context));
-                var projectId = context.Resource as string ?? throw new ArgumentNullException(nameof(context));
+                var userId =
+                    context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                    ?? throw new ArgumentNullException(nameof(context));
+                var projectId =
+                    context.Resource as string ?? throw new ArgumentNullException(nameof(context));
 
-                var projectMember = await _unitOfWork.ReadOnlyProjectMemberRepository.GetProjectMemberAsync(projectId, userId);
+                var projectMember =
+                    await _unitOfWork.ReadOnlyProjectMemberRepository.GetProjectMemberAsync(
+                        projectId,
+                        userId
+                    );
 
                 if (projectMember is null)
                 {
@@ -50,5 +61,4 @@ public class RequirementHandler : IAuthorizationHandler
 
         return;
     }
-
 }

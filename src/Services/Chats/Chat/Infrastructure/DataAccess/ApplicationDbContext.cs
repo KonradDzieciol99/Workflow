@@ -6,9 +6,7 @@ namespace Chat.Infrastructure.DataAccess;
 public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options)
-    {
-    }
+        : base(options) { }
 
     public DbSet<FriendRequest> FriendRequests { get; set; }
     public DbSet<Message> Messages { get; set; }
@@ -28,12 +26,5 @@ public class ApplicationDbContext : DbContext
 
             opt.Property(x => x.Id).ValueGeneratedOnAdd();
         });
-
     }
 }
-
-
-
-
-
-

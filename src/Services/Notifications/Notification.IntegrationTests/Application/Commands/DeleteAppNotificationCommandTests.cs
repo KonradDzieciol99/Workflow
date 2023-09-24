@@ -5,14 +5,16 @@ using TestsHelpers.Extensions;
 
 namespace Notification.IntegrationTests.Application.Commands;
 
-[Collection("Base")] 
+[Collection("Base")]
 public class DeleteAppNotificationCommandTests : IAsyncLifetime
 {
     private readonly Base _base;
+
     public DeleteAppNotificationCommandTests(Base @base)
     {
         _base = @base;
     }
+
     public async Task InitializeAsync()
     {
         await _base._checkpoint.ResetAsync(_base._msSqlContainer.GetConnectionString());
@@ -29,14 +31,16 @@ public class DeleteAppNotificationCommandTests : IAsyncLifetime
         //arrange
         var appNotifications = new List<AppNotification>()
         {
-            new AppNotification("1",
-                                NotificationType.WelcomeNotification,
-                                DateTime.UtcNow,
-                                "test",
-                                null,
-                                null,
-                                null,
-                                false),
+            new AppNotification(
+                "1",
+                NotificationType.WelcomeNotification,
+                DateTime.UtcNow,
+                "test",
+                null,
+                null,
+                null,
+                false
+            ),
         };
 
         _base._factory.SeedData<Program, ApplicationDbContext, AppNotification>(appNotifications);
@@ -49,7 +53,9 @@ public class DeleteAppNotificationCommandTests : IAsyncLifetime
         var response = await _base._client.DeleteAsync($"api/AppNotification/{command.Id}");
 
         //assert
-        var result = await _base._factory.FindAsync<Program, ApplicationDbContext, AppNotification>(appNotifications[0].Id);
+        var result = await _base._factory.FindAsync<Program, ApplicationDbContext, AppNotification>(
+            appNotifications[0].Id
+        );
 
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         Assert.Null(result);

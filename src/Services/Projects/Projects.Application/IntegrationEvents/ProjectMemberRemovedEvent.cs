@@ -2,4 +2,5 @@
 
 namespace Projects.Application.IntegrationEvents;
 
-public record ProjectMemberRemovedEvent(string ProjectMemberId, string ProjectId, string UserId) : IntegrationEvent;
+public record ProjectMemberRemovedEvent(string ProjectMemberId, string ProjectId, string UserId)
+    : IntegrationEvent;

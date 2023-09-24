@@ -9,9 +9,12 @@ public class IdentityServerService : BaseHttpService, IIdentityServerService
 {
     private readonly string _identityUrl;
 
-    public IdentityServerService(IHttpClientFactory httpClientFactory, IConfiguration configuration) : base(httpClientFactory.CreateClient("InternalHttpClient"))
+    public IdentityServerService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        : base(httpClientFactory.CreateClient("InternalHttpClient"))
     {
-        _identityUrl = configuration.GetValue<string>("urls:internal:identity") ?? throw new ArgumentNullException(_identityUrl);
+        _identityUrl =
+            configuration.GetValue<string>("urls:internal:identity")
+            ?? throw new ArgumentNullException(_identityUrl);
     }
 
     public async Task<UserDto?> CheckIfUserExistsAsync(string email)
@@ -21,6 +24,7 @@ public class IdentityServerService : BaseHttpService, IIdentityServerService
 
         return await SendAsync<UserDto?>(new ApiRequest(HttpMethod.Get, sb.ToString(), null));
     }
+
     public async Task<List<UserDto>> SearchAsync(string email, int take, int skip)
     {
         var sb = new StringBuilder(_identityUrl);

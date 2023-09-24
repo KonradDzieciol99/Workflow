@@ -14,5 +14,4 @@ public interface IReadOnlyProjectMemberRepository
     Task<bool> CheckIfUserIsALeaderAsync(string projectId, string userId);
     Task<ProjectMember?> GetAsync(string projectMemberId);
     Task<List<MemberStatusDto>> GetMembersStatusesAsync(string projectId, List<string> usersIds);
-
 }

@@ -7,7 +7,14 @@ namespace Projects.Domain.AggregatesModel.ProjectAggregate;
 public class ProjectMember : BaseEntity
 {
     private ProjectMember() { }
-    public ProjectMember(string userId, string userEmail, string? photoUrl, ProjectMemberType type, InvitationStatus invitationStatus)
+
+    public ProjectMember(
+        string userId,
+        string userEmail,
+        string? photoUrl,
+        ProjectMemberType type,
+        InvitationStatus invitationStatus
+    )
     {
         UserId = userId ?? throw new ArgumentNullException(nameof(userId));
         UserEmail = userEmail ?? throw new ArgumentNullException(nameof(userEmail));
@@ -32,6 +39,7 @@ public class ProjectMember : BaseEntity
 
         InvitationStatus = InvitationStatus.Accepted;
     }
+
     public void ChangeType(ProjectMemberType projectMemberType)
     {
         Type = projectMemberType;

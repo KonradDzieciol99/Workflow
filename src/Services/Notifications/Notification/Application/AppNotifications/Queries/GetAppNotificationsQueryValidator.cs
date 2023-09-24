@@ -8,10 +8,7 @@ public class GetAppNotificationsQueryValidator : AbstractValidator<GetAppNotific
     {
         RuleFor(x => x.Skip).NotEmpty().GreaterThanOrEqualTo(0);
 
-        RuleFor(x => x.Take)
-            .NotEmpty()
-            .GreaterThanOrEqualTo(0)
-            .LessThanOrEqualTo(100);
+        RuleFor(x => x.Take).NotEmpty().GreaterThanOrEqualTo(0).LessThanOrEqualTo(100);
 
         RuleFor(x => x.Search).MaximumLength(50);
     }

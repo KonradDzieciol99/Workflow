@@ -9,7 +9,7 @@ public class ApiRequest
     {
         HttpMethod = httpMethod ?? throw new ArgumentNullException(nameof(httpMethod));
         Url = url ?? throw new ArgumentNullException(nameof(url));
-        Data = data;    
+        Data = data;
     }
 
     public HttpMethod HttpMethod { get; }

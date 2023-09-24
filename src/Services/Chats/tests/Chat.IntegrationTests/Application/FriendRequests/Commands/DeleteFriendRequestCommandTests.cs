@@ -10,22 +10,27 @@ using System.Threading.Tasks;
 using TestsHelpers.Extensions;
 
 namespace Chat.IntegrationTests.Application.FriendRequests.Commands;
+
 [Collection("Base")]
 public class DeleteFriendRequestCommandTests : IAsyncLifetime
 {
     private readonly Base _base;
+
     public DeleteFriendRequestCommandTests(Base @base)
     {
         _base = @base;
     }
+
     public Task DisposeAsync()
     {
         return Task.CompletedTask;
     }
+
     public async Task InitializeAsync()
     {
         await _base._checkpoint.ResetAsync(_base._msSqlContainer.GetConnectionString());
     }
+
     [Fact]
     public async Task DeleteFriendRequestCommand_ValidData_ReturnsNoContent()
     {
@@ -33,14 +38,23 @@ public class DeleteFriendRequestCommandTests : IAsyncLifetime
         var friendRequests = Base.GetFakeFriendRequests();
 
         _base._factory.SeedData<Program, ApplicationDbContext, FriendRequest>(friendRequests);
-        _base._client.SetHeaders(friendRequests[0].InviterUserId, friendRequests[0].InviterUserEmail);
+        _base._client.SetHeaders(
+            friendRequests[0].InviterUserId,
+            friendRequests[0].InviterUserEmail
+        );
         DeleteFriendRequestCommand command = new(friendRequests[0].InvitedUserId);
 
         //act
-        var response = await _base._client.DeleteAsync($"api/FriendRequests/{command.TargetUserId}");
+        var response = await _base._client.DeleteAsync(
+            $"api/FriendRequests/{command.TargetUserId}"
+        );
 
         //assert
-        var friendReques = await _base._factory.FindAsync<Program, ApplicationDbContext, FriendRequest>(friendRequests[0].InviterUserId, friendRequests[0].InvitedUserId);
+        var friendReques = await _base._factory.FindAsync<
+            Program,
+            ApplicationDbContext,
+            FriendRequest
+        >(friendRequests[0].InviterUserId, friendRequests[0].InvitedUserId);
 
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         Assert.Null(friendReques);

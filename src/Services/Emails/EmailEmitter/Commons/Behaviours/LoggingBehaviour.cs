@@ -2,7 +2,8 @@
 
 namespace EmailEmitter.Commons.Behaviours;
 
-public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest> where TRequest : notnull
+public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest>
+    where TRequest : notnull
 {
     private readonly ILogger _logger;
 
@@ -15,7 +16,10 @@ public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest> where T
     {
         var requestName = typeof(TRequest).Name;
 
-        _logger.LogInformation("Intergration Event: {requestName} {@Request}", requestName, request);
-
+        _logger.LogInformation(
+            "Intergration Event: {requestName} {@Request}",
+            requestName,
+            request
+        );
     }
 }

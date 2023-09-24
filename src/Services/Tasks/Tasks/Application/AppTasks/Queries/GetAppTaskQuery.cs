@@ -20,8 +20,8 @@ public record GetAppTaskQuery(string Id, string ProjectId) : IAuthorizationReque
         };
         return listOfRequirements;
     }
-
 }
+
 public class GetAppTaskQueryHandler : IRequestHandler<GetAppTaskQuery, AppTaskDto>
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -32,9 +32,15 @@ public class GetAppTaskQueryHandler : IRequestHandler<GetAppTaskQuery, AppTaskDt
         this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         this._mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
-    public async Task<AppTaskDto> Handle(GetAppTaskQuery request, CancellationToken cancellationToken)
+
+    public async Task<AppTaskDto> Handle(
+        GetAppTaskQuery request,
+        CancellationToken cancellationToken
+    )
     {
-        var appTask = await _unitOfWork.AppTaskRepository.GetAsync(request.Id) ?? throw new TaskDomainException("Task cannot be found.", new NotFoundException());
+        var appTask =
+            await _unitOfWork.AppTaskRepository.GetAsync(request.Id)
+            ?? throw new TaskDomainException("Task cannot be found.", new NotFoundException());
         return _mapper.Map<AppTaskDto>(appTask);
     }
 }

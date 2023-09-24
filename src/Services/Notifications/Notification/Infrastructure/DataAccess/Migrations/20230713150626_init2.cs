@@ -16,7 +16,8 @@ public partial class init2 : Migration
             type: "int",
             nullable: false,
             oldClrType: typeof(string),
-            oldType: "nvarchar(max)");
+            oldType: "nvarchar(max)"
+        );
     }
 
     /// <inheritdoc />
@@ -28,6 +29,7 @@ public partial class init2 : Migration
             type: "nvarchar(max)",
             nullable: false,
             oldClrType: typeof(int),
-            oldType: "int");
+            oldType: "int"
+        );
     }
 }

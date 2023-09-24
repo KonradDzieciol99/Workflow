@@ -34,15 +34,18 @@ public class Program
         app.MapHub<ChatHub>("/hub/Chat");
         app.MapHub<PresenceHub>("/hub/Presence");
         app.MapHub<MessagesHub>("/hub/Messages");
-        app.MapHealthChecks("/hc", new HealthCheckOptions()
-        {
-            Predicate = _ => true,
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        });
-        app.MapHealthChecks("/liveness", new HealthCheckOptions
-        {
-            Predicate = r => r.Name.Contains("self")
-        });
+        app.MapHealthChecks(
+            "/hc",
+            new HealthCheckOptions()
+            {
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            }
+        );
+        app.MapHealthChecks(
+            "/liveness",
+            new HealthCheckOptions { Predicate = r => r.Name.Contains("self") }
+        );
 
         app.Run();
 
@@ -51,18 +54,18 @@ public class Program
             var eventBus = app.Services.GetRequiredService<IEventBusConsumer>();
 
             var subscribeTasks = new List<Task>
-        {
-            eventBus.Subscribe<ChatMessageAddedEvent>(),
-            eventBus.Subscribe<UserOnlineFriendsAndUnMesUserEmailsEvent>(),
-            eventBus.Subscribe<NewOnlineMessagesUserWithFriendsEvent>(),
-            eventBus.Subscribe<UserOfflineWithFriendsEvent>(),
-            eventBus.Subscribe<FriendRequestAcceptedEvent>(),
-            eventBus.Subscribe<FriendRequestAddedEvent>(),
-            eventBus.Subscribe<NotificationAddedEvent>(),
-            eventBus.Subscribe<UserOnlineNotifcationsAndUnreadEvent>(),
-            eventBus.Subscribe<FriendRequestRemovedEvent>(),
-            eventBus.Subscribe<UserConnectedToChatResponseEvent>(),
-        };
+            {
+                eventBus.Subscribe<ChatMessageAddedEvent>(),
+                eventBus.Subscribe<UserOnlineFriendsAndUnMesUserEmailsEvent>(),
+                eventBus.Subscribe<NewOnlineMessagesUserWithFriendsEvent>(),
+                eventBus.Subscribe<UserOfflineWithFriendsEvent>(),
+                eventBus.Subscribe<FriendRequestAcceptedEvent>(),
+                eventBus.Subscribe<FriendRequestAddedEvent>(),
+                eventBus.Subscribe<NotificationAddedEvent>(),
+                eventBus.Subscribe<UserOnlineNotifcationsAndUnreadEvent>(),
+                eventBus.Subscribe<FriendRequestRemovedEvent>(),
+                eventBus.Subscribe<UserConnectedToChatResponseEvent>(),
+            };
 
             await Task.WhenAll(subscribeTasks);
         }

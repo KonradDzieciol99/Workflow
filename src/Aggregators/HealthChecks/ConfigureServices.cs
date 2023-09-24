@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-
 namespace HealthChecks;
 
 public static class ConfigureServices
@@ -9,14 +8,14 @@ public static class ConfigureServices
     {
         services.AddControllers();
 
-        services.AddHealthChecks()
-            .AddCheck("self", () => HealthCheckResult.Healthy());
+        services.AddHealthChecks().AddCheck("self", () => HealthCheckResult.Healthy());
 
-        services.AddHealthChecksUI(setupSettings: setup =>
-                {
-                    setup.SetEvaluationTimeInSeconds(5);
-                })
-                .AddInMemoryStorage();
+        services
+            .AddHealthChecksUI(setupSettings: setup =>
+            {
+                setup.SetEvaluationTimeInSeconds(5);
+            })
+            .AddInMemoryStorage();
 
         return services;
     }

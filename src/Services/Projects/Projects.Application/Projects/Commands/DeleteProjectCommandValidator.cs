@@ -6,8 +6,6 @@ public class DeleteProjectCommandValidator : AbstractValidator<DeleteProjectComm
 {
     public DeleteProjectCommandValidator()
     {
-        RuleFor(x => x.ProjectId)
-            .NotEmpty()
-            .Length(1, 40);
+        RuleFor(x => x.ProjectId).NotEmpty().Length(1, 40);
     }
 }

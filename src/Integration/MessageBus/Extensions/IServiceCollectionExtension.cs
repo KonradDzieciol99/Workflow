@@ -7,48 +7,65 @@ namespace MessageBus.Extensions;
 
 public static class IServiceCollectionExtension
 {
-    public static IServiceCollection AddAzureServiceBusConsumer(this IServiceCollection services, IConfigurationSection configurationSection)
+    public static IServiceCollection AddAzureServiceBusConsumer(
+        this IServiceCollection services,
+        IConfigurationSection configurationSection
+    )
     {
-        services.AddOptions<AzureServiceBusConsumerOptions>()
-                .Bind(configurationSection)
-                .ValidateDataAnnotations()
-                .ValidateOnStart();
+        services
+            .AddOptions<AzureServiceBusConsumerOptions>()
+            .Bind(configurationSection)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
-        services.AddSingleton<IEventBusConsumer,AzureServiceBusConsumer>();
+        services.AddSingleton<IEventBusConsumer, AzureServiceBusConsumer>();
         services.AddHostedService(sp => sp.GetRequiredService<IEventBusConsumer>());
         return services;
     }
-    public static IServiceCollection AddAzureServiceBusSender(this IServiceCollection services, IConfigurationSection configurationSection)
-    {
-        services.AddOptions<AzureServiceBusSenderOptions>()
-                .Bind(configurationSection)
-                .ValidateDataAnnotations()
-                .ValidateOnStart();
 
-        services.AddSingleton<IEventBusSender, AzureServiceBusSender>();//scope ?
+    public static IServiceCollection AddAzureServiceBusSender(
+        this IServiceCollection services,
+        IConfigurationSection configurationSection
+    )
+    {
+        services
+            .AddOptions<AzureServiceBusSenderOptions>()
+            .Bind(configurationSection)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddSingleton<IEventBusSender, AzureServiceBusSender>(); //scope ?
         return services;
-
     }
-    public static IServiceCollection AddRabbitMQConsumer(this IServiceCollection services, IConfigurationSection configurationSection)
-    {
-        services.AddOptions<RabbitMQConsumerOptions>()
-                .Bind(configurationSection)
-                .ValidateDataAnnotations()
-                .ValidateOnStart();
 
-        services.AddSingleton<IEventBusConsumer,RabbitMQConsumer>();
+    public static IServiceCollection AddRabbitMQConsumer(
+        this IServiceCollection services,
+        IConfigurationSection configurationSection
+    )
+    {
+        services
+            .AddOptions<RabbitMQConsumerOptions>()
+            .Bind(configurationSection)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddSingleton<IEventBusConsumer, RabbitMQConsumer>();
         services.AddHostedService(sp => sp.GetRequiredService<IEventBusConsumer>());
         return services;
     }
-    public static IServiceCollection AddRabbitMQSender(this IServiceCollection services, IConfigurationSection configurationSection)
+
+    public static IServiceCollection AddRabbitMQSender(
+        this IServiceCollection services,
+        IConfigurationSection configurationSection
+    )
     {
-        services.AddOptions<RabbitMQSenderOptions>()
-                .Bind(configurationSection)
-                .ValidateDataAnnotations()
-                .ValidateOnStart();
+        services
+            .AddOptions<RabbitMQSenderOptions>()
+            .Bind(configurationSection)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         services.AddScoped<IEventBusSender, RabbitMQSender>();
         return services;
-
     }
 }

@@ -4,7 +4,8 @@ using Chat.Infrastructure.Repositories;
 
 namespace Chat.Application.IntegrationEvents;
 
-public record MarkChatMessageAsReadEvent(string ChatMessageId, DateTime ChatMessageDateRead) : IntegrationEvent;
+public record MarkChatMessageAsReadEvent(string ChatMessageId, DateTime ChatMessageDateRead)
+    : IntegrationEvent;
 
 public class MarkChatMessageAsReadEventHandler : IRequestHandler<MarkChatMessageAsReadEvent>
 {
@@ -14,9 +15,15 @@ public class MarkChatMessageAsReadEventHandler : IRequestHandler<MarkChatMessage
     {
         this._unitOfWork = unitOfWork;
     }
-    public async Task Handle(MarkChatMessageAsReadEvent request, CancellationToken cancellationToken)
+
+    public async Task Handle(
+        MarkChatMessageAsReadEvent request,
+        CancellationToken cancellationToken
+    )
     {
-        var message = await _unitOfWork.MessagesRepository.GetAsync(request.ChatMessageId) ?? throw new InvalidOperationException("Such a message does not exist");
+        var message =
+            await _unitOfWork.MessagesRepository.GetAsync(request.ChatMessageId)
+            ?? throw new InvalidOperationException("Such a message does not exist");
 
         message.MarkMessageAsRead(request.ChatMessageDateRead);
 

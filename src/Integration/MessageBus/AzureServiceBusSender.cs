@@ -12,10 +12,12 @@ namespace MessageBus;
 public class AzureServiceBusSender : IEventBusSender
 {
     private readonly AzureServiceBusSenderOptions _options;
+
     public AzureServiceBusSender(IOptions<AzureServiceBusSenderOptions> options)
     {
         this._options = options.Value ?? throw new ArgumentNullException(nameof(options));
     }
+
     public async Task PublishMessage(IntegrationEvent message)
     {
         await using var client = new ServiceBusClient(_options.ServiceBusConnectionString);

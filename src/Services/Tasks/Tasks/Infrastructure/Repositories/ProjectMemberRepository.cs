@@ -9,42 +9,57 @@ public class ProjectMemberRepository : Repository<ProjectMember>, IProjectMember
 {
     private readonly ApplicationDbContext applicationDbContext;
 
-    public ProjectMemberRepository(ApplicationDbContext applicationDbContext) : base(applicationDbContext)
+    public ProjectMemberRepository(ApplicationDbContext applicationDbContext)
+        : base(applicationDbContext)
     {
         this.applicationDbContext = applicationDbContext;
     }
+
     public async Task<bool> CheckIfUserIsAMemberOfProject(string projectId, string userId)
     {
-        return await applicationDbContext.ProjectMembers.AnyAsync(x => x.UserId == userId && x.ProjectId == projectId);
+        return await applicationDbContext.ProjectMembers.AnyAsync(
+            x => x.UserId == userId && x.ProjectId == projectId
+        );
     }
+
     public async Task<int> ExecuteRemoveAsync(string projectMemberId)
     {
-        return await applicationDbContext.ProjectMembers.Where(x => x.Id == projectMemberId)
-                                                        .ExecuteDeleteAsync();
+        return await applicationDbContext.ProjectMembers
+            .Where(x => x.Id == projectMemberId)
+            .ExecuteDeleteAsync();
     }
-    public async Task<int> ExecuteUpdateAsync(string projectMemberId, ProjectMemberType projectMemberType, InvitationStatus invitationStatus)
+
+    public async Task<int> ExecuteUpdateAsync(
+        string projectMemberId,
+        ProjectMemberType projectMemberType,
+        InvitationStatus invitationStatus
+    )
     {
-        return await applicationDbContext.ProjectMembers.Where(x => x.Id == projectMemberId)
-                                                            .ExecuteUpdateAsync(s =>
-                                                            s.SetProperty(
-                                                                n => n.Type,
-                                                                projectMemberType)
-                                                            .SetProperty(
-                                                                b => b.InvitationStatus,
-                                                                invitationStatus)
-                                                            );
+        return await applicationDbContext.ProjectMembers
+            .Where(x => x.Id == projectMemberId)
+            .ExecuteUpdateAsync(
+                s =>
+                    s.SetProperty(n => n.Type, projectMemberType)
+                        .SetProperty(b => b.InvitationStatus, invitationStatus)
+            );
     }
+
     public async Task<int> RemoveAllProjectMembersAsync(string projectId)
     {
-        return await applicationDbContext.ProjectMembers.Where(x => x.ProjectId == projectId)
-                                                        .ExecuteDeleteAsync();
+        return await applicationDbContext.ProjectMembers
+            .Where(x => x.ProjectId == projectId)
+            .ExecuteDeleteAsync();
     }
+
     public async Task<ProjectMember?> GetAsync(string Id)
     {
         return await applicationDbContext.ProjectMembers.SingleOrDefaultAsync(x => x.Id == Id);
     }
+
     public async Task<ProjectMember?> GetAsync(string userId, string projectId)
     {
-        return await applicationDbContext.ProjectMembers.SingleOrDefaultAsync(x => x.UserId == userId && x.ProjectId == projectId);
+        return await applicationDbContext.ProjectMembers.SingleOrDefaultAsync(
+            x => x.UserId == userId && x.ProjectId == projectId
+        );
     }
 }

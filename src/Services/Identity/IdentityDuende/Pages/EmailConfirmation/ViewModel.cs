@@ -6,6 +6,7 @@ public class ViewModel
     {
         Success = success;
     }
+
     public bool Success { get; set; } = false;
     public string ReturnUrl { get; } = "TESTESTRETURNURL";
 }

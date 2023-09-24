@@ -15,7 +15,8 @@ public class Program
 
         builder.Host.UseSerilog(SeriLogger.Configure);
 
-        builder.Services.AddReverseProxy()
+        builder.Services
+            .AddReverseProxy()
             .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
         var app = builder.Build();

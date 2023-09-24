@@ -18,11 +18,15 @@ public class AppNotificationController : ControllerBase
     {
         this._mediator = mediator;
     }
+
     [HttpGet]
-    public async Task<ActionResult<List<AppNotification>>> Get([FromQuery] GetAppNotificationsQuery query)
+    public async Task<ActionResult<List<AppNotification>>> Get(
+        [FromQuery] GetAppNotificationsQuery query
+    )
     {
         return await _mediator.Send(query);
     }
+
     [HttpPut("{id}")]
     public async Task<ActionResult> MarkAsSeen([FromRoute] string id)
     {
@@ -30,6 +34,7 @@ public class AppNotificationController : ControllerBase
 
         return NoContent();
     }
+
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete([FromRoute] string id)
     {

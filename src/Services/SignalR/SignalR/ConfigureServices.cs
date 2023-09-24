@@ -5,26 +5,37 @@ using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
 using System.Reflection;
 using SignalR.Commons.Behaviours;
+
 namespace SignalR;
+
 public static class ConfigureServices
 {
-    public static IServiceCollection AddWebAPIServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddWebAPIServices(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
     {
-
         services.AddCors(opt =>
         {
-            opt.AddPolicy(name: "allowAny",
-                      policy =>
-                      {
-                          policy.WithOrigins("https://localhost:4200",
-                                             "http://localhost:4200",
-                                             "http://localhost:1000")
-                            .AllowAnyHeader()
-                            .AllowAnyMethod()
-                            .AllowCredentials();
-                      });
+            opt.AddPolicy(
+                name: "allowAny",
+                policy =>
+                {
+                    policy
+                        .WithOrigins(
+                            "https://localhost:4200",
+                            "http://localhost:4200",
+                            "http://localhost:1000"
+                        )
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                }
+            );
         });
-        var rabbitMQOptionsSection = configuration.GetSection("RabbitMQOptions") ?? throw new ArgumentNullException("RabbitMQOptions");
+        var rabbitMQOptionsSection =
+            configuration.GetSection("RabbitMQOptions")
+            ?? throw new ArgumentNullException("RabbitMQOptions");
 
         services.AddRabbitMQConsumer(rabbitMQOptionsSection);
         services.AddRabbitMQSender(rabbitMQOptionsSection);
@@ -32,19 +43,28 @@ public static class ConfigureServices
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-            cfg.AddBehavior(typeof(MediatR.IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
+            cfg.AddBehavior(
+                typeof(MediatR.IPipelineBehavior<,>),
+                typeof(UnhandledExceptionBehaviour<,>)
+            );
         });
 
+        var redisConnString =
+            configuration.GetConnectionString("Redis")
+            ?? throw new ArgumentNullException(nameof(configuration));
 
-        var redisConnString = configuration.GetConnectionString("Redis") ?? throw new ArgumentNullException(nameof(configuration));
-
-        services.AddSignalR(o =>
-        {
-            o.EnableDetailedErrors = true;
-        }).AddStackExchangeRedis(redisConnString, options =>
-        {
-            options.Configuration.ChannelPrefix = "SignalR";
-        });
+        services
+            .AddSignalR(o =>
+            {
+                o.EnableDetailedErrors = true;
+            })
+            .AddStackExchangeRedis(
+                redisConnString,
+                options =>
+                {
+                    options.Configuration.ChannelPrefix = "SignalR";
+                }
+            );
 
         var RedisOptions = new ConfigurationOptions()
         {
@@ -52,71 +72,78 @@ public static class ConfigureServices
             IncludeDetailInExceptions = true,
         };
 
-        services.AddSingleton<IConnectionMultiplexer>(opt => ConnectionMultiplexer.Connect(RedisOptions));
+        services.AddSingleton<IConnectionMultiplexer>(
+            opt => ConnectionMultiplexer.Connect(RedisOptions)
+        );
 
-        services.AddAuthentication(opt =>
-        {
-            opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-        .AddJwtBearer(opt =>
-         {
-             var internalIdentityUrl = configuration.GetValue<string>("urls:internal:identity") ?? throw new ArgumentNullException(nameof(configuration));
-             var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:identity") ?? throw new ArgumentNullException(nameof(configuration));
+        services
+            .AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(opt =>
+            {
+                var internalIdentityUrl =
+                    configuration.GetValue<string>("urls:internal:identity")
+                    ?? throw new ArgumentNullException(nameof(configuration));
+                var externalIdentityUrlhttp =
+                    configuration.GetValue<string>("urls:external:identity")
+                    ?? throw new ArgumentNullException(nameof(configuration));
 
-             opt.RequireHttpsMetadata = false;
-             opt.SaveToken = true;
-             opt.Authority = internalIdentityUrl;
-             opt.Audience = "signalR";
+                opt.RequireHttpsMetadata = false;
+                opt.SaveToken = true;
+                opt.Authority = internalIdentityUrl;
+                opt.Audience = "signalR";
 
-             opt.TokenValidationParameters = new TokenValidationParameters
-             {
-                 ValidateIssuer = true,
-                 ValidateAudience = true,
-                 ValidateLifetime = true,
-                 ValidateIssuerSigningKey = true,
-                 ValidIssuers = new[] { externalIdentityUrlhttp },
-                 ClockSkew = TimeSpan.Zero
+                opt.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuers = new[] { externalIdentityUrlhttp },
+                    ClockSkew = TimeSpan.Zero
+                };
+                opt.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
 
-             };
-             opt.Events = new JwtBearerEvents
-             {
-                 OnMessageReceived = context =>
-                 {
-                     var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hub"))
+                        {
+                            context.Token = accessToken;
+                        }
 
-                     var path = context.HttpContext.Request.Path;
-                     if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hub"))
-                     {
-                         context.Token = accessToken;
-                     }
-
-                     return Task.CompletedTask;
-                 }
-             };
-         });
+                        return Task.CompletedTask;
+                    }
+                };
+            });
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("ApiScope", policy =>
-            {
-                policy.RequireAuthenticatedUser();
-                policy.RequireClaim("scope", "signalR");
-            });
+            options.AddPolicy(
+                "ApiScope",
+                policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "signalR");
+                }
+            );
         });
 
         var healthBuilder = services.AddHealthChecks();
 
-        if (!configuration.GetValue("isTest",true))
+        if (!configuration.GetValue("isTest", true))
             healthBuilder
-                .AddCheck("self",
-                () => HealthCheckResult.Healthy(),
-                tags: new string[] { "api" }
-                )
+                .AddCheck("self", () => HealthCheckResult.Healthy(), tags: new string[] { "api" })
                 .AddRedis(
                     configuration["ConnectionStrings:Redis"],
                     name: "signalr-redis-check",
-                    tags: new string[] { "redis" })
+                    tags: new string[] { "redis" }
+                )
                 .AddIdentityServer(
                     new Uri(configuration.GetValue<string>("urls:internal:identity")),
                     name: "signalr-identity-check",

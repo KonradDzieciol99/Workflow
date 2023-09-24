@@ -10,21 +10,28 @@ public class ExceptionMiddleware
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionMiddleware> _logger;
     private readonly IWebHostEnvironment _env;
-    private readonly Dictionary<Type, Func<ChatDomainException, HttpContext, Task>> _exceptionHandlers;
+    private readonly Dictionary<
+        Type,
+        Func<ChatDomainException, HttpContext, Task>
+    > _exceptionHandlers;
 
-    public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IWebHostEnvironment env)
+    public ExceptionMiddleware(
+        RequestDelegate next,
+        ILogger<ExceptionMiddleware> logger,
+        IWebHostEnvironment env
+    )
     {
         this._next = next;
         this._logger = logger;
         this._env = env;
         _exceptionHandlers = new()
-            {
-                { typeof(ValidationException), HandleValidationException },
-                { typeof(ChatDomainException), HandleDomainException },
-                { typeof(UnauthorizedAccessException), HandleUnauthorizedAccessException },
-                { typeof(ForbiddenAccessException), HandleForbiddenAccessException },
-                { typeof(NotFoundException), HandleNotFoundException },
-            };
+        {
+            { typeof(ValidationException), HandleValidationException },
+            { typeof(ChatDomainException), HandleDomainException },
+            { typeof(UnauthorizedAccessException), HandleUnauthorizedAccessException },
+            { typeof(ForbiddenAccessException), HandleForbiddenAccessException },
+            { typeof(NotFoundException), HandleNotFoundException },
+        };
     }
 
     public async Task InvokeAsync(HttpContext httpContext)
@@ -43,7 +50,8 @@ public class ExceptionMiddleware
     {
         if (exception is ChatDomainException taskDomainException)
         {
-            Type type = taskDomainException.InnerException?.GetType() ?? typeof(ChatDomainException);
+            Type type =
+                taskDomainException.InnerException?.GetType() ?? typeof(ChatDomainException);
             if (_exceptionHandlers.TryGetValue(type, out var handler))
             {
                 await handler.Invoke(taskDomainException, context);
@@ -56,10 +64,12 @@ public class ExceptionMiddleware
             message = exception.Message;
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
         await context.Response.WriteAsJsonAsync(message);
-
     }
 
-    private async Task HandleUnauthorizedAccessException(ChatDomainException exception, HttpContext context)
+    private async Task HandleUnauthorizedAccessException(
+        ChatDomainException exception,
+        HttpContext context
+    )
     {
         var message = new ProblemDetails()
         {
@@ -75,7 +85,10 @@ public class ExceptionMiddleware
         return;
     }
 
-    private async Task HandleForbiddenAccessException(ChatDomainException exception, HttpContext context)
+    private async Task HandleForbiddenAccessException(
+        ChatDomainException exception,
+        HttpContext context
+    )
     {
         var message = new ProblemDetails()
         {
@@ -105,6 +118,7 @@ public class ExceptionMiddleware
         await context.Response.WriteAsJsonAsync(message);
         return;
     }
+
     private async Task HandleValidationException(ChatDomainException exception, HttpContext context)
     {
         var innerException = (ValidationException)exception.InnerException!;
@@ -125,7 +139,6 @@ public class ExceptionMiddleware
 
     private async Task HandleNotFoundException(ChatDomainException exception, HttpContext context)
     {
-
         var message = new ProblemDetails()
         {
             Instance = context.Request.Path,

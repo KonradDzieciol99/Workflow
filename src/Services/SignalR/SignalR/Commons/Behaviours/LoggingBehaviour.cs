@@ -2,7 +2,8 @@
 
 namespace SignalR.Commons.Behaviours;
 
-public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest> where TRequest : notnull
+public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest>
+    where TRequest : notnull
 {
     private readonly ILogger _logger;
 
@@ -13,10 +14,12 @@ public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest> where T
 
     public async Task Process(TRequest request, CancellationToken cancellationToken)
     {
-
         var requestName = typeof(TRequest).Name;
 
-        _logger.LogInformation("Intergration Event: {requestName} {@request}", requestName, request);
-
+        _logger.LogInformation(
+            "Intergration Event: {requestName} {@request}",
+            requestName,
+            request
+        );
     }
 }

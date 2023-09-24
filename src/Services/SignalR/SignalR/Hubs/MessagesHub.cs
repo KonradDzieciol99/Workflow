@@ -7,9 +7,7 @@ namespace SignalR.Hubs;
 [Authorize(Policy = "ApiScope")]
 public class MessagesHub : Hub
 {
-    public MessagesHub()
-    {
-    }
+    public MessagesHub() { }
 
     public override async Task OnConnectedAsync()
     {

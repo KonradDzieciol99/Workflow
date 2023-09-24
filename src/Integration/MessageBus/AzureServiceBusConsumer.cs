@@ -24,18 +24,21 @@ public class AzureServiceBusConsumer : BackgroundService, IEventBusConsumer
     private readonly AzureServiceBusConsumerOptions _options;
     private readonly ConcurrentDictionary<string, Type> _events;
 
-    public AzureServiceBusConsumer(IServiceScopeFactory serviceScopeFactory,
-                                     IMediator mediator,
-                                     IOptions<AzureServiceBusConsumerOptions> options,
-                                     ILogger<AzureServiceBusConsumer> logger)
+    public AzureServiceBusConsumer(
+        IServiceScopeFactory serviceScopeFactory,
+        IMediator mediator,
+        IOptions<AzureServiceBusConsumerOptions> options,
+        ILogger<AzureServiceBusConsumer> logger
+    )
     {
-        this._serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
+        this._serviceScopeFactory =
+            serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
         this._mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        this._options = options.Value ?? throw new ArgumentNullException(nameof(options)); ;
+        this._options = options.Value ?? throw new ArgumentNullException(nameof(options));
+        ;
         this._events = new ConcurrentDictionary<string, Type>();
         RemoveAllRulesAsync().GetAwaiter().GetResult();
-
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -49,13 +52,18 @@ public class AzureServiceBusConsumer : BackgroundService, IEventBusConsumer
 
         return;
     }
+
     private Task ErrorHandler(ProcessErrorEventArgs args)
     {
-
         var ex = args.Exception;
         var context = args.ErrorSource;
 
-        _logger.LogError(ex, "ERROR handling integation event: {ExceptionMessage} - Context: {@ExceptionContext}", ex.Message, context);
+        _logger.LogError(
+            ex,
+            "ERROR handling integation event: {ExceptionMessage} - Context: {@ExceptionContext}",
+            ex.Message,
+            context
+        );
 
         return Task.CompletedTask;
     }
@@ -67,18 +75,25 @@ public class AzureServiceBusConsumer : BackgroundService, IEventBusConsumer
             var message = args.Message;
             var body = Encoding.UTF8.GetString(message.Body);
 
-            var type = _events[message.Subject] ?? throw new InvalidOperationException($"You did not subscribe to this event {message.Subject}");
-            
-            MethodInfo sendAsyncMethod = this.GetType().GetMethod(nameof(SendAsync), BindingFlags.NonPublic | BindingFlags.Instance) ?? throw new InvalidOperationException($"Something went wrong during execution {nameof(SendAsync)}");
+            var type =
+                _events[message.Subject]
+                ?? throw new InvalidOperationException(
+                    $"You did not subscribe to this event {message.Subject}"
+                );
+
+            MethodInfo sendAsyncMethod =
+                this.GetType()
+                    .GetMethod(nameof(SendAsync), BindingFlags.NonPublic | BindingFlags.Instance)
+                ?? throw new InvalidOperationException(
+                    $"Something went wrong during execution {nameof(SendAsync)}"
+                );
 
             await (Task)sendAsyncMethod.MakeGenericMethod(type).Invoke(this, new object[] { body });
 
             await args.CompleteMessageAsync(args.Message);
-
         }
         catch (Exception)
         {
-
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
                 await args.CompleteMessageAsync(args.Message);
             else
@@ -87,12 +102,10 @@ public class AzureServiceBusConsumer : BackgroundService, IEventBusConsumer
 
         return;
     }
+
     private async Task SendAsync<T>(string eventJSON)
     {
-        var options = new JsonSerializerOptions
-        {
-            WriteIndented = true
-        };
+        var options = new JsonSerializerOptions { WriteIndented = true };
 
         var @event = JsonSerializer.Deserialize<T>(eventJSON, options);
 
@@ -105,23 +118,30 @@ public class AzureServiceBusConsumer : BackgroundService, IEventBusConsumer
         return;
     }
 
-    public async Task Subscribe<T>() where T : IntegrationEvent
+    public async Task Subscribe<T>()
+        where T : IntegrationEvent
     {
-
-        var _administrationClient = new ServiceBusAdministrationClient(_options.ServiceBusConnectionString);
+        var _administrationClient = new ServiceBusAdministrationClient(
+            _options.ServiceBusConnectionString
+        );
 
         var eventName = typeof(T).Name;
 
         try
         {
-            await _administrationClient.CreateRuleAsync(_options.TopicName, _options.SubscriptionName, new CreateRuleOptions
-            {
-                Filter = new CorrelationRuleFilter() { Subject = eventName },
-                Name = eventName
-            });
+            await _administrationClient.CreateRuleAsync(
+                _options.TopicName,
+                _options.SubscriptionName,
+                new CreateRuleOptions
+                {
+                    Filter = new CorrelationRuleFilter() { Subject = eventName },
+                    Name = eventName
+                }
+            );
             _events.TryAdd(eventName, typeof(T));
         }
-        catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.MessagingEntityAlreadyExists)
+        catch (ServiceBusException ex)
+            when (ex.Reason == ServiceBusFailureReason.MessagingEntityAlreadyExists)
         {
             //_logger.LogWarning("The messaging entity {eventName} already exists.", eventName);
         }
@@ -141,15 +161,24 @@ public class AzureServiceBusConsumer : BackgroundService, IEventBusConsumer
 
     private async Task RemoveAllRulesAsync()
     {
-        var _administrationClient = new ServiceBusAdministrationClient(_options.ServiceBusConnectionString);
+        var _administrationClient = new ServiceBusAdministrationClient(
+            _options.ServiceBusConnectionString
+        );
 
         try
         {
-            var rules = _administrationClient.GetRulesAsync(_options.TopicName, _options.SubscriptionName);
+            var rules = _administrationClient.GetRulesAsync(
+                _options.TopicName,
+                _options.SubscriptionName
+            );
 
             await foreach (var rule in rules)
             {
-                await _administrationClient.DeleteRuleAsync(_options.TopicName, _options.SubscriptionName, rule.Name);
+                await _administrationClient.DeleteRuleAsync(
+                    _options.TopicName,
+                    _options.SubscriptionName,
+                    rule.Name
+                );
             }
         }
         //catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.MessageNotFound || ex.Reason == ServiceBusFailureReason.MessagingEntityNotFound)

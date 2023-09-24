@@ -5,10 +5,13 @@ using MessageBus;
 namespace EmailEmitter.IntegrationEvents;
 
 public record UserResentVerificationEmailIntegrationEvent(
-                                string UserEmail,
-                                string VerificationToken,
-                                string UserId) : IntegrationEvent;
-public class UserResentVerificationEmailIntegrationEventHandler : IRequestHandler<UserResentVerificationEmailIntegrationEvent>
+    string UserEmail,
+    string VerificationToken,
+    string UserId
+) : IntegrationEvent;
+
+public class UserResentVerificationEmailIntegrationEventHandler
+    : IRequestHandler<UserResentVerificationEmailIntegrationEvent>
 {
     private readonly ISenderSource _emailSender;
 
@@ -16,9 +19,17 @@ public class UserResentVerificationEmailIntegrationEventHandler : IRequestHandle
     {
         _emailSender = emailSender;
     }
-    public async Task Handle(UserResentVerificationEmailIntegrationEvent request, CancellationToken cancellationToken)
+
+    public async Task Handle(
+        UserResentVerificationEmailIntegrationEvent request,
+        CancellationToken cancellationToken
+    )
     {
-        await _emailSender.CreateConfirmEmailMessage(request.UserEmail, request.VerificationToken, request.UserId);
+        await _emailSender.CreateConfirmEmailMessage(
+            request.UserEmail,
+            request.VerificationToken,
+            request.UserId
+        );
 
         return;
     }
