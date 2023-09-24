@@ -44,8 +44,8 @@ public static class ConfigureServices
         })
         .AddJwtBearer(opt =>
         {
-            var internalIdentityUrl = configuration.GetValue<string>("urls:internal:IdentityHttp") ?? throw new ArgumentNullException(nameof(configuration));
-            var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:IdentityHttp") ?? throw new ArgumentNullException(nameof(configuration));
+            var internalIdentityUrl = configuration.GetValue<string>("urls:internal:identity") ?? throw new ArgumentNullException(nameof(configuration));
+            var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:identity") ?? throw new ArgumentNullException(nameof(configuration));
 
             opt.RequireHttpsMetadata = false;
             opt.SaveToken = true;
@@ -92,8 +92,8 @@ public static class ConfigureServices
                       });
         });
 
-        services.AddRabbitMQConsumer(configuration.GetSection("RabbitMQConsumerOptions"));
-        services.AddRabbitMQSender(configuration.GetSection("RabbitMQConsumerOptions"));
+        services.AddRabbitMQConsumer(configuration.GetSection("RabbitMQOptions"));
+        services.AddRabbitMQSender(configuration.GetSection("RabbitMQOptions"));
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
@@ -110,7 +110,10 @@ public static class ConfigureServices
 
         services.AddTransient<IAppTaskService, AppTaskService>();
 
-        services.AddHealthChecks()
+        var healthBuilder = services.AddHealthChecks();
+
+        if (!configuration.GetValue("isTest",true))
+            healthBuilder
                     .AddCheck("self",() => HealthCheckResult.Healthy(),
                         tags: new string[] { "api" }
                     )
@@ -119,7 +122,7 @@ public static class ConfigureServices
                         name: "tasks-sql-db-check",
                         tags: new string[] { "sql" })
                     .AddIdentityServer(
-                        new Uri(configuration.GetValue<string>("urls:internal:IdentityHttp")),
+                        new Uri(configuration.GetValue<string>("urls:internal:identity")),
                         name: "tasks-identity-check",
                         tags: new string[] { "identity" }
                     );

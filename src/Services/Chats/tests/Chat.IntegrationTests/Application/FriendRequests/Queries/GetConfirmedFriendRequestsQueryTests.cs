@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using TestsHelpers.Extensions;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Chat.IntegrationTests.Application.FriendRequests.Queries;

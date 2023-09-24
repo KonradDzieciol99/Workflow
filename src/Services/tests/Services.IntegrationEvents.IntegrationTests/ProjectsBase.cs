@@ -11,7 +11,9 @@ public static class ProjectsBase
             {
                 configBuilder.AddInMemoryCollection(new Dictionary<string, string?>
                 {
-                    ["RabbitMQConsumerOptions:RabbitMQConnectionString"] = RabbitMQConnString
+                    ["RabbitMQOptions:RabbitMQConnectionString"] = RabbitMQConnString,
+                    ["RabbitMQOptions:Exchange"] = "workflow_event_bus",
+                    ["RabbitMQOptions:Queue"] = "projects",
                 });
             });
 
@@ -37,6 +39,8 @@ public static class ProjectsBase
                         policy.RequireAssertion(context => true);
                     });
                 });
+                
+
             });
         });
     }

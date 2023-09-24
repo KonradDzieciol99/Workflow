@@ -10,7 +10,8 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using TestsHelpers;
+using TestsHelpers.Extensions;
+
 namespace Chat.IntegrationTests.Application.FriendRequests.Commands;
 [Collection("Base")]
 public class CreateFriendRequestCommandTests : IAsyncLifetime

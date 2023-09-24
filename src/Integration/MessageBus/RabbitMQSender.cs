@@ -27,12 +27,6 @@ public class RabbitMQSender : IEventBusSender
         using var connection = factory.CreateConnection();
         using var channel = connection.CreateModel();
 
-        //channel.QueueDeclare(queue: "hello",
-        //                     durable: false,
-        //                     exclusive: false,
-        //                     autoDelete: false,
-        //                     arguments: null);
-
         var jsonMessage = JsonSerializer.Serialize(message, message.GetType());
         var body = Encoding.UTF8.GetBytes(jsonMessage);
 

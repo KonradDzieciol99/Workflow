@@ -11,8 +11,4 @@ public class TaskService : BaseHttpService, ITaskService
     {
         _tasksServiceUrl = configuration.GetValue<string>("ServicesUrl:Tasks") ?? throw new ArgumentNullException(nameof(configuration)); ;
     }
-    public async Task<AppTaskDto> CreateTask(object createAppTask)
-    {
-        return await SendAsync<AppTaskDto>(new ApiRequest(HttpMethod.Post, _tasksServiceUrl, createAppTask));
-    }
 }

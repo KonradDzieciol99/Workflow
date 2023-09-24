@@ -11,14 +11,18 @@ public static class SeriLogger
     public static Action<HostBuilderContext, LoggerConfiguration> Configure =>
        (context, configuration) =>
        {
-           var elasticUri = context.Configuration["ConnectionStrings:seq"] ?? throw new ArgumentNullException("ConnectionStrings:seq");
 
-           configuration.MinimumLevel.Verbose()
-                        .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Information)
-                        .WriteTo.Debug(restrictedToMinimumLevel: LogEventLevel.Debug)
-                        .WriteTo.Seq(elasticUri)
-                        .Enrich.WithMachineName()
-                        .Enrich.WithAssemblyName()
-                        .Filter.ByExcluding("Contains(RequestPath, '/hc') and StatusCode = 200");
+          var builder = configuration.MinimumLevel.Verbose()
+                         .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Information)
+                         .WriteTo.Debug(restrictedToMinimumLevel: LogEventLevel.Debug)
+                         .Enrich.WithMachineName()
+                         .Enrich.WithAssemblyName()
+                         .Filter.ByExcluding("Contains(RequestPath, '/hc') and StatusCode = 200");
+
+          if (!context.Configuration.GetValue("isTest", true))
+          {
+               var seqUrl = context.Configuration["ConnectionStrings:seq"] ?? throw new ArgumentNullException("ConnectionStrings:seq");
+               builder.WriteTo.Seq(seqUrl);
+          }
        };
 }

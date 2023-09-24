@@ -37,7 +37,6 @@ public class Base : IAsyncLifetime
         await _msSqlContainer.StartAsync();
         await _rabbitMqContainer.StartAsync();
 
-        var test = _msSqlContainer.GetConnectionString();
         _chatFactory = ChatBase.Init(ModifyConnectionString(_msSqlContainer.GetConnectionString(),"chat"), _rabbitMqContainer.GetConnectionString());
         _notificationFactory = NotificationsBase.Init(ModifyConnectionString(_msSqlContainer.GetConnectionString(), "notification"), _rabbitMqContainer.GetConnectionString());
         _projectsFactory = ProjectsBase.Init(ModifyConnectionString(_msSqlContainer.GetConnectionString(), "projects"), _rabbitMqContainer.GetConnectionString());

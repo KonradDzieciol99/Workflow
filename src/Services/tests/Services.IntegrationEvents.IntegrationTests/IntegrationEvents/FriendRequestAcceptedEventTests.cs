@@ -5,6 +5,7 @@ using Notification.Application.AppNotifications.Queries;
 using Notification.Domain.Common.Enums;
 using Notification.Domain.Entity;
 using System.Text.Json;
+using TestsHelpers.Extensions;
 
 namespace Services.IntegrationEvents.IntegrationTests.IntegrationEvents;
 [Collection("Base")]
@@ -26,7 +27,7 @@ public class FriendRequestAcceptedEventTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task AcceptFriendRequestCommand_InValidData_NoExistingFriendRequests_ReturnsForbidden()
+    public async Task AcceptFriendRequestCommand_AcceptFriendRequest_CreateNotification()
     {
         //arrange
         var FriendRequests = ChatBase.GetFakeFriendRequests();

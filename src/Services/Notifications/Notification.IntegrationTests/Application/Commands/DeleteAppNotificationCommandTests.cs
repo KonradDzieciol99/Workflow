@@ -1,6 +1,7 @@
 ﻿using Notification.Application.AppNotifications.Commands;
 using Notification.Domain.Common.Enums;
 using Notification.Domain.Entity;
+using TestsHelpers.Extensions;
 
 namespace Notification.IntegrationTests.Application.Commands;
 

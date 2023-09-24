@@ -16,8 +16,8 @@ public static class ConfigureServices
                 .AddRazorRenderer()
                 .AddSendGridSender(configuration["SendGrid:Key"] ?? throw new ArgumentNullException(nameof(configuration)));
 
-            services.AddRabbitMQConsumer(configuration.GetSection("RabbitMQConsumerOptions"));
-            services.AddRabbitMQSender(configuration.GetSection("RabbitMQConsumerOptions"));
+            services.AddRabbitMQConsumer(configuration.GetSection("RabbitMQOptions"));
+            services.AddRabbitMQSender(configuration.GetSection("RabbitMQOptions"));
 
             services.AddScoped<ISenderSource, SenderSource>();
 
@@ -29,24 +29,26 @@ public static class ConfigureServices
             });
         }
 
-        var healthChecksBuilder =services.AddHealthChecks()
-            .AddCheck("self",
+        var healthBuilder = services.AddHealthChecks();
+
+        if (!configuration.GetValue("isTest",true))
+        {
+            healthBuilder.AddCheck("self",
                 () => HealthCheckResult.Healthy(),
                 tags: new string[] { "api" }
             )
             .AddIdentityServer(
-                    new Uri(configuration.GetValue<string>("urls:internal:IdentityHttp")),
+                    new Uri(configuration.GetValue<string>("urls:internal:identity")),
                     name: "email-identity-check",
                     tags: new string[] { "identity" }
              );
 
-        if (configuration.GetValue<bool>("SendGrid:enabled"))
-        {
-            healthChecksBuilder
-                .AddSendGrid(
-                    configuration["SendGrid:Key"],
-                    name: "email-send-grid-check",
-                    tags: new string[] { "sendGrid" });
+            if (configuration.GetValue<bool>("SendGrid:enabled"))
+                healthBuilder
+                    .AddSendGrid(
+                        configuration["SendGrid:Key"],
+                        name: "email-send-grid-check",
+                        tags: new string[] { "sendGrid" });
         }
 
         return services;

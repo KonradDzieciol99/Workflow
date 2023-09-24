@@ -4,6 +4,7 @@ using System.Text.Json;
 using Tasks.Application.AppTasks.Commands;
 using Tasks.Domain.Common.Models;
 using Tasks.Domain.Entity;
+using TestsHelpers.Extensions;
 
 namespace Tasks.IntegrationTests.AppTasks.Commands;
 

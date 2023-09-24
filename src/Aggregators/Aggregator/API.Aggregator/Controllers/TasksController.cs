@@ -1,6 +1,4 @@
-﻿using API.Aggregator.Application.AppTasksAggregate.Commands;
-using API.Aggregator.Application.Commons.Models;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,12 +14,5 @@ public class TasksController : ControllerBase
     public TasksController(IMediator mediator)
     {
         this._mediator = mediator ?? throw new ArgumentNullException(nameof(mediator)); ;
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<AppTaskDto>> Post([FromBody] CreateAppTaskAggregateCommand command)
-    {
-        var result = await _mediator.Send(command);
-        return Created("", result);
     }
 }

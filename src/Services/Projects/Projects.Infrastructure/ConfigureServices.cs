@@ -18,21 +18,15 @@ public static class ConfigureServices
     {
         services.AddDbContext<ApplicationDbContext>(opt =>
         {
-            string connString;
-            var isDockerEnvironment = Environment.GetEnvironmentVariable("DOCKER_ENVIRONMENT");
-            if (isDockerEnvironment is null || isDockerEnvironment == "true")
-                connString = configuration.GetConnectionString("DbContextConnString") ?? throw new ArgumentNullException(nameof(configuration));
-            else
-                connString = configuration.GetConnectionString("NonDockerDbContextConnString") ?? throw new ArgumentNullException(nameof(configuration));
-
+            var connString = configuration.GetConnectionString("DbContextConnString") ?? throw new ArgumentNullException(nameof(configuration));
             opt.UseSqlServer(connString);
         });
 
         services.AddScoped<IIntegrationEventService, IntegrationEventService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        services.AddRabbitMQConsumer(configuration.GetSection("RabbitMQConsumerOptions"));
-        services.AddRabbitMQSender(configuration.GetSection("RabbitMQConsumerOptions"));
+        services.AddRabbitMQConsumer(configuration.GetSection("RabbitMQOptions"));
+        services.AddRabbitMQSender(configuration.GetSection("RabbitMQOptions"));
 
         services.AddCors(opt =>
         {
@@ -54,8 +48,8 @@ public static class ConfigureServices
         })
         .AddJwtBearer(opt =>
         {
-            var internalIdentityUrl = configuration.GetValue<string>("urls:internal:IdentityHttp") ?? throw new ArgumentNullException(nameof(configuration));
-            var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:IdentityHttp") ?? throw new ArgumentNullException(nameof(configuration));
+            var internalIdentityUrl = configuration.GetValue<string>("urls:internal:identity") ?? throw new ArgumentNullException(nameof(configuration));
+            var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:identity") ?? throw new ArgumentNullException(nameof(configuration));
 
             opt.RequireHttpsMetadata = false;
             opt.SaveToken = true;
@@ -97,23 +91,23 @@ public static class ConfigureServices
         //        new ProjectAuthorRequirement()
         //        ));
         //});
+        var healthBuilder = services.AddHealthChecks();
 
-        var healthCheckBuilder =services.AddHealthChecks()
-                .AddCheck("self",
-                    () => HealthCheckResult.Healthy(),
-                    tags: new string[] { "api" }
-                )
-                .AddSqlServer(
-                    configuration["ConnectionStrings:DbContextConnString"],
-                    name: "projects-sql-db-check",
-                    tags: new string[] { "sql" })
-                .AddIdentityServer(
-                    new Uri(configuration.GetValue<string>("urls:internal:IdentityHttp")),
-                    name: "tasks-identity-check",
-                    tags: new string[] { "identity" }
-                );
-
-
+        if (!configuration.GetValue("isTest",true))
+            healthBuilder
+                    .AddCheck("self",
+                        () => HealthCheckResult.Healthy(),
+                        tags: new string[] { "api" }
+                    )
+                    .AddSqlServer(
+                        configuration["ConnectionStrings:DbContextConnString"],
+                        name: "projects-sql-db-check",
+                        tags: new string[] { "sql" })
+                    .AddIdentityServer(
+                        new Uri(configuration.GetValue<string>("urls:internal:identity")),
+                        name: "tasks-identity-check",
+                        tags: new string[] { "identity" }
+                    );
 
         services.AddScoped<SeedData>();
 

@@ -14,7 +14,9 @@ public static class ChatBase
             {
                 configBuilder.AddInMemoryCollection(new Dictionary<string, string?>
                 {
-                    ["RabbitMQConsumerOptions:RabbitMQConnectionString"] = RabbitMQConnString
+                    ["RabbitMQOptions:RabbitMQConnectionString"] = RabbitMQConnString,
+                    ["RabbitMQOptions:Exchange"] = "workflow_event_bus",
+                    ["RabbitMQOptions:Queue"] = "chat",
                 });
             });
 
@@ -40,6 +42,8 @@ public static class ChatBase
                         policy.RequireAssertion(context => true); 
                     });
                 });
+                
+
             });
         });
     }

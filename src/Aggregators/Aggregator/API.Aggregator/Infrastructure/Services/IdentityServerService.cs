@@ -11,7 +11,7 @@ public class IdentityServerService : BaseHttpService, IIdentityServerService
 
     public IdentityServerService(IHttpClientFactory httpClientFactory, IConfiguration configuration) : base(httpClientFactory.CreateClient("InternalHttpClient"))
     {
-        _identityUrl = configuration.GetValue<string>("urls:internal:IdentityHttp") ?? throw new ArgumentNullException(_identityUrl);
+        _identityUrl = configuration.GetValue<string>("urls:internal:identity") ?? throw new ArgumentNullException(_identityUrl);
     }
 
     public async Task<UserDto?> CheckIfUserExistsAsync(string email)

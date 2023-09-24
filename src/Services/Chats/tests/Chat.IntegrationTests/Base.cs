@@ -8,6 +8,9 @@ using Bogus;
 using Chat.Domain.Entity;
 using MessageBus;
 using Moq;
+using Microsoft.Extensions.Configuration;
+using TestsHelpers.Extensions;
+using MessageBus.Models;
 
 namespace Chat.IntegrationTests;
 
@@ -30,6 +33,18 @@ public class Base : IAsyncLifetime
 
         this._factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
         {
+
+            builder.ConfigureAppConfiguration((context, configBuilder) =>
+            {
+                configBuilder.AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["isTest"] = "true",
+                    ["RabbitMQOptions:RabbitMQConnectionString"] = "test",
+                    ["RabbitMQOptions:Exchange"] = "test",
+                    ["RabbitMQOptions:Queue"] = "test",
+                });
+            });
+
             builder.ConfigureServices((context, services) =>
             {
                 var mockSender = new Mock<IEventBusSender>();
@@ -41,7 +56,7 @@ public class Base : IAsyncLifetime
                 services.AddSingleton<IEventBusSender>(mockSender.Object);
                 services.AddSingleton<IEventBusConsumer>(mockConsumer.Object);
 
-                var dbContextOptions = services.SingleOrDefault(service => service.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
+                var dbContextOptions = services.SingleOrDefault(descriptor => descriptor.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
                 services.Remove(dbContextOptions);
 
                 var dbConnString = _msSqlContainer.GetConnectionString() ?? throw new ArgumentNullException("dbConnString");
@@ -58,9 +73,10 @@ public class Base : IAsyncLifetime
                 {
                     options.AddPolicy("ApiScope", policy =>
                     {
-                        policy.RequireAssertion(context => true); // zawsze zwraca true
+                        policy.RequireAssertion(context => true);
                     });
                 });
+                
             });
         });
     }

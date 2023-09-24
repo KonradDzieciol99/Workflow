@@ -24,9 +24,10 @@ public static class ConfigureServices
                             .AllowCredentials();
                       });
         });
+        var rabbitMQOptionsSection = configuration.GetSection("RabbitMQOptions") ?? throw new ArgumentNullException("RabbitMQOptions");
 
-        services.AddRabbitMQConsumer(configuration.GetSection("RabbitMQConsumerOptions"));
-        services.AddRabbitMQSender(configuration.GetSection("RabbitMQConsumerOptions"));
+        services.AddRabbitMQConsumer(rabbitMQOptionsSection);
+        services.AddRabbitMQSender(rabbitMQOptionsSection);
 
         services.AddMediatR(cfg =>
         {
@@ -60,8 +61,8 @@ public static class ConfigureServices
         })
         .AddJwtBearer(opt =>
          {
-             var internalIdentityUrl = configuration.GetValue<string>("urls:internal:IdentityHttp") ?? throw new ArgumentNullException(nameof(configuration));
-             var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:IdentityHttp") ?? throw new ArgumentNullException(nameof(configuration));
+             var internalIdentityUrl = configuration.GetValue<string>("urls:internal:identity") ?? throw new ArgumentNullException(nameof(configuration));
+             var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:identity") ?? throw new ArgumentNullException(nameof(configuration));
 
              opt.RequireHttpsMetadata = false;
              opt.SaveToken = true;
@@ -103,20 +104,24 @@ public static class ConfigureServices
                 policy.RequireClaim("scope", "signalR");
             });
         });
-        services.AddHealthChecks()
+
+        var healthBuilder = services.AddHealthChecks();
+
+        if (!configuration.GetValue("isTest",true))
+            healthBuilder
                 .AddCheck("self",
                 () => HealthCheckResult.Healthy(),
                 tags: new string[] { "api" }
-            )
-            .AddRedis(
-                configuration["ConnectionStrings:Redis"],
-                name: "signalr-redis-check",
-                tags: new string[] { "redis" })
-            .AddIdentityServer(
-                new Uri(configuration.GetValue<string>("urls:internal:IdentityHttp")),
-                name: "signalr-identity-check",
-                tags: new string[] { "identity" }
-            );
+                )
+                .AddRedis(
+                    configuration["ConnectionStrings:Redis"],
+                    name: "signalr-redis-check",
+                    tags: new string[] { "redis" })
+                .AddIdentityServer(
+                    new Uri(configuration.GetValue<string>("urls:internal:identity")),
+                    name: "signalr-identity-check",
+                    tags: new string[] { "identity" }
+                );
 
         return services;
     }

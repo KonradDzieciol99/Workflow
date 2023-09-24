@@ -10,6 +10,7 @@ using Bogus;
 using Notification.Domain.Entity;
 using Notification.Domain.Common.Enums;
 using Bogus.DataSets;
+using Microsoft.Extensions.Configuration;
 
 namespace Notification.IntegrationTests;
 [CollectionDefinition("Base")]
@@ -30,6 +31,16 @@ public class Base : IAsyncLifetime
 
         this._factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
         {
+            builder.ConfigureAppConfiguration((context, configBuilder) =>
+            {
+                configBuilder.AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["isTest"] = "true",
+                    ["RabbitMQOptions:RabbitMQConnectionString"] = "test",
+                    ["RabbitMQOptions:Exchange"] = "test",
+                    ["RabbitMQOptions:Queue"] = "test",
+                });
+            });
             builder.ConfigureServices((context, services) =>
             {
                 var mockSender = new Mock<IEventBusSender>();
@@ -61,6 +72,8 @@ public class Base : IAsyncLifetime
                         policy.RequireAssertion(context => true); 
                     });
                 });
+
+                
             });
         });
 

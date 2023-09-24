@@ -1,98 +1,30 @@
 version: '3.4'
 
+x-common-variables: &common-variables
+    urls__internal__identity: http://identityduende:80
+    urls__internal__tasks: http://tasks:80
+    urls__internal__notification: http://notification:80
+    urls__internal__chat: http://chat:80
+    urls__internal__projects: http://projects:80
+    urls__external__identity: http://localhost:5000
+    EmailEmiterEnabled: false
+    ASPNETCORE_ENVIRONMENT: Development
+    ASPNETCORE_URLS: http://+:80
+    RabbitMQOptions__RabbitMQConnectionString: amqp://guest:guest@rabbitmq:5672/
+    RabbitMQOptions__Exchange: workflow_event_bus
+    AzureServiceBusOptions__ServiceBusConnectionString: -------Your Conn String--------
+    AzureServiceBusOptions__TopicName: workflow_event_bus
+    ConnectionStrings__Redis: redis:6379
+    ConnectionStrings__seq: http://seq
+
 services:
-
-  identityduende:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-    ports:
-      - "5000:80"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-
-  projects:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-    ports:
-      - "5002:80"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-
-  chat:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-    ports:
-      - "5004:80"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-
-  emailemitter:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-    ports:
-      - "5006:80"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-
-  notification:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-    ports:
-      - "5008:80"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-
-  photos:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-    ports:
-      - "5010:80"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-
-  signalr:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-    ports:
-      - "5012:80"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-
-  tasks:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-    ports:
-      - "5014:80"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
   healthchecks:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      <<: *common-variables
     ports:
       - "5018:80"
 
-  yarpproxy:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-    ports:
-      - "5100:80"
   seq:
     environment:
       - ACCEPT_EULA=Y
@@ -104,10 +36,110 @@ services:
       - "15672:15672"
       - "5672:5672"
 
+  identityduende:
+    environment:
+      <<: *common-variables
+      RabbitMQOptions__Queue: identityduende
+      AzureServiceBusOptions__SubscriptionName: identityduende
+      ConnectionStrings__DbContextConnString: Server=sql_server,1433;Database=Workflow_identityduende;User ID=sa;Password=Testpassword1!;TrustServerCertificate=True;
+    ports:
+      - "5000:80"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  projects:
+    environment:
+      <<: *common-variables
+      RabbitMQOptions__Queue: projects
+      AzureServiceBusOptions__SubscriptionName: projects
+      ConnectionStrings__DbContextConnString: Server=sql_server,1433;Database=Workflow_projects;User ID=sa;Password=Testpassword1!;TrustServerCertificate=True;
+    ports:
+      - "5002:80"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  chat:
+    environment:
+      <<: *common-variables
+      RabbitMQOptions__Queue: chat
+      AzureServiceBusOptions__SubscriptionName: chat
+      ConnectionStrings__DbContextConnString: Server=sql_server,1433;Database=Workflow_chat;User ID=sa;Password=Testpassword1!;TrustServerCertificate=True;
+    ports:
+      - "5004:80"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  emailemitter:
+    environment:
+      <<: *common-variables
+      RabbitMQOptions__Queue: emailemitter
+      AzureServiceBusOptions__SubscriptionName: emailemitter
+      ConnectionStrings__DbContextConnString: Server=sql_server,1433;Database=Workflow_emailemitter;User ID=sa;Password=Testpassword1!;TrustServerCertificate=True;
+    ports:
+      - "5006:80"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  notification:
+    environment:
+      <<: *common-variables
+      RabbitMQOptions__Queue: notification
+      AzureServiceBusOptions__SubscriptionName: notification
+      ConnectionStrings__DbContextConnString: Server=sql_server,1433;Database=Workflow_notification;User ID=sa;Password=Testpassword1!;TrustServerCertificate=True;
+    ports:
+      - "5008:80"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  photos:
+    environment:
+      <<: *common-variables
+      RabbitMQOptions__Queue: photos
+      AzureServiceBusOptions__SubscriptionName: photos
+      ConnectionStrings__DbContextConnString: Server=sql_server,1433;Database=Workflow_photos;User ID=sa;Password=Testpassword1!;TrustServerCertificate=True;
+    ports:
+      - "5010:80"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  signalr:
+    environment:
+      <<: *common-variables
+      RabbitMQOptions__Queue: signalr
+      AzureServiceBusOptions__SubscriptionName: signalr
+    ports:
+      - "5012:80"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  tasks:
+    environment:
+      <<: *common-variables
+      RabbitMQOptions__Queue: tasks
+      AzureServiceBusOptions__SubscriptionName: tasks
+      ConnectionStrings__DbContextConnString: Server=sql_server,1433;Database=Workflow_tasks;User ID=sa;Password=Testpassword1!;TrustServerCertificate=True;
+    ports:
+      - "5014:80"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  yarpproxy:
+    environment:
+      <<: *common-variables
+    ports:
+      - "5100:80"
+
   api.aggregator:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
+      <<: *common-variables
     ports:
       - "5016:80"
     volumes:
