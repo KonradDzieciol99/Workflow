@@ -3,6 +3,7 @@ using MessageBus;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Respawn;
@@ -36,6 +37,16 @@ public class Base : IAsyncLifetime
 
         this._factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
             {
+                builder.ConfigureAppConfiguration((context, configBuilder) =>
+                {
+                    configBuilder.AddInMemoryCollection(new Dictionary<string, string?>
+                    {
+                        ["isTest"] = "true",
+                        ["RabbitMQOptions:RabbitMQConnectionString"] = "test",
+                        ["RabbitMQOptions:Exchange"] = "test",
+                        ["RabbitMQOptions:Queue"] = "test",
+                    });
+                });
                 builder.ConfigureServices((context, services) =>
                 {
                     var mockSender = new Mock<IEventBusSender>();
@@ -67,6 +78,8 @@ public class Base : IAsyncLifetime
                             policy.RequireAssertion(context => true);
                         });
                     });
+                    
+
                 });
             });
     }

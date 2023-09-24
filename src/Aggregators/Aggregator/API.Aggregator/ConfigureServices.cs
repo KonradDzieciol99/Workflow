@@ -45,8 +45,8 @@ public static class ConfigureServices
         })
         .AddJwtBearer(opt =>
         {
-            var internalIdentityUrl = configuration.GetValue<string>("urls:internal:IdentityHttp") ?? throw new ArgumentNullException(nameof(configuration));
-            var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:IdentityHttp") ?? throw new ArgumentNullException(nameof(configuration));
+            var internalIdentityUrl = configuration.GetValue<string>("urls:internal:identity") ?? throw new ArgumentNullException(nameof(configuration));
+            var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:identity") ?? throw new ArgumentNullException(nameof(configuration));
 
             opt.RequireHttpsMetadata = false;
             opt.SaveToken = true;
@@ -87,13 +87,16 @@ public static class ConfigureServices
                       });
         });
 
-        services.AddHealthChecks()
-            .AddCheck("self", () => HealthCheckResult.Healthy(), tags: new string[] { "api" })
-            .AddUrlGroup(new Uri($"{configuration["urls:internal:chat"]}/hc"), name: "chat-check", tags: new string[] { "chat" })
-            .AddUrlGroup(new Uri($"{configuration["urls:internal:IdentityHttp"]}/hc"), name: "identity-check", tags: new string[] { "identity" })
-            .AddUrlGroup(new Uri($"{configuration["urls:internal:notificationHttp"]}/hc"), name: "notification-check", tags: new string[] { "notification" })
-            .AddUrlGroup(new Uri($"{configuration["urls:internal:projectsHttp"]}/hc"), name: "projects-check", tags: new string[] { "projects" })
-            .AddUrlGroup(new Uri($"{configuration["urls:internal:tasksHttp"]}/hc"), name: "task-check", tags: new string[] { "task" });
+
+        var healthBuilder = services.AddHealthChecks();
+        if (!configuration.GetValue("isTest",true))
+            healthBuilder.AddCheck("self", () => HealthCheckResult.Healthy(), tags: new string[] { "api" })
+                .AddUrlGroup(new Uri($"{configuration["urls:internal:chat"]}/hc"), name: "chat-check", tags: new string[] { "chat" })
+                .AddUrlGroup(new Uri($"{configuration["urls:internal:identity"]}/hc"), name: "identity-check", tags: new string[] { "identity" })
+                .AddUrlGroup(new Uri($"{configuration["urls:internal:notification"]}/hc"), name: "notification-check", tags: new string[] { "notification" })
+                .AddUrlGroup(new Uri($"{configuration["urls:internal:projects"]}/hc"), name: "projects-check", tags: new string[] { "projects" })
+                .AddUrlGroup(new Uri($"{configuration["urls:internal:tasks"]}/hc"), name: "task-check", tags: new string[] { "task" });
+        
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 

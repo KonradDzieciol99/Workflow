@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace TestsHelpers;
+namespace TestsHelpers.Extensions;
 public static class WebApplicationFactoryExtensions
 {
     public static List<TEntity> SeedData<TProgram, TApplicationDbContext, TEntity>(this WebApplicationFactory<TProgram> factory, List<TEntity> entities)

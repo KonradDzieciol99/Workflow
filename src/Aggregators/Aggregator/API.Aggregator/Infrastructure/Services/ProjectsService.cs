@@ -10,7 +10,7 @@ public class ProjectsService : BaseHttpService, IProjectsService
     private readonly string _projectServiceUrl;
     public ProjectsService(IHttpClientFactory httpClientFactory, IConfiguration configuration) : base(httpClientFactory.CreateClient("InternalHttpClient"))
     {
-        _projectServiceUrl = configuration.GetValue<string>("urls:internal:projectsHttp") ?? throw new ArgumentNullException(nameof(configuration)); ;
+        _projectServiceUrl = configuration.GetValue<string>("urls:internal:projects") ?? throw new ArgumentNullException(nameof(configuration)); ;
     }
 
     public async Task<bool> CheckIfUserIsAMemberOfProject(string userId, string projectId)

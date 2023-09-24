@@ -5,7 +5,7 @@ using Tasks.Application.AppTasks.Commands;
 using Tasks.Application.Common.Models;
 using Tasks.Domain.Common.Models;
 using Tasks.Domain.Entity;
-using TestsHelpers;
+using TestsHelpers.Extensions;
 
 namespace Tasks.IntegrationTests.AppTasks.Commands;
 [Collection("Base")]//dzielona klasa wpólna dla wszystkich testów (w obrębie tych które mają ten atrybut z nią)

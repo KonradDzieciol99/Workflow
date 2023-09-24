@@ -87,8 +87,6 @@ services:
     depends_on:
     - sql_server
     - rabbitmq
-    environment:
-      - EmailEmiterEnabled=false
    
   emailemitter:
     image: ${DOCKER_REGISTRY-}emailemitter
@@ -98,8 +96,6 @@ services:
       dockerfile: src/Services/Emails/EmailEmitter/Dockerfile
     depends_on:
      - rabbitmq
-    environment:
-      - EmailEmiterEnabled=false
 
   chat:
     image: ${DOCKER_REGISTRY-}chat

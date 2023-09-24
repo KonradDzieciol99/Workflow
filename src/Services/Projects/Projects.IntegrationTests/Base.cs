@@ -8,6 +8,7 @@ using TestsHelpers;
 using Projects.Infrastructure.DataAccess;
 using MessageBus;
 using Moq;
+using Microsoft.Extensions.Configuration;
 
 namespace Projects.IntegrationTests;
 
@@ -30,6 +31,17 @@ public class Base : IAsyncLifetime
 
         _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
         {
+            builder.ConfigureAppConfiguration((context, configBuilder) =>
+            {
+                configBuilder.AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["isTest"] = "true",
+                    ["RabbitMQOptions:RabbitMQConnectionString"] = "test",
+                    ["RabbitMQOptions:Exchange"] = "test",
+                    ["RabbitMQOptions:Queue"] = "test",
+                });
+            });
+
             builder.ConfigureServices((context, services) =>
             {
 
@@ -62,6 +74,7 @@ public class Base : IAsyncLifetime
                         policy.RequireAssertion(context => true);
                     });
                 });
+                
             });
         });
     }

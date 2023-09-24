@@ -35,15 +35,8 @@ public static class ConfigureServices
             });
 
         services.AddDbContext<ApplicationDbContext>(opt =>
-
         {
-            string connString;
-            var isDockerEnvironment = Environment.GetEnvironmentVariable("DOCKER_ENVIRONMENT");
-            if (isDockerEnvironment is null || isDockerEnvironment == "true")
-                connString = configuration.GetConnectionString("DbContextConnString") ?? throw new ArgumentNullException(nameof(configuration));
-            else
-                connString = configuration.GetConnectionString("NonDockerDbContextConnString") ?? throw new ArgumentNullException(nameof(configuration));
-
+            string connString = configuration.GetConnectionString("DbContextConnString") ?? throw new ArgumentNullException(nameof(configuration));
             opt.UseSqlServer(connString);
         });
 
@@ -78,13 +71,13 @@ public static class ConfigureServices
         services.AddScoped<IEventSink, IdentityEvents>();
         services.AddScoped<SeedData>();
 
-        services.AddRabbitMQSender(configuration.GetSection("RabbitMQConsumerOptions"));
+        services.AddRabbitMQSender(configuration.GetSection("RabbitMQOptions"));
 
         var authBuilder = services.AddAuthentication()
         .AddJwtBearer(opt =>
         {
-            var internalIdentityUrl = configuration.GetValue<string>("urls:internal:IdentityHttp") ?? throw new ArgumentNullException(nameof(configuration));
-            var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:IdentityHttp") ?? throw new ArgumentNullException(nameof(configuration));
+            var internalIdentityUrl = configuration.GetValue<string>("urls:internal:identity") ?? throw new ArgumentNullException(nameof(configuration));
+            var externalIdentityUrlhttp = configuration.GetValue<string>("urls:external:identity") ?? throw new ArgumentNullException(nameof(configuration));
 
             opt.RequireHttpsMetadata = false;
             opt.SaveToken = true;
@@ -143,26 +136,31 @@ public static class ConfigureServices
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddTransient<IProfileService, ProfileService>();
 
-        var healthChecksBuilder = services.AddHealthChecks()
-                    .AddCheck("self",
-                    () => HealthCheckResult.Healthy(),
-                    tags: new string[] { "api" }
-                    )
-                    .AddSqlServer(
-                        configuration["ConnectionStrings:DbContextConnString"],
-                        name: "projects-sql-db-check",
-                        tags: new string[] { "sql" });
+        var healthChecksBuilder = services.AddHealthChecks();
 
-        if (configuration.GetValue<bool>("externalAuth:enabled"))
+        if (!configuration.GetValue("isTest",true))
         {
-            healthChecksBuilder.AddIdentityServer(
-                        new Uri("https://accounts.google.com/"),
-                        name: "identity-google-auth-check",
-                        tags: new string[] { "identity" })
-                    .AddIdentityServer(
-                        new Uri("https://login.microsoftonline.com/common/v2.0/"),
-                        name: "identity-microsoft-auth-check",
-                        tags: new string[] { "identity" });
+
+            healthChecksBuilder
+                    .AddCheck("self",
+                        () => HealthCheckResult.Healthy(),
+                        tags: new string[] { "api" }
+                        )
+                        .AddSqlServer(
+                            configuration["ConnectionStrings:DbContextConnString"],
+                            name: "projects-sql-db-check",
+                            tags: new string[] { "sql" });
+
+            if (configuration.GetValue<bool>("externalAuth:enabled"))
+                healthChecksBuilder.AddIdentityServer(
+                            new Uri("https://accounts.google.com/"),
+                            name: "identity-google-auth-check",
+                            tags: new string[] { "identity" })
+                        .AddIdentityServer(
+                            new Uri("https://login.microsoftonline.com/common/v2.0/"),
+                            name: "identity-microsoft-auth-check",
+                            tags: new string[] { "identity" });
+            
         }
 
         return services;

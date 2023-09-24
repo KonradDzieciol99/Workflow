@@ -23,7 +23,7 @@ namespace MessageBus;
 public class RabbitMQConsumer : BackgroundService, IEventBusConsumer
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
-    private readonly ILogger<AzureServiceBusConsumer> _logger;
+    private readonly ILogger<RabbitMQConsumer> _logger;
     private readonly RabbitMQConsumerOptions _options;
     private readonly ConcurrentDictionary<string, Type> _events;
     private readonly IConnection _connection;
@@ -31,7 +31,7 @@ public class RabbitMQConsumer : BackgroundService, IEventBusConsumer
 
     public RabbitMQConsumer(IServiceScopeFactory serviceScopeFactory,
                             IOptions<RabbitMQConsumerOptions> options,
-                            ILogger<AzureServiceBusConsumer> logger)
+                            ILogger<RabbitMQConsumer> logger)
     {
         this._serviceScopeFactory = serviceScopeFactory;
         this._logger = logger;

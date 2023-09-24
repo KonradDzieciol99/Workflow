@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Bogus;
 using IdentityDuende.Infrastructure.DataAccess;
 using TestsHelpers;
+using Microsoft.Extensions.Configuration;
 
 namespace IdentityDuende.IntegrationTests;
 [CollectionDefinition("Base")]
@@ -29,6 +30,16 @@ public class Base : IAsyncLifetime
 
         _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
         {
+            builder.ConfigureAppConfiguration((context, configBuilder) =>
+            {
+                configBuilder.AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["isTest"] = "true",
+                    ["RabbitMQOptions:RabbitMQConnectionString"] = "test",
+                    ["RabbitMQOptions:Exchange"] = "test",
+                    ["RabbitMQOptions:Queue"] = "test",
+                });
+            });
             builder.ConfigureServices((context, services) =>
             {
                 var mockSender = new Mock<IEventBusSender>();
@@ -60,6 +71,7 @@ public class Base : IAsyncLifetime
                         policy.RequireAssertion(context => true);
                     });
                 });
+                
             });
         });
 

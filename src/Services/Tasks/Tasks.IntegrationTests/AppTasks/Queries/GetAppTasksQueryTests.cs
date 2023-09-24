@@ -5,7 +5,7 @@ using Tasks.Application.AppTasks.Queries;
 using Tasks.Application.Common.Models;
 using Tasks.Domain.Common.Models;
 using Tasks.Domain.Entity;
-using TestsHelpers;
+using TestsHelpers.Extensions;
 
 namespace Tasks.IntegrationTests.AppTasks.Queries;
 

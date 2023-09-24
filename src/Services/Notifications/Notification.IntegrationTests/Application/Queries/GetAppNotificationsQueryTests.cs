@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using TestsHelpers.Extensions;
 
 namespace Notification.IntegrationTests.Application.Queries;
 [Collection("Base")]

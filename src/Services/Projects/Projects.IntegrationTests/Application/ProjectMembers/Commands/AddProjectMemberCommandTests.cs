@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using TestsHelpers.Extensions;
 
 namespace Projects.IntegrationTests.Application.ProjectMembers.Commands;
 [Collection("Base")]

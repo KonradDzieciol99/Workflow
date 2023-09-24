@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Headers;
 
-namespace TestsHelpers;
+namespace TestsHelpers.Extensions;
 public static class HttpClientExtensions
 {
     public static void SetHeaders(this HttpClient client, string userId, string userEmail)

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using TestsHelpers.Extensions;
 
 namespace Chat.IntegrationTests.Application.FriendRequests.Queries;
 [Collection("Base")]
