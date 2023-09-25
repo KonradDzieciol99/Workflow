@@ -103,7 +103,7 @@ i:has(+ .col input.is-invalid) {
         border-radius: 100% 0% 100% 0% / 0% 32% 68% 100%;
         /*        background-image: url('https://res.cloudinary.com/ddmmg4wb2/image/upload/v1673385489/workflow-management_ssnvgy.jpg');
 */
-        background-image: url('https://1workflowstorage.blob.core.windows.net/photos/Workflow_theme.png');
+        background-image: url('http://127.0.0.1:10000/devstoreaccount1/photos/Workflow_theme.png');
         /*        background-position:top left;
 */      z-index: 0;
         background-repeat: no-repeat;

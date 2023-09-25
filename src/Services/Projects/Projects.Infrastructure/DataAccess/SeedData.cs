@@ -75,15 +75,6 @@ public class SeedData
             "handPalm.png"
         };
 
-        //var leader = new ProjectMember("50", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", ProjectMemberType.Leader, InvitationStatus.Accepted);
-
-        //var leaderIdInfo = leader.GetType().GetProperty("Id");
-        //leaderIdInfo.SetValue(leader, "1", null);
-
-        //var mainProject = new Project("Testable", "https://1workflowstorage.blob.core.windows.net/projectsicons/dogo.png", leader);
-
-        //var idProperty = mainProject.GetType().GetProperty("Id");
-        //idProperty.SetValue(mainProject, "1",null);
         var projectMemverId = 0;
         var projectId = 0;
         var projects = new Faker<Project>()
@@ -93,7 +84,7 @@ public class SeedData
                 var leader = new ProjectMember(
                     "50",
                     "AliceSmith@email.com",
-                    "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png",
+                    "http://127.0.0.1:10000/devstoreaccount1/photos/AlicePicture.png",
                     ProjectMemberType.Leader,
                     InvitationStatus.Accepted
                 );
@@ -102,7 +93,7 @@ public class SeedData
 
                 var project = new Project(
                     f.Commerce.ProductName(),
-                    $"https://1workflowstorage.blob.core.windows.net/projectsicons/{f.PickRandom(photosList)}",
+                    $"http://127.0.0.1:10000/devstoreaccount1/projectsicons/{f.PickRandom(photosList)}",
                     leader
                 );
                 var idProperty = project.GetType().GetProperty(nameof(project.Id));
@@ -112,9 +103,6 @@ public class SeedData
             })
             .UseSeed(1111)
             .Generate(110);
-
-        //var projects = faker.Generate(110);
-        //projects.Add(mainProject);
 
         var projectsCount = await _context.Projects.CountAsync();
         if (projectsCount >= 100)
@@ -126,8 +114,6 @@ public class SeedData
         await _context.Projects.AddRangeAsync(projects);
 
         _ = await _unitOfWork.Complete();
-
-        //await _integrationEventService.PublishEventsThroughEventBusAsync();
 
         _logger.LogDebug("Seeding completed.");
     }

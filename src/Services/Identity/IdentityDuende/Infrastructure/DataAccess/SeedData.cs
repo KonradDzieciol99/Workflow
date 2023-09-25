@@ -69,7 +69,7 @@ public class SeedData
                 Email = "AliceSmith@email.com",
                 EmailConfirmed = true,
                 PictureUrl =
-                    "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png",
+                    "http://127.0.0.1:10000/devstoreaccount1/photos/AlicePicture.png",
                 Id = "50"
             }
         );
@@ -79,7 +79,7 @@ public class SeedData
                 UserName = "BobSmith@email.com",
                 Email = "BobSmith@email.com",
                 EmailConfirmed = true,
-                PictureUrl = "https://1workflowstorage.blob.core.windows.net/photos/bobPhoto.png",
+                PictureUrl = "http://127.0.0.1:10000/devstoreaccount1/photos/bobPhoto.png",
                 Id = "51"
             }
         );

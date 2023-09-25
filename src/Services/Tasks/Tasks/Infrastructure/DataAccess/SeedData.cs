@@ -46,7 +46,7 @@ public class SeedData
 
     public async Task TrySeedAsync()
     {
-        //var member = new ProjectMember("1","50", "AliceSmith@email.com", "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png", ProjectMemberType.Leader, InvitationStatus.Accepted,"1");
+        //var member = new ProjectMember("1","50", "AliceSmith@email.com", "http://127.0.0.1:10000/devstoreaccount1/photos/AlicePicture.png", ProjectMemberType.Leader, InvitationStatus.Accepted,"1");
 
         var now = DateTime.UtcNow;
         var projectMemberId = 0;
@@ -60,7 +60,7 @@ public class SeedData
                     projectMemberId++.ToString(),
                     "50",
                     "AliceSmith@email.com",
-                    "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png",
+                    "http://127.0.0.1:10000/devstoreaccount1/photos/AlicePicture.png",
                     ProjectMemberType.Leader,
                     InvitationStatus.Accepted,
                     projectId++.ToString()

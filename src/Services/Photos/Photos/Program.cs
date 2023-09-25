@@ -4,12 +4,13 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Serilog;
 using System.Net;
+using Photos.Infrastructure.DataAccess;
 
 namespace Photos;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,7 @@ public class Program
         {
             app.UseSwagger();
             app.UseSwaggerUI();
+            await ApplyMigration();
         }
 
         app.UseRouting();
@@ -47,5 +49,15 @@ public class Program
         );
 
         app.Run();
+
+        async Task ApplyMigration()
+        {
+            using var scope = app.Services.CreateScope();
+            var initialiser = scope.ServiceProvider.GetRequiredService<SeedData>();
+            await initialiser.InitialiseAsync();
+            await initialiser.SeedAsync();
+            return;
+        }
     }
+
 }

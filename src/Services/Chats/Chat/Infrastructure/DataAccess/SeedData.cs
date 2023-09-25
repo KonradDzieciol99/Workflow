@@ -52,7 +52,7 @@ public class SeedData
             .RuleFor(f => f.InviterUserEmail, f => "AliceSmith@email.com")
             .RuleFor(
                 f => f.InviterPhotoUrl,
-                f => "https://1workflowstorage.blob.core.windows.net/photos/AlicePicture.png"
+                f => "http://127.0.0.1:10000/devstoreaccount1/photos/AlicePicture.png"
             )
             .RuleFor(f => f.InvitedUserId, f => id++.ToString())
             .RuleFor(u => u.InvitedUserEmail, f => f.Internet.Email())
