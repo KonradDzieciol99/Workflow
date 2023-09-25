@@ -68,8 +68,7 @@ public class SeedData
                 UserName = "AliceSmith@email.com",
                 Email = "AliceSmith@email.com",
                 EmailConfirmed = true,
-                PictureUrl =
-                    "http://127.0.0.1:10000/devstoreaccount1/photos/AlicePicture.png",
+                PictureUrl = "http://127.0.0.1:10000/devstoreaccount1/photos/AlicePicture.png",
                 Id = "50"
             }
         );

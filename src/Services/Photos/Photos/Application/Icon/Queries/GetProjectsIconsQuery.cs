@@ -29,10 +29,14 @@ public class GetProjectsIconsQueryHandler
         CancellationToken cancellationToken
     )
     {
-        var blobContainerProjectsIconsName = _configuration.GetValue<string>("AzureBlobStorage:BlobContainerProjectsIcons");
+        var blobContainerProjectsIconsName = _configuration.GetValue<string>(
+            "AzureBlobStorage:BlobContainerProjectsIcons"
+        );
         var url = _configuration.GetValue<string>("urls:external:azureBlobStorage");
 
-        var blobPhotosContainerClient = _blobServiceClient.GetBlobContainerClient(blobContainerProjectsIconsName);
+        var blobPhotosContainerClient = _blobServiceClient.GetBlobContainerClient(
+            blobContainerProjectsIconsName
+        );
 
         var icons = new List<Domain.Entity.Icon>();
 
