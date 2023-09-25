@@ -27,19 +27,21 @@ public class SeedData
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _blobServiceClient =
             blobServiceClient ?? throw new ArgumentNullException(nameof(blobServiceClient));
-        _configuration =
-            configuration ?? throw new ArgumentNullException(nameof(configuration));
-        _env = env ?? throw new ArgumentNullException(nameof(env)); ;
-        _blobProjectsIconsContainerClient =
-            _blobServiceClient.GetBlobContainerClient(
-                blobContainerName: _configuration.GetValue<string>("AzureBlobStorage:BlobContainerProjectsIcons")
-                ?? throw new ArgumentNullException(nameof(_configuration)));
-        _blobPhotosContainerClient =
-            _blobServiceClient.GetBlobContainerClient(
-                blobContainerName: _configuration.GetValue<string>("AzureBlobStorage:BlobContainerPhotos")
-                ?? throw new ArgumentNullException(nameof(_configuration)));
-
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        _env = env ?? throw new ArgumentNullException(nameof(env));
+        ;
+        _blobProjectsIconsContainerClient = _blobServiceClient.GetBlobContainerClient(
+            blobContainerName: _configuration.GetValue<string>(
+                "AzureBlobStorage:BlobContainerProjectsIcons"
+            ) ?? throw new ArgumentNullException(nameof(_configuration))
+        );
+        _blobPhotosContainerClient = _blobServiceClient.GetBlobContainerClient(
+            blobContainerName: _configuration.GetValue<string>(
+                "AzureBlobStorage:BlobContainerPhotos"
+            ) ?? throw new ArgumentNullException(nameof(_configuration))
+        );
     }
+
     public async Task InitialiseAsync()
     {
         try
@@ -83,24 +85,28 @@ public class SeedData
         string folderPath = "./Infrastructure/DataAccess/ProjectsIcons";
         string[] filePaths = Directory.GetFiles(folderPath);
 
-        var uploadTasks = filePaths.Select(async filePath =>
-        {
-            string fileName = Path.GetFileName(filePath);
-            var blobClient = _blobProjectsIconsContainerClient.GetBlobClient(fileName);
-            using var fileStream = File.OpenRead(filePath);
-            await blobClient.UploadAsync(fileStream, blobUploadOptions);
-        }).ToList();
+        var uploadTasks = filePaths
+            .Select(async filePath =>
+            {
+                string fileName = Path.GetFileName(filePath);
+                var blobClient = _blobProjectsIconsContainerClient.GetBlobClient(fileName);
+                using var fileStream = File.OpenRead(filePath);
+                await blobClient.UploadAsync(fileStream, blobUploadOptions);
+            })
+            .ToList();
 
         folderPath = "./Infrastructure/DataAccess/Photos";
         filePaths = Directory.GetFiles(folderPath);
 
-        uploadTasks.AddRange(filePaths.Select(async filePath =>
-        {
-            string fileName = Path.GetFileName(filePath);
-            var blobClient = _blobPhotosContainerClient.GetBlobClient(fileName);
-            using var fileStream = File.OpenRead(filePath);
-            await blobClient.UploadAsync(fileStream, blobUploadOptions);
-        }));
+        uploadTasks.AddRange(
+            filePaths.Select(async filePath =>
+            {
+                string fileName = Path.GetFileName(filePath);
+                var blobClient = _blobPhotosContainerClient.GetBlobClient(fileName);
+                using var fileStream = File.OpenRead(filePath);
+                await blobClient.UploadAsync(fileStream, blobUploadOptions);
+            })
+        );
 
         await Task.WhenAll(uploadTasks);
     }
