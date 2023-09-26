@@ -1,11 +1,12 @@
 ﻿using FluentValidation;
+using Microsoft.Extensions.Configuration;
 using Projects.Application.Common.Models.Validators;
 
 namespace Projects.Application.Projects.Commands;
 
 public class CreateProjectCommandValidator : AbstractValidator<CreateProjectCommand>
 {
-    public CreateProjectCommandValidator()
+    public CreateProjectCommandValidator(IConfiguration configuration)
     {
         RuleFor(x => x.Name)
             .NotEmpty()
@@ -16,6 +17,6 @@ public class CreateProjectCommandValidator : AbstractValidator<CreateProjectComm
         RuleFor(x => x.Icon)
             .NotNull()
             .WithMessage("Icon is required.")
-            .SetValidator(new IconValidator());
+            .SetValidator(new IconValidator(configuration));
     }
 }
