@@ -27,6 +27,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore Workflow.sln
     - name: Build
-      run: dotnet build Workflow.sln--no-restore
+      run: dotnet build Workflow.sln --no-restore
     - name: Test
-      run: dotnet test Workflow.sln--no-build --verbosity normal
+      run: dotnet test Workflow.sln --no-build --verbosity normal
