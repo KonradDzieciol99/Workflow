@@ -103,6 +103,7 @@ public class GetMembersStatusesQueryTests : IAsyncLifetime
         var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
         var returned = JsonSerializer.Deserialize<List<MemberStatusDto>>(responseString, options);
 
+        Assert.NotNull(returned);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.All(returned, item => Assert.Equal(status, item.Status));
     }

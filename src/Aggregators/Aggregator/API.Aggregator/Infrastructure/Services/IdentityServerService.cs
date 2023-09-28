@@ -14,7 +14,7 @@ public class IdentityServerService : BaseHttpService, IIdentityServerService
     {
         _identityUrl =
             configuration.GetValue<string>("urls:internal:identity")
-            ?? throw new ArgumentNullException(_identityUrl);
+             ?? throw new InvalidOperationException("The expected configuration value 'urls:internal:identity' is missing.");
     }
 
     public async Task<UserDto?> CheckIfUserExistsAsync(string email)

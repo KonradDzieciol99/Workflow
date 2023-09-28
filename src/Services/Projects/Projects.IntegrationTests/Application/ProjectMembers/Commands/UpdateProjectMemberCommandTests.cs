@@ -73,6 +73,7 @@ public class UpdateProjectMemberCommandTests : IAsyncLifetime
             ProjectMember
         >(invitedMember.Id);
 
+        Assert.NotNull(invitedMemverAfterAction);
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         Assert.Equal(ProjectMemberType.Admin, invitedMemverAfterAction.Type);
     }

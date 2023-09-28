@@ -44,10 +44,9 @@ public class ExceptionMiddlewareTests
         var stream = reader.ReadToEnd();
 
         var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
-        ProblemDetails response;
+        var response = JsonSerializer.Deserialize<ProblemDetails>(stream, options);
 
-        response = JsonSerializer.Deserialize<ProblemDetails>(stream, options);
-
+        Assert.NotNull(response);
         Assert.Equal(StatusCodes.Status403Forbidden, context.Response.StatusCode);
         Assert.Equal(StatusCodes.Status403Forbidden, response.Status);
         Assert.Equal(nameof(ForbiddenAccessException), response.Type);

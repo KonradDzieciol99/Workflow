@@ -1,6 +1,7 @@
 ﻿using Chat.Application.Common.Models;
 using Chat.Application.FriendRequests.Queries;
 using Chat.Domain.Entity;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,9 @@ public class GetFriendsStatusQueryTests : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
+        if (_base._checkpoint is null)
+            throw new InvalidOperationException("_checkpoint is null and cannot be used.");
+        
         await _base._checkpoint.ResetAsync(_base._msSqlContainer.GetConnectionString());
     }
 
@@ -86,7 +90,7 @@ public class GetFriendsStatusQueryTests : IAsyncLifetime
                 friendRequest.AcceptRequest(friendRequest.InvitedUserId);
             }
         }
-        _base._client.SetHeaders(
+        _base._client?.SetHeaders(
             friendRequests[0].InviterUserId,
             friendRequests[0].InviterUserEmail
         );
@@ -95,7 +99,7 @@ public class GetFriendsStatusQueryTests : IAsyncLifetime
         //act
         var response = await _base._client.GetAsync(
             $"api/FriendRequests/GetFriendsStatus?usersIds={string.Join("&usersIds=", ids)}"
-        );
+        ) ?? throw new InvalidOperationException($"{nameof(IServiceScopeFactory)} Missing required fiield."); ;
 
         //assert
         var responseString = await response.Content.ReadAsStringAsync();
@@ -105,6 +109,7 @@ public class GetFriendsStatusQueryTests : IAsyncLifetime
             options
         );
 
+        Assert.NotNull(returnedFriendStatuses);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.All(returnedFriendStatuses, item => Assert.Equal(friendStatusType, item.Status));
     }

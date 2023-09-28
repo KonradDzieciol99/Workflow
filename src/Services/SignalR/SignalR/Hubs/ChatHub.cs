@@ -20,15 +20,15 @@ public class ChatHub : Hub
         IEventBusSender azureServiceBusSender
     )
     {
-        _connectionMultiplexer = connectionMultiplexer;
-        this._azureServiceBusSender = azureServiceBusSender;
+        _connectionMultiplexer = connectionMultiplexer ?? throw new ArgumentNullException(nameof(connectionMultiplexer));
+        this._azureServiceBusSender = azureServiceBusSender ?? throw new ArgumentNullException(nameof(azureServiceBusSender));
         _redisDb = _connectionMultiplexer.GetDatabase();
     }
 
     public override async Task OnConnectedAsync()
     {
         var httpContext =
-            Context.GetHttpContext() ?? throw new ArgumentNullException("httpContext error");
+            Context.GetHttpContext() ?? throw new HubException("HttpContext is null");
         var recipientEmail = httpContext.Request.Query["RecipientEmail"].ToString();
         if (string.IsNullOrEmpty(recipientEmail))
             throw new HubException("User cannot be identified");
@@ -63,10 +63,10 @@ public class ChatHub : Hub
         await base.OnConnectedAsync();
     }
 
-    public override async Task OnDisconnectedAsync(Exception ex)
+    public override async Task OnDisconnectedAsync(Exception? ex)
     {
         var httpContext =
-            Context.GetHttpContext() ?? throw new ArgumentNullException(nameof(Context));
+            Context.GetHttpContext() ?? throw new HubException("HttpContext is null");
         var recipientEmail = httpContext.Request.Query["RecipientEmail"].ToString();
         if (string.IsNullOrEmpty(recipientEmail))
             throw new HubException("User cannot be identified");
@@ -100,7 +100,7 @@ public class ChatHub : Hub
     public async Task UserIsTyping()
     {
         var httpContext =
-            Context.GetHttpContext() ?? throw new ArgumentNullException("httpContext error");
+            Context.GetHttpContext() ?? throw new HubException("HttpContext is null");
         var recipientEmail = httpContext.Request.Query["RecipientEmail"].ToString();
         if (string.IsNullOrEmpty(recipientEmail))
             throw new HubException("User cannot be identified");

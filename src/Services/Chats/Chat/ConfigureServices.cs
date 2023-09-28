@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Chat;
 
@@ -40,10 +41,10 @@ public static class ConfigureServices
             {
                 var internalIdentityUrl =
                     configuration.GetValue<string>("urls:internal:identity")
-                    ?? throw new ArgumentNullException(nameof(configuration));
+                        ?? throw new InvalidOperationException("The expected configuration value 'urls:internal:identity' is missing.");
                 var externalIdentityUrlhttp =
                     configuration.GetValue<string>("urls:external:identity")
-                    ?? throw new ArgumentNullException(nameof(configuration));
+                        ?? throw new InvalidOperationException("The expected configuration value 'urls:external:identity' is missing.");
 
                 opt.RequireHttpsMetadata = false;
                 opt.SaveToken = true;
@@ -72,22 +73,11 @@ public static class ConfigureServices
                 }
             );
         });
-
         services.AddDbContext<ApplicationDbContext>(opt =>
         {
-            string connString;
-            var isDockerEnvironment = Environment.GetEnvironmentVariable("DOCKER_ENVIRONMENT");
-            if (isDockerEnvironment is null || isDockerEnvironment == "true")
-                connString =
-                    configuration.GetConnectionString("DbContextConnString")
-                    ?? throw new ArgumentNullException("DbContextConnString");
-            else
-                connString =
-                    configuration.GetConnectionString("NonDockerDbContextConnString")
-                    ?? throw new ArgumentNullException("NonDockerDbContextConnString");
-
-            opt.UseSqlServer(connString);
+            opt.UseSqlServer(configuration.GetConnectionString("DbContextConnString") ?? throw new InvalidOperationException("The expected configuration value 'ConnectionStrings:DbContextConnString' is missing."));
         });
+
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 
@@ -110,8 +100,8 @@ public static class ConfigureServices
             );
         });
 
-        services.AddRabbitMQConsumer(configuration.GetSection("RabbitMQOptions"));
-        services.AddRabbitMQSender(configuration.GetSection("RabbitMQOptions"));
+        services.AddRabbitMQConsumer(configuration.GetSection("RabbitMQOptions") ?? throw new InvalidOperationException("The expected configuration value 'RabbitMQOptions' is missing."));
+        services.AddRabbitMQSender(configuration.GetSection("RabbitMQOptions") ?? throw new InvalidOperationException("The expected configuration value 'RabbitMQOptions' is missing."));
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
@@ -127,8 +117,6 @@ public static class ConfigureServices
         services.AddHttpContextAccessor();
 
         services.AddTransient<IMessageService, MessageService>();
-        var test = configuration.GetValue("isTest", false);
-        var test2 = configuration["isTest"];
 
         var healthBuilder = services.AddHealthChecks();
 
@@ -136,12 +124,12 @@ public static class ConfigureServices
             healthBuilder
                 .AddCheck("self", () => HealthCheckResult.Healthy(), tags: new string[] { "api" })
                 .AddSqlServer(
-                    configuration["ConnectionStrings:DbContextConnString"],
+                    configuration["ConnectionStrings:DbContextConnString"] ?? throw new InvalidOperationException("The expected configuration value 'ConnectionStrings:DbContextConnString' is missing."),
                     name: "chat-sql-db-check",
                     tags: new string[] { "sql" }
                 )
                 .AddIdentityServer(
-                    new Uri(configuration.GetValue<string>("urls:internal:identity")),
+                    new Uri(configuration.GetValue<string>("urls:internal:identity") ?? throw new InvalidOperationException("The expected configuration value 'urls:internal:identity' is missing.")),
                     name: "chat-identity-check",
                     tags: new string[] { "identity" }
                 );

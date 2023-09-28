@@ -1,4 +1,5 @@
 ﻿using Projects.Infrastructure.DataAccess;
+using TestsHelpers.Extensions;
 
 namespace Services.IntegrationEvents.IntegrationTests;
 
@@ -28,11 +29,7 @@ public static class ProjectsBase
             builder.ConfigureServices(
                 (context, services) =>
                 {
-                    var dbContextOptions = services.SingleOrDefault(
-                        service =>
-                            service.ServiceType == typeof(DbContextOptions<ApplicationDbContext>)
-                    );
-                    services.Remove(dbContextOptions);
+                    services.Remove<DbContextOptions<ApplicationDbContext>>();
 
                     services.AddDbContext<ApplicationDbContext>(
                         options =>

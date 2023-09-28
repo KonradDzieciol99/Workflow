@@ -110,7 +110,7 @@ public class AzureServiceBusConsumer : BackgroundService, IEventBusConsumer
         var @event = JsonSerializer.Deserialize<T>(eventJSON, options);
 
         if (@event is null)
-            throw new ArgumentNullException($"Message is empty{@event}");
+            throw new InvalidOperationException($"Deserialization failed, resulting object is null. JSON: {eventJSON}");
 
         using var scope = _serviceScopeFactory.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
@@ -143,19 +143,14 @@ public class AzureServiceBusConsumer : BackgroundService, IEventBusConsumer
         catch (ServiceBusException ex)
             when (ex.Reason == ServiceBusFailureReason.MessagingEntityAlreadyExists)
         {
-            //_logger.LogWarning("The messaging entity {eventName} already exists.", eventName);
+            _logger.LogWarning("The messaging entity {eventName} already exists.", eventName);
         }
         catch (Exception)
         {
-            //_logger.LogWarning("The messaging entity {eventName} already exists.", eventName);
             throw;
         }
-        //}
 
-        //_logger.LogInformation("Subscribing to event {EventName} with {EventHandler}", eventName, typeof(TH).Name);
-
-        //_subsManager.AddSubscription<T, TH>();
-
+        _logger.LogInformation("Subscribing to event {EventName} added", eventName);
         return;
     }
 
@@ -181,18 +176,9 @@ public class AzureServiceBusConsumer : BackgroundService, IEventBusConsumer
                 );
             }
         }
-        //catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.MessageNotFound || ex.Reason == ServiceBusFailureReason.MessagingEntityNotFound)
-        //{
-        //    Console.WriteLine(ex.Message);
-        //    //_logger.LogWarning("The messaging entity {eventName} already exists.", eventName);
-        //} to jest chyba wogole źle
         catch (Exception)
         {
             throw;
-            //_logger.LogWarning("The messaging entity {DefaultRuleName} Could not be found.", RuleProperties.DefaultRuleName);
         }
-        await Task.CompletedTask;
-
-        return;
     }
 }

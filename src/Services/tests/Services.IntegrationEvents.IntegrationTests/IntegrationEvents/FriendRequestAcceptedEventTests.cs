@@ -26,7 +26,7 @@ public class FriendRequestAcceptedEventTests : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        await _base._checkpoint.ResetAsync(_base._msSqlContainer.GetConnectionString());
+        await _base._checkpoint?.ResetAsync(_base._msSqlContainer.GetConnectionString());
     }
 
     [Fact]

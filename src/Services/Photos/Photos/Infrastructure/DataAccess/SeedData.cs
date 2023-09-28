@@ -13,32 +13,29 @@ public class SeedData
     private readonly ILogger<SeedData> _logger;
     private readonly BlobServiceClient _blobServiceClient;
     private readonly IConfiguration _configuration;
-    private readonly IWebHostEnvironment _env;
     private readonly BlobContainerClient _blobProjectsIconsContainerClient;
     private readonly BlobContainerClient _blobPhotosContainerClient;
 
     public SeedData(
         ILogger<SeedData> logger,
         BlobServiceClient blobServiceClient,
-        IConfiguration configuration,
-        IWebHostEnvironment env
+        IConfiguration configuration
     )
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _blobServiceClient =
             blobServiceClient ?? throw new ArgumentNullException(nameof(blobServiceClient));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-        _env = env ?? throw new ArgumentNullException(nameof(env));
         ;
         _blobProjectsIconsContainerClient = _blobServiceClient.GetBlobContainerClient(
             blobContainerName: _configuration.GetValue<string>(
                 "AzureBlobStorage:BlobContainerProjectsIcons"
-            ) ?? throw new ArgumentNullException(nameof(_configuration))
+            ) ?? throw new InvalidOperationException("The expected configuration value 'AzureBlobStorage:BlobContainerProjectsIcons' is missing.")
         );
         _blobPhotosContainerClient = _blobServiceClient.GetBlobContainerClient(
             blobContainerName: _configuration.GetValue<string>(
                 "AzureBlobStorage:BlobContainerPhotos"
-            ) ?? throw new ArgumentNullException(nameof(_configuration))
+            ) ?? throw new InvalidOperationException("The expected configuration value 'AzureBlobStorage:BlobContainerPhotos' is missing.")
         );
     }
 

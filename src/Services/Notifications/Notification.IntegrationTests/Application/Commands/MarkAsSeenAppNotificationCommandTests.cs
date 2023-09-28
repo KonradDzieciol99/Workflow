@@ -59,6 +59,7 @@ public class MarkAsSeenAppNotificationCommandTests : IAsyncLifetime
             appNotifications[0].Id
         );
 
+        Assert.NotNull(result);
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         Assert.True(result.Displayed);
     }

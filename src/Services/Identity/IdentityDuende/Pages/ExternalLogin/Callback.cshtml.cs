@@ -133,7 +133,7 @@ public class Callback : PageModel
         var email =
             claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Email)?.Value
             ?? claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value
-            ?? throw new ArgumentNullException(
+            ?? throw new Exception(
                 JwtClaimTypes.Email + " Or " + ClaimTypes.Email + "cannot be empty"
             );
 

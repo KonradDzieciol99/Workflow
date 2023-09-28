@@ -10,18 +10,18 @@ public class WebApplicationFactoryCollection : ICollectionFixture<Base> { }
 
 public class Base : IAsyncLifetime
 {
-    public Respawner? _checkpoint;
-    public HttpClient _chatClient;
-    public HttpClient _notificationClient;
-    public HttpClient _projectsClient;
-    public HttpClient _tasksClient;
+    public Respawner _checkpoint = null!;
+    public HttpClient _chatClient = null!;
+    public HttpClient _notificationClient = null!;
+    public HttpClient _projectsClient = null!;
+    public HttpClient _tasksClient = null!;
     public readonly MsSqlContainer _msSqlContainer;
     public readonly RabbitMqContainer _rabbitMqContainer;
 
-    public WebApplicationFactory<Chat.Program> _chatFactory;
-    public WebApplicationFactory<Notification.Program> _notificationFactory;
-    public WebApplicationFactory<Projects.Program> _projectsFactory;
-    public WebApplicationFactory<Tasks.Program> _tasksFactory;
+    public WebApplicationFactory<Chat.Program> _chatFactory = null!;
+    public WebApplicationFactory<Notification.Program> _notificationFactory = null!;
+    public WebApplicationFactory<Projects.Program> _projectsFactory = null!;
+    public WebApplicationFactory<Tasks.Program> _tasksFactory = null!;
 
     public Base()
     {

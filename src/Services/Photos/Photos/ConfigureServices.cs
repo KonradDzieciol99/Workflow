@@ -27,7 +27,7 @@ public static class ConfigureServices
         {
             return new BlobServiceClient(
                 configuration.GetConnectionString("AzureStorage")
-                    ?? throw new ArgumentNullException(nameof(configuration))
+                    ?? throw new InvalidOperationException("The expected configuration value 'ConnectionStrings:AzureStorage' is missing.")
             );
         });
 
@@ -61,10 +61,10 @@ public static class ConfigureServices
             {
                 var internalIdentityUrl =
                     configuration.GetValue<string>("urls:internal:identity")
-                    ?? throw new ArgumentNullException(nameof(configuration));
+                        ?? throw new InvalidOperationException("The expected configuration value 'urls:internal:identity' is missing.");
                 var externalIdentityUrlhttp =
                     configuration.GetValue<string>("urls:external:identity")
-                    ?? throw new ArgumentNullException(nameof(configuration));
+                        ?? throw new InvalidOperationException("The expected configuration value 'urls:external:identity' is missing.");
 
                 opt.RequireHttpsMetadata = false;
                 opt.SaveToken = true;

@@ -9,11 +9,11 @@ using Notification.Infrastructure.DataAccess;
 
 #nullable disable
 
-namespace Notification.Migrations
+namespace Notification.Infrastructure.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230713150626_init2")]
-    partial class init2
+    [Migration("20230927090036_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

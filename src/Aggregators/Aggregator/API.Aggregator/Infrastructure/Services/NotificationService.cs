@@ -13,7 +13,7 @@ public class NotificationService : BaseHttpService, INotificationService
     {
         _notificationServiceUrl =
             configuration.GetValue<string>("urls:internal:notification")
-            ?? throw new ArgumentNullException(nameof(configuration));
+             ?? throw new InvalidOperationException("The expected configuration value 'urls:internal:notification' is missing.");
         ;
     }
 

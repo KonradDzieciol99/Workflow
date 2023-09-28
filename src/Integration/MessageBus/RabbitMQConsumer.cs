@@ -63,7 +63,8 @@ public class RabbitMQConsumer : BackgroundService, IEventBusConsumer
 
         consumer.Received += EventHandlerAsync;
         _channel.BasicConsume(queue: _options.Queue, autoAck: false, consumer: consumer);
-        return;
+
+        await Task.CompletedTask;
     }
 
     private async Task EventHandlerAsync(object sender, BasicDeliverEventArgs args)
@@ -98,22 +99,17 @@ public class RabbitMQConsumer : BackgroundService, IEventBusConsumer
                 throw;
         }
 
-        return;
     }
 
     private async Task SendAsync<T>(string eventJSON)
     {
         var options = new JsonSerializerOptions { WriteIndented = true };
 
-        var @event = JsonSerializer.Deserialize<T>(eventJSON, options);
-
-        if (@event is null)
-            throw new ArgumentNullException($"Message is empty {@event}");
-
+        var @event = JsonSerializer.Deserialize<T>(eventJSON, options) ?? throw new InvalidOperationException($"Deserialization failed, resulting object is null. JSON: {eventJSON}");
+        
         using var scope = _serviceScopeFactory.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
         var response = await mediator.Send(@event);
-        return;
     }
 
     public Task Subscribe<T>()

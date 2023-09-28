@@ -22,11 +22,11 @@ public class ProjectManagmentOrTaskAuthorRequirementHandler
     {
         var userId =
             context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-            ?? throw new ArgumentNullException(nameof(context));
+                ?? throw new InvalidOperationException($"Claim '{nameof(ClaimTypes.NameIdentifier)}' not found in context.");
         var projectId =
-            requirement.ProjectId ?? throw new ArgumentNullException(nameof(requirement));
+            requirement.ProjectId ?? throw new InvalidOperationException($"{nameof(requirement.ProjectId)} is null in requirement.");
         var appTaskId =
-            requirement.AppTaskId ?? throw new ArgumentNullException(nameof(requirement));
+            requirement.AppTaskId ?? throw new InvalidOperationException($"{nameof(requirement.AppTaskId)} is null in requirement.");
 
         var result = await _unitOfWork.AppTaskRepository.CheckIfUserHasRightsToMenageTaskAsync(
             projectId,

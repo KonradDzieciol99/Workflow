@@ -14,7 +14,7 @@ public class ChatService : BaseHttpService, IChatService
     {
         _chatServiceUrl =
             configuration.GetValue<string>("urls:internal:chat")
-            ?? throw new ArgumentNullException(nameof(configuration));
+                ?? throw new InvalidOperationException("The expected configuration value 'urls:internal:chat' is missing.");
         ;
     }
 

@@ -8,10 +8,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Respawn;
 using Testcontainers.MsSql;
+using TestsHelpers.Extensions;
 
 namespace Tasks.IntegrationTests;
 
-// można też uzywać IAsyncLifetime ale na to wygląda że odróżnai go od konstruktora i disposable to że jest asynchroniczny(i w sumie tyle)
 // Jeżeli klasy dzieci są w tej samej kolekcji, czyli mają atrybut[Collection("Base")], to testy z tych klas będą uruchamiane sekwencyjnie, a nie równolegle.
 [CollectionDefinition("Base")]
 public class WebApplicationFactoryCollection : ICollectionFixture<Base>
@@ -19,14 +19,14 @@ public class WebApplicationFactoryCollection : ICollectionFixture<Base>
     // Ta klasa nie ma żadnego kodu i nigdy nie jest tworzona bezpośrednio.
     // Jej celem jest po prostu być miejscem, gdzie można zastosować [CollectionDefinition] i wszystkie
     // interfejsy ICollectionFixture<>.
-    //czyli potencjalnie kilka ICollectionFixture ?????
+    //czyli potencjalnie kilka ICollectionFixture ??
 }
 
 public class Base : IAsyncLifetime
 {
     public readonly WebApplicationFactory<Program> _factory;
-    public HttpClient? _client;
-    public Respawner? _checkpoint;
+    public HttpClient _client = null!;
+    public Respawner _checkpoint = null!;
     public readonly MsSqlContainer _msSqlContainer;
 
     public Base()
@@ -67,15 +67,9 @@ public class Base : IAsyncLifetime
                     services.AddSingleton<IEventBusSender>(mockSender.Object);
                     services.AddSingleton<IEventBusConsumer>(mockConsumer.Object);
 
-                    var dbContextOptions = services.SingleOrDefault(
-                        service =>
-                            service.ServiceType == typeof(DbContextOptions<ApplicationDbContext>)
-                    );
-                    services.Remove(dbContextOptions);
+                    services.Remove<DbContextOptions<ApplicationDbContext>>();
 
-                    var dbConnString =
-                        _msSqlContainer.GetConnectionString()
-                        ?? throw new ArgumentNullException("dbConnString");
+                    var dbConnString = _msSqlContainer.GetConnectionString();
                     services.AddDbContext<ApplicationDbContext>(
                         options =>
                             options.UseSqlServer(

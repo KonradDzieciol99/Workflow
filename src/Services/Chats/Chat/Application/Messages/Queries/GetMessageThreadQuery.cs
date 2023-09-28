@@ -36,7 +36,7 @@ public class GetMessageThreadQueryHandler : IRequestHandler<GetMessageThreadQuer
         this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         this._currentUserService =
             currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
-        this._mapper = mapper;
+        this._mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     public async Task<List<MessageDto>> Handle(

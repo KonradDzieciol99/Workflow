@@ -1,4 +1,4 @@
-﻿namespace EmailEmitter.Sender;
+﻿namespace EmailEmitter.Services;
 
 public interface ISenderSource
 {

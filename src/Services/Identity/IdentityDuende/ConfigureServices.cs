@@ -41,7 +41,7 @@ public static class ConfigureServices
         {
             string connString =
                 configuration.GetConnectionString("DbContextConnString")
-                ?? throw new ArgumentNullException(nameof(configuration));
+                ?? throw new InvalidOperationException("The expected configuration value 'ConnectionStrings:DbContextConnString' is missing.");
             opt.UseSqlServer(connString);
         });
 
@@ -76,7 +76,7 @@ public static class ConfigureServices
         services.AddScoped<IEventSink, IdentityEvents>();
         services.AddScoped<SeedData>();
 
-        services.AddRabbitMQSender(configuration.GetSection("RabbitMQOptions"));
+        services.AddRabbitMQSender(configuration.GetSection("RabbitMQOptions") ?? throw new InvalidOperationException("The expected configuration value 'RabbitMQOptions' is missing."));
 
         var authBuilder = services
             .AddAuthentication()
@@ -84,10 +84,10 @@ public static class ConfigureServices
             {
                 var internalIdentityUrl =
                     configuration.GetValue<string>("urls:internal:identity")
-                    ?? throw new ArgumentNullException(nameof(configuration));
+                        ?? throw new InvalidOperationException("The expected configuration value 'urls:internal:identity' is missing.");
                 var externalIdentityUrlhttp =
                     configuration.GetValue<string>("urls:external:identity")
-                    ?? throw new ArgumentNullException(nameof(configuration));
+                        ?? throw new InvalidOperationException("The expected configuration value 'urls:external:identity' is missing.");
 
                 opt.RequireHttpsMetadata = false;
                 opt.SaveToken = true;
@@ -113,18 +113,20 @@ public static class ConfigureServices
                     "Azure Active Directory OpenId",
                     options =>
                     {
+                        var microsoftTenant = configuration["externalAuth:Microsoft:Tenant"] ?? throw new InvalidOperationException("The expected configuration value 'externalAuth:Microsoft:Tenant' is missing.");
+
                         options.Authority =
                             "https://login.microsoftonline.com/"
-                            + configuration["externalAuth:Microsoft:Tenant"]
+                            + microsoftTenant
                             + "/v2.0/";
-                        options.ClientId = configuration["externalAuth:Microsoft:ClientId"];
+                        options.ClientId = configuration["externalAuth:Microsoft:ClientId"] ?? throw new InvalidOperationException("The expected configuration value 'externalAuth:Microsoft:ClientId' is missing.");
                         options.ResponseType = OpenIdConnectResponseType.Code;
                         options.CallbackPath = "/signin-microsoft";
                         options.SignInScheme =
                             IdentityServerConstants.ExternalCookieAuthenticationScheme;
                         options.ForwardSignOut =
                             IdentityServerConstants.DefaultCookieAuthenticationScheme;
-                        options.ClientSecret = configuration["externalAuth:Microsoft:ClientSecret"];
+                        options.ClientSecret = configuration["externalAuth:Microsoft:ClientSecret"] ?? throw new InvalidOperationException("The expected configuration value 'externalAuth:Microsoft:ClientSecret' is missing.");
                         options.RequireHttpsMetadata = false;
                         options.SaveTokens = true;
                         options.GetClaimsFromUserInfoEndpoint = true;
@@ -145,8 +147,8 @@ public static class ConfigureServices
                         options.ForwardSignOut =
                             IdentityServerConstants.DefaultCookieAuthenticationScheme;
                         options.Authority = "https://accounts.google.com/";
-                        options.ClientId = configuration["externalAuth:Microsoft:ClientId"];
-                        options.ClientSecret = configuration["externalAuth:Microsoft:ClientSecret"];
+                        options.ClientId = configuration["externalAuth:Microsoft:ClientId"] ?? throw new InvalidOperationException("The expected configuration value 'externalAuth:Microsoft:ClientId' is missing.");
+                        options.ClientSecret = configuration["externalAuth:Microsoft:ClientSecret"] ?? throw new InvalidOperationException("The expected configuration value 'externalAuth:Microsoft:ClientSecret' is missing.");
                         ;
                         options.CallbackPath = "/signin-google";
                         options.GetClaimsFromUserInfoEndpoint = true;
@@ -170,7 +172,7 @@ public static class ConfigureServices
             healthChecksBuilder
                 .AddCheck("self", () => HealthCheckResult.Healthy(), tags: new string[] { "api" })
                 .AddSqlServer(
-                    configuration["ConnectionStrings:DbContextConnString"],
+                    configuration["ConnectionStrings:DbContextConnString"] ?? throw new InvalidOperationException("The expected configuration value 'ConnectionStrings:DbContextConnString' is missing."),
                     name: "projects-sql-db-check",
                     tags: new string[] { "sql" }
                 );

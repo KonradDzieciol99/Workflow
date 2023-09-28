@@ -33,7 +33,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
     public UpdateProjectCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
     {
         this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        this._mapper = mapper;
+        this._mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     public async Task<ProjectDto> Handle(

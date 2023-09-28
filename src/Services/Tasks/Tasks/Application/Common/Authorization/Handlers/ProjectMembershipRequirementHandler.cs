@@ -22,9 +22,9 @@ public class ProjectMembershipRequirementHandler
     {
         var userId =
             context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-            ?? throw new ArgumentNullException(nameof(context));
+                ?? throw new InvalidOperationException($"User identifier claim '{nameof(ClaimTypes.NameIdentifier)}' not found in context.");
         var projectId =
-            requirement.ProjectId ?? throw new ArgumentNullException(nameof(requirement));
+            requirement.ProjectId ?? throw new InvalidOperationException($"{nameof(requirement.ProjectId)} is null in requirement.");
 
         var result = await _unitOfWork.ProjectMemberRepository.CheckIfUserIsAMemberOfProject(
             projectId,
