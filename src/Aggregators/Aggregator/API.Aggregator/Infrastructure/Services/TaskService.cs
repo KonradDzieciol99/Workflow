@@ -1,6 +1,6 @@
 ﻿using API.Aggregator.Application.Commons.Models;
 using API.Aggregator.Domain.Commons.Exceptions;
-using HttpMessage;
+using HttpMessage.Services;
 
 namespace API.Aggregator.Infrastructure.Services;
 
@@ -13,7 +13,7 @@ public class TaskService : BaseHttpService, ITaskService
     {
         _tasksServiceUrl =
             configuration.GetValue<string>("ServicesUrl:Tasks")
-                ?? throw new InvalidOperationException("The expected configuration value 'ServicesUrl:Tasks' is missing.");
+            ?? throw new ArgumentNullException(nameof(configuration));
         ;
     }
 }

@@ -32,7 +32,11 @@ public class TransactionBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequ
             if (_unitOfWork.HasActiveTransaction())
                 return await next();
 
-            using (var transaction = await _unitOfWork.BeginTransactionAsync())
+            using (
+                var transaction =
+                    await _unitOfWork.BeginTransactionAsync()
+                    ?? throw new InvalidOperationException("Transaction could not be started.")
+            )
             {
                 response = await next();
 

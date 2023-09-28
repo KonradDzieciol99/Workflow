@@ -35,6 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Integration\HttpMessage\HttpMessage.csproj" />
     <ProjectReference Include="..\..\..\Integration\Logging\Logging.csproj" />
     <ProjectReference Include="..\..\..\Integration\MessageBus\MessageBus.csproj" />
   </ItemGroup>

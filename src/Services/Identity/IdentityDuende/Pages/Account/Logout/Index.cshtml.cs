@@ -39,7 +39,7 @@ public class Index : PageModel
 
         var showLogoutPrompt = LogoutOptions.ShowLogoutPrompt;
 
-        if (User?.Identity.IsAuthenticated != true)
+        if (User?.Identity?.IsAuthenticated != true)
         {
             // if the user is not authenticated, then just show logged out page
             showLogoutPrompt = false;

@@ -22,9 +22,14 @@ public class ShareFriendRequestRequirementHandler
     {
         var userId =
             context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                ?? throw new InvalidOperationException($"User identifier claim '{nameof(ClaimTypes.NameIdentifier)}' not found in context.");
+            ?? throw new InvalidOperationException(
+                $"User identifier claim '{nameof(ClaimTypes.NameIdentifier)}' not found in context."
+            );
         var targetUserId =
-            requirement.TargetUserId ?? throw new InvalidOperationException($"{nameof(requirement.TargetUserId)} is null in requirement.");
+            requirement.TargetUserId
+            ?? throw new InvalidOperationException(
+                $"{nameof(requirement.TargetUserId)} is null in requirement."
+            );
 
         var result = await _unitOfWork.FriendRequestRepository.CheckIfTheyShareFriendRequest(
             userId,

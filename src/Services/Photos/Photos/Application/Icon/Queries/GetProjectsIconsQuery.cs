@@ -28,12 +28,17 @@ public class GetProjectsIconsQueryHandler
         CancellationToken cancellationToken
     )
     {
-        var blobContainerProjectsIconsName = _configuration.GetValue<string>(
-            "AzureBlobStorage:BlobContainerProjectsIcons"
-        ) ?? throw new InvalidOperationException("The expected configuration value 'AzureBlobStorage:BlobContainerProjectsIcons' is missing.");
+        var blobContainerProjectsIconsName =
+            _configuration.GetValue<string>("AzureBlobStorage:BlobContainerProjectsIcons")
+            ?? throw new InvalidOperationException(
+                "The expected configuration value 'AzureBlobStorage:BlobContainerProjectsIcons' is missing."
+            );
 
-        var url = _configuration.GetValue<string>("urls:external:azureBlobStorage") 
-            ?? throw new InvalidOperationException("The expected configuration value 'urls:external:azureBlobStorage' is missing.");
+        var url =
+            _configuration.GetValue<string>("urls:external:azureBlobStorage")
+            ?? throw new InvalidOperationException(
+                "The expected configuration value 'urls:external:azureBlobStorage' is missing."
+            );
 
         var blobPhotosContainerClient = _blobServiceClient.GetBlobContainerClient(
             blobContainerProjectsIconsName

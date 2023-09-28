@@ -23,7 +23,9 @@ public static class SeriLogger
             {
                 var seqUrl =
                     context.Configuration["ConnectionStrings:seq"]
-                        ?? throw new InvalidOperationException("The expected configuration value 'ConnectionStrings:seq' is missing.");
+                    ?? throw new InvalidOperationException(
+                        "The expected configuration value 'ConnectionStrings:seq' is missing."
+                    );
                 builder.WriteTo.Seq(seqUrl);
             }
         };

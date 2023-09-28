@@ -1,8 +1,7 @@
 ﻿using API.Aggregator.Application.Commons.Models;
-using API.Aggregator.Domain.Commons.Exceptions;
 using API.Aggregator.Infrastructure.Services;
 using MediatR;
-using API.Aggregator.Application.Commons.Exceptions;
+using HttpMessage.Exceptions;
 
 namespace API.Aggregator.Application.ProjectMembersAggregate.Commands;
 
@@ -36,10 +35,7 @@ public class AddProjectMemberCommandHandler
     {
         var usersFound =
             await _identityServerService.CheckIfUserExistsAsync(request.UserEmail)
-            ?? throw new AggregatorDomainException(
-                "User cannot be found.",
-                new NotFoundException()
-            );
+            ?? throw new NotFoundException("User cannot be found.");
 
         return await _projectsService.AddMember(
             request.ProjectId,

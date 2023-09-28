@@ -3,17 +3,18 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Notification.Infrastructure.DataAccess.Migrations
+namespace Notification.Infrastructure.DataAccess.Migrations;
+
+/// <inheritdoc />
+public partial class Init : Migration
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.CreateTable(
-                name: "AppNotification",
-                columns: table => new
+        migrationBuilder.CreateTable(
+            name: "AppNotification",
+            columns: table =>
+                new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -21,21 +22,29 @@ namespace Notification.Infrastructure.DataAccess.Migrations
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Displayed = table.Column<bool>(type: "bit", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NotificationPartnerId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NotificationPartnerEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NotificationPartnerPhotoUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    NotificationPartnerId = table.Column<string>(
+                        type: "nvarchar(max)",
+                        nullable: true
+                    ),
+                    NotificationPartnerEmail = table.Column<string>(
+                        type: "nvarchar(max)",
+                        nullable: true
+                    ),
+                    NotificationPartnerPhotoUrl = table.Column<string>(
+                        type: "nvarchar(max)",
+                        nullable: true
+                    )
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AppNotification", x => x.Id);
-                });
-        }
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_AppNotification", x => x.Id);
+            }
+        );
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropTable(
-                name: "AppNotification");
-        }
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.DropTable(name: "AppNotification");
     }
 }

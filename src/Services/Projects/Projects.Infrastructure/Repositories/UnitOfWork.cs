@@ -13,10 +13,13 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     private readonly IMediator _mediator;
     private bool disposed;
     private IDbContextTransaction? _currentTransaction;
+
     public UnitOfWork(ApplicationDbContext applicationDbContext, IMediator mediator)
     {
-        _applicationDbContext = applicationDbContext ?? throw new ArgumentNullException(nameof(applicationDbContext));
-        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator)); ;
+        _applicationDbContext =
+            applicationDbContext ?? throw new ArgumentNullException(nameof(applicationDbContext));
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        ;
         disposed = false;
         _currentTransaction = null;
     }
@@ -69,8 +72,6 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    
-
     public bool HasActiveTransaction()
     {
         return _currentTransaction != null;
@@ -119,7 +120,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         }
         finally
         {
-            _currentTransaction?.Dispose();  
+            _currentTransaction?.Dispose();
         }
     }
 }

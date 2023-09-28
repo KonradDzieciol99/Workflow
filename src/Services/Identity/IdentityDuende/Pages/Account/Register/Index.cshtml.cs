@@ -37,13 +37,17 @@ public class IndexModel : PageModel
         SignInManager<ApplicationUser> signInManager
     )
     {
-        this._events = events;
-        this._schemeProvider = schemeProvider;
-        this._identityProviderStore = identityProviderStore;
-        this._configuration = configuration;
-        this._signInManager = signInManager;
-        this._interaction = interaction;
-        _userManager = userManager;
+        this._events = events ?? throw new ArgumentNullException(nameof(events));
+        this._schemeProvider =
+            schemeProvider ?? throw new ArgumentNullException(nameof(schemeProvider));
+        this._identityProviderStore =
+            identityProviderStore ?? throw new ArgumentNullException(nameof(identityProviderStore));
+        this._configuration =
+            configuration ?? throw new ArgumentNullException(nameof(configuration));
+        this._signInManager =
+            signInManager ?? throw new ArgumentNullException(nameof(signInManager));
+        this._interaction = interaction ?? throw new ArgumentNullException(nameof(interaction));
+        _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
     }
 
     [BindProperty]

@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
+using HttpMessage.Authorization;
+using HttpMessage.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Projects.Application.Common.Authorization;
 using Projects.Application.Common.Authorization.Requirements;
-using Projects.Application.Common.Exceptions;
 using Projects.Application.Common.Interfaces;
 using Projects.Application.Common.Models.Dto;
 
@@ -33,7 +33,7 @@ public class GetProjectQueryHandler : IRequestHandler<GetProjectQuery, ProjectDt
     {
         var project =
             await _unitOfWork.ReadOnlyProjectRepository.GetOneAsync(request.ProjectId)
-            ?? throw new BadRequestException("Project cannot be found.");
+            ?? throw new NotFoundException("Project cannot be found.");
 
         return _mapper.Map<ProjectDto>(project);
     }

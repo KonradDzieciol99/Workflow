@@ -1,8 +1,9 @@
-﻿using MediatR;
+﻿using HttpMessage.Authorization;
+using HttpMessage.Services;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Notification.Application.Common.Authorization;
 using Notification.Infrastructure.Repositories;
-using Notification.Services;
 
 namespace Notification.Application.AppNotifications.Queries;
 

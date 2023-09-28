@@ -110,7 +110,9 @@ public class AzureServiceBusConsumer : BackgroundService, IEventBusConsumer
         var @event = JsonSerializer.Deserialize<T>(eventJSON, options);
 
         if (@event is null)
-            throw new InvalidOperationException($"Deserialization failed, resulting object is null. JSON: {eventJSON}");
+            throw new InvalidOperationException(
+                $"Deserialization failed, resulting object is null. JSON: {eventJSON}"
+            );
 
         using var scope = _serviceScopeFactory.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();

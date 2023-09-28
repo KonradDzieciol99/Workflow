@@ -52,7 +52,6 @@ public static class Config
                 RequireClientSecret = false,
                 RequirePkce = true,
                 RedirectUris = { "http://localhost:4200/home", "http://localhost:1000/home" },
-                //FrontChannelLogoutUri = "https://localhost:4200",
                 PostLogoutRedirectUris = { "http://localhost:4200", "http://localhost:1000" },
                 AllowedCorsOrigins = { "http://localhost:4200", "http://localhost:1000" },
                 AllowOfflineAccess = true,

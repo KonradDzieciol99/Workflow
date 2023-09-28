@@ -39,12 +39,15 @@ public class ProfileService : IProfileService
 
     private List<Claim> GetClaimsFromUser(ApplicationUser user)
     {
-                if (user == null) throw new ArgumentNullException(nameof(user));
-
+        if (user == null)
+            throw new ArgumentNullException(nameof(user));
 
         var claims = new List<Claim>
         {
-            new(JwtClaimTypes.Email, user.Email ?? throw new InvalidOperationException($"{nameof(user.Email)} is null.")),
+            new(
+                JwtClaimTypes.Email,
+                user.Email ?? throw new InvalidOperationException($"{nameof(user.Email)} is null.")
+            ),
         };
 
         if (user.PictureUrl is not null)

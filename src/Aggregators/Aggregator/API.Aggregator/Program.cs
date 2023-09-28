@@ -1,11 +1,9 @@
-using API.Aggregator;
 using HealthChecks.UI.Client;
 using Logging;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
-using API.Aggregator.Middleware;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using System.Net;
+using HttpMessage.Middleware;
+using API.Aggregator.Domain.Commons.Exceptions;
 
 namespace API.Aggregator;
 
@@ -32,7 +30,7 @@ public class Program
         app.UseCors("allowAny");
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseMiddleware<ExceptionMiddleware>();
+        app.UseMiddleware<ExceptionMiddleware<AggregatorDomainException>>();
         app.MapDefaultControllerRoute();
         app.MapControllers();
         app.MapHealthChecks(

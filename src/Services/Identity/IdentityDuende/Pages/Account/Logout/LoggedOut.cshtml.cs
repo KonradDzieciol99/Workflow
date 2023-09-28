@@ -15,7 +15,8 @@ public class LoggedOut : PageModel
 
     public LoggedOut(IIdentityServerInteractionService interactionService)
     {
-        _interactionService = interactionService;
+        _interactionService =
+            interactionService ?? throw new ArgumentNullException(nameof(interactionService));
     }
 
     public async Task<IActionResult> OnGet(string logoutId)

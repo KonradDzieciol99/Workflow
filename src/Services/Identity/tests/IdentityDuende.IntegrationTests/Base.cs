@@ -64,8 +64,7 @@ public class Base : IAsyncLifetime
 
                     services.Remove<DbContextOptions<ApplicationDbContext>>();
 
-                    var dbConnString =
-                        _msSqlContainer.GetConnectionString();
+                    var dbConnString = _msSqlContainer.GetConnectionString();
                     services.AddDbContext<ApplicationDbContext>(
                         options =>
                             options.UseSqlServer(

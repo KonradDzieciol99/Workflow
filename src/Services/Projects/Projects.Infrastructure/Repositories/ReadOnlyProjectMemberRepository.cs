@@ -17,7 +17,7 @@ public class ReadOnlyProjectMemberRepository : IReadOnlyProjectMemberRepository
     {
         if (applicationDbContext == null)
             throw new ArgumentNullException(nameof(applicationDbContext));
-        
+
         this.ProjectMembersQuery = applicationDbContext.ProjectMembers.AsNoTracking();
     }
 
@@ -59,7 +59,6 @@ public class ReadOnlyProjectMemberRepository : IReadOnlyProjectMemberRepository
             string.IsNullOrWhiteSpace(appParams.OrderBy) == false && appParams.IsDescending.HasValue
         )
             query.OrderBy(appParams.OrderBy, appParams.IsDescending.Value);
-        
 
         query = string.IsNullOrWhiteSpace(appParams.Search) switch
         {

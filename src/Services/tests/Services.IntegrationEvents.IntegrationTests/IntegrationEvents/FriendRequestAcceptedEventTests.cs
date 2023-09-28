@@ -74,7 +74,8 @@ public class FriendRequestAcceptedEventTests : IAsyncLifetime
             await Task.Delay(100);
         }
 
-        Assert.Equal(1, result?.Count);
+        Assert.NotNull(result);
+        Assert.Equal(1, result.Count);
         Assert.True(result[0].NotificationType == NotificationType.FriendRequestAccepted);
     }
 }

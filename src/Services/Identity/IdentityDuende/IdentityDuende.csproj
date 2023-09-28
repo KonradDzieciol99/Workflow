@@ -46,6 +46,7 @@
   <ItemGroup>
     <Folder Include="Infrastructure\Common\" />
     <Folder Include="Infrastructure\DataAccess\Migrations\" />
+    <Folder Include="keys\" />
   </ItemGroup>
 
   <ItemGroup>

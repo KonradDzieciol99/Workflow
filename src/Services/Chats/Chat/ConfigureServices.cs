@@ -1,12 +1,13 @@
 ﻿using Chat.Application.Common.Authorization.Handlers;
-using Chat.Application.Common.Behaviours;
 using Chat.Application.Common.Mappings;
 using Chat.Domain.Services;
 using Chat.Infrastructure.DataAccess;
 using Chat.Infrastructure.Repositories;
-using Chat.Services;
 using FluentValidation;
+using HttpMessage.Behaviours;
+using HttpMessage.Services;
 using MediatR;
+using MediatR.Pipeline;
 using MessageBus.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -14,7 +15,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Chat;
 
@@ -41,10 +41,14 @@ public static class ConfigureServices
             {
                 var internalIdentityUrl =
                     configuration.GetValue<string>("urls:internal:identity")
-                        ?? throw new InvalidOperationException("The expected configuration value 'urls:internal:identity' is missing.");
+                    ?? throw new InvalidOperationException(
+                        "The expected configuration value 'urls:internal:identity' is missing."
+                    );
                 var externalIdentityUrlhttp =
                     configuration.GetValue<string>("urls:external:identity")
-                        ?? throw new InvalidOperationException("The expected configuration value 'urls:external:identity' is missing.");
+                    ?? throw new InvalidOperationException(
+                        "The expected configuration value 'urls:external:identity' is missing."
+                    );
 
                 opt.RequireHttpsMetadata = false;
                 opt.SaveToken = true;
@@ -75,7 +79,12 @@ public static class ConfigureServices
         });
         services.AddDbContext<ApplicationDbContext>(opt =>
         {
-            opt.UseSqlServer(configuration.GetConnectionString("DbContextConnString") ?? throw new InvalidOperationException("The expected configuration value 'ConnectionStrings:DbContextConnString' is missing."));
+            opt.UseSqlServer(
+                configuration.GetConnectionString("DbContextConnString")
+                    ?? throw new InvalidOperationException(
+                        "The expected configuration value 'ConnectionStrings:DbContextConnString' is missing."
+                    )
+            );
         });
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -100,17 +109,28 @@ public static class ConfigureServices
             );
         });
 
-        services.AddRabbitMQConsumer(configuration.GetSection("RabbitMQOptions") ?? throw new InvalidOperationException("The expected configuration value 'RabbitMQOptions' is missing."));
-        services.AddRabbitMQSender(configuration.GetSection("RabbitMQOptions") ?? throw new InvalidOperationException("The expected configuration value 'RabbitMQOptions' is missing."));
+        services.AddRabbitMQConsumer(
+            configuration.GetSection("RabbitMQOptions")
+                ?? throw new InvalidOperationException(
+                    "The expected configuration value 'RabbitMQOptions' is missing."
+                )
+        );
+        services.AddRabbitMQSender(
+            configuration.GetSection("RabbitMQOptions")
+                ?? throw new InvalidOperationException(
+                    "The expected configuration value 'RabbitMQOptions' is missing."
+                )
+        );
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
-        services.AddMediatR(opt =>
+        services.AddMediatR(cfg =>
         {
-            opt.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-            opt.AddBehavior(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
-            opt.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
-            opt.AddBehavior(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehaviour<,>));
+            cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
+            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehaviour<,>));
+            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+            cfg.AddRequestPreProcessor(typeof(IRequestPreProcessor<>), typeof(LoggingBehaviour<>));
         });
 
         services.AddScoped<ICurrentUserService, CurrentUserService>();
@@ -124,12 +144,20 @@ public static class ConfigureServices
             healthBuilder
                 .AddCheck("self", () => HealthCheckResult.Healthy(), tags: new string[] { "api" })
                 .AddSqlServer(
-                    configuration["ConnectionStrings:DbContextConnString"] ?? throw new InvalidOperationException("The expected configuration value 'ConnectionStrings:DbContextConnString' is missing."),
+                    configuration["ConnectionStrings:DbContextConnString"]
+                        ?? throw new InvalidOperationException(
+                            "The expected configuration value 'ConnectionStrings:DbContextConnString' is missing."
+                        ),
                     name: "chat-sql-db-check",
                     tags: new string[] { "sql" }
                 )
                 .AddIdentityServer(
-                    new Uri(configuration.GetValue<string>("urls:internal:identity") ?? throw new InvalidOperationException("The expected configuration value 'urls:internal:identity' is missing.")),
+                    new Uri(
+                        configuration.GetValue<string>("urls:internal:identity")
+                            ?? throw new InvalidOperationException(
+                                "The expected configuration value 'urls:internal:identity' is missing."
+                            )
+                    ),
                     name: "chat-identity-check",
                     tags: new string[] { "identity" }
                 );

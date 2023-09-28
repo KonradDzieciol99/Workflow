@@ -25,13 +25,17 @@ public class ProjectMembershipRequirementHandler
 
         if (requirement == null)
             throw new ArgumentNullException(nameof(requirement));
-        
 
         var userId =
             context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                ?? throw new InvalidOperationException($"The user identifier {nameof(ClaimTypes.NameIdentifier)} is missing in the context.");
+            ?? throw new InvalidOperationException(
+                $"The user identifier {nameof(ClaimTypes.NameIdentifier)} is missing in the context."
+            );
         var AppNotificationId =
-            requirement.AppNotificationId ?? throw new InvalidOperationException($"The {nameof(requirement.AppNotificationId)} is missing.");
+            requirement.AppNotificationId
+            ?? throw new InvalidOperationException(
+                $"The {nameof(requirement.AppNotificationId)} is missing."
+            );
 
         var result =
             await _unitOfWork.AppNotificationRepository.CheckIfUserIsAOwnerOfAppNotification(

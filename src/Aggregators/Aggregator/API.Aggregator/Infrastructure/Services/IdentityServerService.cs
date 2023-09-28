@@ -1,6 +1,7 @@
 ﻿using API.Aggregator.Application.Commons.Models;
 using API.Aggregator.Domain.Commons.Exceptions;
 using HttpMessage;
+using HttpMessage.Services;
 using System.Text;
 
 namespace API.Aggregator.Infrastructure.Services;
@@ -14,7 +15,7 @@ public class IdentityServerService : BaseHttpService, IIdentityServerService
     {
         _identityUrl =
             configuration.GetValue<string>("urls:internal:identity")
-             ?? throw new InvalidOperationException("The expected configuration value 'urls:internal:identity' is missing.");
+            ?? throw new ArgumentNullException(_identityUrl);
     }
 
     public async Task<UserDto?> CheckIfUserExistsAsync(string email)

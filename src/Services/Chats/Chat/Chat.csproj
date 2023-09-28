@@ -18,7 +18,6 @@
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="Bogus" Version="34.0.2" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.7.1" />
-    <PackageReference Include="MediatR" Version="12.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.5" />
@@ -33,6 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Integration\HttpMessage\HttpMessage.csproj" />
     <ProjectReference Include="..\..\..\Integration\Logging\Logging.csproj" />
     <ProjectReference Include="..\..\..\Integration\MessageBus\MessageBus.csproj" />
   </ItemGroup>
@@ -40,6 +40,7 @@
   <ItemGroup>
     <Folder Include="Infrastructure\Common\Extensions\" />
     <Folder Include="Infrastructure\DataAccess\Migrations\" />
+    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>

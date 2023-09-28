@@ -1,16 +1,12 @@
 using HealthChecks.UI.Client;
+using HttpMessage.Middleware;
 using Logging;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.EntityFrameworkCore;
 using Projects.Application;
+using Projects.Domain.Common.Exceptions;
 using Projects.Infrastructure;
 using Projects.Infrastructure.DataAccess;
-using Projects.Middleware;
 using Serilog;
-using Serilog.Events;
-using Serilog.Sinks.SystemConsole.Themes;
-using System.Net;
 
 namespace Projects;
 
@@ -40,7 +36,7 @@ public class Program
         app.UseCors("allowAny");
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseMiddleware<ExceptionMiddleware>();
+        app.UseMiddleware<ExceptionMiddleware<ProjectDomainException>>();
         app.UseSerilogRequestLogging();
         app.MapDefaultControllerRoute();
         app.MapControllers();

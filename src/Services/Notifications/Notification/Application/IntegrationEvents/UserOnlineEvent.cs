@@ -2,7 +2,6 @@
 using Notification.Application.Common.Models;
 using Notification.Application.AppNotifications.Queries;
 using Notification.Infrastructure.Repositories;
-using Notification.Services;
 using MediatR;
 
 namespace Notification.Application.IntegrationEvents;

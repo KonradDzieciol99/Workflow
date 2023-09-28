@@ -1,9 +1,8 @@
-﻿using MediatR;
+﻿using HttpMessage.Authorization;
+using HttpMessage.Exceptions;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Notification.Application.Common.Authorization;
 using Notification.Application.Common.Authorization.Requirements;
-using Notification.Application.Common.Exceptions;
-using Notification.Domain.Common.Exceptions;
 using Notification.Infrastructure.Repositories;
 
 namespace Notification.Application.AppNotifications.Commands;
@@ -36,10 +35,7 @@ public class DeleteAppNotificationCommandHandler : IRequestHandler<DeleteAppNoti
     {
         var appNotification =
             await _unitOfWork.AppNotificationRepository.GetAsync(request.Id)
-            ?? throw new NotificationDomainException(
-                string.Empty,
-                new BadRequestException("Notification cannot be found.")
-            );
+            ?? throw new NotFoundException("Notification cannot be found.");
 
         _unitOfWork.AppNotificationRepository.Remove(appNotification);
 

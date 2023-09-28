@@ -5,8 +5,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
-using Photos.Application.Common.Behaviours;
 using Photos.Infrastructure.DataAccess;
+using HttpMessage.Behaviours;
+using MediatR.Pipeline;
 
 namespace Photos;
 
@@ -27,7 +28,9 @@ public static class ConfigureServices
         {
             return new BlobServiceClient(
                 configuration.GetConnectionString("AzureStorage")
-                    ?? throw new InvalidOperationException("The expected configuration value 'ConnectionStrings:AzureStorage' is missing.")
+                    ?? throw new InvalidOperationException(
+                        "The expected configuration value 'ConnectionStrings:AzureStorage' is missing."
+                    )
             );
         });
 
@@ -61,10 +64,14 @@ public static class ConfigureServices
             {
                 var internalIdentityUrl =
                     configuration.GetValue<string>("urls:internal:identity")
-                        ?? throw new InvalidOperationException("The expected configuration value 'urls:internal:identity' is missing.");
+                    ?? throw new InvalidOperationException(
+                        "The expected configuration value 'urls:internal:identity' is missing."
+                    );
                 var externalIdentityUrlhttp =
                     configuration.GetValue<string>("urls:external:identity")
-                        ?? throw new InvalidOperationException("The expected configuration value 'urls:external:identity' is missing.");
+                    ?? throw new InvalidOperationException(
+                        "The expected configuration value 'urls:external:identity' is missing."
+                    );
 
                 opt.RequireHttpsMetadata = false;
                 opt.SaveToken = true;
@@ -82,12 +89,13 @@ public static class ConfigureServices
                 };
             });
 
-        services.AddMediatR(opt =>
+        services.AddMediatR(cfg =>
         {
-            opt.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-            opt.AddBehavior(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
-            opt.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
-            opt.AddBehavior(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehaviour<,>));
+            cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
+            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehaviour<,>));
+            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+            cfg.AddRequestPreProcessor(typeof(IRequestPreProcessor<>), typeof(LoggingBehaviour<>));
         });
 
         services.AddAuthorization(options =>
@@ -111,7 +119,12 @@ public static class ConfigureServices
                 //    name: "photos-azure-blob-storage-check",
                 //    tags: new string[] { "azureServiceBus" })
                 .AddIdentityServer(
-                    new Uri(configuration.GetValue<string>("urls:internal:identity")),
+                    new Uri(
+                        configuration.GetValue<string>("urls:internal:identity")
+                            ?? throw new InvalidOperationException(
+                                "The expected configuration value 'urls:internal:identity' is missing."
+                            )
+                    ),
                     name: "photos-identity-check",
                     tags: new string[] { "identity" }
                 );

@@ -1,7 +1,8 @@
 ﻿using Chat.Application.Common.Authorization;
 using Chat.Application.Common.Models;
 using Chat.Infrastructure.Repositories;
-using Chat.Services;
+using HttpMessage.Authorization;
+using HttpMessage.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 

@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using HttpMessage.Authorization;
+using HttpMessage.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Projects.Application.Common.Authorization;
@@ -20,19 +22,10 @@ public record DeleteProjectCommand(string ProjectId) : IAuthorizationRequest
 public class DeleteProjectCommandHandler : IRequestHandler<DeleteProjectCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ICurrentUserService _currentUserService;
-    private readonly IMapper _mapper;
 
-    public DeleteProjectCommandHandler(
-        IUnitOfWork unitOfWork,
-        ICurrentUserService currentUserService,
-        IMapper mapper
-    )
+    public DeleteProjectCommandHandler(IUnitOfWork unitOfWork)
     {
         this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        this._currentUserService =
-            currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
-        this._mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     public async Task Handle(DeleteProjectCommand request, CancellationToken cancellationToken)

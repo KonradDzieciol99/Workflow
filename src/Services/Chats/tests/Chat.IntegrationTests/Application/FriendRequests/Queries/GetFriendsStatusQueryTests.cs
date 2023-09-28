@@ -26,7 +26,7 @@ public class GetFriendsStatusQueryTests : IAsyncLifetime
     {
         if (_base._checkpoint is null)
             throw new InvalidOperationException("_checkpoint is null and cannot be used.");
-        
+
         await _base._checkpoint.ResetAsync(_base._msSqlContainer.GetConnectionString());
     }
 
@@ -97,9 +97,14 @@ public class GetFriendsStatusQueryTests : IAsyncLifetime
         _base._factory.SeedData<Program, ApplicationDbContext, FriendRequest>(friendRequests);
 
         //act
-        var response = await _base._client.GetAsync(
-            $"api/FriendRequests/GetFriendsStatus?usersIds={string.Join("&usersIds=", ids)}"
-        ) ?? throw new InvalidOperationException($"{nameof(IServiceScopeFactory)} Missing required fiield."); ;
+        var response =
+            await _base._client.GetAsync(
+                $"api/FriendRequests/GetFriendsStatus?usersIds={string.Join("&usersIds=", ids)}"
+            )
+            ?? throw new InvalidOperationException(
+                $"{nameof(IServiceScopeFactory)} Missing required fiield."
+            );
+        ;
 
         //assert
         var responseString = await response.Content.ReadAsStringAsync();

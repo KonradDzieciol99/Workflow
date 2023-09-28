@@ -1,14 +1,12 @@
 using Chat.Application.IntegrationEvents;
+using Chat.Domain.Common.Exceptions;
 using Chat.Infrastructure.DataAccess;
-using Chat.Middleware;
 using HealthChecks.UI.Client;
+using HttpMessage.Middleware;
 using Logging;
 using MessageBus;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
-using System.Net;
 
 namespace Chat;
 
@@ -38,7 +36,7 @@ public class Program
         app.UseCors("allowAny");
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseMiddleware<ExceptionMiddleware>();
+        app.UseMiddleware<ExceptionMiddleware<ChatDomainException>>();
         app.MapControllers();
         app.MapDefaultControllerRoute();
         app.MapHealthChecks(

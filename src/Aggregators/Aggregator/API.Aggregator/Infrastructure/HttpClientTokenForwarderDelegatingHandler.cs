@@ -19,6 +19,11 @@ public class HttpClientTokenForwarderDelegatingHandler : DelegatingHandler
         CancellationToken cancellationToken
     )
     {
+        if (_httpContextAccessor.HttpContext is null)
+            throw new InvalidOperationException(
+                $"Missing {nameof(_httpContextAccessor.HttpContext)}"
+            );
+
         var authorizationHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
 
         if (!string.IsNullOrEmpty(authorizationHeader))

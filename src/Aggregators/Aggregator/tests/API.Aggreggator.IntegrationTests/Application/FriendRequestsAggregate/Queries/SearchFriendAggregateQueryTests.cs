@@ -108,6 +108,7 @@ public class SearchFriendAggregateQueryTests : IAsyncLifetime
             new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }
         );
 
+        Assert.NotNull(searchedUsers);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(usersList.Count, searchedUsers.Count);
     }

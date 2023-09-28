@@ -98,15 +98,18 @@ public class RabbitMQConsumer : BackgroundService, IEventBusConsumer
             else
                 throw;
         }
-
     }
 
     private async Task SendAsync<T>(string eventJSON)
     {
         var options = new JsonSerializerOptions { WriteIndented = true };
 
-        var @event = JsonSerializer.Deserialize<T>(eventJSON, options) ?? throw new InvalidOperationException($"Deserialization failed, resulting object is null. JSON: {eventJSON}");
-        
+        var @event =
+            JsonSerializer.Deserialize<T>(eventJSON, options)
+            ?? throw new InvalidOperationException(
+                $"Deserialization failed, resulting object is null. JSON: {eventJSON}"
+            );
+
         using var scope = _serviceScopeFactory.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
         var response = await mediator.Send(@event);

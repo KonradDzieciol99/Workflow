@@ -30,12 +30,18 @@ public class SeedData
         _blobProjectsIconsContainerClient = _blobServiceClient.GetBlobContainerClient(
             blobContainerName: _configuration.GetValue<string>(
                 "AzureBlobStorage:BlobContainerProjectsIcons"
-            ) ?? throw new InvalidOperationException("The expected configuration value 'AzureBlobStorage:BlobContainerProjectsIcons' is missing.")
+            )
+                ?? throw new InvalidOperationException(
+                    "The expected configuration value 'AzureBlobStorage:BlobContainerProjectsIcons' is missing."
+                )
         );
         _blobPhotosContainerClient = _blobServiceClient.GetBlobContainerClient(
             blobContainerName: _configuration.GetValue<string>(
                 "AzureBlobStorage:BlobContainerPhotos"
-            ) ?? throw new InvalidOperationException("The expected configuration value 'AzureBlobStorage:BlobContainerPhotos' is missing.")
+            )
+                ?? throw new InvalidOperationException(
+                    "The expected configuration value 'AzureBlobStorage:BlobContainerPhotos' is missing."
+                )
         );
     }
 

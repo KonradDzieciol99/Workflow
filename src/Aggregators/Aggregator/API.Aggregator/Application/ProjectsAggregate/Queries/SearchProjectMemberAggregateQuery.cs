@@ -1,8 +1,6 @@
 ﻿using API.Aggregator.Application.Commons.Models;
 using API.Aggregator.Infrastructure.Services;
-using API.Aggregator.Services;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 
 namespace API.Aggregator.Application.ProjectsAggregate.Queries;
 
