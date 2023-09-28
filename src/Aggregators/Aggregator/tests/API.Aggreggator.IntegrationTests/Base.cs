@@ -19,8 +19,8 @@ public class WebApplicationFactoryCollection : ICollectionFixture<Base> { }
 public class Base : IAsyncLifetime
 {
     public readonly WebApplicationFactory<Program> _factory;
-    public HttpClient? _client;
-    public Respawner? _checkpoint;
+    public HttpClient _client = null!;
+    public Respawner _checkpoint = null!;
     public readonly MsSqlContainer _msSqlContainer;
     public readonly WireMockServer _mockServer;
 

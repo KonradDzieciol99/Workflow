@@ -79,6 +79,7 @@ public class AddTaskCommandTests : IAsyncLifetime //to może zastępowac konstru
         var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
         var returnedAppTasks = JsonSerializer.Deserialize<AppTaskDto>(responseString, options);
 
+        Assert.NotNull(returnedAppTasks);
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.Equal(command.Name, returnedAppTasks.Name);
     }

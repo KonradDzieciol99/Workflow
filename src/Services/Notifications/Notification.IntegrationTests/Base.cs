@@ -11,6 +11,7 @@ using Notification.Domain.Entity;
 using Notification.Domain.Common.Enums;
 using Bogus.DataSets;
 using Microsoft.Extensions.Configuration;
+using TestsHelpers.Extensions;
 
 namespace Notification.IntegrationTests;
 
@@ -20,8 +21,8 @@ public class WebApplicationFactoryCollection : ICollectionFixture<Base> { }
 public class Base : IAsyncLifetime
 {
     public readonly WebApplicationFactory<Program> _factory;
-    public HttpClient? _client;
-    public Respawner? _checkpoint;
+    public HttpClient _client = null!;
+    public Respawner _checkpoint = null!;
     public readonly MsSqlContainer _msSqlContainer;
 
     public Base()
@@ -62,15 +63,11 @@ public class Base : IAsyncLifetime
                     services.AddSingleton<IEventBusSender>(mockSender.Object);
                     services.AddSingleton<IEventBusConsumer>(mockConsumer.Object);
 
-                    var dbContextOptions = services.SingleOrDefault(
-                        service =>
-                            service.ServiceType == typeof(DbContextOptions<ApplicationDbContext>)
-                    );
-                    services.Remove(dbContextOptions);
+                    services.Remove<DbContextOptions<ApplicationDbContext>>();
 
                     var dbConnString =
-                        _msSqlContainer.GetConnectionString()
-                        ?? throw new ArgumentNullException("dbConnString");
+                        _msSqlContainer.GetConnectionString();
+
                     services.AddDbContext<ApplicationDbContext>(
                         options =>
                             options.UseSqlServer(

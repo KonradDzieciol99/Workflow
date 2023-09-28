@@ -38,16 +38,16 @@ public class GetMessageThreadQueryTests : IAsyncLifetime
         {
             new object[]
             {
-                new GetMessageThreadQuery("invitedUserEmail@test.com1", "invitedUserId1", 0, 10),
-                3
+                new GetMessageThreadQuery("invitedUserEmail@test.com1", "invitedUserId1", 0, 10)
+                //3
             },
         };
 
     [Theory]
     [MemberData(nameof(GetAppTasksQueryList))]
     public async Task GetMessageThreadQuery_ValidData_ReturnsMessages(
-        GetMessageThreadQuery query,
-        int amount
+        GetMessageThreadQuery query
+        //int amount
     )
     {
         //arrange
@@ -110,6 +110,7 @@ public class GetMessageThreadQueryTests : IAsyncLifetime
             options
         );
 
+        Assert.NotNull(returnedMessageDtos);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(messages.Count, returnedMessageDtos.Count);
     }

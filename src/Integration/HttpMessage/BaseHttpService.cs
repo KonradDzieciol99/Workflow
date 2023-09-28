@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace HttpMessage;
 
-public class BaseHttpService : IBaseHttpService
+public abstract class BaseHttpService : IBaseHttpService
 {
     private readonly HttpClient _client;
 

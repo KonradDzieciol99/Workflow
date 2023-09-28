@@ -18,11 +18,11 @@ public class CurrentUserService : ICurrentUserService
 
     public string GetUserId() =>
         _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)
-        ?? throw new ArgumentNullException(nameof(ClaimTypes.NameIdentifier));
+            ?? throw new InvalidOperationException($"Claim '{nameof(ClaimTypes.NameIdentifier)}' not found.");
 
     public string GetUserEmail() =>
         _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Email)
-        ?? throw new ArgumentNullException(nameof(ClaimTypes.Email));
+            ?? throw new InvalidOperationException($"Claim '{nameof(ClaimTypes.Email)}' not found.");
 
     public string? GetUserPhoto() =>
         _httpContextAccessor.HttpContext?.User?.FindFirstValue("picture");

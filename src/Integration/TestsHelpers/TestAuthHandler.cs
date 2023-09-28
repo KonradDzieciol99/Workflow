@@ -27,12 +27,12 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
         if (Context.Request.Headers.TryGetValue(UserId, out var userId))
             claims.Add(new Claim(ClaimTypes.NameIdentifier, userId[0]));
         else
-            throw new ArgumentNullException($"{nameof(UserId)}, Podaj Id użytkownika do Testów");
+            throw new InvalidOperationException($"{nameof(UserId)}, Podaj Id użytkownika do Testów");
 
         if (Context.Request.Headers.TryGetValue(UserEmail, out var email))
             claims.Add(new Claim(ClaimTypes.Email, email[0]));
         else
-            throw new ArgumentNullException(
+            throw new InvalidOperationException(
                 $"{nameof(UserEmail)}, Podaj Email użytkownika do Testów"
             );
 

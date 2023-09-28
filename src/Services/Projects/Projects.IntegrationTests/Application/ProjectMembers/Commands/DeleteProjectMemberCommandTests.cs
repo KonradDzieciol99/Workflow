@@ -55,7 +55,7 @@ public class DeleteProjectMemberCommandTests : IAsyncLifetime
 
         _base._factory.SeedData<Program, ApplicationDbContext, Project>(projects);
 
-        _base._client.SetHeaders("testUserId", "testUserEmail@test.com");
+        _base._client?.SetHeaders("testUserId", "testUserEmail@test.com");
 
         DeleteProjectMemberCommand command = new(invitedMember.Id, invitedMember.MotherProject.Id);
 

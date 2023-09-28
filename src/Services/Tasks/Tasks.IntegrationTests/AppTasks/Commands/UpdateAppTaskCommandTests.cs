@@ -112,6 +112,7 @@ public class UpdateAppTaskCommandTests : IAsyncLifetime //to może zastępowac k
         var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
         var returnedAppTasks = JsonSerializer.Deserialize<AppTaskDto>(responseString, options);
 
+        Assert.NotNull(returnedAppTasks);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(updatedDescription, returnedAppTasks.Description);
     }

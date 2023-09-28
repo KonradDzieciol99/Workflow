@@ -8,7 +8,7 @@ using Notification.Infrastructure.DataAccess;
 
 #nullable disable
 
-namespace Notification.Migrations
+namespace Notification.Infrastructure.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot

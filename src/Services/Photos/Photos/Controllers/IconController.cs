@@ -1,10 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Photos.Application.Icon.Commands;
 using Photos.Application.Icon.Queries;
-using Photos.Common.Models;
+using Photos.Domain.Entity;
 
 namespace Photos.Controllers;
 

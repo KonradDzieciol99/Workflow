@@ -107,16 +107,16 @@ public class FriendRequestRepository : IFriendRequestRepository
             .Select(
                 r =>
                     new FriendStatusDto
-                    {
-                        UserId = r.InviterUserId == userId ? r.InvitedUserId : r.InviterUserId,
-                        Status = r.Confirmed
+                    (
+                        r.InviterUserId == userId ? r.InvitedUserId : r.InviterUserId,
+                        r.Confirmed
                             ? FriendStatusType.Friend
                             : (
                                 r.InviterUserId == userId
                                     ? FriendStatusType.InvitedByYou
                                     : FriendStatusType.InvitedYou
                             )
-                    }
+                    )
             )
             .ToListAsync();
 
@@ -124,7 +124,7 @@ public class FriendRequestRepository : IFriendRequestRepository
             .Select(
                 id =>
                     userStatuses.FirstOrDefault(s => s.UserId == id)
-                    ?? new FriendStatusDto { UserId = id, Status = FriendStatusType.Stranger }
+                    ?? new FriendStatusDto(id, FriendStatusType.Stranger)
             )
             .ToList();
     }

@@ -13,7 +13,7 @@ public class TaskService : BaseHttpService, ITaskService
     {
         _tasksServiceUrl =
             configuration.GetValue<string>("ServicesUrl:Tasks")
-            ?? throw new ArgumentNullException(nameof(configuration));
+                ?? throw new InvalidOperationException("The expected configuration value 'ServicesUrl:Tasks' is missing.");
         ;
     }
 }

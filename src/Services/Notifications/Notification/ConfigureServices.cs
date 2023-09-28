@@ -34,10 +34,10 @@ public static class ConfigureServices
             {
                 var internalIdentityUrl =
                     configuration.GetValue<string>("urls:internal:identity")
-                    ?? throw new ArgumentNullException(nameof(configuration));
+                        ?? throw new InvalidOperationException("The expected configuration value 'urls:internal:identity' is missing.");
                 var externalIdentityUrlhttp =
                     configuration.GetValue<string>("urls:external:identity")
-                    ?? throw new ArgumentNullException(nameof(configuration));
+                        ?? throw new InvalidOperationException("The expected configuration value 'urls:external:identity' is missing.");
 
                 opt.RequireHttpsMetadata = false;
                 opt.SaveToken = true;
@@ -81,12 +81,12 @@ public static class ConfigureServices
             opt.AddBehavior(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehaviour<,>));
         });
 
-        services.AddRabbitMQConsumer(configuration.GetSection("RabbitMQOptions"));
-        services.AddRabbitMQSender(configuration.GetSection("RabbitMQOptions"));
+        services.AddRabbitMQConsumer(configuration.GetSection("RabbitMQOptions") ?? throw new InvalidOperationException("The expected configuration value 'RabbitMQOptions' is missing."));
+        services.AddRabbitMQSender(configuration.GetSection("RabbitMQOptions") ?? throw new InvalidOperationException("The expected configuration value 'RabbitMQOptions' is missing."));
 
         services.AddDbContext<ApplicationDbContext>(opt =>
         {
-            opt.UseSqlServer(configuration.GetConnectionString("DbContextConnString"));
+            opt.UseSqlServer(configuration.GetConnectionString("DbContextConnString") ?? throw new InvalidOperationException("The expected configuration value 'ConnectionStrings:DbContextConnString' is missing."));
         });
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
@@ -112,12 +112,12 @@ public static class ConfigureServices
             healthBuilder
                 .AddCheck("self", () => HealthCheckResult.Healthy(), tags: new string[] { "api" })
                 .AddSqlServer(
-                    configuration["ConnectionStrings:DbContextConnString"],
+                    configuration["ConnectionStrings:DbContextConnString"] ?? throw new InvalidOperationException("The expected configuration value 'ConnectionStrings:DbContextConnString' is missing."),
                     name: "notification-sql-db-check",
                     tags: new string[] { "sql" }
                 )
                 .AddIdentityServer(
-                    new Uri(configuration.GetValue<string>("urls:internal:identity")),
+                    new Uri(configuration.GetValue<string>("urls:internal:identity") ?? throw new InvalidOperationException("The expected configuration value 'urls:internal:identity' is missing.")),
                     name: "notification-identity-check",
                     tags: new string[] { "identity" }
                 );

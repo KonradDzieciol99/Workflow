@@ -23,7 +23,7 @@ public class ProfileService : IProfileService
         var user =
             await _userMgr.FindByIdAsync(sub)
             ?? throw new InvalidOperationException(
-                "User not found for the given subject identifier."
+                $"User not found for the given subject identifier ({nameof(sub)})."
             );
         var claims = GetClaimsFromUser(user);
 
@@ -39,9 +39,12 @@ public class ProfileService : IProfileService
 
     private List<Claim> GetClaimsFromUser(ApplicationUser user)
     {
+                if (user == null) throw new ArgumentNullException(nameof(user));
+
+
         var claims = new List<Claim>
         {
-            new(JwtClaimTypes.Email, user.Email ?? throw new ArgumentNullException(nameof(user))),
+            new(JwtClaimTypes.Email, user.Email ?? throw new InvalidOperationException($"{nameof(user.Email)} is null.")),
         };
 
         if (user.PictureUrl is not null)

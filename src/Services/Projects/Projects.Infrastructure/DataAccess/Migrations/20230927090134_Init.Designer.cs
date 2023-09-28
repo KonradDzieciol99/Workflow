@@ -8,11 +8,11 @@ using Projects.Infrastructure.DataAccess;
 
 #nullable disable
 
-namespace Projects.Infrastructure.Migrations
+namespace Projects.Infrastructure.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230903214957_init")]
-    partial class init
+    [Migration("20230927090134_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

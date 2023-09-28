@@ -15,9 +15,10 @@ public class ReadOnlyProjectMemberRepository : IReadOnlyProjectMemberRepository
 
     public ReadOnlyProjectMemberRepository(ApplicationDbContext applicationDbContext)
     {
-        this.ProjectMembersQuery =
-            applicationDbContext.ProjectMembers.AsNoTracking()
-            ?? throw new ArgumentNullException(nameof(applicationDbContext));
+        if (applicationDbContext == null)
+            throw new ArgumentNullException(nameof(applicationDbContext));
+        
+        this.ProjectMembersQuery = applicationDbContext.ProjectMembers.AsNoTracking();
     }
 
     public async Task<Project?> GetOneAsync(string projectName, string userId)
@@ -57,9 +58,8 @@ public class ReadOnlyProjectMemberRepository : IReadOnlyProjectMemberRepository
         if (
             string.IsNullOrWhiteSpace(appParams.OrderBy) == false && appParams.IsDescending.HasValue
         )
-        {
             query.OrderBy(appParams.OrderBy, appParams.IsDescending.Value);
-        }
+        
 
         query = string.IsNullOrWhiteSpace(appParams.Search) switch
         {

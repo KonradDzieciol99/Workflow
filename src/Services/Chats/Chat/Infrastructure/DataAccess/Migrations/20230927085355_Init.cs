@@ -1,19 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Chat.Migrations;
-
-/// <inheritdoc />
-public partial class init : Migration
+namespace Chat.Infrastructure.DataAccess.Migrations
 {
     /// <inheritdoc />
-    protected override void Up(MigrationBuilder migrationBuilder)
+    public partial class Init : Migration
     {
-        migrationBuilder.CreateTable(
-            name: "FriendRequests",
-            columns: table =>
-                new
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.CreateTable(
+                name: "FriendRequests",
+                columns: table => new
                 {
                     InviterUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     InvitedUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -23,19 +23,14 @@ public partial class init : Migration
                     InvitedPhotoUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Confirmed = table.Column<bool>(type: "bit", nullable: false)
                 },
-            constraints: table =>
-            {
-                table.PrimaryKey(
-                    "PK_FriendRequests",
-                    x => new { x.InviterUserId, x.InvitedUserId }
-                );
-            }
-        );
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FriendRequests", x => new { x.InviterUserId, x.InvitedUserId });
+                });
 
-        migrationBuilder.CreateTable(
-            name: "Messages",
-            columns: table =>
-                new
+            migrationBuilder.CreateTable(
+                name: "Messages",
+                columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     SenderId = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -48,18 +43,20 @@ public partial class init : Migration
                     SenderDeleted = table.Column<bool>(type: "bit", nullable: false),
                     RecipientDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
-            constraints: table =>
-            {
-                table.PrimaryKey("PK_Messages", x => x.Id);
-            }
-        );
-    }
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Messages", x => x.Id);
+                });
+        }
 
-    /// <inheritdoc />
-    protected override void Down(MigrationBuilder migrationBuilder)
-    {
-        migrationBuilder.DropTable(name: "FriendRequests");
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropTable(
+                name: "FriendRequests");
 
-        migrationBuilder.DropTable(name: "Messages");
+            migrationBuilder.DropTable(
+                name: "Messages");
+        }
     }
 }

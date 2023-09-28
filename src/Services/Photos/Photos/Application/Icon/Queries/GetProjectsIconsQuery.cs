@@ -1,7 +1,6 @@
 ﻿using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs;
 using MediatR;
-using Photos.Common.Models;
 
 namespace Photos.Application.Icon.Queries;
 
@@ -31,8 +30,10 @@ public class GetProjectsIconsQueryHandler
     {
         var blobContainerProjectsIconsName = _configuration.GetValue<string>(
             "AzureBlobStorage:BlobContainerProjectsIcons"
-        );
-        var url = _configuration.GetValue<string>("urls:external:azureBlobStorage");
+        ) ?? throw new InvalidOperationException("The expected configuration value 'AzureBlobStorage:BlobContainerProjectsIcons' is missing.");
+
+        var url = _configuration.GetValue<string>("urls:external:azureBlobStorage") 
+            ?? throw new InvalidOperationException("The expected configuration value 'urls:external:azureBlobStorage' is missing.");
 
         var blobPhotosContainerClient = _blobServiceClient.GetBlobContainerClient(
             blobContainerProjectsIconsName

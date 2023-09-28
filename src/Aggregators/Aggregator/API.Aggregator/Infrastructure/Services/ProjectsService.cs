@@ -14,7 +14,7 @@ public class ProjectsService : BaseHttpService, IProjectsService
     {
         _projectServiceUrl =
             configuration.GetValue<string>("urls:internal:projects")
-            ?? throw new ArgumentNullException(nameof(configuration));
+                ?? throw new InvalidOperationException("The expected configuration value 'urls:internal:projects' is missing.");
         ;
     }
 

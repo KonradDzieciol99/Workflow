@@ -20,11 +20,16 @@ public class ProjectMembershipRequirementHandler
         ProjectMembershipRequirement requirement
     )
     {
+        if (context == null)
+            throw new ArgumentNullException(nameof(context));
+        if (requirement == null)
+            throw new ArgumentNullException(nameof(requirement));
+
         var userId =
             context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-            ?? throw new ArgumentNullException(nameof(context));
+                ?? throw new InvalidOperationException("The user identifier is missing in the context.");
         var projectId =
-            requirement.ProjectId ?? throw new ArgumentNullException(nameof(requirement));
+            requirement.ProjectId ?? throw new InvalidOperationException("The project identifier is missing in the requirement.");
 
         var result =
             await _unitOfWork.ReadOnlyProjectMemberRepository.CheckIfUserIsAMemberOfProject(

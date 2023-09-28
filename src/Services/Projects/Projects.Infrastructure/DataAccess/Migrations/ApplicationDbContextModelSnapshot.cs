@@ -7,7 +7,7 @@ using Projects.Infrastructure.DataAccess;
 
 #nullable disable
 
-namespace Projects.Infrastructure.Migrations
+namespace Projects.Infrastructure.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot

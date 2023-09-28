@@ -28,5 +28,7 @@ public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest>
             userEmail,
             request
         );
+
+        await Task.CompletedTask;
     }
 }

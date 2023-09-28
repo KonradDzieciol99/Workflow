@@ -61,6 +61,7 @@ public class GetAppNotificationsQueryTests : IAsyncLifetime
         var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
         var result = JsonSerializer.Deserialize<List<AppNotification>>(responseString, options);
 
+        Assert.NotNull(result);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(amount, result.Count);
     }

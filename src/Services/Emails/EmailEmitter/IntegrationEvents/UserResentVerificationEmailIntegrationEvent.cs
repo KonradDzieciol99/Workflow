@@ -1,4 +1,4 @@
-﻿using EmailEmitter.Sender;
+﻿using EmailEmitter.Services;
 using MediatR;
 using MessageBus;
 

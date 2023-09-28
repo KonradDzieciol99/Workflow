@@ -88,6 +88,7 @@ public class GetReceivedFriendRequestsQueryTests : IAsyncLifetime
             options
         );
 
+        Assert.NotNull(returnedFriendRequests);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.True(returnedFriendRequests.Count == amount);
     }

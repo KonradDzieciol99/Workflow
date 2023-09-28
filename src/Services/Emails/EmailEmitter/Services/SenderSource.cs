@@ -2,7 +2,7 @@
 using FluentEmail.Core;
 using System.Net;
 
-namespace EmailEmitter.Sender;
+namespace EmailEmitter.Services;
 
 public class SenderSource : ISenderSource
 {

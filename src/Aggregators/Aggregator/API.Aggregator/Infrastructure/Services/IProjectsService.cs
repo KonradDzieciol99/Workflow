@@ -6,5 +6,5 @@ public interface IProjectsService
 {
     Task<bool> CheckIfUserIsAMemberOfProject(string userId, string projectId);
     Task<List<MemberStatusDto>> GetMembersStatuses(List<string> Ids, string projectId);
-    Task<ProjectMemberDto> AddMember(string projectId, object command);
+    Task<ProjectMemberDto?> AddMember(string projectId, object command);
 }

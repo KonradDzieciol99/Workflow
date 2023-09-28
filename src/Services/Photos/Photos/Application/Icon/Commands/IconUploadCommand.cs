@@ -2,10 +2,7 @@
 using Azure.Storage.Blobs.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Photos.Application.Common.Authorization;
-using Photos.Common.Models;
 
 namespace Photos.Application.Icon.Commands;
 
@@ -36,7 +33,7 @@ public class IconUploadCommandHandler : IRequestHandler<IconUploadCommand>
     public async Task Handle(IconUploadCommand request, CancellationToken cancellationToken)
     {
         var blobPhotosContainerClient = _blobServiceClient.GetBlobContainerClient(
-            _configuration.GetValue<string>("AzureBlobStorage:BlobContainerProjectsIcons")
+            _configuration.GetValue<string>("AzureBlobStorage:BlobContainerProjectsIcons") ?? throw new InvalidOperationException("The expected configuration value 'AzureBlobStorage:BlobContainerProjectsIcons' is missing.") 
         );
         var blobClient = blobPhotosContainerClient.GetBlobClient(request.Name);
         var blobUploadOptions = new BlobUploadOptions

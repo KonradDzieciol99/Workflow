@@ -95,6 +95,7 @@ public class GetAppTaskQueryTests : IAsyncLifetime //to może zastępowac konstr
         var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
         var returnedTask = JsonSerializer.Deserialize<AppTaskDto>(responseString, options);
 
+        Assert.NotNull(returnedTask);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(appTasks[0].Id, returnedTask.Id);
         Assert.Equal(appTasks[0].Name, returnedTask.Name);

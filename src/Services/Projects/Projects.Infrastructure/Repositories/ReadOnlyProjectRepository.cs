@@ -11,9 +11,10 @@ public class ReadOnlyProjectRepository : IReadOnlyProjectRepository
 
     public ReadOnlyProjectRepository(ApplicationDbContext applicationDbContext)
     {
-        this._projectsQuery =
-            applicationDbContext.Projects.AsNoTracking()
-            ?? throw new ArgumentNullException(nameof(applicationDbContext));
+        if (applicationDbContext == null)
+            throw new ArgumentNullException(nameof(applicationDbContext));
+
+        this._projectsQuery = applicationDbContext.Projects.AsNoTracking();
     }
 
     public async Task<Project?> GetOneAsync(string projectId)
