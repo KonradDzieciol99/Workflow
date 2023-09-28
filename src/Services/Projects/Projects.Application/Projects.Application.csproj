@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Integration\HttpMessage\HttpMessage.csproj" />
     <ProjectReference Include="..\..\..\Integration\MessageBus\MessageBus.csproj" />
     <ProjectReference Include="..\Projects.Domain\Projects.Domain.csproj" />
   </ItemGroup>

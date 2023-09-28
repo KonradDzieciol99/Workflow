@@ -77,7 +77,7 @@ public class AcceptProjectInvitationCommandTests : IAsyncLifetime
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         Assert.Equal(
             InvitationStatus.Accepted,
-            invitedMemverAfterInvitationAction.InvitationStatus        
+            invitedMemverAfterInvitationAction.InvitationStatus
         );
     }
 }

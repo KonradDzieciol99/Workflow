@@ -15,8 +15,9 @@ public static class ObjectExtensions
         string json = JsonSerializer.Serialize(obj);
         var dictionary =
             JsonSerializer.Deserialize<Dictionary<string, object>>(json)
-                ?? throw new InvalidOperationException($"Deserialization to dictionary failed for JSON: {json}");
-
+            ?? throw new InvalidOperationException(
+                $"Deserialization to dictionary failed for JSON: {json}"
+            );
 
         var properties = dictionary
             .Where(pair => pair.Value != null)

@@ -1,14 +1,13 @@
 using HealthChecks.UI.Client;
+using HttpMessage.Middleware;
 using Logging;
 using MessageBus;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Notification.Application.IntegrationEvents;
+using Notification.Domain.Common.Exceptions;
 using Notification.Infrastructure.DataAccess;
-using Notification.Middleware;
 using Serilog;
-using System.Net;
 
 namespace Notification;
 
@@ -39,7 +38,7 @@ public class Program
         app.UseCors("allowAny");
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseMiddleware<ExceptionMiddleware>();
+        app.UseMiddleware<ExceptionMiddleware<NotificationDomainException>>();
         app.MapDefaultControllerRoute();
         app.MapControllers();
         app.MapHealthChecks(

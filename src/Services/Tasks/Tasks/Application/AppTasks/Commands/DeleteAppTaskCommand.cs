@@ -1,15 +1,13 @@
-﻿using AutoMapper;
+﻿using HttpMessage.Authorization;
+using HttpMessage.Exceptions;
+using HttpMessage.Services;
 using MediatR;
 using MessageBus;
 using Microsoft.AspNetCore.Authorization;
-using Tasks.Application.Common.Authorization;
 using Tasks.Application.Common.Authorization.Requirements;
-using Tasks.Application.Common.Exceptions;
 using Tasks.Application.IntegrationEvents;
-using Tasks.Domain.Common.Exceptions;
 using Tasks.Domain.Services;
 using Tasks.Infrastructure.Repositories;
-using Tasks.Services;
 
 namespace Tasks.Application.AppTasks.Commands;
 
@@ -52,13 +50,13 @@ public class DeleteAppTaskCommandHandler : IRequestHandler<DeleteAppTaskCommand>
     {
         var task =
             await _unitOfWork.AppTaskRepository.GetAsync(request.Id)
-            ?? throw new TaskDomainException("Task cannot be found.", new NotFoundException());
+            ?? throw new NotFoundException("Task cannot be found.");
 
         var projectMember =
             await _unitOfWork.ProjectMemberRepository.GetAsync(
                 _currentUserService.GetUserId(),
                 request.ProjectId
-            ) ?? throw new TaskDomainException("Project Member cannot be found.");
+            ) ?? throw new NotFoundException("Project Member cannot be found.");
 
         _appTaskService.RemoveAppTask(task, projectMember);
 

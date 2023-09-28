@@ -16,13 +16,17 @@ public static class WebApplicationFactoryExtensions
     {
         var scopeFactory =
             factory.Services.GetService<IServiceScopeFactory>()
-                ?? throw new InvalidOperationException($"{nameof(IServiceScopeFactory)} Missing required services.");
+            ?? throw new InvalidOperationException(
+                $"{nameof(IServiceScopeFactory)} Missing required services."
+            );
 
         using (var scope = scopeFactory.CreateScope())
         {
             var _dbContext =
                 scope.ServiceProvider.GetService<TApplicationDbContext>()
-                    ?? throw new InvalidOperationException($"{nameof(TApplicationDbContext)} Missing required services.");
+                ?? throw new InvalidOperationException(
+                    $"{nameof(TApplicationDbContext)} Missing required services."
+                );
 
             _dbContext.AddRange(entities);
 
@@ -40,8 +44,11 @@ public static class WebApplicationFactoryExtensions
         where TApplicationDbContext : DbContext
         where TEntity : class
     {
-        var scopeFactory = factory.Services.GetService<IServiceScopeFactory>() 
-            ?? throw new InvalidOperationException($"{nameof(IServiceScopeFactory)} Missing required services.");
+        var scopeFactory =
+            factory.Services.GetService<IServiceScopeFactory>()
+            ?? throw new InvalidOperationException(
+                $"{nameof(IServiceScopeFactory)} Missing required services."
+            );
 
         using var scope = scopeFactory.CreateScope();
 

@@ -1,16 +1,15 @@
 ﻿using AutoMapper;
+using HttpMessage.Authorization;
 using MediatR;
 using MessageBus;
 using Microsoft.AspNetCore.Authorization;
 using Tasks.Application.Common.Authorization;
 using Tasks.Application.Common.Authorization.Requirements;
-using Tasks.Application.Common.Exceptions;
 using Tasks.Application.Common.Models;
 using Tasks.Application.IntegrationEvents;
 using Tasks.Domain.Common.Models;
 using Tasks.Domain.Entity;
 using Tasks.Infrastructure.Repositories;
-using Tasks.Services;
 
 namespace Tasks.Application.AppTasks.Commands;
 

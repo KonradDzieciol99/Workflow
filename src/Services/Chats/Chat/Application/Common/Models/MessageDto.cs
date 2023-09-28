@@ -2,14 +2,12 @@
 
 public class MessageDto
 {
-    public string Id { get; set; }
-    public string SenderId { get; set; }
-    public string SenderEmail { get; set; }
-    public string RecipientId { get; set; }
-    public string RecipientEmail { get; set; }
-    public string Content { get; set; }
+    public required string Id { get; set; }
+    public required string SenderId { get; set; }
+    public required string SenderEmail { get; set; }
+    public required string RecipientId { get; set; }
+    public required string RecipientEmail { get; set; }
+    public required string Content { get; set; }
     public DateTime? DateRead { get; set; }
-    public DateTime MessageSent { get; set; }
-    public bool SenderDeleted { get; set; }
-    public bool RecipientDeleted { get; set; }
+    public required DateTime MessageSent { get; set; }
 }

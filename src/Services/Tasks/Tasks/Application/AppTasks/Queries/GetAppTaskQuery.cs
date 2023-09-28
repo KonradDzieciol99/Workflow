@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
+using HttpMessage.Authorization;
+using HttpMessage.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Tasks.Application.Common.Authorization;
 using Tasks.Application.Common.Authorization.Requirements;
-using Tasks.Application.Common.Exceptions;
 using Tasks.Application.Common.Models;
-using Tasks.Domain.Common.Exceptions;
 using Tasks.Infrastructure.Repositories;
 
 namespace Tasks.Application.AppTasks.Queries;
@@ -40,7 +39,8 @@ public class GetAppTaskQueryHandler : IRequestHandler<GetAppTaskQuery, AppTaskDt
     {
         var appTask =
             await _unitOfWork.AppTaskRepository.GetAsync(request.Id)
-            ?? throw new TaskDomainException("Task cannot be found.", new NotFoundException());
+            ?? throw new NotFoundException("Task cannot be found.");
+
         return _mapper.Map<AppTaskDto>(appTask);
     }
 }

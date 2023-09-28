@@ -1,4 +1,7 @@
-﻿using MediatR;
+﻿using HttpMessage.Authorization;
+using HttpMessage.Exceptions;
+using HttpMessage.Services;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Projects.Application.Common.Authorization;
 using Projects.Application.Common.Authorization.Requirements;
@@ -35,7 +38,7 @@ public class AcceptProjectInvitationCommandHandler : IRequestHandler<AcceptProje
     {
         var project =
             await _unitOfWork.ProjectRepository.GetOneAsync(request.ProjectId)
-            ?? throw new ProjectDomainException("Such a project does not exist");
+            ?? throw new NotFoundException("Such a project does not exist");
 
         project.AcceptInvitation(_currentUserService.GetUserId());
 

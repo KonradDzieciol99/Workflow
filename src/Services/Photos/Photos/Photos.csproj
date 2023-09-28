@@ -17,7 +17,6 @@
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="7.1.0" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.18.0-beta.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.5.1" />
-    <PackageReference Include="MediatR" Version="12.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.3" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" />
@@ -27,11 +26,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Application\Common\Authorization\" />
     <Folder Include="Domain\Common\Models\" />
     <Folder Include="Infrastructure\DataAccess\Photos\" />
+    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Integration\HttpMessage\HttpMessage.csproj" />
     <ProjectReference Include="..\..\..\Integration\Logging\Logging.csproj" />
     <ProjectReference Include="..\..\..\Integration\MessageBus\MessageBus.csproj" />
   </ItemGroup>

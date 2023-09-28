@@ -58,6 +58,6 @@ public class CreateFriendRequestCommandTests : IAsyncLifetime
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.NotNull(returnedAppTasks);
-        Assert.Equal(false, returnedAppTasks.Confirmed);
+        Assert.False(returnedAppTasks.Confirmed);
     }
 }

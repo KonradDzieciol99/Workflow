@@ -106,8 +106,7 @@ public class FriendRequestRepository : IFriendRequestRepository
             )
             .Select(
                 r =>
-                    new FriendStatusDto
-                    (
+                    new FriendStatusDto(
                         r.InviterUserId == userId ? r.InvitedUserId : r.InviterUserId,
                         r.Confirmed
                             ? FriendStatusType.Friend

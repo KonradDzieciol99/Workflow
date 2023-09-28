@@ -1,13 +1,12 @@
 using HealthChecks.UI.Client;
+using HttpMessage.Middleware;
 using Logging;
 using MessageBus;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Serilog;
-using System.Net;
 using Tasks.Application.IntegrationEvents;
+using Tasks.Domain.Common.Exceptions;
 using Tasks.Infrastructure.DataAccess;
-using Tasks.Middleware;
 
 namespace Tasks;
 
@@ -36,7 +35,7 @@ public class Program
         app.UseCors("allowAny");
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseMiddleware<ExceptionMiddleware>();
+        app.UseMiddleware<ExceptionMiddleware<TaskDomainException>>();
         app.MapDefaultControllerRoute();
         app.MapControllers();
         app.MapHealthChecks(

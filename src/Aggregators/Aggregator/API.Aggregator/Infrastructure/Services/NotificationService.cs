@@ -1,5 +1,6 @@
 ﻿using API.Aggregator.Domain.Commons.Exceptions;
 using HttpMessage;
+using HttpMessage.Services;
 using System.Text;
 
 namespace API.Aggregator.Infrastructure.Services;
@@ -13,7 +14,7 @@ public class NotificationService : BaseHttpService, INotificationService
     {
         _notificationServiceUrl =
             configuration.GetValue<string>("urls:internal:notification")
-             ?? throw new InvalidOperationException("The expected configuration value 'urls:internal:notification' is missing.");
+            ?? throw new ArgumentNullException(nameof(configuration));
         ;
     }
 

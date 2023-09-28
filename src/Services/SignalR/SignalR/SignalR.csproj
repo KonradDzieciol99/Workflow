@@ -16,7 +16,6 @@
     <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="7.0.0" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="7.1.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
-    <PackageReference Include="MediatR" Version="12.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="7.0.5" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
@@ -25,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Integration\HttpMessage\HttpMessage.csproj" />
     <ProjectReference Include="..\..\..\Integration\Logging\Logging.csproj" />
     <ProjectReference Include="..\..\..\Integration\MessageBus\MessageBus.csproj" />
   </ItemGroup>

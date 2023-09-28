@@ -4,13 +4,12 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using MediatR;
-using API.Aggregator.Application.Commons.Behaviours;
 using API.Aggregator.Infrastructure.Services;
-using API.Aggregator.Services;
 using API.Aggregator.Infrastructure;
-using System.Net.Http;
 using Polly;
-using Serilog;
+using HttpMessage.Behaviours;
+using HttpMessage.Services;
+using MediatR.Pipeline;
 
 namespace API.Aggregator;
 
@@ -28,7 +27,7 @@ public static class ConfigureServices
         services
             .AddHttpClient("InternalHttpClient")
             .AddHttpMessageHandler<HttpClientTokenForwarderDelegatingHandler>()
-            .AddHttpMessageHandler<HttpClientErrorHandlingDelegatingHandler>()
+            //.AddHttpMessageHandler<HttpClientErrorHandlingDelegatingHandler>()
             .AddTransientHttpErrorPolicy(builder =>
             {
                 return builder.WaitAndRetryAsync(
@@ -53,10 +52,14 @@ public static class ConfigureServices
             {
                 var internalIdentityUrl =
                     configuration.GetValue<string>("urls:internal:identity")
-                        ?? throw new InvalidOperationException("The expected configuration value 'urls:internal:identity' is missing.");
+                    ?? throw new InvalidOperationException(
+                        "The expected configuration value 'urls:internal:identity' is missing."
+                    );
                 var externalIdentityUrlhttp =
                     configuration.GetValue<string>("urls:external:identity")
-                        ?? throw new InvalidOperationException("The expected configuration value 'urls:external:identity' is missing.");
+                    ?? throw new InvalidOperationException(
+                        "The expected configuration value 'urls:external:identity' is missing."
+                    );
 
                 opt.RequireHttpsMetadata = false;
                 opt.SaveToken = true;
@@ -137,17 +140,17 @@ public static class ConfigureServices
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
-        services.AddMediatR(opt =>
+        services.AddMediatR(cfg =>
         {
-            opt.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-            opt.AddBehavior(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
-            opt.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+            cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
+            cfg.AddRequestPreProcessor(typeof(IRequestPreProcessor<>), typeof(LoggingBehaviour<>));
         });
 
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddHttpContextAccessor();
         services.AddTransient<HttpClientTokenForwarderDelegatingHandler>();
-        services.AddTransient<HttpClientErrorHandlingDelegatingHandler>();
+        //services.AddTransient<HttpClientErrorHandlingDelegatingHandler>();
 
         return services;
     }

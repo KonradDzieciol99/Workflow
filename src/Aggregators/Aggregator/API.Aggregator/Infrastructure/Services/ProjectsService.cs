@@ -1,6 +1,7 @@
 ﻿using API.Aggregator.Application.Commons.Models;
 using API.Aggregator.Domain.Commons.Exceptions;
 using HttpMessage;
+using HttpMessage.Services;
 using System.Text;
 
 namespace API.Aggregator.Infrastructure.Services;
@@ -14,7 +15,7 @@ public class ProjectsService : BaseHttpService, IProjectsService
     {
         _projectServiceUrl =
             configuration.GetValue<string>("urls:internal:projects")
-                ?? throw new InvalidOperationException("The expected configuration value 'urls:internal:projects' is missing.");
+            ?? throw new ArgumentNullException(nameof(configuration));
         ;
     }
 

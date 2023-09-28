@@ -1,10 +1,12 @@
-﻿using MessageBus.Extensions;
+﻿using MediatR.Pipeline;
+using MediatR;
+using MessageBus.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
 using System.Reflection;
-using SignalR.Commons.Behaviours;
+using HttpMessage.Behaviours;
 
 namespace SignalR;
 
@@ -35,7 +37,9 @@ public static class ConfigureServices
         });
         var rabbitMQOptionsSection =
             configuration.GetSection("RabbitMQOptions")
-              ?? throw new InvalidOperationException("The expected configuration value 'RabbitMQOptions' is missing.");
+            ?? throw new InvalidOperationException(
+                "The expected configuration value 'RabbitMQOptions' is missing."
+            );
 
         services.AddRabbitMQConsumer(rabbitMQOptionsSection);
         services.AddRabbitMQSender(rabbitMQOptionsSection);
@@ -43,15 +47,15 @@ public static class ConfigureServices
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-            cfg.AddBehavior(
-                typeof(MediatR.IPipelineBehavior<,>),
-                typeof(UnhandledExceptionBehaviour<,>)
-            );
+            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
+            cfg.AddRequestPreProcessor(typeof(IRequestPreProcessor<>), typeof(LoggingBehaviour<>));
         });
 
         var redisConnString =
             configuration.GetConnectionString("Redis")
-                ?? throw new InvalidOperationException("The expected configuration value 'ConnectionStrings:Redis' is missing.");
+            ?? throw new InvalidOperationException(
+                "The expected configuration value 'ConnectionStrings:Redis' is missing."
+            );
 
         services
             .AddSignalR(o =>
@@ -86,10 +90,14 @@ public static class ConfigureServices
             {
                 var internalIdentityUrl =
                     configuration.GetValue<string>("urls:internal:identity")
-                        ?? throw new InvalidOperationException("The expected configuration value 'urls:internal:identity' is missing.");
+                    ?? throw new InvalidOperationException(
+                        "The expected configuration value 'urls:internal:identity' is missing."
+                    );
                 var externalIdentityUrlhttp =
                     configuration.GetValue<string>("urls:external:identity")
-                        ?? throw new InvalidOperationException("The expected configuration value 'urls:external:identity' is missing.");
+                    ?? throw new InvalidOperationException(
+                        "The expected configuration value 'urls:external:identity' is missing."
+                    );
 
                 opt.RequireHttpsMetadata = false;
                 opt.SaveToken = true;
@@ -113,9 +121,7 @@ public static class ConfigureServices
 
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hub"))
-                        {
                             context.Token = accessToken;
-                        }
 
                         return Task.CompletedTask;
                     }
@@ -140,12 +146,20 @@ public static class ConfigureServices
             healthBuilder
                 .AddCheck("self", () => HealthCheckResult.Healthy(), tags: new string[] { "api" })
                 .AddRedis(
-                    configuration["ConnectionStrings:Redis"] ?? throw new InvalidOperationException("The expected configuration value 'ConnectionStrings:Redis' is missing."),
+                    configuration["ConnectionStrings:Redis"]
+                        ?? throw new InvalidOperationException(
+                            "The expected configuration value 'ConnectionStrings:Redis' is missing."
+                        ),
                     name: "signalr-redis-check",
                     tags: new string[] { "redis" }
                 )
                 .AddIdentityServer(
-                    new Uri(configuration.GetValue<string>("urls:internal:identity") ?? throw new InvalidOperationException("The expected configuration value 'urls:internal:identity' is missing.")),
+                    new Uri(
+                        configuration.GetValue<string>("urls:internal:identity")
+                            ?? throw new InvalidOperationException(
+                                "The expected configuration value 'urls:internal:identity' is missing."
+                            )
+                    ),
                     name: "signalr-identity-check",
                     tags: new string[] { "identity" }
                 );

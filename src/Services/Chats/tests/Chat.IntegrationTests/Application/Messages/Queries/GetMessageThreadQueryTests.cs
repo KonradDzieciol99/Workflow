@@ -47,7 +47,7 @@ public class GetMessageThreadQueryTests : IAsyncLifetime
     [MemberData(nameof(GetAppTasksQueryList))]
     public async Task GetMessageThreadQuery_ValidData_ReturnsMessages(
         GetMessageThreadQuery query
-        //int amount
+    //int amount
     )
     {
         //arrange

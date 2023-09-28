@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Serilog;
 using System.Net;
 using Photos.Infrastructure.DataAccess;
+using HttpMessage.Middleware;
+using Photos.Domain.Common.Exceptions;
 
 namespace Photos;
 
@@ -33,6 +35,7 @@ public class Program
         app.UseCors("allowAny");
         app.UseAuthentication();
         app.UseAuthorization();
+        app.UseMiddleware<ExceptionMiddleware<PhotosDomainException>>();
         app.MapDefaultControllerRoute();
         app.MapControllers();
         app.MapHealthChecks(

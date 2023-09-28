@@ -25,6 +25,7 @@ public record FriendRequestAddedEvent : IntegrationEvent
             invitedUserEmail ?? throw new ArgumentNullException(nameof(invitedUserEmail));
         InvitedUserPhotoUrl = invitedUserPhotoUrl;
     }
+
     public string InvitationSendingUserId { get; set; }
     public string InvitationSendingUserEmail { get; set; }
     public string? InvitationSendingUserPhotoUrl { get; set; }

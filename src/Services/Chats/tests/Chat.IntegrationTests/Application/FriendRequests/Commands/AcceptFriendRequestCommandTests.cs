@@ -62,7 +62,7 @@ public class AcceptFriendRequestCommandTests : IAsyncLifetime
         >(FriendRequests[0].InviterUserId, FriendRequests[0].InvitedUserId);
 
         Assert.NotNull(friendReques);
-        Assert.Equal(true, friendReques.Confirmed);
+        Assert.True(friendReques.Confirmed);
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 

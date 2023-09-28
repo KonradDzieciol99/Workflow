@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using HttpMessage.Authorization;
+using HttpMessage.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Projects.Application.Common.Authorization;

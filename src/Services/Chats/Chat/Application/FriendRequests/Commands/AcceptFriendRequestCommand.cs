@@ -1,10 +1,10 @@
 ﻿using Chat.Application.Common.Authorization;
 using Chat.Application.Common.Authorization.Requirements;
-using Chat.Application.Common.Exceptions;
 using Chat.Application.IntegrationEvents;
-using Chat.Domain.Common.Exceptions;
 using Chat.Infrastructure.Repositories;
-using Chat.Services;
+using HttpMessage.Authorization;
+using HttpMessage.Exceptions;
+using HttpMessage.Services;
 using MediatR;
 using MessageBus;
 using Microsoft.AspNetCore.Authorization;
@@ -50,11 +50,7 @@ public class AcceptFriendRequestCommandHandler : IRequestHandler<AcceptFriendReq
             await _unitOfWork.FriendRequestRepository.GetAsync(
                 _currentUserService.GetUserId(),
                 request.TargetUserId
-            )
-            ?? throw new ChatDomainException(
-                "Friend request cannot be found.",
-                new NotFoundException()
-            );
+            ) ?? throw new NotFoundException("Friend request cannot be found.");
 
         friendRequest.AcceptRequest(_currentUserService.GetUserId());
 

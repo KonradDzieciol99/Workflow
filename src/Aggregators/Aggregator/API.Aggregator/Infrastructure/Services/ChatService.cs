@@ -1,6 +1,7 @@
 ﻿using API.Aggregator.Application.Commons.Models;
 using API.Aggregator.Domain.Commons.Exceptions;
 using HttpMessage;
+using HttpMessage.Services;
 using System.Text;
 
 namespace API.Aggregator.Infrastructure.Services;
@@ -14,7 +15,7 @@ public class ChatService : BaseHttpService, IChatService
     {
         _chatServiceUrl =
             configuration.GetValue<string>("urls:internal:chat")
-                ?? throw new InvalidOperationException("The expected configuration value 'urls:internal:chat' is missing.");
+            ?? throw new ArgumentNullException(nameof(configuration));
         ;
     }
 

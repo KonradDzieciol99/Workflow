@@ -11,8 +11,16 @@ public class SenderSource : ISenderSource
 
     public SenderSource(IFluentEmail fluentEmail, IConfiguration configuration)
     {
-        _verifyEmailUrl = configuration["VerifyEmailUrl"];
-        _fluentEmail = fluentEmail;
+        if (configuration is null)
+            throw new ArgumentNullException(nameof(configuration));
+
+        _verifyEmailUrl =
+            configuration["VerifyEmailUrl"]
+            ?? throw new InvalidOperationException(
+                "The expected configuration value 'VerifyEmailUrl' is missing."
+            );
+        ;
+        _fluentEmail = fluentEmail ?? throw new ArgumentNullException(nameof(fluentEmail));
     }
 
     public async Task CreateConfirmEmailMessage(string userEmail, string token, string userId)
