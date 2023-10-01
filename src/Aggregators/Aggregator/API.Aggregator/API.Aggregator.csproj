@@ -30,6 +30,7 @@
     <Folder Include="Application\AppTasksAggregate\Commands\" />
     <Folder Include="Application\AppTasksAggregate\Queries\" />
     <Folder Include="Application\FriendRequestsAggregate\Commands\" />
+    <Folder Include="Application\PhotosAggregate\Queries\" />
     <Folder Include="Application\ProjectMembersAggregate\Queries\" />
     <Folder Include="Application\ProjectsAggregate\Commands\" />
     <Folder Include="Services\" />

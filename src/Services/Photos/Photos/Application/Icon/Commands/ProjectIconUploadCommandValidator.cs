@@ -2,9 +2,9 @@
 
 namespace Photos.Application.Icon.Commands;
 
-public class IconUploadCommandValidator : AbstractValidator<IconUploadCommand>
+public class ProjectIconUploadCommandValidator : AbstractValidator<ProjectIconUploadCommand>
 {
-    public IconUploadCommandValidator()
+    public ProjectIconUploadCommandValidator()
     {
         RuleFor(x => x.Name).NotEmpty().MinimumLength(1).MaximumLength(30);
         RuleFor(x => x.File)

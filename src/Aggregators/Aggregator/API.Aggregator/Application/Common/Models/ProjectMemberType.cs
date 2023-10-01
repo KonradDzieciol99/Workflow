@@ -1,4 +1,4 @@
-﻿namespace API.Aggregator.Application.Commons.Models;
+﻿namespace API.Aggregator.Application.Common.Models;
 
 public enum ProjectMemberType
 {

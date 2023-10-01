@@ -1,4 +1,4 @@
-﻿using API.Aggregator.Application.Commons.Models;
+﻿using API.Aggregator.Application.Common.Models;
 using API.Aggregator.Infrastructure.Services;
 using HttpMessage;
 using MediatR;
@@ -33,13 +33,14 @@ public class SearchFriendAggregateQueryHandler
         var usersFound = await _identityServerService.SearchAsync(
             request.Email,
             request.Take,
-            request.Skip
+            request.Skip,
+            cancellationToken
         );
 
         if (usersFound is null || usersFound.Count == 0)
             return new List<SearchedUserDto>();
 
-        var status = await _chatService.GetFriendsStatus(usersFound.Select(x => x.Id).ToList());
+        var status = await _chatService.GetFriendsStatus(usersFound.Select(x => x.Id).ToList(), cancellationToken);
 
         return usersFound
             .Select(

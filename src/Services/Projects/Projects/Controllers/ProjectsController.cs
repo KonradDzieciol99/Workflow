@@ -19,7 +19,7 @@ public class ProjectsController : ControllerBase
 
     public ProjectsController(IMediator mediator)
     {
-        this.mediator = mediator;
+        this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
     [HttpDelete("{projectId}/DeclineInvitation")]
@@ -39,6 +39,9 @@ public class ProjectsController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Only accessible from the inside.
+    /// </summary>
     [HttpPost("{projectId}/projectMembers/addMember")]
     public async Task<ActionResult<ProjectMemberDto?>> AddMember(
         [FromRoute] string projectId,
@@ -128,5 +131,10 @@ public class ProjectsController : ControllerBase
     )
     {
         return await mediator.Send(new GetMembersStatusesQuery(projectId, usersIds));
+    }
+    [HttpGet("{projectId}/projectMembers/{userId}/CheckIfUserIsAMemberOfProject")]
+    public async Task<bool> Get([FromRoute] string projectId, [FromRoute] string userId)
+    {
+        return await mediator.Send(new CheckIfUserIsAMemberOfProjectQuery(projectId, userId));
     }
 }

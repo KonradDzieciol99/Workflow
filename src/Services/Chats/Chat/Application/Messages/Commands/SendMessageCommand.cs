@@ -45,7 +45,7 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand>
             currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
         this._azureServiceBusSender =
             azureServiceBusSender ?? throw new ArgumentNullException(nameof(azureServiceBusSender));
-        this._messageService = messageService;
+        this._messageService = messageService ?? throw new ArgumentNullException(nameof(messageService));
     }
 
     public async Task Handle(SendMessageCommand request, CancellationToken cancellationToken)

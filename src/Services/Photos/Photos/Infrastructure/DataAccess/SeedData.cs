@@ -15,6 +15,7 @@ public class SeedData
     private readonly IConfiguration _configuration;
     private readonly BlobContainerClient _blobProjectsIconsContainerClient;
     private readonly BlobContainerClient _blobPhotosContainerClient;
+    private readonly BlobContainerClient _blobProjectsPrivateIconsContainerClient;
 
     public SeedData(
         ILogger<SeedData> logger,
@@ -43,6 +44,12 @@ public class SeedData
                     "The expected configuration value 'AzureBlobStorage:BlobContainerPhotos' is missing."
                 )
         );
+        _blobProjectsPrivateIconsContainerClient = _blobServiceClient.GetBlobContainerClient(
+            blobContainerName: _configuration.GetValue<string>("AzureBlobStorage:BlobContainerProjectsPrivateIcons")
+                ?? throw new InvalidOperationException(
+                    "The expected configuration value 'AzureBlobStorage:BlobContainerProjectsPrivateIcons' is missing."
+                )
+        );
     }
 
     public async Task InitialiseAsync()
@@ -53,6 +60,8 @@ public class SeedData
             await _blobProjectsIconsContainerClient.SetAccessPolicyAsync(PublicAccessType.Blob);
             await _blobPhotosContainerClient.CreateIfNotExistsAsync();
             await _blobPhotosContainerClient.SetAccessPolicyAsync(PublicAccessType.Blob);
+            await _blobProjectsPrivateIconsContainerClient.CreateIfNotExistsAsync();
+            await _blobProjectsPrivateIconsContainerClient.SetAccessPolicyAsync(PublicAccessType.Blob);
         }
         catch (Exception ex)
         {

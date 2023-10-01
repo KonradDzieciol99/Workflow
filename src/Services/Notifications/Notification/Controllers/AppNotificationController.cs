@@ -16,7 +16,7 @@ public class AppNotificationController : ControllerBase
 
     public AppNotificationController(IMediator mediator)
     {
-        this._mediator = mediator;
+        this._mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
     [HttpGet]

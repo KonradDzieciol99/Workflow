@@ -40,7 +40,7 @@ public static class ConfigureServices
         services.AddScoped<IIdentityServerService, IdentityServerService>();
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IProjectsService, ProjectsService>();
-        services.AddScoped<ITaskService, TaskService>();
+        services.AddScoped<IPhotosService, PhotosService >();
 
         services
             .AddAuthentication(opt =>

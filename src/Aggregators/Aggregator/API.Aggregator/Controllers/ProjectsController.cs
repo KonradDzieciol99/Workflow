@@ -1,4 +1,4 @@
-﻿using API.Aggregator.Application.Commons.Models;
+﻿using API.Aggregator.Application.Common.Models;
 using API.Aggregator.Application.ProjectMembersAggregate.Commands;
 using API.Aggregator.Application.ProjectsAggregate.Queries;
 using MediatR;

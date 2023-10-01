@@ -20,7 +20,7 @@ public class FriendRequestsController : ControllerBase
     }
 
     /// <summary>
-    /// Only available from the aggregate, as it is necessary to check whether the specified user exists
+    /// Only accessible from the inside.
     /// </summary>
     [HttpPost]
     public async Task<ActionResult<FriendRequestDto>> Post(

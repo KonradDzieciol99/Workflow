@@ -1,7 +1,7 @@
-﻿using API.Aggregator.Application.Commons.Models;
-using API.Aggregator.Infrastructure.Services;
+﻿using API.Aggregator.Infrastructure.Services;
 using MediatR;
 using HttpMessage.Exceptions;
+using API.Aggregator.Application.Common.Models;
 
 namespace API.Aggregator.Application.ProjectMembersAggregate.Commands;
 
@@ -34,7 +34,7 @@ public class AddProjectMemberCommandHandler
     )
     {
         var usersFound =
-            await _identityServerService.CheckIfUserExistsAsync(request.UserEmail)
+            await _identityServerService.CheckIfUserExistsAsync(request.UserEmail, cancellationToken)
             ?? throw new NotFoundException("User cannot be found.");
 
         return await _projectsService.AddMember(
@@ -46,7 +46,8 @@ public class AddProjectMemberCommandHandler
                 usersFound.PhotoUrl,
                 Type = ProjectMemberType.Member,
                 request.ProjectId
-            }
+            },
+            cancellationToken
         );
     }
 }

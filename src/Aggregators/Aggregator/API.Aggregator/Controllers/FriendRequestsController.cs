@@ -1,10 +1,8 @@
-﻿using API.Aggregator.Application.Commons.Models;
+﻿using API.Aggregator.Application.Common.Models;
 using API.Aggregator.Application.FriendRequestsAggregate.Queries;
-using API.Aggregator.Infrastructure.Services;
 using MediatR;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 
 namespace API.Aggregator.Controllers;
 
@@ -23,9 +21,10 @@ public class FriendRequestsController : ControllerBase
     public async Task<List<SearchedUserDto>> GetAsync(
         [FromRoute] string email,
         [FromQuery] int take,
-        [FromQuery] int skip
+        [FromQuery] int skip,
+        CancellationToken cancellationToken
     )
     {
-        return await _mediator.Send(new SearchFriendAggregateQuery(email, take, skip));
+        return await _mediator.Send(new SearchFriendAggregateQuery(email, take, skip), cancellationToken);
     }
 }
