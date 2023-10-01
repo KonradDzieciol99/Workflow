@@ -17,11 +17,30 @@ public class Program
 
         builder.Services
             .AddReverseProxy()
-            .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+            .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy") ?? throw new InvalidOperationException("The expected configuration value 'ReverseProxy' is missing."))
+            .AddConfigFilter<CustomConfigFilter>();
 
         var app = builder.Build();
 
-        app.MapReverseProxy();
+        app.MapReverseProxy(proxyPipeline =>
+        {
+            proxyPipeline.Use(async (context, next) =>
+            {
+                var metaData = context.GetReverseProxyFeature().Route.Config.Metadata;
+
+                if (metaData?.TryGetValue("UnsuccessfulResponseStatusCode", out var unsuccessfulResponseStatusCode) ?? false)
+                {
+                    context.Response.StatusCode = unsuccessfulResponseStatusCode switch
+                    {
+                        "404" => StatusCodes.Status404NotFound,
+                        _ => StatusCodes.Status500InternalServerError,
+                    };
+                    return;
+                }
+
+                await next();
+            });
+        });
 
         app.Run();
     }
