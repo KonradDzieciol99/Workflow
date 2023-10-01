@@ -6,6 +6,9 @@ x-common-variables: &common-variables
     urls__internal__notification: http://notification:80
     urls__internal__chat: http://chat:80
     urls__internal__projects: http://projects:80
+    urls__internal__photos: http://photos:80
+    urls__internal__signalr: http://signalr:80
+    urls__internal__apiAggregator: http://api.aggregator:80
     urls__external__identity: http://localhost:5000
     urls__external__azureBlobStorage: http://127.0.0.1:10000/devstoreaccount1
     EmailEmiterEnabled: false
