@@ -18,9 +18,12 @@ public class IdentityUserController : ControllerBase
 
     public IdentityUserController(UserManager<ApplicationUser> userManager)
     {
-        this._userManager = userManager;
+        this._userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
     }
 
+    /// <summary>
+    /// Only accessible from the inside.
+    /// </summary>
     [HttpGet("search/{email}")]
     public async Task<ActionResult<List<UserDto>>> Search(
         [FromRoute] string email,
@@ -44,6 +47,10 @@ public class IdentityUserController : ControllerBase
         return Ok(users);
     }
 
+
+    /// <summary>
+    /// Only accessible from the inside.
+    /// </summary>
     [HttpGet("CheckIfUserExists/{email}")]
     public async Task<ActionResult<UserDto?>> CheckIfUserExists(string email)
     {

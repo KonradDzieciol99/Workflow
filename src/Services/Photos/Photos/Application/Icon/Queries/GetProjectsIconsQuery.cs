@@ -4,10 +4,10 @@ using MediatR;
 
 namespace Photos.Application.Icon.Queries;
 
-public record GetProjectsIconsQuery() : IRequest<List<Domain.Entity.Icon>>;
+public record GetProjectsIconsQuery(string? ProjectId) : IRequest<List<Domain.Entity.AppIcon>>;
 
 public class GetProjectsIconsQueryHandler
-    : IRequestHandler<GetProjectsIconsQuery, List<Domain.Entity.Icon>>
+    : IRequestHandler<GetProjectsIconsQuery, List<Domain.Entity.AppIcon>>
 {
     private readonly BlobServiceClient _blobServiceClient;
     private readonly IConfiguration _configuration;
@@ -23,28 +23,27 @@ public class GetProjectsIconsQueryHandler
             configuration ?? throw new ArgumentNullException(nameof(configuration));
     }
 
-    public async Task<List<Domain.Entity.Icon>> Handle(
+    public async Task<List<Domain.Entity.AppIcon>> Handle(
         GetProjectsIconsQuery request,
         CancellationToken cancellationToken
     )
     {
+        var url =
+            _configuration.GetValue<string>("urls:external:azureBlobStorage")
+            ?? throw new InvalidOperationException(
+                "The expected configuration value 'urls:external:azureBlobStorage' is missing."
+            );
         var blobContainerProjectsIconsName =
             _configuration.GetValue<string>("AzureBlobStorage:BlobContainerProjectsIcons")
             ?? throw new InvalidOperationException(
                 "The expected configuration value 'AzureBlobStorage:BlobContainerProjectsIcons' is missing."
             );
 
-        var url =
-            _configuration.GetValue<string>("urls:external:azureBlobStorage")
-            ?? throw new InvalidOperationException(
-                "The expected configuration value 'urls:external:azureBlobStorage' is missing."
-            );
-
         var blobPhotosContainerClient = _blobServiceClient.GetBlobContainerClient(
             blobContainerProjectsIconsName
         );
 
-        var icons = new List<Domain.Entity.Icon>();
+        var icons = new List<Domain.Entity.AppIcon>();
 
         await foreach (
             BlobItem file in blobPhotosContainerClient.GetBlobsAsync(
@@ -56,7 +55,28 @@ public class GetProjectsIconsQueryHandler
             var name = file.Name;
             var fullUri = $"{uri}/{name}";
 
-            icons.Add(new Domain.Entity.Icon(fullUri, name));
+            icons.Add(new Domain.Entity.AppIcon(fullUri, name));
+        }
+
+        if (request.ProjectId is null)
+            return icons;
+
+        var blobContainerProjectsPrivateIcons =
+            _configuration.GetValue<string>("AzureBlobStorage:BlobContainerProjectsPrivateIcons")
+            ?? throw new InvalidOperationException(
+                "The expected configuration value 'AzureBlobStorage:BlobContainerProjectsPrivateIcons' is missing."
+            );
+
+        var blobContainerProjectsPrivateIconsClient = _blobServiceClient.GetBlobContainerClient(
+            blobContainerProjectsPrivateIcons
+        );
+
+        await foreach (BlobItem file in blobContainerProjectsPrivateIconsClient.GetBlobsAsync(cancellationToken: cancellationToken , prefix: request.ProjectId))
+        {
+            string uri = $"{url}/{blobContainerProjectsPrivateIcons}";
+            var name = file.Name;
+            var fullUri = $"{uri}/{name}";
+            icons.Add(new Domain.Entity.AppIcon(fullUri, name));
         }
 
         return icons;

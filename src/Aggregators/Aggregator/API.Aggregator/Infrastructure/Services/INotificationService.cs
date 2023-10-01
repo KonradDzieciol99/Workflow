@@ -2,5 +2,5 @@
 
 public interface INotificationService
 {
-    Task<bool> Get(string token);
+    Task<bool> Get(string token, CancellationToken cancellationToken);
 }

@@ -1,4 +1,4 @@
-﻿using API.Aggregator.Application.Commons.Models;
+﻿using API.Aggregator.Application.Common.Models;
 using API.Aggregator.Application.FriendRequestsAggregate.Queries;
 using HttpMessage;
 using Microsoft.AspNetCore.Hosting.Server;

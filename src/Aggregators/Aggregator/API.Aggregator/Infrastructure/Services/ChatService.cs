@@ -1,4 +1,4 @@
-﻿using API.Aggregator.Application.Commons.Models;
+﻿using API.Aggregator.Application.Common.Models;
 using API.Aggregator.Domain.Commons.Exceptions;
 using HttpMessage;
 using HttpMessage.Services;
@@ -13,13 +13,16 @@ public class ChatService : BaseHttpService, IChatService
     public ChatService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         : base(httpClientFactory.CreateClient("InternalHttpClient"))
     {
+        if (configuration is null)
+            throw new ArgumentNullException(nameof(configuration));
+
+
         _chatServiceUrl =
             configuration.GetValue<string>("urls:internal:chat")
-            ?? throw new ArgumentNullException(nameof(configuration));
-        ;
+                ?? throw new InvalidOperationException("The expected configuration value 'urls:internal:chat' is missing.");
     }
 
-    public async Task<List<FriendStatusDto>> GetFriendsStatus(List<string> Ids)
+    public async Task<List<FriendStatusDto>> GetFriendsStatus(List<string> Ids, CancellationToken cancellationToken)
     {
         var sb = new StringBuilder(_chatServiceUrl);
         sb.Append(
@@ -27,7 +30,7 @@ public class ChatService : BaseHttpService, IChatService
         );
 
         return await SendAsync<List<FriendStatusDto>>(
-            new ApiRequest(HttpMethod.Get, sb.ToString(), null)
+            new ApiRequest(HttpMethod.Get, sb.ToString(), null), cancellationToken
         );
     }
 }

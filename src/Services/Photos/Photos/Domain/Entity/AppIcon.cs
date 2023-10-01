@@ -1,8 +1,8 @@
 ﻿namespace Photos.Domain.Entity;
 
-public class Icon
+public class AppIcon
 {
-    public Icon(string url, string name)
+    public AppIcon(string url, string name)
     {
         Url = url ?? throw new ArgumentNullException(nameof(url));
         Name = name ?? throw new ArgumentNullException(nameof(name));

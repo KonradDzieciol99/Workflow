@@ -8,6 +8,7 @@ using System.Reflection;
 using Photos.Infrastructure.DataAccess;
 using HttpMessage.Behaviours;
 using MediatR.Pipeline;
+using HttpMessage.Services;
 
 namespace Photos;
 
@@ -97,6 +98,9 @@ public static class ConfigureServices
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
             cfg.AddRequestPreProcessor(typeof(IRequestPreProcessor<>), typeof(LoggingBehaviour<>));
         });
+
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddHttpContextAccessor();
 
         services.AddAuthorization(options =>
         {

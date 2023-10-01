@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Photos.Application.Icon.Commands;
 using Photos.Application.Icon.Queries;
 using Photos.Domain.Entity;
 
@@ -18,17 +19,19 @@ public class IconController : ControllerBase
         this._mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    //TODO
-    //[HttpPost]
-    //public async Task<IActionResult> Post([FromForm] IFormFile file, [FromQuery] string name)
-    //{
-    //    await _mediator.Send(new IconUploadCommand(file,name));
-    //    return Ok();
-    //}
+    /// <summary>
+    /// Only accessible from the inside.
+    /// </summary>
+
+    [HttpPost]
+    public async Task<AppIcon> Post([FromForm] IFormFile file, [FromQuery] string projectId, [FromQuery] string name)
+    {
+        return await _mediator.Send(new ProjectIconUploadCommand(file, projectId, name));
+    }
 
     [HttpGet]
-    public async Task<ActionResult<List<Icon>>> Get()
+    public async Task<ActionResult<List<AppIcon>>> Get([FromQuery] string? projectId)
     {
-        return Ok(await _mediator.Send(new GetProjectsIconsQuery()));
+        return await _mediator.Send(new GetProjectsIconsQuery(projectId));
     }
 }

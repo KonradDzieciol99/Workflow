@@ -16,7 +16,7 @@ public class TaskController : ControllerBase
 
     public TaskController(IMediator mediator)
     {
-        this._mediator = mediator;
+        this._mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
     [HttpGet]

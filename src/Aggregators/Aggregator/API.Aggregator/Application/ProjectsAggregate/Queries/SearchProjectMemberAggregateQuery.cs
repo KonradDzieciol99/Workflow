@@ -1,4 +1,4 @@
-﻿using API.Aggregator.Application.Commons.Models;
+﻿using API.Aggregator.Application.Common.Models;
 using API.Aggregator.Infrastructure.Services;
 using MediatR;
 
@@ -32,7 +32,8 @@ public class SearchMemberQueryHandler
         var usersFound = await _identityServerService.SearchAsync(
             request.Email,
             request.Take,
-            request.Skip
+            request.Skip,
+            cancellationToken
         );
 
         if (usersFound is null || usersFound.Count == 0)
@@ -40,7 +41,8 @@ public class SearchMemberQueryHandler
 
         var status = await _projectsService.GetMembersStatuses(
             usersFound.Select(x => x.Id).ToList(),
-            request.ProjectId
+            request.ProjectId,
+            cancellationToken
         );
 
         var SearchedMembers = usersFound
