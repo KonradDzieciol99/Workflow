@@ -3,7 +3,7 @@
 
 ![](README-img/workflowDiag.drawio.svg)
 
-The application was designed as a system for project management and real-time communication. It consists of microservices written using .NET. The user interface was created with Angular. The backend is covered with tests using XUnit. The project is currently under active development and will undergo further improvements.
+The application was designed as a system for project management and real-time communication. It consists of microservices written using .NET. The user interface was created with Angular. The backend is covered with tests using XUnit. Project was created as a demonstrative sample of capabilities during my college days, and I do not plan on further developing it. Some functions may be incomplete or contain errors, so please consider the code as an example rather than a finished product.
 
 ## Features
 - Live Chat: Enables users to engage in real-time conversations using SignalR, facilitating instant message exchange and information sharing.
